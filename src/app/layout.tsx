@@ -23,11 +23,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='pt-BR'>
-			<AuthSessionProvider>
-				<body className={`${montserrat.className} antialiased`}>
-					{children}
-				</body>
-			</AuthSessionProvider>
+			<body className={`${montserrat.className} antialiased`}>
+				<AuthSessionProvider>{children}</AuthSessionProvider>
+			</body>
 		</html>
 	);
 }

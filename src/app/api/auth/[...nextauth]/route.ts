@@ -32,22 +32,21 @@ const handler = NextAuth({
 			},
 		}),
 	],
+	secret: process.env.NEXTAUTH_SECRET,
 	pages: {
 		signIn: '/sign-in',
 		signOut: '/sign-in',
+		error: '/',
 	},
 	callbacks: {
 		jwt: async ({ token, user, session, account, profile }) => {
-			if (user) {
-				return {
-					...token,
-					...user,
-					...session,
-					...account,
-					...profile,
-				};
-			}
-			return token;
+			return {
+				...token,
+				...user,
+				...session,
+				...account,
+				...profile,
+			};
 		},
 		session: async ({ session, token, newSession, user }) => {
 			return {
