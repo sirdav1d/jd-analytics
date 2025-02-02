@@ -4,6 +4,8 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 import AuthSessionProvider from '@/providers/session-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 
 const montserrat = Montserrat({
 	weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -22,9 +24,20 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang='pt-BR'>
+		<html
+			lang='pt-BR'
+			suppressHydrationWarning>
 			<body className={`${montserrat.className} antialiased`}>
-				<AuthSessionProvider>{children}</AuthSessionProvider>
+				<AuthSessionProvider>
+					<ThemeProvider
+						attribute={'class'}
+						defaultTheme='system'
+						enableSystem
+						disableTransitionOnChange>
+						{children}
+						<Toaster />
+					</ThemeProvider>
+				</AuthSessionProvider>
 			</body>
 		</html>
 	);

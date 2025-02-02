@@ -1,101 +1,90 @@
-import Image from "next/image";
+/** @format */
+
+import Logo from '@/components/logo';
+import { Button } from '@/components/ui/button';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import { ModeToggle } from '@/components/ui/mode-toggle';
+import { BarChart3, LineChart, Users, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+	const content = [
+		{
+			icon: BarChart3,
+			title: 'Dashboard de Vendas',
+			description:
+				'Visualize seus dados de vendas, ranking de produtos, vendedores e todos os indicarores relevantes para o seu negócio',
+		},
+		{
+			icon: Users,
+			title: 'Gerenciamento de Usuários',
+			description:
+				'Gerencie facilmente contas de usuários, funções e permissões com nossa interface de administração intuitiva',
+		},
+		{
+			icon: LineChart,
+			title: 'Marketing Analytics',
+			description:
+				'Obtenha insights profundos sobre seus esforços de marketing com nossa integração do Google Analytics e do Google Ads',
+		},
+	];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	return (
+		<main className='w-full min-h-screen h-full xl:h-screen bg-background '>
+			<div className=' container w-full mx-auto h-full relative pt-10 px-5 pb-5'>
+				<div className='absolute top-5 right-5 z-40'>
+					<ModeToggle />
+				</div>
+				<span className='absolute z-10 inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] md:bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-background to-background' />
+
+				<div className='flex relative h-full z-20 justify-center items-center text-center flex-col gap-5 '>
+					<Logo />
+					<h2 className='2xl:text-nowrap text-center text-balance text-3xl lg:text-5xl 2xl:text-7xl font-bold'>
+						Impulsione Sua{' '}
+						<span className='text-primary'>Inteligência de Negócios</span>
+					</h2>
+					<p className='text-sm lg:text-xl 2xl:text-2xl text-balance text-foreground max-w-4xl'>
+						Aproveite o poder das decisões baseadas em dados com a plataforma{' '}
+						<strong className='text-primary'>JD Analytics</strong>
+					</p>
+					<Button
+						size={'lg'}
+						asChild
+						className='text-lg mt-5'>
+						<Link href={'/sign-in'}>
+							{' '}
+							Entrar na plataforma <Zap />
+						</Link>
+					</Button>
+					<div className='grid mt-10 2xl:mt-32 gap-5 md:gap-10 grid-cols-1 md:grid-cols-3 relative'>
+						{content.map((feature, index) => {
+							return (
+								<Card
+									key={index}
+									className=' bg-opacity-40 backdrop-blur-sm border-red-500/20 '>
+									<CardHeader>
+										<CardTitle className='flex text-left flex-col 2xl:flex-row items-start gap-2 text-red-500'>
+											<feature.icon className='h-6 w-6 mr-2' />
+											{feature.title}
+										</CardTitle>
+									</CardHeader>
+									<CardContent>
+										<CardDescription className='text-muted-foreground text-balance text-left'>
+											{feature.description}
+										</CardDescription>
+									</CardContent>
+								</Card>
+							);
+						})}
+					</div>
+				</div>
+			</div>
+		</main>
+	);
 }
