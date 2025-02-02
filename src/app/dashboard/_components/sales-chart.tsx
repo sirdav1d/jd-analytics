@@ -34,7 +34,7 @@ const chartConfig = {
 
 export default function SalesChart() {
 	return (
-		<ChartContainer config={chartConfig}>
+		<ChartContainer config={chartConfig} className='w-full'>
 			<LineChart
 				accessibilityLayer
 				data={chartData}
@@ -55,7 +55,7 @@ export default function SalesChart() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent className='text-sm' />} />
+				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
 				<Line
 					dataKey='sales'
 					type='natural'

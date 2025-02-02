@@ -34,9 +34,9 @@ export default async function OverviewPage() {
 
 	return (
 		<div className=' w-full p-4 flex flex-col xl:mx-10'>
-			<div className=' flex flex-col-reverse lg:flex-row  items-end lg:items-center justify-between w-full gap-5 xl:mt-10'>
-				<div className='space-y-2'>
-					<h2 className='font-medium text-2xl xl:text-xl'>
+			<div className=' flex flex-col-reverse lg:flex-row items-end lg:items-center justify-between w-full gap-5 xl:mt-10'>
+				<div className='space-y-2 mr-auto'>
+					<h2 className='font-medium text-base xl:text-xl'>
 						Bem vindo <span className='text-primary'>{session.user?.name}</span>
 					</h2>
 					<p className='font-bold text-2xl xl:text-4xl'>Visão Geral</p>
@@ -132,7 +132,9 @@ export default async function OverviewPage() {
 			<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
 				<Card>
 					<CardHeader>
-						<CardTitle>Tendência de Vendas e Crescimento Mensal</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Tendência de Vendas e Crescimento Mensal
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SalesChart />
@@ -140,7 +142,9 @@ export default async function OverviewPage() {
 				</Card>
 				<Card>
 					<CardHeader>
-						<CardTitle>Distribuição de Vendas por Categoria</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Distribuição de Vendas por Categoria
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SalesByCategoryChart />
@@ -150,7 +154,9 @@ export default async function OverviewPage() {
 			<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
 				<Card>
 					<CardHeader>
-						<CardTitle>Top 5 Vendedores</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Top 5 Vendedores
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<Table>
@@ -158,7 +164,7 @@ export default async function OverviewPage() {
 								<TableRow>
 									<TableHead>Posição</TableHead>
 									<TableHead>Nome</TableHead>
-									<TableHead>Total de Vendas</TableHead>
+									<TableHead className='text-nowrap'>Total de Vendas</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -205,8 +211,12 @@ export default async function OverviewPage() {
 												/>
 											) : null}
 										</TableCell>
-										<TableCell>{vendedor.nome}</TableCell>
-										<TableCell>{vendedor.vendas}</TableCell>
+										<TableCell className='text-nowrap'>
+											{vendedor.nome}
+										</TableCell>
+										<TableCell className='text-nowrap'>
+											{vendedor.vendas}
+										</TableCell>
 									</TableRow>
 								))}
 							</TableBody>
@@ -215,7 +225,9 @@ export default async function OverviewPage() {
 				</Card>
 				<Card>
 					<CardHeader>
-						<CardTitle>Receita de Vendas vs. Serviços</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Receita de Vendas vs. Serviços
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SalesVsRepairRevenue />

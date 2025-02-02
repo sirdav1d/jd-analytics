@@ -50,8 +50,9 @@ export function SalesByCategoryChart() {
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					label
-					innerRadius={100}
+					label={{ fontSize: '14px' }}
+					labelLine={false}
+					innerRadius={98}
 					strokeWidth={4}>
 					<Label
 						content={({ viewBox }) => {
@@ -81,7 +82,12 @@ export function SalesByCategoryChart() {
 					/>
 				</Pie>
 				<ChartLegend
-					content={<ChartLegendContent nameKey='name' />}
+					content={
+						<ChartLegendContent
+							nameKey='name'
+							className='md:text-sm'
+						/>
+					}
 					className='-translate-y-2  gap-2 [&>*]:basis-1/4 [&>*]:justify-center text-sm'
 				/>
 			</PieChart>
