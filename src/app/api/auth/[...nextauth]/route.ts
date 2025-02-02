@@ -19,6 +19,7 @@ const handler = NextAuth({
 				const user = {
 					id: '1',
 					email: 'admin@jdinfo.com.br',
+					name: 'David Diniz Dos Santos',
 					password: 'admin@jd',
 				};
 				if (

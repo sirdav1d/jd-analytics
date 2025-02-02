@@ -21,9 +21,7 @@ export default async function DashLayout({
 	return (
 		<SidebarProvider defaultOpen={defaultOpen}>
 			<AppSidebar />
-			<div>
-				<SidebarTrigger /> {children}
-			</div>
+			<SidebarTrigger /> {children}
 		</SidebarProvider>
 	);
 }

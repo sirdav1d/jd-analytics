@@ -3,6 +3,7 @@
 import Logo from '@/components/logo';
 import { ModeToggle } from '@/components/ui/mode-toggle';
 import { SignInForm } from './_components/sign-in-form';
+import Image from 'next/image';
 
 export default function SignIn() {
 	return (
@@ -27,12 +28,12 @@ export default function SignIn() {
 					</div>
 				</div>
 			</div>
-			<div className='relative hidden bg-muted lg:block'>
-				{/* <img
-					src='/placeholder.svg'
-					alt='Image'
-					className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
-				/> */}
+			<div className='relative hidden bg-muted lg:flex items-center justify-center'>
+				<Image
+					src={'/Analysis-bro.svg'}
+					alt='Analise de dados'
+					width={580}
+					height={180}></Image>
 			</div>
 		</div>
 	);

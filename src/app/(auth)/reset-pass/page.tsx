@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { ResetPassForm } from './_components/reset-pass-form';
 import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ResetPassPage() {
 	return (
@@ -38,12 +39,12 @@ export default function ResetPassPage() {
 					</div>
 				</div>
 			</div>
-			<div className='relative hidden bg-muted lg:block'>
-				{/* <img
-					src='/placeholder.svg'
-					alt='Image'
-					className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
-				/> */}
+			<div className='relative hidden bg-muted lg:flex items-center justify-center'>
+				<Image
+					src={'/Dark-analytics-bro.svg'}
+					alt='Analise de dados'
+					width={580}
+					height={180}></Image>
 			</div>
 		</div>
 	);

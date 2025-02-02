@@ -10,33 +10,30 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Calendar, Home, Inbox, Search, Settings, User2 } from 'lucide-react';
+import { Megaphone, Settings, ShoppingBag, User2, UserCog } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AppSidebar() {
 	const items = [
 		{
-			title: 'Home',
-			url: '#',
-			icon: Home,
+			title: 'Admin',
+			url: '/dashboard/admin',
+			icon: UserCog,
 		},
 		{
-			title: 'Inbox',
-			url: '#',
-			icon: Inbox,
+			title: 'Marketing',
+			url: '/dashboard/marketing',
+			icon: Megaphone,
 		},
 		{
-			title: 'Calendar',
-			url: '#',
-			icon: Calendar,
+			title: 'Comercial',
+			url: '/dashboard/comercial',
+			icon: ShoppingBag,
 		},
+
 		{
-			title: 'Search',
-			url: '#',
-			icon: Search,
-		},
-		{
-			title: 'Settings',
-			url: '#',
+			title: 'Configurações',
+			url: '/dashboard/settings',
 			icon: Settings,
 		},
 	];
@@ -49,11 +46,16 @@ export default function AppSidebar() {
 						<SidebarMenu>
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<a href={item.url}>
+									<SidebarMenuButton
+										asChild
+										disabled
+										className='disabled:cursor-not-allowed'>
+										<Link
+											href={item.url}
+											className='cursor-not-allowed'>
 											<item.icon />
 											<span>{item.title}</span>
-										</a>
+										</Link>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
@@ -64,11 +66,16 @@ export default function AppSidebar() {
 			<SidebarFooter>
 				<SidebarMenu>
 					<SidebarMenuItem>
-						<SidebarMenuButton asChild>
-							<a href={'/dashboard/profile'}>
+						<SidebarMenuButton
+							asChild
+							disabled
+							className='disabled:cursor-not-allowed'>
+							<Link
+								href={'/dashboard/profile'}
+								className='cursor-not-allowed'>
 								<User2 />
 								<span>Meu Perfil</span>
-							</a>
+							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
