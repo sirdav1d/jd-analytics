@@ -29,16 +29,14 @@ export default function RootLayout({
 			lang='pt-BR'
 			suppressHydrationWarning>
 			<body className={`${montserrat.className} antialiased`}>
-				<AuthSessionProvider>
-					<ThemeProvider
-						attribute={'class'}
-						defaultTheme='dark'
-						enableSystem
-						disableTransitionOnChange>
-						{children}
-						<Toaster />
-					</ThemeProvider>
-				</AuthSessionProvider>
+				<ThemeProvider
+					attribute={'class'}
+					defaultTheme='dark'
+					enableSystem
+					disableTransitionOnChange>
+					<AuthSessionProvider>{children}</AuthSessionProvider>
+					<Toaster />
+				</ThemeProvider>
 			</body>
 		</html>
 	);
