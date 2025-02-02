@@ -55,7 +55,7 @@ export default function SalesChart() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent />} />
+				<ChartLegend content={<ChartLegendContent className='text-sm' />} />
 				<Line
 					dataKey='sales'
 					type='natural'

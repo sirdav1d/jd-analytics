@@ -50,7 +50,7 @@ export function SalesVsRepairRevenue() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent />} />
+				<ChartLegend content={<ChartLegendContent className='text-sm' />} />
 				<Bar
 					dataKey='vendas'
 					fill='var(--color-vendas)'
