@@ -31,7 +31,7 @@ export default function RootLayout({
 				<AuthSessionProvider>
 					<ThemeProvider
 						attribute={'class'}
-						defaultTheme='system'
+						defaultTheme='dark'
 						enableSystem
 						disableTransitionOnChange>
 						{children}
