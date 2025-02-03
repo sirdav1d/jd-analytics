@@ -1,9 +1,10 @@
 /** @format */
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/app-sidebar';
+import HeaderDashboard from '@/components/header-dashboard';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function DashLayout({
 	children,
@@ -21,7 +22,11 @@ export default async function DashLayout({
 	return (
 		<SidebarProvider defaultOpen={defaultOpen}>
 			<AppSidebar />
-			<SidebarTrigger /> {children}
+			<SidebarTrigger />
+			<div className=' w-full p-4 flex flex-col xl:mx-10'>
+				<HeaderDashboard />
+				{children}
+			</div>
 		</SidebarProvider>
 	);
 }

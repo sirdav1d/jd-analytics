@@ -1,4 +1,7 @@
 /** @format */
+
+'use client';
+
 import {
 	Sidebar,
 	SidebarContent,
@@ -10,11 +13,24 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Megaphone, Settings, ShoppingBag, User2, UserCog } from 'lucide-react';
+import {
+	Home,
+	Megaphone,
+	Settings,
+	ShoppingBag,
+	User2,
+	UserCog,
+} from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function AppSidebar() {
 	const items = [
+		{
+			title: 'Home',
+			url: '/dashboard',
+			icon: Home,
+		},
 		{
 			title: 'Admin',
 			url: '/dashboard/admin',
@@ -37,22 +53,25 @@ export default function AppSidebar() {
 			icon: Settings,
 		},
 	];
+
+	const pathname = usePathname();
 	return (
 		<Sidebar collapsible='icon'>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
 					<SidebarGroupContent>
-						<SidebarMenu>
+						<SidebarMenu className='space-y-2'>
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
 										asChild
-										disabled
-										className='disabled:cursor-not-allowed'>
-										<Link
-											href={item.url}
-											className='cursor-not-allowed'>
+										className={`transition-all ease-linear duration-200 active:shadow-lg ${
+											pathname == item.url
+												? 'bg-primary hover:bg-primary/90 text-slate-50 hover:text-slate-50 active:bg-primary/90  active:text-slate-50'
+												: 'bg-transparent'
+										}`}>
+										<Link href={item.url}>
 											<item.icon />
 											<span>{item.title}</span>
 										</Link>
@@ -68,11 +87,12 @@ export default function AppSidebar() {
 					<SidebarMenuItem>
 						<SidebarMenuButton
 							asChild
-							disabled
-							className='disabled:cursor-not-allowed'>
-							<Link
-								href={'/dashboard/profile'}
-								className='cursor-not-allowed'>
+							className={`transition-all ease-linear duration-200 ${
+								pathname == '/dashboard/profile'
+									? 'bg-primary hover:bg-primary/90 hover:text-slate-50 text-slate-50 active:bg-primary/90 active:shadow-md active:text-slate-50'
+									: 'bg-transparent'
+							}`}>
+							<Link href={'/dashboard/profile'}>
 								<User2 />
 								<span>Meu Perfil</span>
 							</Link>

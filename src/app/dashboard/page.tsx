@@ -1,9 +1,6 @@
 /** @format */
 
-import BtnSignOut from '@/components/btn-sign-out';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ModeToggle } from '@/components/ui/mode-toggle';
-import { Separator } from '@/components/ui/separator';
 import {
 	Table,
 	TableBody,
@@ -33,20 +30,7 @@ export default async function OverviewPage() {
 	}
 
 	return (
-		<div className=' w-full p-4 flex flex-col xl:mx-10'>
-			<div className=' flex flex-col-reverse lg:flex-row items-end lg:items-center justify-between w-full gap-5 xl:mt-10'>
-				<div className='space-y-2 mr-auto'>
-					<h2 className='font-medium text-base xl:text-xl'>
-						Bem vindo <span className='text-primary'>{session.user?.name}</span>
-					</h2>
-					<p className='font-bold text-2xl xl:text-4xl'>Visão Geral</p>
-				</div>
-				<div className='flex items-center gap-5'>
-					<ModeToggle />
-					<BtnSignOut />
-				</div>
-			</div>
-			<Separator className='my-5' />
+		<>
 			<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-8'>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -234,6 +218,6 @@ export default async function OverviewPage() {
 					</CardContent>
 				</Card>
 			</div>
-		</div>
+		</>
 	);
 }
