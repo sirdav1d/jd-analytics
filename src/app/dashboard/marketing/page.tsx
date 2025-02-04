@@ -40,7 +40,7 @@ export default function MarketingPage() {
 		<div className='w-full mx-auto space-y-4'>
 			{/* Filtros */}
 			<div className='w-full flex flex-wrap gap-4 mb-4'>
-				<DatePickerWithRange 
+				<DatePickerWithRange
 					date={dateRange}
 					setDate={(e) =>
 						setDateRange({
@@ -293,7 +293,6 @@ export default function MarketingPage() {
 									<TableCell>15,000</TableCell>
 									<TableCell>720</TableCell>
 								</TableRow>
-								{/* Adicione mais linhas conforme necessário */}
 							</TableBody>
 						</Table>
 					</CardContent>
@@ -347,7 +346,6 @@ export default function MarketingPage() {
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
 								</TableRow>
-								{/* Adicione mais linhas conforme necessário */}
 							</TableBody>
 						</Table>
 					</CardContent>

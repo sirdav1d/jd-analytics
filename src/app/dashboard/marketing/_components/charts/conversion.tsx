@@ -26,7 +26,7 @@ const chartConfig = {
 		color: 'hsl(var(--chart-1))',
 	},
 	cpa: {
-		label: 'Custo por Aquisição',
+		label: 'Custo por Aquisição - CPA',
 		color: 'hsl(var(--chart-2))',
 	},
 } satisfies ChartConfig;
@@ -58,7 +58,7 @@ export function ConversionsComponent() {
 					yAxisId='right'
 					dataKey='conversions'
 					fill='var(--color-conversions)'
-					name='Impressões'>
+					>
 					<LabelList
 						position='top'
 						offset={12}
@@ -71,7 +71,7 @@ export function ConversionsComponent() {
 					yAxisId='right'
 					dataKey='cpa'
 					fill='var(--color-cpa)'
-					name='Cliques'>
+				>
 					<LabelList
 						position='top'
 						offset={12}

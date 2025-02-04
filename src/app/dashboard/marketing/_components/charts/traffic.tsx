@@ -11,6 +11,7 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Cell, Pie, PieChart } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartData = [
 	{ name: 'Orgânico', value: 4000 },
@@ -34,6 +35,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function TrafficComponent() {
+	const isMobile = useIsMobile();
 	return (
 		<ChartContainer
 			config={chartConfig}
@@ -47,7 +49,7 @@ export function TrafficComponent() {
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					innerRadius={80}
+					outerRadius={isMobile ? 112 : 140}
 					label={({ name, percent }) =>
 						`${name} ${(percent * 100).toFixed(0)}%`
 					}
