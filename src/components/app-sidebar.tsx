@@ -32,11 +32,6 @@ export default function AppSidebar() {
 			icon: Home,
 		},
 		{
-			title: 'Admin',
-			url: '/dashboard/admin',
-			icon: UserCog,
-		},
-		{
 			title: 'Marketing',
 			url: '/dashboard/marketing',
 			icon: Megaphone,
@@ -47,6 +42,11 @@ export default function AppSidebar() {
 			icon: ShoppingBag,
 		},
 
+		{
+			title: 'Admin',
+			url: '/dashboard/admin',
+			icon: UserCog,
+		},
 		{
 			title: 'Configurações',
 			url: '/dashboard/settings',
