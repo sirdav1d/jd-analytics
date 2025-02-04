@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/chart';
 import * as React from 'react';
 import { Label, Pie, PieChart } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartData = [
 	{ name: 'Computadores', value: 400, fill: 'var(--color-Computadores)' },
@@ -34,6 +35,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function SalesByCategoryChart() {
+	const isMobile = useIsMobile();
 	const totalVisitors = React.useMemo(() => {
 		return chartData.reduce((acc, curr) => acc + curr.value, 0);
 	}, []);
@@ -52,7 +54,7 @@ export function SalesByCategoryChart() {
 					nameKey='name'
 					label={{ fontSize: '14px' }}
 					labelLine={false}
-					innerRadius={98}
+					innerRadius={isMobile ? 70 : 100}
 					strokeWidth={4}>
 					<Label
 						content={({ viewBox }) => {
