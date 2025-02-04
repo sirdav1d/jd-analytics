@@ -1,7 +1,358 @@
 /** @format */
 
-import React from 'react';
+'use client';
+
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import { DatePickerWithRange } from '@/components/ui/date-range-picker';
+import { addDays } from 'date-fns';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
+
+// Import the chart components
+import { TrafficComponent } from './_components/charts/traffic';
+import { ConversionsComponent } from './_components/charts/conversion';
+import { CampagnComponent } from './_components/charts/campaings';
+import { RevenueComponent } from './_components/charts/revenue';
 
 export default function MarketingPage() {
-	return <div>marketingPage</div>;
+	const [dateRange, setDateRange] = useState({
+		from: new Date(),
+		to: addDays(new Date(), 7),
+	});
+	const [trafficSource, setTrafficSource] = useState('all');
+	const [campaign, setCampaign] = useState('all');
+
+	return (
+		<div className='w-full mx-auto space-y-4'>
+			{/* Filtros */}
+			<div className='w-full flex flex-wrap gap-4 mb-4'>
+				<DatePickerWithRange 
+					date={dateRange}
+					setDate={(e) =>
+						setDateRange({
+							from: e?.from ?? new Date(),
+							to: e?.to ?? new Date(),
+						})
+					}
+				/>
+				<Select
+					value={trafficSource}
+					onValueChange={setTrafficSource}>
+					<SelectTrigger className='w-full md:w-[240px]'>
+						<SelectValue placeholder='Fonte de Tráfego' />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value='all'>Todas as Fontes</SelectItem>
+						<SelectItem value='organic'>Orgânico</SelectItem>
+						<SelectItem value='paid'>Pago</SelectItem>
+						<SelectItem value='social'>Social</SelectItem>
+					</SelectContent>
+				</Select>
+				<Select
+					value={campaign}
+					onValueChange={setCampaign}>
+					<SelectTrigger className='w-full md:w-[240px]'>
+						<SelectValue placeholder='Campanha' />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value='all'>Todas as Campanhas</SelectItem>
+						<SelectItem value='summer'>Verão 2023</SelectItem>
+						<SelectItem value='blackfriday'>Black Friday</SelectItem>
+						<SelectItem value='christmas'>Natal</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+
+			{/* KPIs Principais */}
+			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+				{' '}
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>Faturamento</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>R$ 1,250,000</div>
+						<p className='text-xs text-muted-foreground'>
+							+20% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>Sessões</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>120.000</div>
+						<p className='text-xs text-muted-foreground'>
+							+15% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>Usuários</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>85.000</div>
+						<p className='text-xs text-muted-foreground'>
+							+10% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Taxa de Conversão
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>2.8%</div>
+						<p className='text-xs text-muted-foreground'>
+							+0.5% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+			</div>
+
+			{/* Gráficos */}
+			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+				<Card>
+					<CardHeader>
+						<CardTitle>Distribuição de Tráfego</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<TrafficComponent />
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle>Conversões por Canal</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<ConversionsComponent />
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle>Desempenho de Campanhas</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<CampagnComponent />
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle>Faturamento por Canal</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<RevenueComponent />
+					</CardContent>
+				</Card>
+			</div>
+
+			{/* Métricas Adicionais */}
+			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Taxa de Rejeição
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>35%</div>
+						<p className='text-xs text-muted-foreground'>
+							-2% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Duração Média da Sessão
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>2m 45s</div>
+						<p className='text-xs text-muted-foreground'>
+							+15s em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Páginas por Sessão
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>3.5</div>
+						<p className='text-xs text-muted-foreground'>
+							+0.2 em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							CTR (Taxa de Cliques)
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>3.5%</div>
+						<p className='text-xs text-muted-foreground'>
+							+0.3% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							CPC (Custo por Clique)
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>R$ 0.75</div>
+						<p className='text-xs text-muted-foreground'>
+							-R$ 0.05 em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>ROAS</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>3.2x</div>
+						<p className='text-xs text-muted-foreground'>
+							+0.4x em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+			</div>
+
+			{/* Tabelas */}
+			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Top 5 Anúncios por CTR
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Anúncio</TableHead>
+									<TableHead>CTR</TableHead>
+									<TableHead>Impressões</TableHead>
+									<TableHead>Cliques</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<TableRow className='text-nowrap'>
+									<TableCell className='text-nowrap'>Anúncio 1</TableCell>
+									<TableCell>5.2%</TableCell>
+									<TableCell>10,000</TableCell>
+									<TableCell>520</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='text-nowrap'>Anúncio 2</TableCell>
+									<TableCell>4.8%</TableCell>
+									<TableCell>15,000</TableCell>
+									<TableCell>720</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='text-nowrap'>Anúncio 3</TableCell>
+									<TableCell>4.8%</TableCell>
+									<TableCell>15,000</TableCell>
+									<TableCell>720</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='text-nowrap'>Anúncio 4</TableCell>
+									<TableCell>4.8%</TableCell>
+									<TableCell>15,000</TableCell>
+									<TableCell>720</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='text-nowrap'>Anúncio 5</TableCell>
+									<TableCell>4.8%</TableCell>
+									<TableCell>15,000</TableCell>
+									<TableCell>720</TableCell>
+								</TableRow>
+								{/* Adicione mais linhas conforme necessário */}
+							</TableBody>
+						</Table>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Top 5 Palavras-Chave por Eficiência
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className='text-nowrap'>Palavra-Chave</TableHead>
+									<TableHead>CTR</TableHead>
+									<TableHead>Conversões</TableHead>
+									<TableHead>CPC</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<TableRow>
+									<TableCell className='text-nowrap'>
+										marketing digital
+									</TableCell>
+									<TableCell>4.5%</TableCell>
+									<TableCell className='text-center'>50</TableCell>
+									<TableCell className='text-nowrap'>R$ 1.20</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>palavra 2</TableCell>
+									<TableCell>3.8%</TableCell>
+									<TableCell className='text-center'>35</TableCell>
+									<TableCell>R$ 1.50</TableCell>
+								</TableRow>{' '}
+								<TableRow>
+									<TableCell>palavra 3</TableCell>
+									<TableCell>3.8%</TableCell>
+									<TableCell className='text-center'>35</TableCell>
+									<TableCell>R$ 1.50</TableCell>
+								</TableRow>{' '}
+								<TableRow>
+									<TableCell>palavra 4</TableCell>
+									<TableCell>3.8%</TableCell>
+									<TableCell className='text-center'>35</TableCell>
+									<TableCell>R$ 1.50</TableCell>
+								</TableRow>{' '}
+								<TableRow>
+									<TableCell>palavra 5</TableCell>
+									<TableCell>3.8%</TableCell>
+									<TableCell className='text-center'>35</TableCell>
+									<TableCell>R$ 1.50</TableCell>
+								</TableRow>
+								{/* Adicione mais linhas conforme necessário */}
+							</TableBody>
+						</Table>
+					</CardContent>
+				</Card>
+			</div>
+		</div>
+	);
 }
