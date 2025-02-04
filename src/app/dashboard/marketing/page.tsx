@@ -37,7 +37,7 @@ export default function MarketingPage() {
 	const [campaign, setCampaign] = useState('all');
 
 	return (
-		<div className='w-full mx-auto space-y-4'>
+		<div className='w-full mx-auto space-y-4 pb-5'>
 			{/* Filtros */}
 			<div className='w-full flex flex-wrap gap-4 mb-4'>
 				<DatePickerWithRange
