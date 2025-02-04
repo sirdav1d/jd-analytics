@@ -31,7 +31,7 @@ export default async function OverviewPage() {
 
 	return (
 		<>
-			<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-8'>
+			<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>Receita Total</CardTitle>
@@ -113,7 +113,7 @@ export default async function OverviewPage() {
 					</CardContent>
 				</Card>
 			</div>
-			<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
+			<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-4'>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
@@ -135,7 +135,7 @@ export default async function OverviewPage() {
 					</CardContent>
 				</Card>
 			</div>
-			<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
+			<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-4'>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>

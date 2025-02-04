@@ -56,7 +56,9 @@ export default function AppSidebar() {
 
 	const pathname = usePathname();
 	return (
-		<Sidebar collapsible='icon'>
+		<Sidebar
+			collapsible='icon'
+			className='border-2'>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
