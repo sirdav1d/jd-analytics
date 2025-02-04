@@ -139,6 +139,16 @@ export default async function OverviewPage() {
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
+							Receita de Vendas vs. Serviços
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<SalesVsRepairRevenue />
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
 							Top 5 Vendedores
 						</CardTitle>
 					</CardHeader>
@@ -205,16 +215,6 @@ export default async function OverviewPage() {
 								))}
 							</TableBody>
 						</Table>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Receita de Vendas vs. Serviços
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SalesVsRepairRevenue />
 					</CardContent>
 				</Card>
 			</div>
