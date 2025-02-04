@@ -327,19 +327,19 @@ export default function MarketingPage() {
 									<TableCell>3.8%</TableCell>
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
-								</TableRow>{' '}
+								</TableRow>
 								<TableRow>
 									<TableCell>palavra 3</TableCell>
 									<TableCell>3.8%</TableCell>
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
-								</TableRow>{' '}
+								</TableRow>
 								<TableRow>
 									<TableCell>palavra 4</TableCell>
 									<TableCell>3.8%</TableCell>
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
-								</TableRow>{' '}
+								</TableRow>
 								<TableRow>
 									<TableCell>palavra 5</TableCell>
 									<TableCell>3.8%</TableCell>

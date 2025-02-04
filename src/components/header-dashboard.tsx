@@ -16,8 +16,8 @@ export default async function HeaderDashboard() {
 
 	return (
 		<>
-			<div className=' flex flex-col-reverse lg:flex-row items-end lg:items-center justify-between w-full gap-5 xl:mt-5'>
-				<div className='space-y-2 mr-auto'>
+			<div className=' flex flex-col-reverse lg:flex-row items-end lg:items-center justify-between w-full gap-2 xl:mt-5'>
+				<div className='lg:space-y-2 mr-auto'>
 					<h2 className='font-medium text-base xl:text-xl'>
 						Bem vindo <span className='text-primary'>{session.user?.name}</span>
 					</h2>
