@@ -34,9 +34,12 @@ const chartConfig = {
 
 export function SalesVsRepairRevenue() {
 	return (
-		<ChartContainer config={chartConfig}>
+		<ChartContainer
+			className='max-h-96 mx-auto'
+			config={chartConfig}>
 			<BarChart
 				accessibilityLayer
+				margin={{top:28}}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
 				<XAxis
