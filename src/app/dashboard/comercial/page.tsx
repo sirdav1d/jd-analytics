@@ -31,7 +31,7 @@ import { SalesChartComponent } from './_components/sales-chart-commercial';
 export default function ComercialDashboard() {
 	const [dateRange, setDateRange] = useState({
 		from: new Date(),
-		to: addDays(new Date(), 30),
+		to: addDays(new Date(), 7),
 	});
 	const [channel, setChannel] = useState('all');
 	const [category, setCategory] = useState('all');
@@ -68,7 +68,12 @@ export default function ComercialDashboard() {
 			<div className='flex flex-wrap gap-4 mb-4'>
 				<DatePickerWithRange
 					date={dateRange}
-					setDate={() => setDateRange}
+					setDate={(e) =>
+						setDateRange({
+							from: e?.from ?? new Date(),
+							to: e?.to ?? new Date(),
+						})
+					}
 				/>
 				<Select
 					value={channel}
