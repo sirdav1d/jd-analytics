@@ -61,6 +61,7 @@ export function CustomerComparisonChartComponent() {
 					type='natural'
 					fill='var(--color-novos)'
 					stroke='var(--color-novos)'
+					radius={4}
 					strokeWidth={2}>
 					<LabelList
 						position='top'
@@ -73,6 +74,7 @@ export function CustomerComparisonChartComponent() {
 					dataKey='recorrentes'
 					type='natural'
 					fill='var(--color-recorrentes)'
+					radius={4}
 					stroke='var(--color-recorrentes)'
 					strokeWidth={2}>
 					<LabelList
