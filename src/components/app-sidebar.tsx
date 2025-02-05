@@ -13,14 +13,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import {
-	Home,
-	Megaphone,
-	Settings,
-	ShoppingCart,
-	User2,
-	UserCog,
-} from 'lucide-react';
+import { Home, Megaphone, ShoppingCart, User2, UserCog } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -46,11 +39,6 @@ export default function AppSidebar() {
 			title: 'Admin',
 			url: '/dashboard/admin',
 			icon: UserCog,
-		},
-		{
-			title: 'Configurações',
-			url: '/dashboard/settings',
-			icon: Settings,
 		},
 	];
 
@@ -82,7 +70,7 @@ export default function AppSidebar() {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
-			<SidebarFooter>
+			<SidebarFooter className='bg-white dark:bg-slate-900'>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton
