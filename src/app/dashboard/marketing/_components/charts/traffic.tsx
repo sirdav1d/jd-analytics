@@ -10,8 +10,9 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Cell, Pie, PieChart } from 'recharts';
 import { useIsMobile } from '@/hooks/use-mobile';
+import React from 'react';
+import { Cell, Label, Pie, PieChart } from 'recharts';
 
 const chartData = [
 	{ name: 'Orgânico', value: 4000 },
@@ -35,11 +36,15 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function TrafficComponent() {
+	const totaltraffic = React.useMemo(() => {
+		return chartData.reduce((acc, curr) => acc + curr.value, 0);
+	}, []);
+
 	const isMobile = useIsMobile();
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square max-h-[364px] w-full [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square max-h-[440px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -49,7 +54,7 @@ export function TrafficComponent() {
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					outerRadius={isMobile ? 112 : 140}
+					innerRadius={isMobile ? 70 : 100}
 					label={({ name, percent }) =>
 						`${name} ${(percent * 100).toFixed(0)}%`
 					}
@@ -60,6 +65,32 @@ export function TrafficComponent() {
 							fill={`var(--color-${entry.name})`}
 						/>
 					))}
+					<Label
+						content={({ viewBox }) => {
+							if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+								return (
+									<text
+										x={viewBox.cx}
+										y={viewBox.cy}
+										textAnchor='middle'
+										dominantBaseline='middle'>
+										<tspan
+											x={viewBox.cx}
+											y={viewBox.cy}
+											className='fill-foreground text-3xl font-bold'>
+											{totaltraffic.toLocaleString()}
+										</tspan>
+										<tspan
+											x={viewBox.cx}
+											y={(viewBox.cy || 0) + 24}
+											className='fill-muted-foreground text-wrap'>
+											Impressões
+										</tspan>
+									</text>
+								);
+							}
+						}}
+					/>
 				</Pie>
 				<ChartLegend
 					content={

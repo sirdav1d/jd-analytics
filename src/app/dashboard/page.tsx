@@ -56,6 +56,7 @@ import {
 } from '@/components/ui/chart';
 
 import React from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function OverviewPage() {
 	// Mock data (replace with actual data in a real application)
@@ -71,7 +72,7 @@ export default function OverviewPage() {
 	const customerData = React.useMemo(
 		() => [
 			{ name: 'Novos', value: 30 },
-			{ name: 'Recorrentes', value: 70 },
+			{ name: 'Recorrentes', value: 90 },
 		],
 		[],
 	);
@@ -124,6 +125,8 @@ export default function OverviewPage() {
 	const totalSales = React.useMemo(() => {
 		return customerData.reduce((acc, curr) => acc + curr.value, 0);
 	}, [customerData]);
+
+	const isMobile = useIsMobile();
 
 	return (
 		<div className='pb-4 w-full mx-auto space-y-4 min-h-screen'>
@@ -292,7 +295,7 @@ export default function OverviewPage() {
 						<CardContent>
 							<ChartContainer
 								config={chartConfig}
-								className='mx-auto aspect-square max-h-[364px] w-full [&_.recharts-pie-label-text]:fill-foreground'>
+								className='mx-auto aspect-square max-h-[440px] [&_.recharts-pie-label-text]:fill-foreground'>
 								<PieChart>
 									<ChartTooltip
 										cursor={false}
@@ -302,9 +305,9 @@ export default function OverviewPage() {
 										data={customerData}
 										dataKey='value'
 										nameKey='name'
-										innerRadius={80}
-										label={({ name, percent }) =>
-											`${name} ${(percent * 100).toFixed(0)}%`
+										innerRadius={isMobile ? 70 : 100}
+										label={({ percent }) =>
+											`${(percent * 100).toFixed(0)}%`
 										}
 										labelLine={false}>
 										{customerData.map((entry, index) => (
@@ -344,10 +347,10 @@ export default function OverviewPage() {
 										content={
 											<ChartLegendContent
 												nameKey='name'
-												className='md:text-sm'
+												className='md:text-sm '
 											/>
 										}
-										className='text-sm'
+										className='text-sm '
 									/>
 								</PieChart>
 							</ChartContainer>
