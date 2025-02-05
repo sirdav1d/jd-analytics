@@ -17,7 +17,7 @@ import {
 	Home,
 	Megaphone,
 	Settings,
-	ShoppingBag,
+	ShoppingCart,
 	User2,
 	UserCog,
 } from 'lucide-react';
@@ -39,7 +39,7 @@ export default function AppSidebar() {
 		{
 			title: 'Comercial',
 			url: '/dashboard/comercial',
-			icon: ShoppingBag,
+			icon: ShoppingCart,
 		},
 
 		{
@@ -56,10 +56,8 @@ export default function AppSidebar() {
 
 	const pathname = usePathname();
 	return (
-		<Sidebar
-			collapsible='icon'
-			className='border-2'>
-			<SidebarContent>
+		<Sidebar collapsible='icon'>
+			<SidebarContent className='bg-white dark:bg-slate-900'>
 				<SidebarGroup>
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
 					<SidebarGroupContent>

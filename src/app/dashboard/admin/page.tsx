@@ -198,7 +198,7 @@ export default function AdminPage() {
 	];
 
 	return (
-		<div className='w-full mx-auto py-5'>
+		<div className='w-full mx-auto pb-5'>
 			<div className='mb-4'>
 				<Dialog>
 					<DialogTrigger asChild>
