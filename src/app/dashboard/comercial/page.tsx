@@ -25,6 +25,7 @@ import { SalesByCategoryChart } from './_components/category-sales';
 import { CustomerComparisonChartComponent } from './_components/customer-comparison';
 import { GrowthChartComponent } from './_components/growth-chart';
 import { SalesChartComponent } from './_components/sales-chart-commercial';
+import { Trophy } from 'lucide-react';
 
 // Mock data (replace with actual data in a real application)
 
@@ -39,27 +40,92 @@ export default function ComercialDashboard() {
 	const [customerType, setCustomerType] = useState('all');
 
 	const topProducts = [
-		{ name: 'Notebook Gamer XYZ', sales: 50, revenue: 150000 },
-		{ name: 'SSD 1TB', sales: 100, revenue: 50000 },
-		{ name: 'Placa de Vídeo RTX 3080', sales: 30, revenue: 90000 },
-		{ name: 'Monitor 4K 27"', sales: 40, revenue: 60000 },
-		{ name: 'Serviço de Montagem', sales: 80, revenue: 40000 },
+		{ posicao: 1, name: 'Notebook Gamer XYZ', sales: 50, revenue: 150000 },
+		{ posicao: 2, name: 'SSD 1TB', sales: 100, revenue: 50000 },
+		{ posicao: 3, name: 'Placa de Vídeo RTX 3080', sales: 30, revenue: 90000 },
+		{ posicao: 4, name: 'Monitor 4K 27"', sales: 40, revenue: 60000 },
+		{ posicao: 5, name: 'Serviço de Montagem', sales: 80, revenue: 40000 },
 	];
 
 	const topCustomers = [
-		{ name: 'Empresa A', purchases: 10, revenue: 100000 },
-		{ name: 'João Silva', purchases: 5, revenue: 50000 },
-		{ name: 'Empresa B', purchases: 8, revenue: 80000 },
-		{ name: 'Maria Oliveira', purchases: 6, revenue: 60000 },
-		{ name: 'Empresa C', purchases: 7, revenue: 70000 },
+		{ posicao: 1, name: 'Empresa A', purchases: 10, revenue: 100000 },
+		{ posicao: 2, name: 'João Silva', purchases: 5, revenue: 50000 },
+		{ posicao: 3, name: 'Empresa B', purchases: 8, revenue: 80000 },
+		{ posicao: 4, name: 'Maria Oliveira', purchases: 6, revenue: 60000 },
+		{ posicao: 5, name: 'Empresa C', purchases: 7, revenue: 70000 },
 	];
 
 	const topSalespeople = [
-		{ name: 'Carlos Souza', sales: 50, revenue: 250000 },
-		{ name: 'Ana Rodrigues', sales: 45, revenue: 225000 },
-		{ name: 'Pedro Santos', sales: 40, revenue: 200000 },
-		{ name: 'Juliana Lima', sales: 35, revenue: 175000 },
-		{ name: 'Roberto Alves', sales: 30, revenue: 150000 },
+		{
+			posicao: 1,
+			name: 'Carlos Souza',
+			sales: 50,
+			revenue: 270000,
+			conversion: 80,
+		},
+		{
+			posicao: 2,
+			name: 'Ana Rodrigues',
+			sales: 45,
+			revenue: 235000,
+			conversion: 90,
+		},
+		{
+			posicao: 3,
+			name: 'Pedro Santos',
+			sales: 40,
+			revenue: 202000,
+			conversion: 70,
+		},
+		{
+			posicao: 4,
+			name: 'Juliana Lima',
+			sales: 35,
+			revenue: 180000,
+			conversion: 75,
+		},
+		{
+			posicao: 5,
+			name: 'Bianca Martins',
+			sales: 30,
+			revenue: 160000,
+			conversion: 65,
+		},
+		{
+			posicao: 6,
+			name: 'Gustavo Ferreira',
+			sales: 50,
+			revenue: 270000,
+			conversion: 74,
+		},
+		{
+			posicao: 7,
+			name: 'Fernanda Oliveira',
+			sales: 45,
+			revenue: 235000,
+			conversion: 60,
+		},
+		{
+			posicao: 8,
+			name: 'Leonardo Mendes',
+			sales: 40,
+			revenue: 202000,
+			conversion: 55,
+		},
+		{
+			posicao: 9,
+			name: 'Thiago Barbosa',
+			sales: 35,
+			revenue: 180000,
+			conversion: 58,
+		},
+		{
+			posicao: 10,
+			name: 'Amanda Nogueira',
+			sales: 30,
+			revenue: 160000,
+			conversion: 45,
+		},
 	];
 
 	return (
@@ -127,7 +193,6 @@ export default function ComercialDashboard() {
 					</SelectContent>
 				</Select>
 			</div>
-
 			{/* Main KPIs */}
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
 				<Card>
@@ -171,7 +236,7 @@ export default function ComercialDashboard() {
 						<div className='text-2xl font-bold '>50</div>
 						<p className='text-xs'>+10% em relação ao período anterior</p>
 					</CardContent>
-				</Card>{' '}
+				</Card>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
@@ -195,7 +260,6 @@ export default function ComercialDashboard() {
 					</CardContent>
 				</Card>
 			</div>
-
 			{/* Charts */}
 			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
 				<Card>
@@ -231,7 +295,7 @@ export default function ComercialDashboard() {
 					</CardContent>
 				</Card>
 			</div>
-			<div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
+			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
 				<Card>
 					<CardHeader>
 						<CardTitle>Top 5 Produtos</CardTitle>
@@ -240,21 +304,48 @@ export default function ComercialDashboard() {
 						<Table>
 							<TableHeader>
 								<TableRow>
+									<TableHead>Posição</TableHead>
 									<TableHead>Produto</TableHead>
-									<TableHead>Vendas</TableHead>
-									<TableHead>Receita</TableHead>
+									<TableHead className='text-center'>Vendas</TableHead>
+									<TableHead className='text-center'>Receita</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{topProducts.map((product) => (
-									<TableRow key={product.name}>
-										<TableCell>{product.name}</TableCell>
-										<TableCell>{product.sales}</TableCell>
-										<TableCell className='text-nowrap'>
-											R$ {product.revenue.toLocaleString()}
-										</TableCell>
-									</TableRow>
-								))}
+								{topProducts.map((product) => {
+									return (
+										<TableRow key={product.name}>
+											<TableCell className='flex items-center gap-3'>
+												{product.posicao}
+												{product.posicao == 1 ? (
+													<Trophy
+														size={20}
+														className='text-amber-500'
+													/>
+												) : product.posicao == 2 ? (
+													<Trophy
+														size={20}
+														className='text-zinc-400'
+													/>
+												) : product.posicao == 3 ? (
+													<Trophy
+														size={20}
+														className='text-rose-700'
+													/>
+												) : null}
+											</TableCell>
+											<TableCell>{product.name}</TableCell>
+											<TableCell className='text-center'>
+												{product.sales}
+											</TableCell>
+											<TableCell className='text-nowrap text-center'>
+												{product.revenue.toLocaleString('pt-br', {
+													currency: 'brl',
+													style: 'currency',
+												})}
+											</TableCell>
+										</TableRow>
+									);
+								})}
 							</TableBody>
 						</Table>
 					</CardContent>
@@ -267,45 +358,43 @@ export default function ComercialDashboard() {
 						<Table>
 							<TableHeader>
 								<TableRow>
+									<TableHead>Posição</TableHead>
 									<TableHead>Cliente</TableHead>
-									<TableHead>Compras</TableHead>
-									<TableHead>Receita</TableHead>
+									<TableHead className='text-center'>Compras</TableHead>
+									<TableHead className='text-center'>Receita</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								{topCustomers.map((customer) => (
 									<TableRow key={customer.name}>
-										<TableCell>{customer.name}</TableCell>
-										<TableCell>{customer.purchases}</TableCell>
-										<TableCell>
-											R$ {customer.revenue.toLocaleString()}
+										<TableCell className='flex items-center gap-3'>
+											{customer.posicao}
+											{customer.posicao == 1 ? (
+												<Trophy
+													size={20}
+													className='text-amber-500'
+												/>
+											) : customer.posicao == 2 ? (
+												<Trophy
+													size={20}
+													className='text-zinc-400'
+												/>
+											) : customer.posicao == 3 ? (
+												<Trophy
+													size={20}
+													className='text-rose-700'
+												/>
+											) : null}
 										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle>Top 5 Vendedores</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Vendedor</TableHead>
-									<TableHead>Vendas</TableHead>
-									<TableHead>Receita</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{topSalespeople.map((salesperson) => (
-									<TableRow key={salesperson.name}>
-										<TableCell>{salesperson.name}</TableCell>
-										<TableCell>{salesperson.sales}</TableCell>
-										<TableCell>
-											R$ {salesperson.revenue.toLocaleString()}
+										<TableCell>{customer.name}</TableCell>
+										<TableCell className='text-center'>
+											{customer.purchases}
+										</TableCell>
+										<TableCell className='text-center'>
+											{customer.revenue.toLocaleString('pt-br', {
+												currency: 'brl',
+												style: 'currency',
+											})}
 										</TableCell>
 									</TableRow>
 								))}
@@ -314,6 +403,72 @@ export default function ComercialDashboard() {
 					</CardContent>
 				</Card>
 			</div>
+			<Card>
+				<CardHeader>
+					<CardTitle>Ranking de Vendedores</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Posição</TableHead>
+								<TableHead>Vendedor</TableHead>
+								<TableHead className='text-center'>Vendas</TableHead>
+								<TableHead className='text-center'>Receita</TableHead>
+								<TableHead className='text-center'>Ticket Médio</TableHead>
+								<TableHead className='text-center'>Taxa de Conversão</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{topSalespeople.map((salesperson) => {
+								const ticketSalesMan = salesperson.revenue / salesperson.sales;
+								return (
+									<TableRow key={salesperson.name}>
+										<TableCell className='flex items-center gap-3'>
+											{salesperson.posicao}
+											{salesperson.posicao == 1 ? (
+												<Trophy
+													size={20}
+													className='text-amber-500'
+												/>
+											) : salesperson.posicao == 2 ? (
+												<Trophy
+													size={20}
+													className='text-zinc-400'
+												/>
+											) : salesperson.posicao == 3 ? (
+												<Trophy
+													size={20}
+													className='text-rose-700'
+												/>
+											) : null}
+										</TableCell>
+										<TableCell>{salesperson.name}</TableCell>
+										<TableCell className='text-center'>
+											{salesperson.sales}
+										</TableCell>
+										<TableCell className='text-center'>
+											{salesperson.revenue.toLocaleString('pt-br', {
+												currency: 'brl',
+												style: 'currency',
+											})}
+										</TableCell>
+										<TableCell className='text-center'>
+											{ticketSalesMan.toLocaleString('pt-br', {
+												currency: 'brl',
+												style: 'currency',
+											})}
+										</TableCell>
+										<TableCell className='text-center'>
+											{salesperson.conversion}%
+										</TableCell>
+									</TableRow>
+								);
+							})}
+						</TableBody>
+					</Table>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

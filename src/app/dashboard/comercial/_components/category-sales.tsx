@@ -4,14 +4,13 @@
 import {
 	ChartConfig,
 	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
 	ChartLegend,
 	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
 } from '@/components/ui/chart';
 import * as React from 'react';
 import { Label, Pie, PieChart } from 'recharts';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartData = [
 	{ name: 'Computadores', value: 400, fill: 'var(--color-Computadores)' },
@@ -35,14 +34,13 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function SalesByCategoryChart() {
-	const isMobile = useIsMobile();
 	const totalVisitors = React.useMemo(() => {
 		return chartData.reduce((acc, curr) => acc + curr.value, 0);
 	}, []);
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square max-h-[440px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square max-h-80 [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -54,7 +52,7 @@ export function SalesByCategoryChart() {
 					nameKey='name'
 					label={{ fontSize: '14px' }}
 					labelLine={false}
-					innerRadius={isMobile ? 70 : 100}
+					innerRadius={70}
 					strokeWidth={4}>
 					<Label
 						content={({ viewBox }) => {

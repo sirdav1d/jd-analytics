@@ -2,10 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
 	Dialog,
 	DialogContent,
@@ -15,9 +12,8 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { DataTable } from './_components/data-table';
-import type { ColumnDef } from '@tanstack/react-table';
 import {
 	Select,
 	SelectContent,
@@ -25,6 +21,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import type { ColumnDef } from '@tanstack/react-table';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { DataTable } from '../_components/data-table';
 
 // Define the User type
 type User = {

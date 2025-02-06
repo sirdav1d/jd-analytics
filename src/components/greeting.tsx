@@ -13,7 +13,7 @@ export default function Greeting() {
 			return 'Visão Geral';
 		}
 
-		if (pathname == '/dashboard/admin') {
+		if (pathname == '/dashboard/users') {
 			return 'Gestão de Usuários';
 		}
 
@@ -26,8 +26,8 @@ export default function Greeting() {
 		if (pathname == '/dashboard/comercial') {
 			return 'Gestão Comercial';
 		}
-		if (pathname == '/dashboard/settings') {
-			return 'Configurações';
+		if (pathname == '/dashboard/goals') {
+			return 'Gestão de Meta';
 		}
 	}
 

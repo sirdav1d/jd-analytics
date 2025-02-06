@@ -34,7 +34,9 @@ const chartConfig = {
 
 export function CustomerComparisonChartComponent() {
 	return (
-		<ChartContainer config={chartConfig}>
+		<ChartContainer
+			className='max-h-80 w-full'
+			config={chartConfig}>
 			<BarChart
 				accessibilityLayer
 				data={chartData}
