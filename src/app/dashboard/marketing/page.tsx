@@ -52,7 +52,7 @@ export default function MarketingPage() {
 				<Select
 					value={trafficSource}
 					onValueChange={setTrafficSource}>
-					<SelectTrigger className='w-full md:w-[240px]'>
+					<SelectTrigger className='w-full md:w-48'>
 						<SelectValue placeholder='Fonte de Tráfego' />
 					</SelectTrigger>
 					<SelectContent>
@@ -65,7 +65,7 @@ export default function MarketingPage() {
 				<Select
 					value={campaign}
 					onValueChange={setCampaign}>
-					<SelectTrigger className='w-full md:w-[240px]'>
+					<SelectTrigger className='w-full md:w-48'>
 						<SelectValue placeholder='Campanha' />
 					</SelectTrigger>
 					<SelectContent>
@@ -78,7 +78,7 @@ export default function MarketingPage() {
 			</div>
 
 			{/* KPIs Principais */}
-			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4'>
 				{' '}
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -172,7 +172,7 @@ export default function MarketingPage() {
 				</CardContent>
 			</Card>
 			{/* Métricas Adicionais */}
-			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
@@ -252,7 +252,7 @@ export default function MarketingPage() {
 			</div>
 
 			{/* Tabelas */}
-			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>

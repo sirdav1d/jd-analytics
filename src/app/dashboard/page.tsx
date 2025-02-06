@@ -141,7 +141,7 @@ export default function OverviewPage() {
 					<Select
 						value={customerType}
 						onValueChange={setCustomerType}>
-						<SelectTrigger className='w-full md:w-[220px]'>
+						<SelectTrigger className='w-full md:w-48'>
 							<SelectValue placeholder='Tipo de Cliente' />
 						</SelectTrigger>
 						<SelectContent>
@@ -153,7 +153,7 @@ export default function OverviewPage() {
 					<Select
 						value={salesChannel}
 						onValueChange={setSalesChannel}>
-						<SelectTrigger className='w-full md:w-[220px]'>
+						<SelectTrigger className='w-full md:w-48'>
 							<SelectValue placeholder='Canal de Venda' />
 						</SelectTrigger>
 						<SelectContent>
@@ -165,7 +165,7 @@ export default function OverviewPage() {
 				</div>
 
 				{/* Main KPIs */}
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+				<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
 					<Card>
 						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 							<CardTitle className='text-sm font-medium '>

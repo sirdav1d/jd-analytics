@@ -129,7 +129,7 @@ export default function ComercialDashboard() {
 	];
 
 	return (
-		<div className='mx-auto space-y-4 w-full mb-5'>
+		<div className='mx-auto space-y-4 mb-5  w-full'>
 			{/* Filters */}
 			<div className='flex flex-wrap gap-4 mb-4'>
 				<DatePickerWithRange
@@ -144,7 +144,7 @@ export default function ComercialDashboard() {
 				<Select
 					value={channel}
 					onValueChange={setChannel}>
-					<SelectTrigger className='md:w-[220px]'>
+					<SelectTrigger className='w-full md:w-48'>
 						<SelectValue placeholder='Canal de Venda' />
 					</SelectTrigger>
 					<SelectContent>
@@ -156,7 +156,7 @@ export default function ComercialDashboard() {
 				<Select
 					value={category}
 					onValueChange={setCategory}>
-					<SelectTrigger className='md:w-[220px]'>
+					<SelectTrigger className='w-full md:w-48'>
 						<SelectValue placeholder='Categoria' />
 					</SelectTrigger>
 					<SelectContent>
@@ -170,11 +170,11 @@ export default function ComercialDashboard() {
 				<Select
 					value={representative}
 					onValueChange={setRepresentative}>
-					<SelectTrigger className='md:w-[220px]'>
+					<SelectTrigger className='w-full md:w-48'>
 						<SelectValue placeholder='Representante' />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value='all'>Todos os Representantes</SelectItem>
+						<SelectItem value='all'>Todos os Vendedores</SelectItem>
 						<SelectItem value='rep1'>Representante 1</SelectItem>
 						<SelectItem value='rep2'>Representante 2</SelectItem>
 						<SelectItem value='rep3'>Representante 3</SelectItem>
@@ -183,7 +183,7 @@ export default function ComercialDashboard() {
 				<Select
 					value={customerType}
 					onValueChange={setCustomerType}>
-					<SelectTrigger className='md:w-[220px]'>
+					<SelectTrigger className='w-full md:w-48'>
 						<SelectValue placeholder='Tipo de Cliente' />
 					</SelectTrigger>
 					<SelectContent>
@@ -194,7 +194,7 @@ export default function ComercialDashboard() {
 				</Select>
 			</div>
 			{/* Main KPIs */}
-			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
@@ -313,40 +313,96 @@ export default function ComercialDashboard() {
 					</CardContent>
 				</Card>
 			</div>
-			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-				<Card>
-					<CardHeader>
-						<CardTitle>Top 5 Produtos</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Posição</TableHead>
-									<TableHead>Produto</TableHead>
-									<TableHead className='text-center text-nowrap'>
-										Vendas
-									</TableHead>
-									<TableHead className='text-center'>Receita</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{topProducts.map((product) => {
-									return (
-										<TableRow key={product.name}>
+			<div className='grid grid-cols-1 gap-4'>
+				<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+					<Card>
+						<CardHeader>
+							<CardTitle>Top 5 Produtos</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead>Posição</TableHead>
+										<TableHead>Produto</TableHead>
+										<TableHead className='text-center text-nowrap'>
+											Vendas
+										</TableHead>
+										<TableHead className='text-center'>Receita</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{topProducts.map((product) => {
+										return (
+											<TableRow key={product.name}>
+												<TableCell className='flex items-center gap-3'>
+													{product.posicao}
+													{product.posicao == 1 ? (
+														<Trophy
+															size={20}
+															className='text-amber-500'
+														/>
+													) : product.posicao == 2 ? (
+														<Trophy
+															size={20}
+															className='text-zinc-400'
+														/>
+													) : product.posicao == 3 ? (
+														<Trophy
+															size={20}
+															className='text-rose-700'
+														/>
+													) : null}
+												</TableCell>
+												<TableCell className='text-sm text-nowrap'>
+													{product.name}
+												</TableCell>
+												<TableCell className='text-center'>
+													{product.sales}
+												</TableCell>
+												<TableCell className='text-nowrap text-center'>
+													{product.revenue.toLocaleString('pt-br', {
+														currency: 'brl',
+														style: 'currency',
+													})}
+												</TableCell>
+											</TableRow>
+										);
+									})}
+								</TableBody>
+							</Table>
+						</CardContent>
+					</Card>
+					<Card>
+						<CardHeader>
+							<CardTitle>Top 5 Clientes</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead>Posição</TableHead>
+										<TableHead>Cliente</TableHead>
+										<TableHead className='text-center'>Compras</TableHead>
+										<TableHead className='text-center'>Receita</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{topCustomers.map((customer) => (
+										<TableRow key={customer.name}>
 											<TableCell className='flex items-center gap-3'>
-												{product.posicao}
-												{product.posicao == 1 ? (
+												{customer.posicao}
+												{customer.posicao == 1 ? (
 													<Trophy
 														size={20}
 														className='text-amber-500'
 													/>
-												) : product.posicao == 2 ? (
+												) : customer.posicao == 2 ? (
 													<Trophy
 														size={20}
 														className='text-zinc-400'
 													/>
-												) : product.posicao == 3 ? (
+												) : customer.posicao == 3 ? (
 													<Trophy
 														size={20}
 														className='text-rose-700'
@@ -354,16 +410,93 @@ export default function ComercialDashboard() {
 												) : null}
 											</TableCell>
 											<TableCell className='text-sm text-nowrap'>
-												{product.name}
+												{customer.name}
 											</TableCell>
 											<TableCell className='text-center'>
-												{product.sales}
+												{customer.purchases}
 											</TableCell>
-											<TableCell className='text-nowrap text-center'>
-												{product.revenue.toLocaleString('pt-br', {
+											<TableCell className='text-center'>
+												{customer.revenue.toLocaleString('pt-br', {
 													currency: 'brl',
 													style: 'currency',
 												})}
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</CardContent>
+					</Card>
+				</div>
+				<Card>
+					<CardHeader>
+						<CardTitle>Ranking de Vendedores</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Posição</TableHead>
+									<TableHead>Vendedor</TableHead>
+									<TableHead className='text-center text-nowrap'>
+										Vendas
+									</TableHead>
+									<TableHead className='text-center text-nowrap'>
+										Receita
+									</TableHead>
+									<TableHead className='text-center text-nowrap'>
+										Ticket Médio
+									</TableHead>
+									<TableHead className='text-center text-nowrap'>
+										Taxa de Conversão
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{topSalespeople.map((salesperson) => {
+									const ticketSalesMan =
+										salesperson.revenue / salesperson.sales;
+									return (
+										<TableRow key={salesperson.name}>
+											<TableCell className='flex items-center gap-3'>
+												{salesperson.posicao}
+												{salesperson.posicao == 1 ? (
+													<Trophy
+														size={20}
+														className='text-amber-500'
+													/>
+												) : salesperson.posicao == 2 ? (
+													<Trophy
+														size={20}
+														className='text-zinc-400'
+													/>
+												) : salesperson.posicao == 3 ? (
+													<Trophy
+														size={20}
+														className='text-rose-700'
+													/>
+												) : null}
+											</TableCell>
+											<TableCell className='text-sm text-nowrap'>
+												{salesperson.name}
+											</TableCell>
+											<TableCell className='text-center'>
+												{salesperson.sales}
+											</TableCell>
+											<TableCell className='text-center'>
+												{salesperson.revenue.toLocaleString('pt-br', {
+													currency: 'brl',
+													style: 'currency',
+												})}
+											</TableCell>
+											<TableCell className='text-center'>
+												{ticketSalesMan.toLocaleString('pt-br', {
+													currency: 'brl',
+													style: 'currency',
+												})}
+											</TableCell>
+											<TableCell className='text-center'>
+												{salesperson.conversion}%
 											</TableCell>
 										</TableRow>
 									);
@@ -372,137 +505,7 @@ export default function ComercialDashboard() {
 						</Table>
 					</CardContent>
 				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle>Top 5 Clientes</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Posição</TableHead>
-									<TableHead>Cliente</TableHead>
-									<TableHead className='text-center'>Compras</TableHead>
-									<TableHead className='text-center'>Receita</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{topCustomers.map((customer) => (
-									<TableRow key={customer.name}>
-										<TableCell className='flex items-center gap-3'>
-											{customer.posicao}
-											{customer.posicao == 1 ? (
-												<Trophy
-													size={20}
-													className='text-amber-500'
-												/>
-											) : customer.posicao == 2 ? (
-												<Trophy
-													size={20}
-													className='text-zinc-400'
-												/>
-											) : customer.posicao == 3 ? (
-												<Trophy
-													size={20}
-													className='text-rose-700'
-												/>
-											) : null}
-										</TableCell>
-										<TableCell className='text-sm text-nowrap'>
-											{customer.name}
-										</TableCell>
-										<TableCell className='text-center'>
-											{customer.purchases}
-										</TableCell>
-										<TableCell className='text-center'>
-											{customer.revenue.toLocaleString('pt-br', {
-												currency: 'brl',
-												style: 'currency',
-											})}
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</CardContent>
-				</Card>
 			</div>
-			<Card>
-				<CardHeader>
-					<CardTitle>Ranking de Vendedores</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Posição</TableHead>
-								<TableHead>Vendedor</TableHead>
-								<TableHead className='text-center text-nowrap'>
-									Vendas
-								</TableHead>
-								<TableHead className='text-center text-nowrap'>
-									Receita
-								</TableHead>
-								<TableHead className='text-center text-nowrap'>
-									Ticket Médio
-								</TableHead>
-								<TableHead className='text-center text-nowrap'>
-									Taxa de Conversão
-								</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{topSalespeople.map((salesperson) => {
-								const ticketSalesMan = salesperson.revenue / salesperson.sales;
-								return (
-									<TableRow key={salesperson.name}>
-										<TableCell className='flex items-center gap-3'>
-											{salesperson.posicao}
-											{salesperson.posicao == 1 ? (
-												<Trophy
-													size={20}
-													className='text-amber-500'
-												/>
-											) : salesperson.posicao == 2 ? (
-												<Trophy
-													size={20}
-													className='text-zinc-400'
-												/>
-											) : salesperson.posicao == 3 ? (
-												<Trophy
-													size={20}
-													className='text-rose-700'
-												/>
-											) : null}
-										</TableCell>
-										<TableCell className='text-sm text-nowrap'>
-											{salesperson.name}
-										</TableCell>
-										<TableCell className='text-center'>
-											{salesperson.sales}
-										</TableCell>
-										<TableCell className='text-center'>
-											{salesperson.revenue.toLocaleString('pt-br', {
-												currency: 'brl',
-												style: 'currency',
-											})}
-										</TableCell>
-										<TableCell className='text-center'>
-											{ticketSalesMan.toLocaleString('pt-br', {
-												currency: 'brl',
-												style: 'currency',
-											})}
-										</TableCell>
-										<TableCell className='text-center'>
-											{salesperson.conversion}%
-										</TableCell>
-									</TableRow>
-								);
-							})}
-						</TableBody>
-					</Table>
-				</CardContent>
-			</Card>
 		</div>
 	);
 }
