@@ -3,7 +3,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -13,6 +19,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -62,17 +76,17 @@ export default function GoalsPage() {
 				<Card>
 					<CardHeader>
 						<CardTitle>Meta Comercial Atual</CardTitle>
+						<CardDescription>Meta válida para 02/2025</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className='space-y-2'>
-							<h2 className='text-xl font-semibold mb-5'>02/2025</h2>
 							<p className='space-x-2'>
 								<small>Faturamento:</small>
-								<span className='font-semibold text-lg'>R$500.000,00</span>
+								<span className='font-semibold text-lg'>R$ 400.000,00</span>
 							</p>
 							<p className='space-x-2'>
 								<small>Ticket Médio:</small>
-								<span className='font-semibold text-lg'>R$950,00</span>
+								<span className='font-semibold text-lg'>R$ 950,00</span>
 							</p>
 						</div>
 					</CardContent>
@@ -80,13 +94,13 @@ export default function GoalsPage() {
 				<Card>
 					<CardHeader>
 						<CardTitle>Meta de Marketing Atual</CardTitle>
+						<CardDescription>Meta válida para 02/2025</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className='space-y-2'>
-							<h2 className='text-xl font-semibold mb-5'>02/2025</h2>
 							<p className='space-x-2'>
 								<small>Faturamento:</small>
-								<span className='font-semibold text-lg'>R$500.000,00</span>
+								<span className='font-semibold text-lg'>R$ 100.000,00</span>
 							</p>
 							<p className='space-x-2'>
 								<small>ROAS:</small>
@@ -135,6 +149,16 @@ export default function GoalsPage() {
 									required
 								/>
 							</div>
+							<div className='space-y-2'>
+								<Label htmlFor='commercialGoalDateValue'>Validade</Label>
+								<Input
+									id='commercialGoalDateValue'
+									type='date'
+									value={commercialGoalValue}
+									onChange={(e) => setCommercialGoalValue(e.target.value)}
+									required
+								/>
+							</div>
 							<Button
 								type='submit'
 								className='bg-red-600 text-white hover:bg-red-700'>
@@ -178,6 +202,16 @@ export default function GoalsPage() {
 									required
 								/>
 							</div>
+							<div className='space-y-2'>
+								<Label htmlFor='marketingGoalDateValue'>Validade</Label>
+								<Input
+									id='marketingGoalDateValue'
+									type='date'
+									value={commercialGoalValue}
+									onChange={(e) => setCommercialGoalValue(e.target.value)}
+									required
+								/>
+							</div>
 							<Button
 								type='submit'
 								className='bg-red-600 text-white hover:bg-red-700'>
@@ -187,6 +221,162 @@ export default function GoalsPage() {
 					</CardContent>
 				</Card>
 			</motion.div>
+			<div className='grid grid-cols-1 xl:grid-cols-2 gap-5'>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Metas Futuras - Comercial
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Data</TableHead>
+									<TableHead>Faturamento</TableHead>
+									<TableHead className='text-nowrap text-center'>
+										Ticket Médio
+									</TableHead>
+									<TableHead className='text-nowrap text-center'>
+										Total de Vendas
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{[
+									{
+										data: '02/2025',
+										nome: 'Ana Silva',
+										faturamento: 'R$ 150.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 256,
+									},
+									{
+										data: '03/2025',
+										nome: 'Carlos Santos',
+										faturamento: 'R$ 145.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 256,
+									},
+									{
+										data: '04/2025',
+										nome: 'Mariana Oliveira',
+										faturamento: 'R$ 140.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 256,
+									},
+									{
+										data: '05/2025',
+										nome: 'Roberto Alves',
+										faturamento: 'R$ 135.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 256,
+									},
+									{
+										data: '06/2025',
+										nome: 'Juliana Costa',
+										faturamento: 'R$ 130.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 256,
+									},
+								].map((vendedor) => (
+									<TableRow key={vendedor.data}>
+										<TableCell className='flex items-center gap-3'>
+											{vendedor.data}
+										</TableCell>
+										<TableCell className='text-nowrap'>
+											{vendedor.faturamento}
+										</TableCell>
+										<TableCell className='text-nowrap text-center'>
+											{vendedor.ticketAvarage}
+										</TableCell>
+										<TableCell className='text-nowrap text-center'>
+											{vendedor.vendas}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Metas Futuras - Marketing
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Data</TableHead>
+									<TableHead>Faturamento</TableHead>
+									<TableHead className='text-nowrap text-center'>
+										Taxa de Conversão
+									</TableHead>
+									<TableHead className='text-nowrap text-center'>
+										ROAS
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{[
+									{
+										data: '02/2025',
+										nome: 'Ana Silva',
+										faturamento: 'R$ 150.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 20,
+									},
+									{
+										data: '03/2025',
+										nome: 'Carlos Santos',
+										faturamento: 'R$ 145.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 20,
+									},
+									{
+										data: '04/2025',
+										nome: 'Mariana Oliveira',
+										faturamento: 'R$ 140.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 20,
+									},
+									{
+										data: '05/2025',
+										nome: 'Roberto Alves',
+										faturamento: 'R$ 135.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 20,
+									},
+									{
+										data: '06/2025',
+										nome: 'Juliana Costa',
+										faturamento: 'R$ 130.000,00',
+										ticketAvarage: 'R$ 1500,00',
+										vendas: 20,
+									},
+								].map((vendedor) => (
+									<TableRow key={vendedor.data}>
+										<TableCell className='flex items-center gap-3'>
+											{vendedor.data}
+										</TableCell>
+										<TableCell className='text-nowrap'>
+											{vendedor.faturamento}
+										</TableCell>
+										<TableCell className='text-nowrap text-center'>
+											{vendedor.ticketAvarage}
+										</TableCell>
+										<TableCell className='text-nowrap text-center'>
+											{vendedor.vendas}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</CardContent>
+				</Card>
+			</div>
 		</div>
 	);
 }

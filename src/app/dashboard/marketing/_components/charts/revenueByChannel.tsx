@@ -39,7 +39,7 @@ const chartConfig = {
 
 export function RevenueComponent() {
 	return (
-		<ChartContainer config={chartConfig}>
+		<ChartContainer className='h-80 w-full' config={chartConfig}>
 			<LineChart
 				data={chartData}
 				margin={{

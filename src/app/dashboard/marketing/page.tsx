@@ -26,7 +26,7 @@ import {
 import { TrafficComponent } from './_components/charts/traffic';
 import { ConversionsComponent } from './_components/charts/conversion';
 import { CampagnComponent } from './_components/charts/campaings';
-import { RevenueComponent } from './_components/charts/revenue';
+import { RevenueComponent } from './_components/charts/revenueByChannel';
 
 export default function MarketingPage() {
 	const [dateRange, setDateRange] = useState({
@@ -132,7 +132,9 @@ export default function MarketingPage() {
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 				<Card>
 					<CardHeader>
-						<CardTitle>Distribuição de Tráfego</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Distribuição de Tráfego
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<TrafficComponent />
@@ -140,30 +142,35 @@ export default function MarketingPage() {
 				</Card>
 				<Card>
 					<CardHeader>
-						<CardTitle>Conversões por Canal</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Conversões por Canal
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<ConversionsComponent />
 					</CardContent>
 				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle>Desempenho de Campanhas</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<CampagnComponent />
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle>Faturamento por Canal</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<RevenueComponent />
-					</CardContent>
-				</Card>
 			</div>
-
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Desempenho de Campanhas
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<CampagnComponent />
+				</CardContent>
+			</Card>
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Faturamento por Canal
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<RevenueComponent />
+				</CardContent>
+			</Card>
 			{/* Métricas Adicionais */}
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
 				<Card>

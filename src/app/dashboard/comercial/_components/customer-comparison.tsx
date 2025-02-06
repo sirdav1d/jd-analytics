@@ -35,15 +35,13 @@ const chartConfig = {
 export function CustomerComparisonChartComponent() {
 	return (
 		<ChartContainer
-			className='max-h-80 w-full'
+			className='h-80 w-full'
 			config={chartConfig}>
 			<BarChart
 				accessibilityLayer
 				data={chartData}
 				margin={{
 					top: 28,
-					left: 28,
-					right: 28,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis

@@ -35,7 +35,7 @@ export function ConversionsComponent() {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className=' w-full'>
+			className='h-80 w-full'>
 			<BarChart
 				margin={{
 					top: 28,

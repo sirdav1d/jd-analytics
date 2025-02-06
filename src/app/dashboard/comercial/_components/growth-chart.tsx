@@ -29,7 +29,7 @@ const chartConfig = {
 export function GrowthChartComponent() {
 	return (
 		<ChartContainer
-			className='max-h-80 w-full'
+			className='h-80 w-full'
 			config={chartConfig}>
 			<LineChart
 				accessibilityLayer

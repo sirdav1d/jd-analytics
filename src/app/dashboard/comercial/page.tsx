@@ -274,7 +274,9 @@ export default function ComercialDashboard() {
 			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
 				<Card>
 					<CardHeader>
-						<CardTitle>Vendas por Período</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Vendas por Período
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SalesChartComponent />
@@ -282,7 +284,9 @@ export default function ComercialDashboard() {
 				</Card>
 				<Card>
 					<CardHeader>
-						<CardTitle>Vendas por Categoria</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Vendas por Categoria
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SalesByCategoryChart />
@@ -290,7 +294,9 @@ export default function ComercialDashboard() {
 				</Card>
 				<Card>
 					<CardHeader>
-						<CardTitle>Crescimento de Vendas</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Crescimento de Vendas
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<GrowthChartComponent />
@@ -298,7 +304,9 @@ export default function ComercialDashboard() {
 				</Card>
 				<Card>
 					<CardHeader>
-						<CardTitle>Novos Clientes vs. Recorrentes</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Novos Clientes vs. Recorrentes
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<CustomerComparisonChartComponent />
@@ -316,7 +324,9 @@ export default function ComercialDashboard() {
 								<TableRow>
 									<TableHead>Posição</TableHead>
 									<TableHead>Produto</TableHead>
-									<TableHead className='text-center'>Vendas</TableHead>
+									<TableHead className='text-center text-nowrap'>
+										Vendas
+									</TableHead>
 									<TableHead className='text-center'>Receita</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -343,7 +353,9 @@ export default function ComercialDashboard() {
 													/>
 												) : null}
 											</TableCell>
-											<TableCell>{product.name}</TableCell>
+											<TableCell className='text-sm text-nowrap'>
+												{product.name}
+											</TableCell>
 											<TableCell className='text-center'>
 												{product.sales}
 											</TableCell>
@@ -396,7 +408,9 @@ export default function ComercialDashboard() {
 												/>
 											) : null}
 										</TableCell>
-										<TableCell>{customer.name}</TableCell>
+										<TableCell className='text-sm text-nowrap'>
+											{customer.name}
+										</TableCell>
 										<TableCell className='text-center'>
 											{customer.purchases}
 										</TableCell>
@@ -423,10 +437,18 @@ export default function ComercialDashboard() {
 							<TableRow>
 								<TableHead>Posição</TableHead>
 								<TableHead>Vendedor</TableHead>
-								<TableHead className='text-center'>Vendas</TableHead>
-								<TableHead className='text-center'>Receita</TableHead>
-								<TableHead className='text-center'>Ticket Médio</TableHead>
-								<TableHead className='text-center'>Taxa de Conversão</TableHead>
+								<TableHead className='text-center text-nowrap'>
+									Vendas
+								</TableHead>
+								<TableHead className='text-center text-nowrap'>
+									Receita
+								</TableHead>
+								<TableHead className='text-center text-nowrap'>
+									Ticket Médio
+								</TableHead>
+								<TableHead className='text-center text-nowrap'>
+									Taxa de Conversão
+								</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -453,7 +475,9 @@ export default function ComercialDashboard() {
 												/>
 											) : null}
 										</TableCell>
-										<TableCell>{salesperson.name}</TableCell>
+										<TableCell className='text-sm text-nowrap'>
+											{salesperson.name}
+										</TableCell>
 										<TableCell className='text-center'>
 											{salesperson.sales}
 										</TableCell>

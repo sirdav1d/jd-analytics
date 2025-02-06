@@ -56,7 +56,6 @@ import {
 } from '@/components/ui/chart';
 
 import React from 'react';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function OverviewPage() {
 	// Mock data (replace with actual data in a real application)
@@ -125,8 +124,6 @@ export default function OverviewPage() {
 	const totalSales = React.useMemo(() => {
 		return customerData.reduce((acc, curr) => acc + curr.value, 0);
 	}, [customerData]);
-
-	const isMobile = useIsMobile();
 
 	return (
 		<div className='pb-4 w-full mx-auto space-y-4 min-h-screen'>
@@ -265,7 +262,7 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<ChartContainer
-								className='max-h-96 mx-auto'
+								className='h-80 mx-auto w-full'
 								config={salesChartConfig}>
 								<BarChart
 									accessibilityLayer
@@ -307,7 +304,7 @@ export default function OverviewPage() {
 						<CardContent>
 							<ChartContainer
 								config={chartConfig}
-								className='mx-auto aspect-square max-h-[440px] [&_.recharts-pie-label-text]:fill-foreground'>
+								className='mx-auto aspect-square max-h-[348px] [&_.recharts-pie-label-text]:fill-foreground'>
 								<PieChart>
 									<ChartTooltip
 										cursor={false}
@@ -317,7 +314,7 @@ export default function OverviewPage() {
 										data={customerData}
 										dataKey='value'
 										nameKey='name'
-										innerRadius={isMobile ? 70 : 100}
+										innerRadius={70}
 										label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
 										labelLine={false}>
 										{customerData.map((entry, index) => (
@@ -378,7 +375,7 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<ChartContainer
-								className='max-h-96 mx-auto'
+								className='h-80 w-full'
 								config={ROIChartConfig}>
 								<LineChart
 									accessibilityLayer
@@ -435,7 +432,7 @@ export default function OverviewPage() {
 						</CardContent>
 					</Card>
 				</div>
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-4'>
+				<div className='grid grid-cols-1 xl:grid-cols-2 gap-4 mb-4'>
 					<Card>
 						<CardHeader>
 							<CardTitle className='text-base text-balance md:text-2xl'>

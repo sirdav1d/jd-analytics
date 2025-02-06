@@ -10,7 +10,6 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { useIsMobile } from '@/hooks/use-mobile';
 import React from 'react';
 import { Cell, Label, Pie, PieChart } from 'recharts';
 
@@ -40,11 +39,10 @@ export function TrafficComponent() {
 		return chartData.reduce((acc, curr) => acc + curr.value, 0);
 	}, []);
 
-	const isMobile = useIsMobile();
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square max-h-[440px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square max-h-[348px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -54,10 +52,8 @@ export function TrafficComponent() {
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					innerRadius={isMobile ? 70 : 100}
-					label={({ name, percent }) =>
-						`${name} ${(percent * 100).toFixed(0)}%`
-					}
+					innerRadius={70}
+					label={({ percent }) => ` ${(percent * 100).toFixed(0)}%`}
 					labelLine={false}>
 					{chartData.map((entry, index) => (
 						<Cell
