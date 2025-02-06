@@ -178,7 +178,9 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold'>R$ 150,000</div>
-							<p className='text-xs '>+20% em relação ao período anterior</p>
+							<p className='text-xs text-muted-foreground'>
+								+20% em relação ao período anterior
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -190,7 +192,9 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>R$ 500</div>
-							<p className='text-xs '>+5% em relação ao período anterior</p>
+							<p className='text-xs text-muted-foreground'>
+								+5% em relação ao período anterior
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -202,7 +206,9 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>15%</div>
-							<p className='text-xs '>Comparado ao trimestre anterior</p>
+							<p className='text-xs text-muted-foreground'>
+								Comparado ao mês anterior
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -214,7 +220,9 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>250</div>
-							<p className='text-xs '>30% do total de clientes</p>
+							<p className='text-xs text-muted-foreground'>
+								30% do total de clientes
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -226,7 +234,9 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>1,200</div>
-							<p className='text-xs '>+15% em relação ao mês anterior</p>
+							<p className='text-xs text-muted-foreground'>
+								+15% em relação ao mês anterior
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -238,7 +248,9 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>1,250</div>
-							<p className='text-xs '>+15% em relação ao mês anterior</p>
+							<p className='text-xs text-muted-foreground'>
+								+15% em relação ao mês anterior
+							</p>
 						</CardContent>
 					</Card>
 				</div>
@@ -306,9 +318,7 @@ export default function OverviewPage() {
 										dataKey='value'
 										nameKey='name'
 										innerRadius={isMobile ? 70 : 100}
-										label={({ percent }) =>
-											`${(percent * 100).toFixed(0)}%`
-										}
+										label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
 										labelLine={false}>
 										{customerData.map((entry, index) => (
 											<Cell

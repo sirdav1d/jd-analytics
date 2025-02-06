@@ -131,6 +131,7 @@ export default function GoalsPage() {
 									placeholder='Digite o valor da meta'
 									value={commercialGoalValue}
 									onChange={(e) => setCommercialGoalValue(e.target.value)}
+									className='placeholder:text-slate-500'
 									required
 								/>
 							</div>
@@ -171,6 +172,7 @@ export default function GoalsPage() {
 									id='marketingGoalValue'
 									type='number'
 									placeholder='Digite o valor da meta'
+									className='placeholder:text-slate-500'
 									value={marketingGoalValue}
 									onChange={(e) => setMarketingGoalValue(e.target.value)}
 									required

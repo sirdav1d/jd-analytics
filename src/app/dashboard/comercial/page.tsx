@@ -203,7 +203,9 @@ export default function ComercialDashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>R$ 150,000</div>
-						<p className='text-xs'>+20% em relação ao período anterior</p>
+						<p className='text-xs text-muted-foreground'>
+							+20% em relação ao período anterior
+						</p>
 					</CardContent>
 				</Card>
 				<Card>
@@ -212,7 +214,9 @@ export default function ComercialDashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>R$ 500</div>
-						<p className='text-xs'>+5% em relação ao período anterior</p>
+						<p className='text-xs text-muted-foreground'>
+							+5% em relação ao período anterior
+						</p>
 					</CardContent>
 				</Card>
 				<Card>
@@ -223,7 +227,9 @@ export default function ComercialDashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>300</div>
-						<p className='text-xs'>+15% em relação ao período anterior</p>
+						<p className='text-xs text-muted-foreground'>
+							+15% em relação ao período anterior
+						</p>
 					</CardContent>
 				</Card>
 				<Card>
@@ -234,7 +240,9 @@ export default function ComercialDashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>50</div>
-						<p className='text-xs'>+10% em relação ao período anterior</p>
+						<p className='text-xs text-muted-foreground'>
+							+10% em relação ao período anterior
+						</p>
 					</CardContent>
 				</Card>
 				<Card>
@@ -245,7 +253,9 @@ export default function ComercialDashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>45 dias</div>
-						<p className='text-xs'>Para clientes recorrentes</p>
+						<p className='text-xs text-muted-foreground'>
+							Para clientes recorrentes
+						</p>
 					</CardContent>
 				</Card>
 				<Card>
@@ -256,7 +266,7 @@ export default function ComercialDashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>R$ 1,500</div>
-						<p className='text-xs'>Média por cliente</p>
+						<p className='text-xs text-muted-foreground'>Média por cliente</p>
 					</CardContent>
 				</Card>
 			</div>
