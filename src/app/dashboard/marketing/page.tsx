@@ -2,8 +2,8 @@
 
 'use client';
 
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import {
 	Select,
 	SelectContent,
@@ -11,8 +11,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { addDays } from 'date-fns';
 import {
 	Table,
 	TableBody,
@@ -21,12 +19,27 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { addDays } from 'date-fns';
+import { useState } from 'react';
 
 // Import the chart components
-import { TrafficComponent } from './_components/charts/traffic';
-import { ConversionsComponent } from './_components/charts/conversion';
+import {
+	BookUser,
+	Clock,
+	DollarSign,
+	GitPullRequestClosed,
+	HandCoins,
+	MonitorPlay,
+	MousePointerClick,
+	Percent,
+	SquareDashedMousePointer,
+	Trophy,
+	UserRoundCheck,
+} from 'lucide-react';
 import { CampagnComponent } from './_components/charts/campaings';
+import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenueByChannel';
+import { TrafficComponent } from './_components/charts/traffic';
 
 export default function MarketingPage() {
 	const [dateRange, setDateRange] = useState({
@@ -82,7 +95,10 @@ export default function MarketingPage() {
 				{' '}
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>Faturamento</CardTitle>
+						<CardTitle className='text-sm font-medium'>
+							Total de Faturamento
+						</CardTitle>
+						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>R$ 1,250,000</div>
@@ -94,6 +110,7 @@ export default function MarketingPage() {
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>Sessões</CardTitle>
+						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>120.000</div>
@@ -105,6 +122,7 @@ export default function MarketingPage() {
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>Usuários</CardTitle>
+						<UserRoundCheck className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>85.000</div>
@@ -118,6 +136,7 @@ export default function MarketingPage() {
 						<CardTitle className='text-sm font-medium'>
 							Taxa de Conversão
 						</CardTitle>
+						<Percent className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>2.8%</div>
@@ -178,6 +197,7 @@ export default function MarketingPage() {
 						<CardTitle className='text-sm font-medium'>
 							Taxa de Rejeição
 						</CardTitle>
+						<GitPullRequestClosed className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>35%</div>
@@ -191,6 +211,7 @@ export default function MarketingPage() {
 						<CardTitle className='text-sm font-medium'>
 							Duração Média da Sessão
 						</CardTitle>
+						<Clock className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>2m 45s</div>
@@ -204,6 +225,7 @@ export default function MarketingPage() {
 						<CardTitle className='text-sm font-medium'>
 							Páginas por Sessão
 						</CardTitle>
+						<BookUser className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>3.5</div>
@@ -217,6 +239,7 @@ export default function MarketingPage() {
 						<CardTitle className='text-sm font-medium'>
 							CTR (Taxa de Cliques)
 						</CardTitle>
+						<MousePointerClick className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>3.5%</div>
@@ -230,6 +253,7 @@ export default function MarketingPage() {
 						<CardTitle className='text-sm font-medium'>
 							CPC (Custo por Clique)
 						</CardTitle>
+						<SquareDashedMousePointer className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>R$ 0.75</div>
@@ -241,6 +265,7 @@ export default function MarketingPage() {
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>ROAS</CardTitle>
+						<HandCoins className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>3.2x</div>
@@ -271,19 +296,37 @@ export default function MarketingPage() {
 							</TableHeader>
 							<TableBody>
 								<TableRow className='text-nowrap'>
-									<TableCell className='text-nowrap'>Anúncio 1</TableCell>
+									<TableCell className='text-nowrap flex items-center gap-2'>
+										<Trophy
+											size={20}
+											className='text-amber-500'
+										/>
+										Anúncio 1
+									</TableCell>
 									<TableCell>5.2%</TableCell>
 									<TableCell>10,000</TableCell>
 									<TableCell>520</TableCell>
 								</TableRow>
 								<TableRow>
-									<TableCell className='text-nowrap'>Anúncio 2</TableCell>
+									<TableCell className='text-nowrap flex items-center gap-2'>
+										<Trophy
+											size={20}
+											className='text-zinc-400'
+										/>
+										Anúncio 2
+									</TableCell>
 									<TableCell>4.8%</TableCell>
 									<TableCell>15,000</TableCell>
 									<TableCell>720</TableCell>
 								</TableRow>
 								<TableRow>
-									<TableCell className='text-nowrap'>Anúncio 3</TableCell>
+									<TableCell className='text-nowrap flex items-center gap-2'>
+										<Trophy
+											size={20}
+											className='text-rose-700'
+										/>
+										Anúncio 3
+									</TableCell>
 									<TableCell>4.8%</TableCell>
 									<TableCell>15,000</TableCell>
 									<TableCell>720</TableCell>
@@ -322,7 +365,11 @@ export default function MarketingPage() {
 							</TableHeader>
 							<TableBody>
 								<TableRow>
-									<TableCell className='text-nowrap'>
+									<TableCell className='text-nowrap flex items-center gap-2'>
+										<Trophy
+											size={20}
+											className='text-amber-500'
+										/>
 										marketing digital
 									</TableCell>
 									<TableCell>4.5%</TableCell>
@@ -330,13 +377,25 @@ export default function MarketingPage() {
 									<TableCell className='text-nowrap'>R$ 1.20</TableCell>
 								</TableRow>
 								<TableRow>
-									<TableCell>palavra 2</TableCell>
+									<TableCell className='text-nowrap flex items-center gap-2'>
+										<Trophy
+											size={20}
+											className='text-zinc-400'
+										/>
+										palavra 2
+									</TableCell>
 									<TableCell>3.8%</TableCell>
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
 								</TableRow>
 								<TableRow>
-									<TableCell>palavra 3</TableCell>
+									<TableCell className='text-nowrap flex items-center gap-2'>
+										<Trophy
+											size={20}
+											className='text-rose-700'
+										/>
+										palavra 3
+									</TableCell>
 									<TableCell>3.8%</TableCell>
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>

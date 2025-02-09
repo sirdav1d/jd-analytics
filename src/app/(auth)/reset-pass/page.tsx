@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ResetPassForm } from './_components/reset-pass-form';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
+import svg from '../../../assets/data-analysis-2.svg';
 
 export default function ResetPassPage() {
 	return (
@@ -41,7 +42,7 @@ export default function ResetPassPage() {
 			</div>
 			<div className='relative hidden bg-muted lg:flex items-center justify-center'>
 				<Image
-					src={'/Dark-analytics-bro.svg'}
+					src={svg}
 					alt='Analise de dados'
 					width={580}
 					height={180}></Image>

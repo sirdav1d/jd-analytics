@@ -22,13 +22,13 @@ import {
 import { addDays } from 'date-fns';
 import { motion } from 'framer-motion';
 import {
-	BarChartIcon,
 	DollarSign,
-	Target,
+	ShoppingBag,
+	SquarePercent,
 	TrendingUp,
 	Trophy,
 	UserPlus,
-	Users,
+	UsersRound,
 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -169,7 +169,7 @@ export default function OverviewPage() {
 					<Card>
 						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 							<CardTitle className='text-sm font-medium '>
-								Total de Vendas
+								Total de Faturamento
 							</CardTitle>
 							<DollarSign className='h-4 w-4 text-primary' />
 						</CardHeader>
@@ -185,7 +185,7 @@ export default function OverviewPage() {
 							<CardTitle className='text-sm font-medium '>
 								Ticket Médio
 							</CardTitle>
-							<Users className='h-4 w-4 text-primary' />
+							<SquarePercent className='h-4 w-4 text-primary' />
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>R$ 500</div>
@@ -227,7 +227,7 @@ export default function OverviewPage() {
 							<CardTitle className='text-sm font-medium '>
 								Leads Gerados
 							</CardTitle>
-							<Target className='h-4 w-4 text-primary' />
+							<UsersRound className='h-4 w-4 text-primary' />
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>1,200</div>
@@ -239,9 +239,9 @@ export default function OverviewPage() {
 					<Card>
 						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 							<CardTitle className='text-sm font-medium '>
-								Número de Vendas
+								Total de Vendas
 							</CardTitle>
-							<BarChartIcon className='h-4 w-4 text-primary' />
+							<ShoppingBag className='h-4 w-4 text-primary' />
 						</CardHeader>
 						<CardContent>
 							<div className='text-2xl font-bold '>1,250</div>

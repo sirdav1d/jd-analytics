@@ -4,6 +4,7 @@ import Logo from '@/components/logo';
 import { ModeToggle } from '@/components/ui/mode-toggle';
 import { SignInForm } from './_components/sign-in-form';
 import Image from 'next/image';
+import svg from '../../../assets/data-analysis.svg';
 
 export default function SignIn() {
 	return (
@@ -30,7 +31,7 @@ export default function SignIn() {
 			</div>
 			<div className='relative hidden bg-muted lg:flex items-center justify-center'>
 				<Image
-					src={'/Analysis-bro.svg'}
+					src={svg}
 					alt='Analise de dados'
 					width={580}
 					height={180}></Image>

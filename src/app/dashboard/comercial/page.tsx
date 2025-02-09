@@ -25,7 +25,7 @@ import { SalesByCategoryChart } from './_components/category-sales';
 import { CustomerComparisonChartComponent } from './_components/customer-comparison';
 import { GrowthChartComponent } from './_components/growth-chart';
 import { SalesChartComponent } from './_components/sales-chart-commercial';
-import { Trophy } from 'lucide-react';
+import { CirclePercent, DollarSign, ShoppingBag, SquarePercent, Timer, Trophy, UserRoundPlus } from 'lucide-react';
 
 // Mock data (replace with actual data in a real application)
 
@@ -198,8 +198,9 @@ export default function ComercialDashboard() {
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
-							Total de Vendas
+							Total de Faturamento
 						</CardTitle>
+						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>R$ 150,000</div>
@@ -211,6 +212,7 @@ export default function ComercialDashboard() {
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>Ticket Médio</CardTitle>
+						<SquarePercent className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>R$ 500</div>
@@ -222,8 +224,9 @@ export default function ComercialDashboard() {
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
-							Número de Transações
+							Total de Vendas
 						</CardTitle>
+						<ShoppingBag className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>300</div>
@@ -237,6 +240,7 @@ export default function ComercialDashboard() {
 						<CardTitle className='text-sm font-medium'>
 							Novos Clientes
 						</CardTitle>
+						<UserRoundPlus className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>50</div>
@@ -250,6 +254,7 @@ export default function ComercialDashboard() {
 						<CardTitle className='text-sm font-medium'>
 							Tempo Médio entre Compras
 						</CardTitle>
+						<Timer className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>45 dias</div>
@@ -263,6 +268,7 @@ export default function ComercialDashboard() {
 						<CardTitle className='text-sm font-medium'>
 							Faturamento por Cliente
 						</CardTitle>
+						<CirclePercent className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold '>R$ 1,500</div>
