@@ -202,7 +202,7 @@ export default function AdminPage() {
 			<div className='mb-4'>
 				<Dialog>
 					<DialogTrigger asChild>
-						<Button className='bg-red-600 hover:bg-red-700'>
+						<Button className='bg-red-600 hover:bg-red-700 w-full md:w-fit'>
 							<Plus className='mr-1 h-4 w-4' /> Adicionar Usuário
 						</Button>
 					</DialogTrigger>

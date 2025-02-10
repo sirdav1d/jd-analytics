@@ -35,7 +35,7 @@ const chartConfig = {
 export function SalesVsRepairRevenue() {
 	return (
 		<ChartContainer
-			className='h-80 w-full'
+			className='h-72 w-full'
 			config={chartConfig}>
 			<BarChart
 				accessibilityLayer

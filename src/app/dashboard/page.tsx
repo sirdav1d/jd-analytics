@@ -86,7 +86,7 @@ export default function OverviewPage() {
 
 	const [dateRange, setDateRange] = useState({
 		from: new Date(),
-		to: addDays(new Date(), 30),
+		to: addDays(new Date(), 7),
 	});
 	const [customerType, setCustomerType] = useState('all');
 	const [salesChannel, setSalesChannel] = useState('all');
@@ -262,7 +262,7 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<ChartContainer
-								className='h-80 mx-auto w-full'
+								className='h-72 mx-auto w-full'
 								config={salesChartConfig}>
 								<BarChart
 									accessibilityLayer
@@ -304,7 +304,7 @@ export default function OverviewPage() {
 						<CardContent>
 							<ChartContainer
 								config={chartConfig}
-								className='mx-auto aspect-square max-h-[348px] [&_.recharts-pie-label-text]:fill-foreground'>
+								className='mx-auto aspect-square w-full max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 								<PieChart>
 									<ChartTooltip
 										cursor={false}
@@ -314,7 +314,7 @@ export default function OverviewPage() {
 										data={customerData}
 										dataKey='value'
 										nameKey='name'
-										innerRadius={70}
+										innerRadius={60}
 										label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
 										labelLine={false}>
 										{customerData.map((entry, index) => (
@@ -366,7 +366,7 @@ export default function OverviewPage() {
 				</div>
 
 				{/* ROI of Marketing Campaigns */}
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-4'>
+				<div className='grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4'>
 					<Card>
 						<CardHeader>
 							<CardTitle className='text-base text-balance md:text-2xl'>
@@ -375,7 +375,7 @@ export default function OverviewPage() {
 						</CardHeader>
 						<CardContent>
 							<ChartContainer
-								className='h-80 w-full'
+								className='h-72 w-full'
 								config={ROIChartConfig}>
 								<LineChart
 									accessibilityLayer

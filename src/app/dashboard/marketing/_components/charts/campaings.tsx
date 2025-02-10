@@ -43,7 +43,7 @@ export function CampagnComponent() {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='w-full h-80'>
+			className='w-full h-72'>
 			<BarChart
 				margin={{
 					top: 28,

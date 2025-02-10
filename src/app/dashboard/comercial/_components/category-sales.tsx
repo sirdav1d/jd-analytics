@@ -40,7 +40,7 @@ export function SalesByCategoryChart() {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square max-h-80 [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square max-h-72 [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -52,7 +52,7 @@ export function SalesByCategoryChart() {
 					nameKey='name'
 					label={{ fontSize: '14px' }}
 					labelLine={false}
-					innerRadius={70}
+					innerRadius={60}
 					strokeWidth={4}>
 					<Label
 						content={({ viewBox }) => {

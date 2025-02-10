@@ -42,7 +42,7 @@ export function TrafficComponent() {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square max-h-[348px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -52,7 +52,7 @@ export function TrafficComponent() {
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					innerRadius={70}
+					innerRadius={60}
 					label={({ percent }) => ` ${(percent * 100).toFixed(0)}%`}
 					labelLine={false}>
 					{chartData.map((entry, index) => (

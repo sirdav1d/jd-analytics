@@ -34,7 +34,7 @@ const chartConfig = {
 
 export default function SalesChart() {
 	return (
-		<ChartContainer config={chartConfig} className='w-full h-80'>
+		<ChartContainer config={chartConfig} className='w-full h-72'>
 			<LineChart
 				accessibilityLayer
 				data={chartData}

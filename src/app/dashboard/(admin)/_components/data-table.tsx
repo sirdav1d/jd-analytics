@@ -63,7 +63,7 @@ export function DataTable<TData, TValue>({
 
 	return (
 		<div>
-			<div className='flex items-center py-4'>
+			<div className='flex items-center flex-col gap-5 md:flex-row  py-4'>
 				<Input
 					placeholder='Filtrar por nome'
 					value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
 							.getColumn('role')
 							?.setFilterValue(value === 'all' ? '' : value);
 					}}>
-					<SelectTrigger className='w-[180px] ml-4'>
+					<SelectTrigger className='w-full md:w-[220px]'>
 						<SelectValue placeholder='Selecione o Cargo' />
 					</SelectTrigger>
 					<SelectContent>
@@ -117,7 +117,7 @@ export function DataTable<TData, TValue>({
 									key={row.id}
 									data-state={row.getIsSelected() && 'selected'}>
 									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
+										<TableCell key={cell.id} className='text-sm text-nowrap'>
 											{flexRender(
 												cell.column.columnDef.cell,
 												cell.getContext(),

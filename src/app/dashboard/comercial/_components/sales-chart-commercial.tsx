@@ -28,7 +28,7 @@ const chartConfig = {
 
 export function SalesChartComponent() {
 	return (
-		<ChartContainer className='h-80 w-full' config={chartConfig}>
+		<ChartContainer className='h-72 w-full' config={chartConfig}>
 			<BarChart
 				accessibilityLayer
 				data={chartData}
