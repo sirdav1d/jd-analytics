@@ -12,7 +12,7 @@ export async function CreateOrgAction(name: string) {
 
 		if (!organization) {
 			return {
-				error: 'Algo deu errado, oog não criada',
+				error: 'Algo deu errado, org não criada',
 				ok: false,
 				org: null,
 			};

@@ -13,10 +13,10 @@ model Organization {
   name               String
   googleAccessToken  String?
   googleRefreshToken String?
-  googleUserId       String?
   googleScopes       String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+  googleExpiresIn    Float?
   dashboardComercial DashboardComercial?
   dashboardMarketing DashboardMarketing?
   users              User[]

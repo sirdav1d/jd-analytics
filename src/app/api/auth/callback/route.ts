@@ -1,5 +1,6 @@
 /** @format */
 
+import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -8,7 +9,10 @@ export async function GET(request: Request) {
 
 	if (!code) {
 		return NextResponse.json(
-			{ error: 'Código de autorização ausente' },
+			{
+				error: 'Código de autorização ausente',
+				redirectUri: new URL('/dashboard/marketing', request.url),
+			},
 			{ status: 400 },
 		);
 	}
@@ -35,18 +39,50 @@ export async function GET(request: Request) {
 
 		const tokens = await response.json();
 
-		if (!response.ok) {
-			console.error('Erro ao obter token:', tokens);
-			return NextResponse.json(
-				{ error: 'Falha ao obter token' },
-				{ status: 500 },
-			);
+		console.log(tokens);
+
+		// if (!response.ok) {
+		// 	console.error('Erro ao obter token:', tokens);
+		// 	return NextResponse.json(
+		// 		{
+		// 			error: 'Falha ao obter token',
+		// 		},
+		// 		{ status: 500 },
+		// 	);
+		// }
+
+		const organizationId = '75d5e26d-5030-4abf-ac16-9351b73a4a20';
+
+		const updatedOrganization = await prisma.organization.update({
+			where: { id: organizationId },
+			data: {
+				googleAccessToken: tokens.access_token,
+				googleRefreshToken: tokens.refresh_token,
+				googleExpiresIn: tokens.expires_in,
+				googleScopes: tokens.scope,
+				// Se tiver o campo para data de expiração, pode atualizar assim:
+				// googleExpiresAt: expiresAt,
+			},
+		});
+		console.log(updatedOrganization);
+
+		if (!updatedOrganization) {
+			console.log(updatedOrganization);
+			return NextResponse.json({
+				error: 'Algo deu errado, org tokens não atualizados',
+				ok: false,
+				org: null,
+			});
 		}
 
-		// Salvar tokens no Supabase futuramente
-		return NextResponse.json(tokens);
+		return NextResponse.redirect(new URL('/dashboard/marketing', request.url));
 	} catch (error) {
-		console.error('Erro na requisição do token:', error);
-		return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
+		console.log('Erro na requisição do token:', error);
+		return NextResponse.json(
+			{
+				error: 'Erro interno',
+			},
+			{ status: 500 },
+		);
 	}
 }

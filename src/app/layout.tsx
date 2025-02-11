@@ -1,11 +1,11 @@
 /** @format */
 
+import { Toaster } from '@/components/ui/sonner';
+import AuthSessionProvider from '@/providers/session-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
-import AuthSessionProvider from '@/providers/session-provider';
-import { ThemeProvider } from '@/providers/theme-provider';
-import { Toaster } from '@/components/ui/sonner';
 
 const montserrat = Montserrat({
 	weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],

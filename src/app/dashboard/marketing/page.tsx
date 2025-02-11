@@ -41,6 +41,7 @@ import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenueByChannel';
 import { TrafficComponent } from './_components/charts/traffic';
 import GoogleLoginButton from '@/components/google-login-button';
+import NotificationConnectionGoogle from '@/components/notification-connection-google';
 
 export default function MarketingPage() {
 	const [dateRange, setDateRange] = useState({
@@ -52,6 +53,7 @@ export default function MarketingPage() {
 
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
+			<NotificationConnectionGoogle />
 			{/* Filtros */}
 			<div className='w-full flex flex-wrap gap-4 mb-4'>
 				<DatePickerWithRange
