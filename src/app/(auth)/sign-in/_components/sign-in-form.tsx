@@ -19,6 +19,7 @@ import { z } from 'zod';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
 	email: z.string().email({ message: 'Digite um e-mail válido' }),
@@ -109,9 +110,17 @@ export function SignInForm({
 						)}></FormField>
 
 					<Button
+						disabled={form.formState.isSubmitting || form.formState.isLoading}
 						type='submit'
-						className='w-full font-semibold'>
-						Entrar
+						className='w-full font-semibold disabled:opacity-70'>
+						{form.formState.isSubmitting || form.formState.isLoading ? (
+							<>
+								<Loader2 className='animate-spin' />
+								Entrar
+							</>
+						) : (
+							<>Entrar</>
+						)}
 					</Button>
 				</form>
 			</Form>

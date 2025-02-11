@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Organization {
+  id                 String              @id @default(uuid())
+  name               String
+  googleAccessToken  String?
+  googleRefreshToken String?
+  googleUserId       String?
+  googleScopes       String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  dashboardComercial DashboardComercial?
+  dashboardMarketing DashboardMarketing?
+  users              User[]
+}
+
+model User {
+  id             String       @id @default(uuid())
+  name           String
+  email          String       @unique
+  password       String
+  role           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model DashboardMarketing {
+  id                   String             @id @default(uuid())
+  organizationId       String             @unique
+  sessoes              Int
+  usuarios             Int
+  taxaRejeicao         Float
+  taxaConversaoSite    Float
+  taxaAbandonoCarrinho Float
+  impressoes           Int
+  cliques              Int
+  ctr                  Float
+  cpc                  Decimal
+  conversoes           Int
+  custoPorConversao    Decimal
+  roas                 Float
+  custoPorLead         Decimal
+  faturamentoTotal     Decimal
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  anunciosCTR          AnuncioCTR[]
+  anunciosConv         AnuncioConversao[]
+  canais               CanalTrafego[]
+  organization         Organization       @relation(fields: [organizationId], references: [id])
+  palavrasChave        PalavraChave[]
+  trafego              Trafego[]
+}
+
+model Trafego {
+  id          String             @id @default(uuid())
+  dashboardId String
+  origem      String
+  valor       Int
+  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model CanalTrafego {
+  id            String             @id @default(uuid())
+  dashboardId   String
+  canal         String
+  taxaConversao Float
+  cpa           Decimal
+  roi           Float
+  dashboard     DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model AnuncioCTR {
+  id          String             @id @default(uuid())
+  dashboardId String
+  nome        String
+  ctr         Float
+  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model AnuncioConversao {
+  id          String             @id @default(uuid())
+  dashboardId String
+  nome        String
+  conversoes  Int
+  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model PalavraChave {
+  id          String             @id @default(uuid())
+  dashboardId String
+  palavra     String
+  ctr         Float
+  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model DashboardComercial {
+  id                      String                        @id @default(uuid())
+  organizationId          String                        @unique
+  receitaTotal            Decimal
+  ticketMedio             Decimal
+  crescimentoReceita      Float
+  novosClientes           Int
+  taxaRetencaoClientes    Float
+  clv                     Decimal
+  volumeReparos           Int
+  taxaReincidenciaReparos Float
+  receitaReparosVsVendas  Float
+  createdAt               DateTime                      @default(now())
+  updatedAt               DateTime                      @updatedAt
+  clientesComparacao      ClientesRecorrentesVsUnicos[]
+  organization            Organization                  @relation(fields: [organizationId], references: [id])
+  produtosTop             ProdutoRank[]
+  receitaPorCategoria     ReceitaCategoria[]
+  receitaPorPagamento     ReceitaMetodoPagamento[]
+}
+
+model ReceitaCategoria {
+  id          String             @id @default(uuid())
+  dashboardId String
+  categoria   String
+  receita     Decimal
+  dashboard   DashboardComercial @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model ReceitaMetodoPagamento {
+  id              String             @id @default(uuid())
+  dashboardId     String
+  metodoPagamento String
+  receita         Decimal
+  dashboard       DashboardComercial @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model ClientesRecorrentesVsUnicos {
+  id          String             @id @default(uuid())
+  dashboardId String
+  tipoCliente String
+  quantidade  Int
+  dashboard   DashboardComercial @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}
+
+model ProdutoRank {
+  id          String             @id @default(uuid())
+  dashboardId String
+  produto     String
+  vendas      Int
+  dashboard   DashboardComercial @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+}

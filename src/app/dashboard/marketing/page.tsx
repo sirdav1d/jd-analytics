@@ -40,6 +40,7 @@ import { CampagnComponent } from './_components/charts/campaings';
 import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenueByChannel';
 import { TrafficComponent } from './_components/charts/traffic';
+import GoogleLoginButton from '@/components/google-login-button';
 
 export default function MarketingPage() {
 	const [dateRange, setDateRange] = useState({
@@ -88,6 +89,7 @@ export default function MarketingPage() {
 						<SelectItem value='christmas'>Natal</SelectItem>
 					</SelectContent>
 				</Select>
+				<GoogleLoginButton />
 			</div>
 
 			{/* KPIs Principais */}
