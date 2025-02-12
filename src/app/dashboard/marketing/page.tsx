@@ -1,16 +1,6 @@
 /** @format */
 
-'use client';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import {
 	Table,
 	TableBody,
@@ -19,10 +9,9 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { addDays } from 'date-fns';
-import { useState } from 'react';
 
 // Import the chart components
+import GoogleLoginButton from '@/components/google-login-button';
 import {
 	BookUser,
 	Clock,
@@ -40,60 +29,40 @@ import { CampagnComponent } from './_components/charts/campaings';
 import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenueByChannel';
 import { TrafficComponent } from './_components/charts/traffic';
-import GoogleLoginButton from '@/components/google-login-button';
-import NotificationConnectionGoogle from '@/components/notification-connection-google';
+import Filters from './_components/filters';
 
-export default function MarketingPage() {
-	const [dateRange, setDateRange] = useState({
-		from: new Date(),
-		to: addDays(new Date(), 7),
-	});
-	const [trafficSource, setTrafficSource] = useState('all');
-	const [campaign, setCampaign] = useState('all');
+async function getAnalyticsData(startDate: string, endDate: string) {
+	const res = await fetch(
+		`http://localhost:3000/api/g-analytics?startDate=${encodeURIComponent(
+			startDate,
+		)}&endDate=${encodeURIComponent(endDate)}`,
+	);
+
+	return res.json();
+}
+
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export default async function MarketingPage(props: {
+	searchParams: SearchParams;
+}) {
+	const searchParams = await props.searchParams;
+	const startDate = searchParams.startDate || '60days';
+	const endDate = searchParams.endDate || 'today';
+
+	const analyticsData = await getAnalyticsData(
+		String(startDate),
+		String(endDate),
+	);
 
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
-			<NotificationConnectionGoogle />
+			<pre>{analyticsData && JSON.stringify(analyticsData, null, 2)}</pre>
 			{/* Filtros */}
 			<div className='w-full flex flex-wrap gap-4 mb-4'>
-				<DatePickerWithRange
-					date={dateRange}
-					setDate={(e) =>
-						setDateRange({
-							from: e?.from ?? new Date(),
-							to: e?.to ?? new Date(),
-						})
-					}
-				/>
-				<Select
-					value={trafficSource}
-					onValueChange={setTrafficSource}>
-					<SelectTrigger className='w-full md:w-48'>
-						<SelectValue placeholder='Fonte de Tráfego' />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value='all'>Todas as Fontes</SelectItem>
-						<SelectItem value='organic'>Orgânico</SelectItem>
-						<SelectItem value='paid'>Pago</SelectItem>
-						<SelectItem value='social'>Social</SelectItem>
-					</SelectContent>
-				</Select>
-				<Select
-					value={campaign}
-					onValueChange={setCampaign}>
-					<SelectTrigger className='w-full md:w-48'>
-						<SelectValue placeholder='Campanha' />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value='all'>Todas as Campanhas</SelectItem>
-						<SelectItem value='summer'>Verão 2023</SelectItem>
-						<SelectItem value='blackfriday'>Black Friday</SelectItem>
-						<SelectItem value='christmas'>Natal</SelectItem>
-					</SelectContent>
-				</Select>
+				<Filters />
 				<GoogleLoginButton />
 			</div>
-
 			{/* KPIs Principais */}
 			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4'>
 				{' '}
