@@ -30,16 +30,7 @@ import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenueByChannel';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
-
-async function getAnalyticsData(startDate: string, endDate: string) {
-	const res = await fetch(
-		`http://localhost:3000/api/g-analytics?startDate=${encodeURIComponent(
-			startDate,
-		)}&endDate=${encodeURIComponent(endDate)}`,
-	);
-
-	return res.json();
-}
+import { getAnalyticsData } from '@/utils/get-analytics-data';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -50,14 +41,11 @@ export default async function MarketingPage(props: {
 	const startDate = searchParams.startDate || '60days';
 	const endDate = searchParams.endDate || 'today';
 
-	const analyticsData = await getAnalyticsData(
-		String(startDate),
-		String(endDate),
-	);
-
+	const { data } = await getAnalyticsData(String(startDate), String(endDate));
+	console.log(data);
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
-			<pre>{analyticsData && JSON.stringify(analyticsData, null, 2)}</pre>
+			<pre>{data ? JSON.stringify(data, null, 2) : null}</pre>
 			{/* Filtros */}
 			<div className='w-full flex flex-wrap gap-4 mb-4'>
 				<Filters />
