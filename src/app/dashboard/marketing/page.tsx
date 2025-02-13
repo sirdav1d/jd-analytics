@@ -82,7 +82,7 @@ export default async function MarketingPage(props: {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold'>
-						R$ {data.data.purchaseRevenue}
+						R$ {data.data.purchaseRevenue ?? 0}
 					</div>
 					<p className='text-xs text-muted-foreground'>
 						+20% em relação ao mês anterior
@@ -99,7 +99,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data.purchaseRevenue}
+							R$ {data.data.purchaseRevenue ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -115,7 +115,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data.purchaseRevenue}
+							R$ {data.data.purchaseRevenue ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -131,7 +131,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data.purchaseRevenue}
+							R$ {data.data.purchaseRevenue ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -144,7 +144,7 @@ export default async function MarketingPage(props: {
 						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>{data.data.sessions}</div>
+						<div className='text-2xl font-bold'>{data.data.sessions ?? 0}</div>
 						<p className='text-xs text-muted-foreground'>
 							+15% em relação ao mês anterior
 						</p>
@@ -156,7 +156,9 @@ export default async function MarketingPage(props: {
 						<UserRoundCheck className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>{data.data.totalUsers}</div>
+						<div className='text-2xl font-bold'>
+							{data.data.totalUsers ?? 0}
+						</div>
 						<p className='text-xs text-muted-foreground'>
 							+10% em relação ao mês anterior
 						</p>
@@ -171,7 +173,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data.sessionConversionRate}%
+							{data.data.sessionConversionRate ?? 0}%
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+0.5% em relação ao mês anterior
@@ -187,7 +189,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{Number(data.data.bounceRate).toFixed(2)}%
+							{Number(data.data.bounceRate).toFixed(2) ?? 0}%
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							-2% em relação ao mês anterior
@@ -203,7 +205,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{formatDuration(data.data.averageSessionDuration)}
+							{formatDuration(data.data.averageSessionDuration) ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+15s em relação ao mês anterior
@@ -222,7 +224,7 @@ export default async function MarketingPage(props: {
 							{calculatePagesPerSession(
 								Number(data.data.sessions),
 								Number(data.data.screenPageViews),
-							).toFixed(2)}
+							).toFixed(2) ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+0.2 em relação ao mês anterior
@@ -343,14 +345,14 @@ export default async function MarketingPage(props: {
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead>Anúncio</TableHead>
-									<TableHead>CTR</TableHead>
-									<TableHead>Impressões</TableHead>
-									<TableHead>Cliques</TableHead>
+									<TableHead className='text-left'>Anúncio</TableHead>
+									<TableHead className='text-center'>CTR</TableHead>
+									<TableHead className='text-center'>Impressões</TableHead>
+									<TableHead className='text-center'>Cliques</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								<TableRow className='text-nowrap'>
+								<TableRow className='text-nowrap text-center'>
 									<TableCell className='text-nowrap flex items-center gap-2'>
 										<Trophy
 											size={20}
@@ -362,8 +364,8 @@ export default async function MarketingPage(props: {
 									<TableCell>10,000</TableCell>
 									<TableCell>520</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell className='text-nowrap flex items-center gap-2'>
+								<TableRow className='text-center'>
+									<TableCell className='text-nowrap text-left flex items-center gap-2'>
 										<Trophy
 											size={20}
 											className='text-zinc-400'
@@ -374,8 +376,8 @@ export default async function MarketingPage(props: {
 									<TableCell>15,000</TableCell>
 									<TableCell>720</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell className='text-nowrap flex items-center gap-2'>
+								<TableRow className='text-center'>
+									<TableCell className='text-nowrap text-left flex items-center gap-2'>
 										<Trophy
 											size={20}
 											className='text-rose-700'
@@ -386,14 +388,18 @@ export default async function MarketingPage(props: {
 									<TableCell>15,000</TableCell>
 									<TableCell>720</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell className='text-nowrap'>Anúncio 4</TableCell>
+								<TableRow className='text-center'>
+									<TableCell className='text-nowrap text-left'>
+										Anúncio 4
+									</TableCell>
 									<TableCell>4.8%</TableCell>
 									<TableCell>15,000</TableCell>
 									<TableCell>720</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell className='text-nowrap'>Anúncio 5</TableCell>
+								<TableRow className='text-center'>
+									<TableCell className='text-nowrap text-left'>
+										Anúncio 5
+									</TableCell>
 									<TableCell>4.8%</TableCell>
 									<TableCell>15,000</TableCell>
 									<TableCell>720</TableCell>
@@ -413,14 +419,14 @@ export default async function MarketingPage(props: {
 							<TableHeader>
 								<TableRow>
 									<TableHead className='text-nowrap'>Palavra-Chave</TableHead>
-									<TableHead>CTR</TableHead>
-									<TableHead>Conversões</TableHead>
-									<TableHead>CPC</TableHead>
+									<TableHead className='text-center'>CTR</TableHead>
+									<TableHead className='text-center'>Conversões</TableHead>
+									<TableHead className='text-center'>CPC</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								<TableRow>
-									<TableCell className='text-nowrap flex items-center gap-2'>
+								<TableRow className='text-center'>
+									<TableCell className='text-nowrap text-left flex items-center gap-2'>
 										<Trophy
 											size={20}
 											className='text-amber-500'
@@ -431,8 +437,8 @@ export default async function MarketingPage(props: {
 									<TableCell className='text-center'>50</TableCell>
 									<TableCell className='text-nowrap'>R$ 1.20</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell className='text-nowrap flex items-center gap-2'>
+								<TableRow className='text-center'>
+									<TableCell className='text-nowrap text-left flex items-center gap-2'>
 										<Trophy
 											size={20}
 											className='text-zinc-400'
@@ -443,8 +449,8 @@ export default async function MarketingPage(props: {
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell className='text-nowrap flex items-center gap-2'>
+								<TableRow className='text-center'>
+									<TableCell className='text-nowrap text-left flex items-center gap-2'>
 										<Trophy
 											size={20}
 											className='text-rose-700'
@@ -455,16 +461,16 @@ export default async function MarketingPage(props: {
 									<TableCell className='text-center'>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell>palavra 4</TableCell>
+								<TableRow className='text-center'>
+									<TableCell className='text-left'>palavra 4</TableCell>
 									<TableCell>3.8%</TableCell>
-									<TableCell className='text-center'>35</TableCell>
+									<TableCell>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
 								</TableRow>
-								<TableRow>
-									<TableCell>palavra 5</TableCell>
+								<TableRow className='text-center'>
+									<TableCell className='text-left'>palavra 5</TableCell>
 									<TableCell>3.8%</TableCell>
-									<TableCell className='text-center'>35</TableCell>
+									<TableCell>35</TableCell>
 									<TableCell>R$ 1.50</TableCell>
 								</TableRow>
 							</TableBody>
