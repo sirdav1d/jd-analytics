@@ -50,7 +50,7 @@ export async function refreshAccessTokenAction() {
 
 		if (!response.ok) {
 			const errorData = await response.json();
-			console.error('Erro ao atualizar token:', errorData);
+			console.log('Erro ao atualizar token:', errorData);
 			return { success: false, error: 'Falha ao atualizar token' };
 		}
 
@@ -70,7 +70,7 @@ export async function refreshAccessTokenAction() {
 		console.log('Token atualizado com sucesso!');
 		return { success: true, accessToken: newAccessToken };
 	} catch (error) {
-		console.error('Erro ao processar refresh token:', error);
+		console.log('Erro ao processar refresh token:', error);
 		return {
 			success: false,
 			error: 'Erro inesperado ao processar refresh token',

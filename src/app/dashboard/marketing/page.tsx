@@ -57,7 +57,7 @@ export default async function MarketingPage(props: {
 	}
 	const { data } = await getAnalyticsData(String(startDate), String(endDate));
 
-	if (!data) {
+	if (!data.ok) {
 		<div className='w-full mx-auto space-y-4 pb-5'>
 			Faça Login com o Google <GoogleLoginButton />
 		</div>;
