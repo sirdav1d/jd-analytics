@@ -51,12 +51,17 @@ export default async function MarketingPage(props: {
 		console.log('Erro ao atualizar token:', error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
-				Erro ao carregar os dados. Tente novamente.
+				Faça Login com o Google <GoogleLoginButton />
 			</div>
 		);
 	}
 	const { data } = await getAnalyticsData(String(startDate), String(endDate));
 
+	if (!data) {
+		<div className='w-full mx-auto space-y-4 pb-5'>
+			Faça Login com o Google <GoogleLoginButton />
+		</div>;
+	}
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
 			{/* <pre>{data ? JSON.stringify(data, null, 2) : null}</pre> */}
