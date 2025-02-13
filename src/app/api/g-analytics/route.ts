@@ -1,15 +1,3 @@
-/**
- * eslint-disable @typescript-eslint/no-explicit-any
- *
- * @format
- */
-
-/**
- * eslint-disable @typescript-eslint/no-explicit-any
- *
- * @format
- */
-
 /** @format */
 
 import { prisma } from '@/lib/prisma';
@@ -20,6 +8,7 @@ export async function GET(request: NextRequest) {
 
 	const startDate = searchParams?.get('startDate') || '60daysAgo';
 	const endDate = searchParams?.get('endDate') || 'today';
+
 	try {
 		const organization = await prisma.organization.findFirst();
 		const propertyId = '465499652';
@@ -40,7 +29,7 @@ export async function GET(request: NextRequest) {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					dateRanges: [{ startDate, endDate }],
+					dateRanges: [{ startDate: startDate, endDate: endDate }],
 					metrics: [
 						{ name: 'sessions' }, // Sessões
 						{ name: 'totalUsers' }, // Usuários
@@ -50,8 +39,6 @@ export async function GET(request: NextRequest) {
 						{ name: 'averageSessionDuration' }, //duração média de sessão
 						{ name: 'eventCount' }, // Conversões
 						{ name: 'screenPageViews' }, // Total de visualizações de página
-						// { name: 'averageCpc' }, // CPC
-						// { name: 'costPerConversion' }, // Custo por conversão
 					],
 				}),
 			},
@@ -59,19 +46,32 @@ export async function GET(request: NextRequest) {
 
 		if (!response.ok) {
 			console.log(response);
-			return NextResponse.json(
-				{ error: 'Erro ao buscar dados do Google Analytics', ok: false },
-				{ status: response.status },
-			);
+			console.log(searchParams?.get('startDate'));
+			return NextResponse.json({
+				error: 'Erro ao buscar dados do Google Analytics',
+				ok: false,
+				data: null,
+			});
 		}
 
 		const data = await response.json();
+		const formattedMetrics: { [key: string]: string | null } = {};
+		if (data?.metricHeaders && data?.rows && data.rows.length > 0) {
+			const headers = data.metricHeaders;
+			const firstRow = data.rows[0];
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			headers.forEach((header: any, index: number) => {
+				formattedMetrics[header.name] =
+					firstRow.metricValues[index]?.value || null;
+			});
+		}
 
 		return NextResponse.json({
 			ok: true,
-			data: data,
+			data: formattedMetrics,
+			error: null,
 		});
 	} catch (error) {
-		return NextResponse.json({ error: error, ok: false }, { status: 500 });
+		return NextResponse.json({ error: error, ok: false, data: null });
 	}
 }

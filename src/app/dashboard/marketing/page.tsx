@@ -11,9 +11,12 @@ import {
 } from '@/components/ui/table';
 
 // Import the chart components
+import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
 import GoogleLoginButton from '@/components/google-login-button';
+import { getAnalyticsData } from '@/utils/get-analytics-data';
 import {
 	BookUser,
+	CheckCircle,
 	Clock,
 	DollarSign,
 	GitPullRequestClosed,
@@ -24,13 +27,15 @@ import {
 	SquareDashedMousePointer,
 	Trophy,
 	UserRoundCheck,
+	UserRoundPlus,
 } from 'lucide-react';
 import { CampagnComponent } from './_components/charts/campaings';
 import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenueByChannel';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
-import { getAnalyticsData } from '@/utils/get-analytics-data';
+import { formatDuration } from '@/utils/normalize-duration-session';
+import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -38,31 +43,96 @@ export default async function MarketingPage(props: {
 	searchParams: SearchParams;
 }) {
 	const searchParams = await props.searchParams;
-	const startDate = searchParams.startDate || '60days';
+	const startDate = searchParams.startDate || '7daysAgo';
 	const endDate = searchParams.endDate || 'today';
 
+	const { success, error } = await refreshAccessTokenAction();
+	if (!success) {
+		console.log('Erro ao atualizar token:', error);
+		return (
+			<div className='w-full mx-auto space-y-4 pb-5'>
+				Erro ao carregar os dados. Tente novamente.
+			</div>
+		);
+	}
 	const { data } = await getAnalyticsData(String(startDate), String(endDate));
-	console.log(data);
+
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
-			<pre>{data ? JSON.stringify(data, null, 2) : null}</pre>
+			{/* <pre>{data ? JSON.stringify(data, null, 2) : null}</pre> */}
 			{/* Filtros */}
-			<div className='w-full flex flex-wrap gap-4 mb-4'>
+			<div className='w-full flex justify-center md:justify-start flex-wrap gap-4 mb-4'>
 				<Filters />
-				<GoogleLoginButton />
+				{data.ok ? (
+					<p className='dark:text-emerald-400 text-emerald-500 flex gap-1.5 items-center text-center text-sm md:text-base font-medium'>
+						<CheckCircle size={16} />
+						Dados Sincronizados Com Google API
+					</p>
+				) : (
+					<GoogleLoginButton />
+				)}
 			</div>
 			{/* KPIs Principais */}
-			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4'>
-				{' '}
-				<Card>
+			<Card className='xl:hidden'>
+				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+					<CardTitle className='text-sm font-medium'>
+						Faturamento Total
+					</CardTitle>
+					<DollarSign className='h-4 w-4 text-primary' />
+				</CardHeader>
+				<CardContent>
+					<div className='text-2xl font-bold'>
+						R$ {data.data.purchaseRevenue}
+					</div>
+					<p className='text-xs text-muted-foreground'>
+						+20% em relação ao mês anterior
+					</p>
+				</CardContent>
+			</Card>
+			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
+				<Card className='hidden xl:block'>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
-							Total de Faturamento
+							Faturamento Total
 						</CardTitle>
 						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>R$ 1,250,000</div>
+						<div className='text-2xl font-bold'>
+							R$ {data.data.purchaseRevenue}
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							+20% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Faturamento de Eccomerce
+						</CardTitle>
+						<DollarSign className='h-4 w-4 text-primary' />
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>
+							R$ {data.data.purchaseRevenue}
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							+20% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Faturamento de Loja Física Via Tráfego
+						</CardTitle>
+						<DollarSign className='h-4 w-4 text-primary' />
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>
+							R$ {data.data.purchaseRevenue}
+						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
 						</p>
@@ -74,7 +144,7 @@ export default async function MarketingPage(props: {
 						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>120.000</div>
+						<div className='text-2xl font-bold'>{data.data.sessions}</div>
 						<p className='text-xs text-muted-foreground'>
 							+15% em relação ao mês anterior
 						</p>
@@ -86,7 +156,7 @@ export default async function MarketingPage(props: {
 						<UserRoundCheck className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>85.000</div>
+						<div className='text-2xl font-bold'>{data.data.totalUsers}</div>
 						<p className='text-xs text-muted-foreground'>
 							+10% em relação ao mês anterior
 						</p>
@@ -100,9 +170,62 @@ export default async function MarketingPage(props: {
 						<Percent className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>2.8%</div>
+						<div className='text-2xl font-bold'>
+							{data.data.sessionConversionRate}%
+						</div>
 						<p className='text-xs text-muted-foreground'>
 							+0.5% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Taxa de Rejeição
+						</CardTitle>
+						<GitPullRequestClosed className='h-4 w-4 text-primary' />
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>
+							{Number(data.data.bounceRate).toFixed(2)}%
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							-2% em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Duração Média da Sessão
+						</CardTitle>
+						<Clock className='h-4 w-4 text-primary' />
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>
+							{formatDuration(data.data.averageSessionDuration)}
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							+15s em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							Páginas por Sessão
+						</CardTitle>
+						<BookUser className='h-4 w-4 text-primary' />
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>
+							{calculatePagesPerSession(
+								Number(data.data.sessions),
+								Number(data.data.screenPageViews),
+							).toFixed(2)}
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							+0.2 em relação ao mês anterior
 						</p>
 					</CardContent>
 				</Card>
@@ -152,49 +275,7 @@ export default async function MarketingPage(props: {
 				</CardContent>
 			</Card>
 			{/* Métricas Adicionais */}
-			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
-				<Card>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>
-							Taxa de Rejeição
-						</CardTitle>
-						<GitPullRequestClosed className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold'>35%</div>
-						<p className='text-xs text-muted-foreground'>
-							-2% em relação ao mês anterior
-						</p>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>
-							Duração Média da Sessão
-						</CardTitle>
-						<Clock className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold'>2m 45s</div>
-						<p className='text-xs text-muted-foreground'>
-							+15s em relação ao mês anterior
-						</p>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>
-							Páginas por Sessão
-						</CardTitle>
-						<BookUser className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold'>3.5</div>
-						<p className='text-xs text-muted-foreground'>
-							+0.2 em relação ao mês anterior
-						</p>
-					</CardContent>
-				</Card>
+			<div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4'>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
@@ -203,7 +284,7 @@ export default async function MarketingPage(props: {
 						<MousePointerClick className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>3.5%</div>
+						<div className='text-2xl font-bold'>15%</div>
 						<p className='text-xs text-muted-foreground'>
 							+0.3% em relação ao mês anterior
 						</p>
@@ -215,6 +296,20 @@ export default async function MarketingPage(props: {
 							CPC (Custo por Clique)
 						</CardTitle>
 						<SquareDashedMousePointer className='h-4 w-4 text-primary' />
+					</CardHeader>
+					<CardContent>
+						<div className='text-2xl font-bold'>R$ 0.75</div>
+						<p className='text-xs text-muted-foreground'>
+							-R$ 0.05 em relação ao mês anterior
+						</p>
+					</CardContent>
+				</Card>{' '}
+				<Card>
+					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+						<CardTitle className='text-sm font-medium'>
+							CPA (Custo por Aquisição de Cliente)
+						</CardTitle>
+						<UserRoundPlus className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>R$ 0.75</div>
@@ -236,7 +331,6 @@ export default async function MarketingPage(props: {
 					</CardContent>
 				</Card>
 			</div>
-
 			{/* Tabelas */}
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
 				<Card>

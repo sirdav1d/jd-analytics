@@ -1,6 +1,7 @@
 /** @format */
 
 'use client';
+import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import {
 	Select,
@@ -10,39 +11,63 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { addDays, format } from 'date-fns';
-import { useState } from 'react';
+import { Loader2, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { DateRange } from 'react-day-picker';
+import { useState, useTransition } from 'react';
 
 export default function Filters() {
 	const [dateRange, setDateRange] = useState({
-		from: new Date(),
-		to: addDays(new Date(), 7),
+		to: new Date(),
+		from: addDays(new Date(), -7),
 	});
 	const [trafficSource, setTrafficSource] = useState('all');
 	const [campaign, setCampaign] = useState('all');
-
+	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 
-	const handleDateChange = (e: DateRange | undefined) => {
-		if (e?.from && e?.to) {
-			const formattedFrom = format(e.from, 'yyyy-MM-dd');
-			const formattedTo = format(e.to, 'yyyy-MM-dd');
+	const handleDateChange = async (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+	) => {
+		e.stopPropagation();
+		e.preventDefault();
+
+		if (dateRange.from && dateRange.to) {
+			const formattedFrom = format(dateRange.from, 'yyyy-MM-dd');
+			const formattedTo = format(dateRange.to, 'yyyy-MM-dd');
 			// Atualiza a URL sem recarregar a página (opção shallow para evitar recarregamento total)
-			router.push(
-				`/dashboard/marketing?startDate=${encodeURIComponent(
-					formattedFrom,
-				)}&endDate=${encodeURIComponent(formattedTo)}`,
-			);
-			setDateRange({ from: e?.from, to: e.to });
+			startTransition(() => {
+				router.push(
+					`/dashboard/marketing?startDate=${encodeURIComponent(
+						formattedFrom,
+					)}&endDate=${encodeURIComponent(formattedTo)}`,
+				);
+			});
 		}
+
 		// Atualiza a URL com os parâmetros de data
 	};
+
 	return (
 		<>
+			<Button
+				onClick={(e) => handleDateChange(e)}
+				className='disabled:opacity-70 w-full md:w-fit'
+				disabled={isPending}>
+				{isPending ? (
+					<>
+						Atualizar <Loader2 className='animate-spin' />
+					</>
+				) : (
+					<>
+						Atualizar <Zap />
+					</>
+				)}
+			</Button>
 			<DatePickerWithRange
 				date={dateRange}
-				setDate={(e) => handleDateChange(e)}
+				setDate={(e) =>
+					setDateRange({ from: e?.from ?? new Date(), to: e?.to ?? new Date() })
+				}
 			/>
 			<Select
 				value={trafficSource}
