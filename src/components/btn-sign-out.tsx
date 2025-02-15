@@ -10,7 +10,7 @@ export default function BtnSignOut() {
 		<Button
 			size={'sm'}
 			variant={'outline'}
-			className='border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground'
+			className='border-destructive bg-transparent text-destructive hover:bg-destructive hover:text-destructive-foreground'
 			onClick={() => signOut({ redirect: true, callbackUrl: '/sign-in' })}>
 			Sair <LogOut size={16} />
 		</Button>

@@ -14,13 +14,17 @@ import { addDays, format } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function Filters() {
+	const searchParams = useSearchParams();
 	const [dateRange, setDateRange] = useState({
-		to: new Date(),
-		from: addDays(new Date(), -7),
+		to: searchParams.get('endDate') || new Date(),
+		from: searchParams.get('startDate') || addDays(new Date(), -7),
 	});
-	const [trafficSource, setTrafficSource] = useState('all');
+	const [trafficSource, setTrafficSource] = useState(
+		searchParams.get('channel') || 'all',
+	);
 	const [campaign, setCampaign] = useState('all');
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
@@ -39,7 +43,9 @@ export default function Filters() {
 				router.push(
 					`/dashboard/marketing?startDate=${encodeURIComponent(
 						formattedFrom,
-					)}&endDate=${encodeURIComponent(formattedTo)}`,
+					)}&endDate=${encodeURIComponent(
+						formattedTo,
+					)}&channel=${trafficSource}`,
 				);
 			});
 		}
@@ -48,7 +54,7 @@ export default function Filters() {
 	};
 
 	return (
-		<>
+		<div className='md:w-fit flex items-center my-5 flex-col md:flex-row  w-full gap-4 h-fit'>
 			<Button
 				onClick={(e) => handleDateChange(e)}
 				className='disabled:opacity-70 w-full md:w-fit'
@@ -77,9 +83,11 @@ export default function Filters() {
 				</SelectTrigger>
 				<SelectContent>
 					<SelectItem value='all'>Todas as Fontes</SelectItem>
-					<SelectItem value='organic'>Orgânico</SelectItem>
-					<SelectItem value='paid'>Pago</SelectItem>
-					<SelectItem value='social'>Social</SelectItem>
+					<SelectItem value='Organic Search'>Orgânico</SelectItem>
+					<SelectItem value='Paid Search'>Pago</SelectItem>
+					<SelectItem value='Social'>Social</SelectItem>
+					<SelectItem value='Direct'>Direto</SelectItem>
+					<SelectItem value='Other'>Outros</SelectItem>
 				</SelectContent>
 			</Select>
 			<Select
@@ -95,6 +103,6 @@ export default function Filters() {
 					<SelectItem value='christmas'>Natal</SelectItem>
 				</SelectContent>
 			</Select>
-		</>
+		</div>
 	);
 }

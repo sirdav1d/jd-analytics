@@ -57,8 +57,7 @@ export function ConversionsComponent() {
 					radius={4}
 					yAxisId='right'
 					dataKey='conversions'
-					fill='var(--color-conversions)'
-					>
+					fill='var(--color-conversions)'>
 					<LabelList
 						position='top'
 						offset={12}
@@ -70,8 +69,7 @@ export function ConversionsComponent() {
 					radius={4}
 					yAxisId='right'
 					dataKey='cpa'
-					fill='var(--color-cpa)'
-				>
+					fill='var(--color-cpa)'>
 					<LabelList
 						position='top'
 						offset={12}

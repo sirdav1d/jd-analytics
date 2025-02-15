@@ -20,7 +20,8 @@ export function DatePickerWithRange({
 	setDate,
 }: {
 	className?: string;
-	date: DateRange | undefined;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	date: DateRange | undefined | any;
 	setDate: (date: DateRange | undefined) => void;
 }) {
 	return (

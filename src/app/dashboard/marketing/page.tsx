@@ -13,7 +13,9 @@ import {
 // Import the chart components
 import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
 import GoogleLoginButton from '@/components/google-login-button';
+import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
 import { getAnalyticsData } from '@/utils/get-analytics-data';
+import { formatDuration } from '@/utils/normalize-duration-session';
 import {
 	BookUser,
 	CheckCircle,
@@ -34,8 +36,6 @@ import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenueByChannel';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
-import { formatDuration } from '@/utils/normalize-duration-session';
-import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -45,22 +45,28 @@ export default async function MarketingPage(props: {
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || '7daysAgo';
 	const endDate = searchParams.endDate || 'today';
+	const channelFilter = searchParams.channel || 'all';
 
 	const { success, error } = await refreshAccessTokenAction();
 	if (!success) {
 		console.log('Erro ao atualizar token:', error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
-				Faça Login com o Google <GoogleLoginButton />
+				<GoogleLoginButton />
 			</div>
 		);
 	}
-	const { data } = await getAnalyticsData(String(startDate), String(endDate));
-
+	const { data } = await getAnalyticsData(
+		String(startDate),
+		String(endDate),
+		String(channelFilter),
+	);
 	if (!data.ok) {
-		<div className='w-full mx-auto space-y-4 pb-5'>
-			Faça Login com o Google <GoogleLoginButton />
-		</div>;
+		return (
+			<div className='w-full mx-auto space-y-4 pb-5'>
+				<GoogleLoginButton />
+			</div>
+		);
 	}
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
@@ -87,7 +93,7 @@ export default async function MarketingPage(props: {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold'>
-						R$ {data.data.purchaseRevenue ?? 0}
+						R$ {data.data[0].purchaseRevenue ?? 0}
 					</div>
 					<p className='text-xs text-muted-foreground'>
 						+20% em relação ao mês anterior
@@ -104,7 +110,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data.purchaseRevenue ?? 0}
+							R$ {data.data[0].purchaseRevenue ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -120,7 +126,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data.purchaseRevenue ?? 0}
+							R$ {data.data[0].purchaseRevenue ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -136,7 +142,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data.purchaseRevenue ?? 0}
+							R$ {data.data[0].purchaseRevenue ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -149,7 +155,9 @@ export default async function MarketingPage(props: {
 						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>{data.data.sessions ?? 0}</div>
+						<div className='text-2xl font-bold'>
+							{data.data[0].sessions ?? 0}
+						</div>
 						<p className='text-xs text-muted-foreground'>
 							+15% em relação ao mês anterior
 						</p>
@@ -162,7 +170,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data.totalUsers ?? 0}
+							{data.data[0].totalUsers ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+10% em relação ao mês anterior
@@ -178,7 +186,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data.sessionConversionRate ?? 0}%
+							{data.data[0].sessionConversionRate ?? 0}%
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+0.5% em relação ao mês anterior
@@ -194,7 +202,10 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{Number(data.data.bounceRate).toFixed(2) ?? 0}%
+							{data.data.bounceRate
+								? Number(data.data[0].bounceRate).toFixed(2)
+								: 0}
+							%
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							-2% em relação ao mês anterior
@@ -210,7 +221,9 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{formatDuration(data.data.averageSessionDuration) ?? 0}
+							{data.data[0].averageSessionDuration
+								? formatDuration(data.data[0].averageSessionDuration)
+								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+15s em relação ao mês anterior
@@ -226,10 +239,12 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{calculatePagesPerSession(
-								Number(data.data.sessions),
-								Number(data.data.screenPageViews),
-							).toFixed(2) ?? 0}
+							{data.data[0].sessions && data.data[0].screenPageViews
+								? calculatePagesPerSession(
+										Number(data.data[0].sessions),
+										Number(data.data[0].screenPageViews),
+								  ).toFixed(2)
+								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+0.2 em relação ao mês anterior
@@ -247,7 +262,13 @@ export default async function MarketingPage(props: {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<TrafficComponent />
+						<TrafficComponent
+							Organico={data.data[1]['Organic Search']}
+							Pago={data.data[1]['Paid Search']}
+							Social={data.data[1].Social}
+							Direto={data.data[1].Direct}
+							outros={data.data[1].Other}
+						/>
 					</CardContent>
 				</Card>
 				<Card>
