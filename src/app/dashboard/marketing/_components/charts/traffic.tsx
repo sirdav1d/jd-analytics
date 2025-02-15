@@ -139,7 +139,7 @@ export function TrafficComponent({
 							className='md:text-sm'
 						/>
 					}
-					className='text-xs md:text-sm pt-5  md:text-nowrap flex-wrap md:flex-nowrap'
+					className='text-xs md:text-sm pt-5 md:pt-0  md:text-nowrap flex-wrap md:flex-nowrap'
 				/>
 			</PieChart>
 		</ChartContainer>
