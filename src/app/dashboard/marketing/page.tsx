@@ -68,6 +68,7 @@ export default async function MarketingPage(props: {
 			</div>
 		);
 	}
+
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
 			{/* <pre>{data ? JSON.stringify(data, null, 2) : null}</pre> */}
@@ -93,7 +94,12 @@ export default async function MarketingPage(props: {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold'>
-						R$ {data.data[0].purchaseRevenue ?? 0}
+						{data.data[0].purchaseRevenue
+							? data.data[0].purchaseRevenue.toLocaleString('pt-br', {
+									style: 'currency',
+									currency: 'brl',
+							  })
+							: 0}
 					</div>
 					<p className='text-xs text-muted-foreground'>
 						+20% em relação ao mês anterior
@@ -110,7 +116,12 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data[0].purchaseRevenue ?? 0}
+							{data.data[0].purchaseRevenue
+								? Number(data.data[0].purchaseRevenue).toLocaleString('pt-br', {
+										style: 'currency',
+										currency: 'brl',
+								  })
+								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -126,7 +137,12 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data[0].purchaseRevenue ?? 0}
+							{data.data[0].purchaseRevenue
+								? Number(data.data[0].purchaseRevenue).toLocaleString('pt-br', {
+										style: 'currency',
+										currency: 'brl',
+								  })
+								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -142,7 +158,12 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							R$ {data.data[0].purchaseRevenue ?? 0}
+							{data.data[0].purchaseRevenue
+								? Number(data.data[0].purchaseRevenue).toLocaleString('pt-br', {
+										style: 'currency',
+										currency: 'brl',
+								  })
+								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+20% em relação ao mês anterior
@@ -186,7 +207,10 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].sessionConversionRate ?? 0}%
+							{data.data[0].sessionConversionRate
+								? Number(data.data[0].sessionConversionRate).toPrecision(2)
+								: 0}
+							%
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+0.5% em relação ao mês anterior
@@ -202,8 +226,8 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data.bounceRate
-								? Number(data.data[0].bounceRate).toFixed(2)
+							{data.data[0].bounceRate
+								? Number(data.data[0].bounceRate).toPrecision(2)
 								: 0}
 							%
 						</div>
