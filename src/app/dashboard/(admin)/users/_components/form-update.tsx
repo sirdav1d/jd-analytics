@@ -48,7 +48,7 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		const { name, email, role } = values;
-		const response = await updateUserAction(name, email, role);
+		const response = await updateUserAction({ userUp: { name, email, role } });
 		if (!response.ok) {
 			toast.error('Algo deu errado', { description: String(response.error) });
 		} else {

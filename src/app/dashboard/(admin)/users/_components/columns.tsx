@@ -26,7 +26,9 @@ import { toast } from 'sonner';
 
 async function handleUpdateRole(user: Partial<User>, role: $Enums.Role) {
 	const { name, email } = user;
-	const response = await updateUserAction(name, email, role);
+	const response = await updateUserAction({
+		userUp: { role: role, name, email },
+	});
 	console.log(user, role, response);
 	if (!response.ok) {
 		toast.error('Algo deu errado', { description: String(response.error) });

@@ -14,31 +14,11 @@ import { DataTable } from '../_components/data-table';
 import { columns } from './_components/columns';
 import FormCreate from './_components/form-create';
 
-// Define the User type
-// type User = {
-// 	id: number;
-// 	name: string;
-// 	email: string;
-// 	role: 'Administrador' | 'Gerente';
-// };
-
-// // Mock user data
-// const users: User[] = [
-// 	{ id: 1, name: 'John Doe', email: 'john@example.com', role: 'Administrador' },
-// 	{ id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Gerente' },
-// 	{
-// 		id: 3,
-// 		name: 'Bob Johnson',
-// 		email: 'bob@example.com',
-// 		role: 'Administrador',
-// 	},
-// Add more users as needed
-
 export default async function AdminPage() {
 	const response = await fetch(
 		'http://localhost:3000/api/services/user-get-all',
 		{
-			next: { revalidate: 3600, tags:['users'] },
+			next: { revalidate: 3600, tags: ['users'] },
 		},
 	);
 

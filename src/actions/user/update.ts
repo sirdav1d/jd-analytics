@@ -4,27 +4,25 @@
 'use server';
 
 import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutura
-import { $Enums } from '@prisma/client';
+import { User } from '@prisma/client';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
 import bcrypt from 'bcrypt';
 
 import { revalidateTag } from 'next/cache';
 
-export async function updateUserAction(
-	name?: string,
-	email?: string,
-	role?: $Enums.Role,
-	password?: string,
-) {
+interface updateUserActionProps {
+	userUp: Partial<User>;
+}
+
+export async function updateUserAction({ userUp }: updateUserActionProps) {
 	try {
-		const hashPassword = password && (await bcrypt.hash(password, 10));
+		const hashPassword =
+			userUp.password && (await bcrypt.hash(userUp.password, 10));
 		const user = await prisma.user.update({
-			where: { email: email },
+			where: { email: userUp.email },
 			data: {
-				name,
-				email,
 				password: hashPassword, // Certifique-se de criptografar a senha antes de salvar!
-				role,
+				...userUp,
 			},
 		});
 
