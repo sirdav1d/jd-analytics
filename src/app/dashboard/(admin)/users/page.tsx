@@ -15,10 +15,11 @@ import { columns } from './_components/columns';
 import FormCreate from './_components/form-create';
 
 export default async function AdminPage() {
+	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		'http://localhost:3000/api/services/user-get-all',
+		`${baseURL}/api/services/user-get-all`,
 		{
-			next: { revalidate: 3600, tags: ['users'] },
+			next: { tags: ['users'] },
 		},
 	);
 

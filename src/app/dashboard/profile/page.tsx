@@ -6,12 +6,13 @@ import UserConfigAccount from './_components/user-config-account';
 import UserInfo from './_components/user-info';
 
 export default async function UserProfile() {
+	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const session = await getServerSession();
 	if (!session) {
 		redirect('/login');
 	}
 	const response = await fetch(
-		'http://localhost:3000/api/services/user-get-by-email',
+		`${baseURL}/api/services/user-get-by-email`,
 
 		{ method: 'POST', body: JSON.stringify({ email: session.user?.email }) },
 	);
