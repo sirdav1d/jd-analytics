@@ -71,8 +71,6 @@ export default async function MarketingPage(props: {
 
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
-			{/* <pre>{data ? JSON.stringify(data, null, 2) : null}</pre> */}
-			{/* Filtros */}
 			<div className='w-full flex justify-center md:justify-start flex-wrap gap-4 mb-4'>
 				<Filters />
 				{data.ok ? (

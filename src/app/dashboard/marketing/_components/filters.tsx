@@ -46,6 +46,7 @@ export default function Filters() {
 					)}&endDate=${encodeURIComponent(
 						formattedTo,
 					)}&channel=${trafficSource}`,
+					{ scroll: false },
 				);
 			});
 		}

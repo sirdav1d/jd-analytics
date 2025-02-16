@@ -85,8 +85,8 @@ export function DataTable<TData, TValue>({
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value='all'>Todos os Cargos</SelectItem>
-						<SelectItem value='Administrador'>Administrador</SelectItem>
-						<SelectItem value='Gerente'>Gerente</SelectItem>
+						<SelectItem value='ADMIN'>Administrador</SelectItem>
+						<SelectItem value='MANAGER'>Gerente</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>

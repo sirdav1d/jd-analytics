@@ -7,37 +7,30 @@ import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutur
 import { $Enums } from '@prisma/client';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
 import bcrypt from 'bcrypt';
-import { randomUUID } from 'crypto';
+
 import { revalidateTag } from 'next/cache';
 
-export async function createUserAction(
-	name: string,
-	email: string,
-	role: $Enums.Role,
-	organizationName: string,
+export async function updateUserAction(
+	name?: string,
+	email?: string,
+	role?: $Enums.Role,
+	password?: string,
 ) {
 	try {
-		const org = await prisma.organization.findFirst({
-			where: { name: organizationName },
-		});
-		if (!org) {
-			return { error: 'Organização não encontrada', ok: false, user: null };
-		}
-		const password = randomUUID();
-		const hashPassword = await bcrypt.hash(password, 10);
-		const user = await prisma.user.create({
+		const hashPassword = password && (await bcrypt.hash(password, 10));
+		const user = await prisma.user.update({
+			where: { email: email },
 			data: {
 				name,
 				email,
 				password: hashPassword, // Certifique-se de criptografar a senha antes de salvar!
 				role,
-				organizationId: org.id, // Associação com a organização
 			},
 		});
 
 		if (!user) {
 			return {
-				error: 'Algo deu errado, user não criado',
+				error: 'Algo deu errado, user não atualizado',
 				ok: false,
 				user: null,
 			};
