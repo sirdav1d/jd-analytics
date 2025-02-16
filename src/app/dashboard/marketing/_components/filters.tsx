@@ -55,7 +55,7 @@ export default function Filters() {
 	};
 
 	return (
-		<div className='md:w-fit flex items-center my-5 flex-col md:flex-row  w-full gap-4 h-fit'>
+		<div className='md:w-fit flex items-center flex-col md:flex-row  w-full gap-4 h-fit'>
 			<Button
 				onClick={(e) => handleDateChange(e)}
 				className='disabled:opacity-70 w-full md:w-fit'

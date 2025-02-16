@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/table';
 
 // Import the chart components
-import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
 import GoogleLoginButton from '@/components/google-login-button';
 import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
 import { getAnalyticsData } from '@/utils/get-analytics-data';
@@ -47,15 +46,6 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || 'today';
 	const channelFilter = searchParams.channel || 'all';
 
-	const { success, error } = await refreshAccessTokenAction();
-	if (!success) {
-		console.log('Erro ao atualizar token:', error);
-		return (
-			<div className='w-full mx-auto space-y-4 pb-5'>
-				<GoogleLoginButton />
-			</div>
-		);
-	}
 	const { data } = await getAnalyticsData(
 		String(startDate),
 		String(endDate),

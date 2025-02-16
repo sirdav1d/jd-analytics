@@ -10,8 +10,6 @@ export async function GET(request: NextRequest) {
 	const endDate = searchParams?.get('endDate') || 'today';
 	const channelFilter = searchParams.get('channel');
 
-	console.log({ channel: channelFilter });
-
 	try {
 		const organization = await prisma.organization.findFirst();
 		const propertyId = '465499652';
@@ -87,8 +85,6 @@ export async function GET(request: NextRequest) {
 		);
 
 		if (!responseStatic.ok || !responsetraffic.ok) {
-			console.log(responseStatic, responsetraffic);
-
 			return NextResponse.json({
 				error: 'Erro ao buscar dados do Google Analytics',
 				ok: false,
@@ -135,8 +131,6 @@ export async function GET(request: NextRequest) {
 				}
 			});
 		}
-
-		console.log(formattedMetrics);
 
 		return NextResponse.json({
 			ok: true,

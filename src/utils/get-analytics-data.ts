@@ -20,6 +20,7 @@ export async function getAnalyticsData(
 		)}&endDate=${encodeURIComponent(endDate)}&channel=${encodeURIComponent(
 			channelFilter,
 		)}`,
+		{ next: { revalidate: 120 } },
 	);
 	const data = await res.json();
 	return { data: data };
