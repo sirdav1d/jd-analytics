@@ -11,9 +11,14 @@ import {
 } from '@/components/ui/table';
 
 // Import the chart components
+import { getAnalyticsDataAction } from '@/actions/google/get-analytics';
+import { getAnalyticsChannelAction } from '@/actions/google/get-analytics-channel';
+import { getAnalyticsTrafficAction } from '@/actions/google/get-analytics-traffic';
 import GoogleLoginButton from '@/components/google-login-button';
 import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
-import { getAnalyticsData } from '@/utils/get-analytics-data';
+import { generateBodyChannelAnalytics } from '@/utils/google/body-channel-analytics';
+import { generateBodyStaticAnalytics } from '@/utils/google/body-static-analytics';
+import { generateBodyTrafficAnalytics } from '@/utils/google/body-traffic-analytics';
 import { formatDuration } from '@/utils/normalize-duration-session';
 import {
 	BookUser,
@@ -32,7 +37,7 @@ import {
 } from 'lucide-react';
 import { CampagnComponent } from './_components/charts/campaings';
 import { ConversionsComponent } from './_components/charts/conversion';
-import { RevenueComponent } from './_components/charts/revenueByChannel';
+import { RevenueComponent } from './_components/charts/revenue-by-campagn';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
 
@@ -46,11 +51,30 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || 'today';
 	const channelFilter = searchParams.channel || 'all';
 
-	const { data } = await getAnalyticsData(
-		String(startDate),
-		String(endDate),
-		String(channelFilter),
-	);
+	const staticBody = generateBodyStaticAnalytics({
+		startDate: String(startDate),
+		endDate: String(endDate),
+		channel: String(channelFilter),
+	});
+
+	const trafficBody = generateBodyTrafficAnalytics({
+		startDate: String(startDate),
+		endDate: String(endDate),
+		channel: String(channelFilter),
+	});
+
+	const channelBody = generateBodyChannelAnalytics({
+		startDate: String(startDate),
+		endDate: String(endDate),
+		channel: String(channelFilter),
+	});
+
+	const [data, trafficData, channelData] = await Promise.all([
+		getAnalyticsDataAction({ body: staticBody }),
+		getAnalyticsTrafficAction({ body: trafficBody }),
+		getAnalyticsChannelAction({ body: channelBody }),
+	]);
+
 	if (!data.ok) {
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
@@ -63,14 +87,10 @@ export default async function MarketingPage(props: {
 		<div className='w-full mx-auto space-y-4 pb-5'>
 			<div className='w-full flex justify-center md:justify-start flex-wrap gap-4 mb-4'>
 				<Filters />
-				{data.ok ? (
-					<p className='dark:text-emerald-400 text-emerald-500 flex gap-1.5 items-center text-center text-sm md:text-base font-medium'>
-						<CheckCircle size={16} />
-						Dados Sincronizados Com Google API
-					</p>
-				) : (
-					<GoogleLoginButton />
-				)}
+				<p className='dark:text-emerald-400 text-emerald-500 flex gap-1.5 items-center text-center text-sm md:text-base font-medium'>
+					<CheckCircle size={16} />
+					Dados Sincronizados Com Google API
+				</p>
 			</div>
 			{/* KPIs Principais */}
 			<Card className='xl:hidden'>
@@ -82,8 +102,8 @@ export default async function MarketingPage(props: {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold'>
-						{data.data[0].purchaseRevenue
-							? data.data[0].purchaseRevenue.toLocaleString('pt-br', {
+						{data.data?.purchaseRevenue
+							? Number(data.data.purchaseRevenue).toLocaleString('pt-br', {
 									style: 'currency',
 									currency: 'brl',
 							  })
@@ -104,8 +124,8 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].purchaseRevenue
-								? Number(data.data[0].purchaseRevenue).toLocaleString('pt-br', {
+							{data.data?.purchaseRevenue
+								? Number(data.data.purchaseRevenue).toLocaleString('pt-br', {
 										style: 'currency',
 										currency: 'brl',
 								  })
@@ -125,8 +145,8 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].purchaseRevenue
-								? Number(data.data[0].purchaseRevenue).toLocaleString('pt-br', {
+							{data.data?.purchaseRevenue
+								? Number(data.data.purchaseRevenue).toLocaleString('pt-br', {
 										style: 'currency',
 										currency: 'brl',
 								  })
@@ -146,8 +166,8 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].purchaseRevenue
-								? Number(data.data[0].purchaseRevenue).toLocaleString('pt-br', {
+							{data.data?.purchaseRevenue
+								? Number(data.data.purchaseRevenue).toLocaleString('pt-br', {
 										style: 'currency',
 										currency: 'brl',
 								  })
@@ -164,9 +184,7 @@ export default async function MarketingPage(props: {
 						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
-							{data.data[0].sessions ?? 0}
-						</div>
+						<div className='text-2xl font-bold'>{data.data?.sessions ?? 0}</div>
 						<p className='text-xs text-muted-foreground'>
 							+15% em relação ao mês anterior
 						</p>
@@ -179,7 +197,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].totalUsers ?? 0}
+							{data.data?.totalUsers ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+10% em relação ao mês anterior
@@ -195,8 +213,8 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].sessionConversionRate
-								? Number(data.data[0].sessionConversionRate).toPrecision(2)
+							{data.data?.sessionConversionRate
+								? Number(data.data.sessionConversionRate).toPrecision(2)
 								: 0}
 							%
 						</div>
@@ -214,8 +232,8 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].bounceRate
-								? Number(data.data[0].bounceRate).toPrecision(2)
+							{data.data?.bounceRate
+								? Number(data.data.bounceRate).toPrecision(2)
 								: 0}
 							%
 						</div>
@@ -233,8 +251,8 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].averageSessionDuration
-								? formatDuration(data.data[0].averageSessionDuration)
+							{data.data?.averageSessionDuration
+								? formatDuration(Number(data.data.averageSessionDuration))
 								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -251,10 +269,10 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{data.data[0].sessions && data.data[0].screenPageViews
+							{data.data?.sessions && data.data?.screenPageViews
 								? calculatePagesPerSession(
-										Number(data.data[0].sessions),
-										Number(data.data[0].screenPageViews),
+										Number(data.data.sessions),
+										Number(data.data.screenPageViews),
 								  ).toFixed(2)
 								: 0}
 						</div>
@@ -274,23 +292,34 @@ export default async function MarketingPage(props: {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<TrafficComponent
-							Organico={data.data[1]['Organic Search']}
-							Pago={data.data[1]['Paid Search']}
-							Social={data.data[1].Social}
-							Direto={data.data[1].Direct}
-							outros={data.data[1].Other}
-						/>
+						{trafficData.data && channelData.data ? (
+							<TrafficComponent
+								Organico={Number(trafficData.data?.['Organic Search'])}
+								Pago={Number(trafficData?.data?.['Paid Search'])}
+								Social={Number(trafficData.data?.Social)}
+								Direto={Number(trafficData.data?.Direct)}
+							/>
+						) : (
+							<div className='flex items-center italic text-muted-foreground'>
+								Nenhum Valor Encontrado
+							</div>
+						)}
 					</CardContent>
 				</Card>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
-							Conversões por Canal
+							Conversões por Canal de Mídia
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<ConversionsComponent />
+						{channelData.data ? (
+							<ConversionsComponent data={channelData.data!} />
+						) : (
+							<div className='flex items-center italic text-muted-foreground'>
+								Nenhum Valor Encontrado
+							</div>
+						)}
 					</CardContent>
 				</Card>
 			</div>
@@ -304,10 +333,13 @@ export default async function MarketingPage(props: {
 					<CampagnComponent />
 				</CardContent>
 			</Card>
+
+			{/* GOOGLE ADS */}
+
 			<Card>
 				<CardHeader>
 					<CardTitle className='text-base text-balance md:text-2xl'>
-						Faturamento por Canal
+						Faturamento por Campanha
 					</CardTitle>
 				</CardHeader>
 				<CardContent>

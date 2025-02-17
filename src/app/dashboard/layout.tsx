@@ -25,7 +25,6 @@ export default async function DashLayout({
 			<div className='w-full px-4  flex flex-col xl:mx-5 '>
 				<SidebarTrigger className='mt-2 z-50' />
 				<HeaderDashboard />
-
 				{children}
 			</div>
 		</SidebarProvider>

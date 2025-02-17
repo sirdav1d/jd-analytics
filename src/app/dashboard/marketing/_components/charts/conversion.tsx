@@ -13,25 +13,59 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
-	{ name: 'Orgânico', conversions: 200, cpa: 15 },
-	{ name: 'Pago', conversions: 300, cpa: 25 },
-	{ name: 'Social', conversions: 150, cpa: 20 },
-	{ name: 'Direto', conversions: 100, cpa: 10 },
-];
-
 const chartConfig = {
 	conversions: {
 		label: 'Conversões',
 		color: 'hsl(var(--chart-1))',
 	},
-	cpa: {
-		label: 'Custo por Aquisição - CPA',
+	sessions: {
+		label: 'Sessões',
 		color: 'hsl(var(--chart-2))',
 	},
 } satisfies ChartConfig;
 
-export function ConversionsComponent() {
+interface ConversionsComponentProps {
+	name: string;
+	conversions: number;
+	sessions: number;
+}
+
+interface DataConversionsComponentProps {
+	data: ConversionsComponentProps[];
+}
+export function ConversionsComponent({ data }: DataConversionsComponentProps) {
+	const chartData = data.map((item) => {
+		if (item.name == 'Organic Search') {
+			return {
+				name: 'Busca Orgânica',
+				conversions: item.conversions,
+				sessions: item.sessions,
+			};
+		}
+
+		if (item.name == 'Direct') {
+			return {
+				name: 'Busca Direta',
+				conversions: item.conversions,
+				sessions: item.sessions,
+			};
+		}
+		if (item.name == 'Paid Search') {
+			return {
+				name: 'Tráfego Pago',
+				conversions: item.conversions,
+				sessions: item.sessions,
+			};
+		}
+		if (item.name == 'Social') {
+			return {
+				name: 'Redes Sociais',
+				conversions: item.conversions,
+				sessions: item.sessions,
+			};
+		}
+	});
+
 	return (
 		<ChartContainer
 			config={chartConfig}
@@ -68,8 +102,8 @@ export function ConversionsComponent() {
 				<Bar
 					radius={4}
 					yAxisId='right'
-					dataKey='cpa'
-					fill='var(--color-cpa)'>
+					dataKey='sessions'
+					fill='var(--color-sessions)'>
 					<LabelList
 						position='top'
 						offset={12}

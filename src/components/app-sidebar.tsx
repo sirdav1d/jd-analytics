@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import {
 	Home,
+	Loader2,
 	Megaphone,
 	ShoppingCart,
 	Target,
@@ -22,7 +23,8 @@ import {
 	UserCog,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 
 export default function AppSidebar() {
 	const items = [
@@ -55,8 +57,20 @@ export default function AppSidebar() {
 			icon: Target,
 		},
 	];
-
+	const [isPending, startTransition] = useTransition();
+	const router = useRouter();
 	const pathname = usePathname();
+
+	const handleNavigation = (url: string) => {
+		// Inicia a navegação e mostra o loader
+
+		startTransition(() => {
+			router.push(url, { scroll: false });
+		});
+
+		// Depois de a navegação ser concluída, oculta o loader
+	};
+
 	return (
 		<Sidebar collapsible='icon'>
 			<SidebarContent className='bg-white dark:bg-slate-900'>
@@ -73,10 +87,13 @@ export default function AppSidebar() {
 												? 'bg-primary hover:bg-primary/90 text-slate-50 hover:text-slate-50 active:bg-primary/90  active:text-slate-50'
 												: 'bg-transparent'
 										}`}>
-										<Link href={item.url}>
+										<button
+											key={item.title}
+											onClick={() => handleNavigation(item.url)}>
 											<item.icon />
+
 											<span>{item.title}</span>
-										</Link>
+										</button>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
@@ -85,7 +102,12 @@ export default function AppSidebar() {
 				</SidebarGroup>
 
 				<SidebarGroup>
-					<SidebarGroupLabel>Relatórios</SidebarGroupLabel>
+					<SidebarGroupLabel>
+						Relatórios
+						{isPending && items.find((item) => item.url == pathname) && (
+							<Loader2 className='animate-spin h-2 w-2 ml-2' />
+						)}
+					</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu className='space-y-2'>
 							{items.map((item) => (
@@ -97,10 +119,13 @@ export default function AppSidebar() {
 												? 'bg-primary hover:bg-primary/90 text-slate-50 hover:text-slate-50 active:bg-primary/90  active:text-slate-50'
 												: 'bg-transparent'
 										}`}>
-										<Link href={item.url}>
+										<button
+											key={item.title}
+											onClick={() => handleNavigation(item.url)}>
 											<item.icon />
+
 											<span>{item.title}</span>
-										</Link>
+										</button>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
@@ -118,7 +143,9 @@ export default function AppSidebar() {
 									? 'bg-primary hover:bg-primary/90 hover:text-slate-50 text-slate-50 active:bg-primary/90 active:shadow-md active:text-slate-50'
 									: 'bg-transparent'
 							}`}>
-							<Link href={'/dashboard/profile'}>
+							<Link
+								href={'/dashboard/profile'}
+								prefetch={true}>
 								<User2 />
 								<span>Meu Perfil</span>
 							</Link>

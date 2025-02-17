@@ -14,38 +14,40 @@ import {
 } from '@/components/ui/chart';
 
 const chartData = [
-	{ name: 'Jan', Organico: 4000, Pago: 1400, Social: 8000 },
-	{ name: 'Fev', Organico: 3000, Pago: 1398, Social: 5210 },
-	{ name: 'Mar', Organico: 2000, Pago: 9800, Social: 2990 },
-	{ name: 'Abr', Organico: 2780, Pago: 3908, Social: 1000 },
-	{ name: 'Mai', Organico: 7890, Pago: 4800, Social: 2181 },
-	{ name: 'Jun', Organico: 4390, Pago: 6800, Social: 2500 },
+	{ name: 'Jan', campangn1: 4000, campangn2: 1400, campangn3: 8000 },
+	{ name: 'Fev', campangn1: 3000, campangn2: 1398, campangn3: 5210 },
+	{ name: 'Mar', campangn1: 2000, campangn2: 9800, campangn3: 2990 },
+	{ name: 'Abr', campangn1: 2780, campangn2: 3908, campangn3: 1000 },
+	{ name: 'Mai', campangn1: 7890, campangn2: 4800, campangn3: 2181 },
+	{ name: 'Jun', campangn1: 4390, campangn2: 6800, campangn3: 2500 },
 ];
 
 const chartConfig = {
-	Organico: {
-		label: 'Organico',
+	campangn1: {
+		label: 'Verão 2024',
 		color: 'hsl(var(--chart-1))',
 	},
-	Pago: {
-		label: 'Pago',
+	campangn2: {
+		label: 'Black Friday 2024',
 		color: 'hsl(var(--chart-2))',
 	},
-	Social: {
-		label: 'Social',
+	campangn3: {
+		label: 'Natal 2024',
 		color: 'hsl(var(--chart-3))',
 	},
 } satisfies ChartConfig;
 
 export function RevenueComponent() {
 	return (
-		<ChartContainer className='h-72 w-full' config={chartConfig}>
+		<ChartContainer
+			className='h-80 md:h-72 w-full'
+			config={chartConfig}>
 			<LineChart
 				data={chartData}
 				margin={{
 					top: 28,
-					left: 28,
-					right: 28,
+					left: 24,
+					right: 24,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -58,14 +60,18 @@ export function RevenueComponent() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
+				<ChartLegend
+					content={
+						<ChartLegendContent className=' text-xs pt-3 md:text-sm text-nowrap' />
+					}
+				/>
 				<Line
-					dataKey='Organico'
+					dataKey='campangn1'
 					type='natural'
-					stroke='var(--color-Organico)'
+					stroke='var(--color-campangn1)'
 					strokeWidth={2}
 					dot={{
-						fill: 'var(--color-Organico)',
+						fill: 'var(--color-campangn1)',
 					}}
 					activeDot={{
 						r: 6,
@@ -78,12 +84,12 @@ export function RevenueComponent() {
 					/>
 				</Line>
 				<Line
-					dataKey='Pago'
+					dataKey='campangn2'
 					type='natural'
-					stroke='var(--color-Pago)'
+					stroke='var(--color-campangn2)'
 					strokeWidth={2}
 					dot={{
-						fill: 'var(--color-Pago)',
+						fill: 'var(--color-campangn2)',
 					}}
 					activeDot={{
 						r: 6,
@@ -96,12 +102,12 @@ export function RevenueComponent() {
 					/>
 				</Line>
 				<Line
-					dataKey='Social'
+					dataKey='campangn3'
 					type='natural'
-					stroke='var(--color-Social)'
+					stroke='var(--color-campangn3)'
 					strokeWidth={2}
 					dot={{
-						fill: 'var(--color-Social)',
+						fill: 'var(--color-campangn3)',
 					}}
 					activeDot={{
 						r: 6,

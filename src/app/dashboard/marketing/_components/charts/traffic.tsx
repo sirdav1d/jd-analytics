@@ -13,12 +13,6 @@ import {
 import React from 'react';
 import { Cell, Label, Pie, PieChart } from 'recharts';
 
-// const chartData = [
-// 	{ name: 'Orgânico', value: 4000 },
-// 	{ name: 'Pago', value: 3000 },
-// 	{ name: 'Social', value: 2000 },
-// ];
-
 const chartConfig = {
 	Organico: {
 		label: 'Tráfego Orgânico',
@@ -47,7 +41,6 @@ interface TrafficComponentProps {
 	Pago: number;
 	Social: number;
 	Direto: number;
-	outros: number;
 }
 
 export function TrafficComponent({
@@ -55,7 +48,6 @@ export function TrafficComponent({
 	Organico,
 	Pago,
 	Social,
-	outros,
 }: TrafficComponentProps) {
 	const { totaltraffic, chartData } = React.useMemo(() => {
 		const chartData = [
@@ -63,11 +55,10 @@ export function TrafficComponent({
 			{ name: 'Pago', value: Pago },
 			{ name: 'Direta', value: Direto },
 			{ name: 'Social', value: Social },
-			{ name: 'Outros', value: outros },
 		];
 		const totaltraffic = chartData.reduce((acc, curr) => acc + curr.value, 0);
 		return { totaltraffic, chartData };
-	}, [Organico, Direto, Pago, Social, outros]);
+	}, [Organico, Direto, Pago, Social]);
 
 	return (
 		<ChartContainer
@@ -139,7 +130,7 @@ export function TrafficComponent({
 							className='md:text-sm'
 						/>
 					}
-					className='text-xs md:text-sm py-2 md:text-nowrap flex-wrap md:flex-nowrap'
+					className='text-xs md:text-sm pt-3 md:text-nowrap flex-wrap md:flex-nowrap'
 				/>
 			</PieChart>
 		</ChartContainer>

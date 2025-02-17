@@ -88,7 +88,6 @@ export default function Filters() {
 					<SelectItem value='Paid Search'>Pago</SelectItem>
 					<SelectItem value='Social'>Social</SelectItem>
 					<SelectItem value='Direct'>Direto</SelectItem>
-					<SelectItem value='Other'>Outros</SelectItem>
 				</SelectContent>
 			</Select>
 			<Select
