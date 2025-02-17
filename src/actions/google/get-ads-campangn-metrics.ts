@@ -3,9 +3,8 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { google } from 'googleapis';
-import { refreshAccessTokenAction } from './refresh-token';
 import { GoogleAdsApi } from 'google-ads-api';
+import { refreshAccessTokenAction } from './refresh-token';
 
 export async function getADSMetricsAction() {
 	const { success, error } = await refreshAccessTokenAction();
@@ -13,7 +12,7 @@ export async function getADSMetricsAction() {
 	if (!success || error) {
 		console.log(error);
 		return {
-			error: 'Erro ao buscar dados do Google Analytics' + error,
+			error: 'Erro ao buscar dados do Google ADS' + error,
 			ok: false,
 			data: null,
 		};
@@ -30,9 +29,6 @@ export async function getADSMetricsAction() {
 	}
 
 	try {
-		const auth = new google.auth.OAuth2();
-		auth.setCredentials({ access_token: organization.googleAccessToken });
-
 		// Instancia o cliente da API Analytics Data (v1beta)
 		const client = new GoogleAdsApi({
 			client_id: process.env.GOOGLE_CLIENT_ID!,
@@ -84,7 +80,7 @@ export async function getADSMetricsAction() {
 	} catch (error) {
 		console.log(error);
 		return {
-			error: 'Erro ao buscar dados do Google Analytics' + error,
+			error: 'Erro ao buscar dados do Google ADS' + error,
 			ok: false,
 			data: null,
 		};

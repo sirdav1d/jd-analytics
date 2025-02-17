@@ -35,34 +35,37 @@ interface DataConversionsComponentProps {
 }
 export function ConversionsComponent({ data }: DataConversionsComponentProps) {
 	const chartData = data.map((item) => {
-		if (item.name == 'Organic Search') {
-			return {
-				name: 'Busca Orgânica',
-				conversions: item.conversions,
-				sessions: item.sessions,
-			};
-		}
-
-		if (item.name == 'Direct') {
-			return {
-				name: 'Busca Direta',
-				conversions: item.conversions,
-				sessions: item.sessions,
-			};
-		}
-		if (item.name == 'Paid Search') {
-			return {
-				name: 'Tráfego Pago',
-				conversions: item.conversions,
-				sessions: item.sessions,
-			};
-		}
-		if (item.name == 'Social') {
-			return {
-				name: 'Redes Sociais',
-				conversions: item.conversions,
-				sessions: item.sessions,
-			};
+		switch (item.name) {
+			case 'Organic Search':
+				return {
+					name: 'Tráfego Orgânico',
+					conversions: item.conversions,
+					sessions: item.sessions,
+				};
+			case 'Direct':
+				return {
+					name: 'Busca Direta',
+					conversions: item.conversions,
+					sessions: item.sessions,
+				};
+			case 'Paid Search':
+				return {
+					name: 'Tráfego Pago',
+					conversions: item.conversions,
+					sessions: item.sessions,
+				};
+			case 'Social':
+				return {
+					name: 'Redes Sociais',
+					conversions: item.conversions,
+					sessions: item.sessions,
+				};
+			default:
+				return {
+					name: 'Outros',
+					conversions: item.conversions,
+					sessions: item.sessions,
+				};
 		}
 	});
 
