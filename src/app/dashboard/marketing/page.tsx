@@ -75,6 +75,9 @@ export default async function MarketingPage(props: {
 		getAnalyticsChannelAction({ body: channelBody }),
 	]);
 
+	// const dataADS = getADSMetricsAction();
+	// console.log(dataADS);
+
 	if (!data.ok) {
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>

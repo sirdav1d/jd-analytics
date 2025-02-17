@@ -31,8 +31,6 @@ export async function refreshAccessTokenAction() {
 			}
 		}
 
-		console.log('Token expirado, renovando...');
-
 		const tokenEndpoint = 'https://oauth2.googleapis.com/token';
 		const clientId = process.env.GOOGLE_CLIENT_ID!;
 		const clientSecret = process.env.GOOGLE_CLIENT_SECRET!;
@@ -66,8 +64,6 @@ export async function refreshAccessTokenAction() {
 				googleExpiresIn: newExpiresIn,
 			},
 		});
-
-		console.log('Token atualizado com sucesso!');
 		return { success: true, accessToken: newAccessToken };
 	} catch (error) {
 		console.log('Erro ao processar refresh token:', error);
