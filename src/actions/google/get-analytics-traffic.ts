@@ -25,7 +25,7 @@ export async function getAnalyticsTrafficAction({
 	}
 
 	const organization = await prisma.organization.findFirst();
-	const propertyId = '465499652';
+	const propertyId = '295260064';
 
 	if (!organization || !organization.googleAccessToken || !propertyId) {
 		return {

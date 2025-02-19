@@ -37,7 +37,7 @@ export async function getADSMetricsAction() {
 		});
 
 		const customer = client.Customer({
-			customer_id: '825-112-2454', // ID do cliente
+			customer_id: '297-195-2651', // ID do cliente
 			refresh_token: organization.googleRefreshToken!, // O refresh token
 		});
 
