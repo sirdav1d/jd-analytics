@@ -29,6 +29,9 @@ export default function Greeting() {
 		if (pathname == '/dashboard/goals') {
 			return 'Gestão de Meta';
 		}
+		if (pathname == '/dashboard/goals-result') {
+			return 'Resultados de Meta';
+		}
 	}
 
 	return (

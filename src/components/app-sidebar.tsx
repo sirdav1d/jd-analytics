@@ -19,6 +19,7 @@ import {
 	Megaphone,
 	ShoppingCart,
 	Target,
+	Trophy,
 	User2,
 	UserCog,
 } from 'lucide-react';
@@ -32,6 +33,11 @@ export default function AppSidebar() {
 			title: 'Home',
 			url: '/dashboard',
 			icon: Home,
+		},
+		{
+			title: 'Resultados',
+			url: '/dashboard/goals-result',
+			icon: Trophy,
 		},
 		{
 			title: 'Marketing',
