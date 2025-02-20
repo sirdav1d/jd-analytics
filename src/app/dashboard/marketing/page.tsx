@@ -73,7 +73,7 @@ export default async function MarketingPage(props: {
 	const trafficData = await getAnalyticsTrafficAction({ body: trafficBody });
 	const channelData = await getAnalyticsChannelAction({ body: channelBody });
 
-	if (!data.ok) {
+	if (!data.ok || !data.data) {
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />

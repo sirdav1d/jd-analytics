@@ -103,7 +103,7 @@ export default function GoalResultPage() {
 	};
 
 	return (
-		<div className='w-full  mx-auto p-4 space-y-8'>
+		<div className='w-full  mx-auto space-y-8'>
 			<motion.div
 				initial='hidden'
 				animate='visible'
@@ -149,7 +149,7 @@ export default function GoalResultPage() {
 				</div>
 
 				{/* Card da Loja do Centro */}
-				<div className='grid xl:grid-cols-2 my-5 gap-4 items-center h-full w-full'>
+				<div className='grid xl:grid-cols-2 my-5 gap-4 md:items-center h-full w-full'>
 					<Card className='w-full h-full'>
 						<CardHeader>
 							<CardTitle className='text-lg font-bold'>
@@ -172,7 +172,9 @@ export default function GoalResultPage() {
 				</div>
 
 				{/* Gráficos */}
-				<div className='grid grid-cols-1 gap-6 mb-8'>
+
+				<SalesmanList />
+				<div className='grid grid-cols-1 gap-6 my-5'>
 					{/* Vendas ao Longo do Tempo - Centro */}
 					<Card>
 						<CardHeader>
@@ -206,8 +208,6 @@ export default function GoalResultPage() {
 
 					{/* Comparação entre Vendedores */}
 				</div>
-
-				<SalesmanList />
 			</motion.div>
 		</div>
 	);

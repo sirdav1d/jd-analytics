@@ -40,7 +40,7 @@ export default function SalesmanList() {
 		},
 	];
 	return (
-		<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4  gap-6'>
+		<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4  gap-5'>
 			{vendedoresData.map((vendedor, index) => (
 				<Card key={index}>
 					<CardHeader>
@@ -52,16 +52,10 @@ export default function SalesmanList() {
 					</CardHeader>
 					<CardContent>
 						<PieStore />
-						<div className='mt-4 text-center'>
-							<p className='text-sm '>Realizado</p>
-							<p className='text-lg font-bold'>
-								{formatCurrency(vendedor.realizado)}
-							</p>
-						</div>
 
-						<div className='flex flex-col gap-2 mt-5'>
+						<div className='flex flex-col gap-2 mt-8'>
 							<span className='font-bold text-sm'>META PROJETADA</span>
-							<div className='flex gap-5'>
+							<div className='flex gap-4'>
 								<span className='font-bold text-sm'>
 									{formatCurrency(vendedor.metaProjetada)}
 								</span>
