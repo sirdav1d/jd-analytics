@@ -25,54 +25,56 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface ConversionsComponentProps {
-	name: string;
 	conversions: number;
 	sessions: number;
 }
 
 interface DataConversionsComponentProps {
-	data: ConversionsComponentProps[];
+	Organic: ConversionsComponentProps;
+	Paid: ConversionsComponentProps;
+	Direct: ConversionsComponentProps;
+	Social: ConversionsComponentProps;
+	Other: ConversionsComponentProps;
 }
-export function ConversionsComponent({ data }: DataConversionsComponentProps) {
-	const chartData = data.map((item) => {
-		switch (item.name) {
-			case 'Organic Search':
-				return {
-					name: 'Tráfego Orgânico',
-					conversions: item.conversions,
-					sessions: item.sessions,
-				};
-			case 'Direct':
-				return {
-					name: 'Busca Direta',
-					conversions: item.conversions,
-					sessions: item.sessions,
-				};
-			case 'Paid Search':
-				return {
-					name: 'Tráfego Pago',
-					conversions: item.conversions,
-					sessions: item.sessions,
-				};
-			case 'Social':
-				return {
-					name: 'Redes Sociais',
-					conversions: item.conversions,
-					sessions: item.sessions,
-				};
-			default:
-				return {
-					name: 'Outros',
-					conversions: item.conversions,
-					sessions: item.sessions,
-				};
-		}
-	});
+export function ConversionsComponent({
+	Organic,
+	Direct,
+	Other,
+	Paid,
+	Social,
+}: DataConversionsComponentProps) {
+	const chartData = [
+		{
+			name: 'Tráfego Orgânico',
+			conversions: Organic.conversions,
+			sessions: Organic.sessions,
+		},
+		{
+			name: 'Tráfego Pago',
+			conversions: Paid.conversions,
+			sessions: Paid.sessions,
+		},
+		{
+			name: 'Busca Direta',
+			conversions: Direct.conversions,
+			sessions: Direct.sessions,
+		},
+		{
+			name: 'Redes Sociais',
+			conversions: Social.conversions,
+			sessions: Social.sessions,
+		},
+		{
+			name: 'Outros',
+			conversions: Other.conversions,
+			sessions: Other.sessions,
+		},
+	];
 
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-72 w-full'>
+			className='h-80 md:h-72 w-full'>
 			<BarChart
 				margin={{
 					top: 28,

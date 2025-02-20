@@ -2,9 +2,9 @@
 
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import {
 	Select,
 	SelectContent,
@@ -12,24 +12,23 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/utils/format-currency';
 import { addDays } from 'date-fns';
+import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 import {
-	PieChart,
-	Pie,
-	Cell,
-	LineChart,
+	CartesianGrid,
 	Line,
-	BarChart,
-	Bar,
+	LineChart,
+	ResponsiveContainer,
+	Tooltip,
 	XAxis,
 	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
 } from 'recharts';
+import { PieStore } from './_components/charts/pie-store';
+import SellerComparison from './_components/charts/seller-comparison';
+import SalesmanList from './_components/salesman-list';
 
 // Mock data
 const storeData = {
@@ -83,13 +82,6 @@ const vendedoresData = [
 	},
 ];
 
-const vendedoresComparacaoData = vendedoresData.map((v) => ({
-	name: v.name,
-	value: v.realizado,
-}));
-
-const COLORS = ['#DC2626', '#2563eb'];
-
 export default function GoalResultPage() {
 	const [dateRange, setDateRange] = useState({
 		from: new Date(),
@@ -110,23 +102,15 @@ export default function GoalResultPage() {
 		visible: { opacity: 1, transition: { duration: 0.6 } },
 	};
 
-	const formatCurrency = (value: number) => {
-		return value.toLocaleString('pt-BR', {
-			style: 'currency',
-			currency: 'BRL',
-		});
-	};
-
 	return (
-		<div className='container  mx-auto p-4 space-y-8'>
+		<div className='w-full  mx-auto p-4 space-y-8'>
 			<motion.div
 				initial='hidden'
 				animate='visible'
 				variants={fadeIn}>
 				{/* Header e Filtros */}
 				<div className='space-y-6'>
-					<div className='flex justify-between items-center'>
-						<h1 className='text-2xl font-bold'>Dashboard de Vendas</h1>
+					<div className='flex flex-wrap gap-4 items-end'>
 						<Button
 							onClick={handleRefresh}
 							disabled={isLoading}
@@ -136,118 +120,53 @@ export default function GoalResultPage() {
 							/>
 							Atualizar
 						</Button>
+						<div className='flex-1 max-w-[220px]'>
+							<Select
+								value={selectedVendedor}
+								onValueChange={setSelectedVendedor}>
+								<SelectTrigger>
+									<SelectValue placeholder='Selecione um vendedor' />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value='all'>Todos os Vendedores</SelectItem>
+									{vendedoresData.map((vendedor, index) => (
+										<SelectItem
+											key={index}
+											value={vendedor.name.toLowerCase()}>
+											{vendedor.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<div className='flex-1 min-w-[300px]'>
+							<DatePickerWithRange
+								date={dateRange}
+								setDate={() => setDateRange}
+							/>
+						</div>
 					</div>
-
-					<Card>
-						<CardContent className='pt-6'>
-							<div className='flex flex-wrap gap-4 items-end'>
-								<div className='flex-1 min-w-[200px]'>
-									<label className='text-sm font-medium  mb-2 block'>
-										Vendedor
-									</label>
-									<Select
-										value={selectedVendedor}
-										onValueChange={setSelectedVendedor}>
-										<SelectTrigger>
-											<SelectValue placeholder='Selecione um vendedor' />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value='all'>Todos</SelectItem>
-											{vendedoresData.map((vendedor, index) => (
-												<SelectItem
-													key={index}
-													value={vendedor.name.toLowerCase()}>
-													{vendedor.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-								<div className='flex-1 min-w-[300px]'>
-									<label className='text-sm font-medium  mb-2 block'>
-										Período
-									</label>
-									<DatePickerWithRange
-										date={dateRange}
-										setDate={() => setDateRange}
-									/>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
 				</div>
 
 				{/* Card da Loja do Centro */}
-				<div className='grid grid-cols-2 gap-4 items-center'>
-					<Card className='w-full'>
+				<div className='grid xl:grid-cols-2 my-5 gap-4 items-center h-full w-full'>
+					<Card className='w-full h-full'>
 						<CardHeader>
 							<CardTitle className='text-lg font-bold'>
 								{storeData.name}
 							</CardTitle>
 							<p className='text-sm '>Meta: {formatCurrency(storeData.meta)}</p>
 						</CardHeader>
-						<CardContent className='flex flex-col items-center'>
-							<div className='w-48 h-48 relative'>
-								<ResponsiveContainer
-									width='100%'
-									height='100%'>
-									<PieChart>
-										<Pie
-											data={[
-												{ value: storeData.percentual },
-												{ value: 100 - storeData.percentual },
-											]}
-											cx='50%'
-											cy='50%'
-											innerRadius={60}
-											outerRadius={80}
-											startAngle={90}
-											endAngle={-270}
-											dataKey='value'>
-											{[0, 1].map((entry, index) => (
-												<Cell
-													key={`cell-${index}`}
-													fill={COLORS[index % COLORS.length]}
-												/>
-											))}
-										</Pie>
-									</PieChart>
-								</ResponsiveContainer>
-								<div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold'>
-									{storeData.percentual}%
-								</div>
-							</div>
-							<div className='mt-4 text-center'>
-								<p className='text-sm '>Realizado</p>
-								<p className='text-lg font-bold'>
-									{formatCurrency(storeData.realizado)}
-								</p>
-							</div>
+						<CardContent>
+							<PieStore />
 						</CardContent>
 					</Card>
-					<Card className='w-full'>
+					<Card className='w-full h-full'>
 						<CardHeader>
-							<CardTitle className=''>Comparação entre Vendedores</CardTitle>
+							<CardTitle>Comparação entre Vendedores</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<div className='h-[400px]'>
-								<ResponsiveContainer
-									width='100%'
-									height='100%'>
-									<BarChart data={vendedoresComparacaoData}>
-										<CartesianGrid strokeDasharray='3 3' />
-										<XAxis dataKey='name' />
-										<YAxis />
-										<Tooltip
-											formatter={(value: number) => formatCurrency(value)}
-										/>
-										<Bar
-											dataKey='value'
-											fill='#DC2626'
-										/>
-									</BarChart>
-								</ResponsiveContainer>
-							</div>
+							<SellerComparison />
 						</CardContent>
 					</Card>{' '}
 				</div>
@@ -288,71 +207,7 @@ export default function GoalResultPage() {
 					{/* Comparação entre Vendedores */}
 				</div>
 
-				{/* Cards dos Vendedores */}
-				<div className='grid grid-cols-1 md:grid-cols-2  gap-6'>
-					{vendedoresData.map((vendedor, index) => (
-						<Card key={index}>
-							<CardHeader>
-								<CardTitle className='text-lg font-bold'>
-									{vendedor.name} - VENDA REAL
-								</CardTitle>
-								<p className='text-sm '>
-									META - {formatCurrency(vendedor.meta)}
-								</p>
-								<p className='text-xs '>ABERTAS + FECHADAS</p>
-							</CardHeader>
-							<CardContent className='flex flex-col items-center'>
-								<div className='w-48 h-48 relative'>
-									<ResponsiveContainer
-										width='100%'
-										height='100%'>
-										<PieChart>
-											<Pie
-												data={[
-													{ value: vendedor.percentual },
-													{ value: 100 - vendedor.percentual },
-												]}
-												cx='50%'
-												cy='50%'
-												innerRadius={60}
-												outerRadius={80}
-												startAngle={90}
-												endAngle={-270}
-												dataKey='value'>
-												{[0, 1].map((entry, index) => (
-													<Cell
-														key={`cell-${index}`}
-														fill={COLORS[index % COLORS.length]}
-													/>
-												))}
-											</Pie>
-										</PieChart>
-									</ResponsiveContainer>
-									<div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold'>
-										{vendedor.percentual}%
-									</div>
-								</div>
-								<div className='mt-4 text-center'>
-									<p className='text-sm '>Realizado</p>
-									<p className='text-lg font-bold'>
-										{formatCurrency(vendedor.realizado)}
-									</p>
-								</div>
-								<div className='mt-4 w-full  p-2'>
-									<div className='flex justify-between items-center'>
-										<span className='font-bold text-sm'>META PROJETADA</span>
-										<span className='font-bold text-sm'>
-											{formatCurrency(vendedor.metaProjetada)}
-										</span>
-									</div>
-									<div className='text-right text-sm '>
-										{vendedor.metaProjetadaPercentual}%
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					))}
-				</div>
+				<SalesmanList />
 			</motion.div>
 		</div>
 	);

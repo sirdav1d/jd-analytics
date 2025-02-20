@@ -58,7 +58,6 @@ export default function Home() {
 						asChild
 						className='text-lg mt-5'>
 						<Link href={'/sign-in'}>
-							{' '}
 							Entrar na plataforma <Zap />
 						</Link>
 					</Button>

@@ -10,63 +10,32 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { formatCurrency } from '@/utils/format-currency';
 import React from 'react';
 import { Cell, Label, Pie, PieChart } from 'recharts';
 
 const chartConfig = {
-	Organico: {
-		label: 'Tráfego Orgânico',
+	Atingido: {
+		label: 'Atingido',
 		color: 'hsl(var(--chart-1))',
 	},
-	Pago: {
-		label: 'Tráfego Pago',
+	Restante: {
+		label: 'Restante',
 		color: 'hsl(var(--chart-2))',
-	},
-	Social: {
-		label: 'Redes Sociais',
-		color: 'hsl(var(--chart-4))',
-	},
-	Direta: {
-		label: 'Busca Direta',
-		color: 'hsl(var(--chart-3))',
-	},
-	Outros: {
-		label: 'Outros',
-		color: 'hsl(var(--chart-5))',
 	},
 } satisfies ChartConfig;
 
-interface TrafficComponentProps {
-	Organico: number;
-	Pago: number;
-	Social: number;
-	Direto: number;
-	Outros: number;
-}
-
-export function TrafficComponent({
-	Direto,
-	Organico,
-	Pago,
-	Social,
-	Outros,
-}: TrafficComponentProps) {
-	const { totaltraffic, chartData } = React.useMemo(() => {
-		const chartData = [
-			{ name: 'Organico', value: Organico },
-			{ name: 'Pago', value: Pago },
-			{ name: 'Direta', value: Direto },
-			{ name: 'Social', value: Social },
-			{ name: 'Outros', value: Outros },
-		];
-		const totaltraffic = chartData.reduce((acc, curr) => acc + curr.value, 0);
-		return { totaltraffic, chartData };
-	}, [Organico, Direto, Pago, Social, Outros]);
+export function PieStore() {
+	const chartData = [
+		{ name: 'Atingido', value: 80 },
+		{ name: 'Restante', value: 40 },
+	];
+	const totaltraffic = 158;
 
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -76,7 +45,7 @@ export function TrafficComponent({
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					innerRadius={60}
+					innerRadius={68}
 					label={({ percent, ...props }) => {
 						return (
 							<text
@@ -111,14 +80,8 @@ export function TrafficComponent({
 										<tspan
 											x={viewBox.cx}
 											y={viewBox.cy}
-											className='fill-foreground text-3xl font-bold'>
-											{totaltraffic.toLocaleString()}
-										</tspan>
-										<tspan
-											x={viewBox.cx}
-											y={(viewBox.cy || 0) + 24}
-											className='fill-muted-foreground text-wrap'>
-											Usuários
+											className='fill-foreground text-xl font-bold'>
+											{formatCurrency(totaltraffic)}
 										</tspan>
 									</text>
 								);

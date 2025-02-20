@@ -58,15 +58,33 @@ export async function getAnalyticsChannelAction({
 			};
 		}
 
-		const formattedData = data.rows.map((row) => ({
-			name: row.dimensionValues?.[0]?.value || 'Desconhecido',
-			conversions: Number(row.metricValues?.[0]?.value) || 0,
-			sessions: Number(row.metricValues?.[1]?.value) || 0,
-		}));
+		const trafficByChannel: {
+			[key: string]: { conversions: number; sessions: number };
+		} = {
+			'Organic Search': { conversions: 0, sessions: 0 },
+			'Paid Search': { conversions: 0, sessions: 0 },
+			Direct: { conversions: 0, sessions: 0 },
+			Social: { conversions: 0, sessions: 0 },
+			Other: { conversions: 0, sessions: 0 }, // Acumula as demais origens
+		};
+		data.rows.forEach((row) => {
+			const channel = row.dimensionValues?.[0]?.value || 'Other';
+			const conversions = Number(row.metricValues?.[0]?.value) || 0;
+			const sessions = Number(row.metricValues?.[1]?.value) || 0;
+
+			// Se o canal estiver nas categorias predefinidas, soma os valores, senão joga em "Other"
+			if (trafficByChannel[channel]) {
+				trafficByChannel[channel].conversions += conversions;
+				trafficByChannel[channel].sessions += sessions;
+			} else {
+				trafficByChannel['Other'].conversions += conversions;
+				trafficByChannel['Other'].sessions += sessions;
+			}
+		});
 
 		return {
 			ok: true,
-			data: formattedData,
+			data: trafficByChannel,
 			error: null,
 		};
 	} catch (error) {

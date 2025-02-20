@@ -69,11 +69,9 @@ export default async function MarketingPage(props: {
 		channel: String(channelFilter),
 	});
 
-	const [data, trafficData, channelData] = await Promise.all([
-		getAnalyticsDataAction({ body: staticBody }),
-		getAnalyticsTrafficAction({ body: trafficBody }),
-		getAnalyticsChannelAction({ body: channelBody }),
-	]);
+	const data = await getAnalyticsDataAction({ body: staticBody });
+	const trafficData = await getAnalyticsTrafficAction({ body: trafficBody });
+	const channelData = await getAnalyticsChannelAction({ body: channelBody });
 
 	if (!data.ok) {
 		return (
@@ -298,6 +296,7 @@ export default async function MarketingPage(props: {
 								Pago={Number(trafficData?.data?.['Paid Search'])}
 								Social={Number(trafficData.data?.Social)}
 								Direto={Number(trafficData.data?.Direct)}
+								Outros={Number(trafficData.data?.Other)}
 							/>
 						) : (
 							<div className='flex items-center italic text-muted-foreground'>
@@ -314,7 +313,13 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						{channelData.data ? (
-							<ConversionsComponent data={channelData.data!} />
+							<ConversionsComponent
+								Organic={channelData.data?.['Organic Search']}
+								Direct={channelData.data?.Direct}
+								Other={channelData.data?.Other}
+								Paid={channelData.data?.['Paid Search']}
+								Social={channelData.data?.Social}
+							/>
 						) : (
 							<div className='flex items-center italic text-muted-foreground'>
 								Nenhum Valor Encontrado
