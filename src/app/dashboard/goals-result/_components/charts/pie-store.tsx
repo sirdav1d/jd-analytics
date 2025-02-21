@@ -35,7 +35,7 @@ export function PieStore() {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square  md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
