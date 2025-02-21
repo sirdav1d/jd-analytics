@@ -20,6 +20,7 @@ import { PieStore } from './_components/charts/pie-store';
 import { Revenue } from './_components/charts/revenue';
 import SellerComparison from './_components/charts/seller-comparison';
 import SalesmanList from './_components/salesman-list';
+import SellerRevenue from './_components/charts/seller-revenue';
 
 // Mock data
 const storeData = {
@@ -134,17 +135,23 @@ export default function GoalResultPage() {
 						<PieStore />
 					</CardContent>
 				</Card>
-
 				<Card className='w-full h-full'>
 					<CardHeader>
-						<CardTitle>Comparação entre Vendedores</CardTitle>
+						<CardTitle>Comparação de Faturamento</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<SellerComparison />
+						<SellerRevenue />
 					</CardContent>
 				</Card>
 			</div>
-
+			<Card className='w-full '>
+				<CardHeader>
+					<CardTitle>Comparação de Performance</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<SellerComparison />
+				</CardContent>
+			</Card>
 			{/* Gráficos */}
 
 			<SalesmanList />

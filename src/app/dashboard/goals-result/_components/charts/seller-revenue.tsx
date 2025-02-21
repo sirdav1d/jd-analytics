@@ -1,29 +1,41 @@
 /** @format */
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	LabelList,
+	XAxis,
+	YAxis,
+} from 'recharts';
 
 import {
 	ChartConfig,
 	ChartContainer,
-	ChartLegend,
-	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 
-export default function SellerComparison() {
+export default function SellerRevenue() {
 	const chartConfig = {
-		sales: {
-			label: 'Vendas',
-			color: 'hsl(var(--chart-1))',
-		},
 		revenue: {
 			label: 'Faturamento',
+		},
+		Paulo: {
+			label: 'Paulo',
+			color: 'hsl(var(--chart-1))',
+		},
+		Weliton: {
+			label: 'Weliton',
 			color: 'hsl(var(--chart-2))',
 		},
-		ticket: {
-			label: 'Ticket Médio',
+		Lucas: {
+			label: 'Lucas',
 			color: 'hsl(var(--chart-3))',
+		},
+		Joyce: {
+			label: 'Joyce',
+			color: 'hsl(var(--chart-4))',
 		},
 	} satisfies ChartConfig;
 
@@ -33,24 +45,28 @@ export default function SellerComparison() {
 			sales: 40,
 			revenue: 12800,
 			ticket: 320,
+			fill: 'var(--color-Paulo)',
 		},
 		{
 			name: 'Weliton',
 			sales: 30,
 			revenue: 12900,
 			ticket: 430,
+			fill: 'var(--color-Weliton)',
 		},
 		{
 			name: 'Lucas',
 			sales: 70,
 			revenue: 19500,
 			ticket: 278,
+			fill: 'var(--color-Lucas)',
 		},
 		{
 			name: 'Joyce',
 			sales: 50,
 			revenue: 13600,
 			ticket: 272,
+			fill: 'var(--color-Joyce)',
 		},
 	];
 
@@ -59,23 +75,28 @@ export default function SellerComparison() {
 			config={chartConfig}
 			className='h-80 md:h-72 w-full'>
 			<BarChart
-				margin={{
-					top: 28,
-				}}
+				accessibilityLayer
+				layout='vertical'
 				data={chartData}>
 				<CartesianGrid vertical={false} />
-				<XAxis
+				<YAxis
 					dataKey='name'
 					tickMargin={12}
+					type='category'
 					tickLine={false}
 					axisLine={false}
+					hide
+				/>
+				<XAxis
+					dataKey='revenue'
+					type='number'
+					hide
 				/>
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
-				<Bar
+				{/* <Bar
 					radius={4}
 					yAxisId='right'
 					dataKey='sales'
@@ -98,19 +119,19 @@ export default function SellerComparison() {
 						className='fill-foreground'
 						fontSize={12}
 					/>
-				</Bar>
-				{/* <Bar
+				</Bar> */}
+				<Bar
 					radius={4}
-					yAxisId='right'
 					dataKey='revenue'
-					fill='var(--color-revenue)'>
+					layout='vertical'
+					fill='var(--color-fill)'>
 					<LabelList
-						position='top'
+						position='insideEnd'
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
 					/>
-				</Bar> */}
+				</Bar>
 			</BarChart>
 		</ChartContainer>
 	);
