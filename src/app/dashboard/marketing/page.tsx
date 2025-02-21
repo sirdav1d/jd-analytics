@@ -40,6 +40,7 @@ import { ConversionsComponent } from './_components/charts/conversion';
 import { RevenueComponent } from './_components/charts/revenue-by-campagn';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
+import { getADSMetricsAction } from '@/actions/google/get-ads-campangn-metrics';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -72,6 +73,9 @@ export default async function MarketingPage(props: {
 	const data = await getAnalyticsDataAction({ body: staticBody });
 	const trafficData = await getAnalyticsTrafficAction({ body: trafficBody });
 	const channelData = await getAnalyticsChannelAction({ body: channelBody });
+	const dataADS = await getADSMetricsAction();
+
+	console.log(dataADS);
 
 	if (!data.ok || !data.data) {
 		return (
