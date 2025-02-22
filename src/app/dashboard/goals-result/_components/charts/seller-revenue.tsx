@@ -15,6 +15,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { formatCurrency } from '@/utils/format-currency';
 
 export default function SellerRevenue() {
 	const chartConfig = {
@@ -77,8 +78,11 @@ export default function SellerRevenue() {
 			<BarChart
 				accessibilityLayer
 				layout='vertical'
+				margin={{
+					right: 60,
+				}}
 				data={chartData}>
-				<CartesianGrid vertical={false} />
+				<CartesianGrid horizontal={false} />
 				<YAxis
 					dataKey='name'
 					tickMargin={12}
@@ -96,40 +100,27 @@ export default function SellerRevenue() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				{/* <Bar
-					radius={4}
-					yAxisId='right'
-					dataKey='sales'
-					fill='var(--color-sales)'>
-					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={12}
-					/>
-				</Bar>
-				<Bar
-					radius={4}
-					yAxisId='right'
-					dataKey='ticket'
-					fill='var(--color-ticket)'>
-					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={12}
-					/>
-				</Bar> */}
+
 				<Bar
 					radius={4}
 					dataKey='revenue'
 					layout='vertical'
 					fill='var(--color-fill)'>
 					<LabelList
-						position='insideEnd'
+						dataKey={'name'}
+						position='insideLeft'
+						offset={12}
+						className='fill-[--color-label]'
+						fontSize={14}
+						fontWeight={700}
+					/>
+					<LabelList
+						dataKey={'revenue'}
+						position='right'
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
+						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>
 			</BarChart>

@@ -10,6 +10,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { formatCurrency } from '@/utils/format-currency';
 
 export default function SellerComparison() {
 	const chartConfig = {
@@ -61,6 +62,7 @@ export default function SellerComparison() {
 			<BarChart
 				margin={{
 					top: 28,
+					right:24
 				}}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
@@ -97,6 +99,7 @@ export default function SellerComparison() {
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
+						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>
 				{/* <Bar

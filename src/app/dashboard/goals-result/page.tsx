@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { formatCurrency } from '@/utils/format-currency';
 import { addDays } from 'date-fns';
-import { Zap } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { PieStore } from './_components/charts/pie-store';
 import { Revenue } from './_components/charts/revenue';
@@ -81,18 +81,23 @@ export default function GoalResultPage() {
 	};
 
 	return (
-		<div className='w-full  mx-auto space-y-5'>
+		<div className='w-full  mx-auto space-y-5 pb-5'>
 			{/* Header e Filtros */}
 			<div className='space-y-4'>
 				<div className='grid grid-cols-1 md:flex items-start gap-4 '>
 					<Button
 						onClick={handleRefresh}
 						disabled={isLoading}
-						className='bg-red-600 w-full md:w-fit hover:bg-red-700'>
-						Atualizar
-						<Zap
-							className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
-						/>
+						className='bg-red-600 disabled:opacity-70 w-full md:w-fit hover:bg-red-700'>
+						{isLoading ? (
+							<>
+								Atualizar <Loader2 className='animate-spin' />
+							</>
+						) : (
+							<>
+								Atualizar <Zap />
+							</>
+						)}
 					</Button>
 					<div className='w-full md:max-w-[220px]'>
 						<Select
@@ -126,7 +131,7 @@ export default function GoalResultPage() {
 			<div className='grid grid-cols-1 xl:grid-cols-2 w-full my-5 gap-4 md:items-center'>
 				<Card className='w-full h-full'>
 					<CardHeader>
-						<CardTitle className='text-lg font-bold'>
+						<CardTitle className='text-base text-balance md:text-2xl'>
 							{storeData.name}
 						</CardTitle>
 						<p className='text-sm'>Meta: {formatCurrency(storeData.meta)}</p>
@@ -137,7 +142,9 @@ export default function GoalResultPage() {
 				</Card>
 				<Card className='w-full h-full'>
 					<CardHeader>
-						<CardTitle>Comparação de Faturamento</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Faturamento
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SellerRevenue />
@@ -146,7 +153,9 @@ export default function GoalResultPage() {
 			</div>
 			<Card className='w-full '>
 				<CardHeader>
-					<CardTitle>Comparação de Performance</CardTitle>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Performance
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<SellerComparison />
@@ -159,7 +168,9 @@ export default function GoalResultPage() {
 				{/* Vendas ao Longo do Tempo - Centro */}
 				<Card>
 					<CardHeader>
-						<CardTitle className=''>Faturamento ao Longo do Tempo</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Faturamento ao Longo do Tempo
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<Revenue />

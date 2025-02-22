@@ -7,11 +7,10 @@ import { Area, AreaChart, CartesianGrid, LabelList, XAxis } from 'recharts';
 import {
 	ChartConfig,
 	ChartContainer,
-	ChartLegend,
-	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { formatCurrency } from '@/utils/format-currency';
 const chartData = [
 	{ month: 'January', desktop: 186 },
 	{ month: 'February', desktop: 305 },
@@ -37,8 +36,8 @@ export function Revenue() {
 				accessibilityLayer
 				data={chartData}
 				margin={{
-					left: 12,
-					right: 12,
+					left: 32,
+					right: 32,
 					top: 28,
 				}}>
 				<CartesianGrid vertical={false} />
@@ -101,10 +100,10 @@ export function Revenue() {
 						position='top'
 						offset={12}
 						className='fill-foreground'
-						fontSize={12}
+						fontSize={10}
+						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Area>
-				<ChartLegend content={<ChartLegendContent />} />
 			</AreaChart>
 		</ChartContainer>
 	);

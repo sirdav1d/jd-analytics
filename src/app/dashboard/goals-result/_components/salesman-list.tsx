@@ -44,7 +44,9 @@ export default function SalesmanList() {
 			{vendedoresData.map((vendedor, index) => (
 				<Card key={index}>
 					<CardHeader>
-						<CardTitle className='text-lg font-bold'>{vendedor.name}</CardTitle>
+						<CardTitle className='text-base text-balance md:text-xl'>
+							{vendedor.name}
+						</CardTitle>
 						<p className='text-sm text-muted-foreground'>
 							META - {formatCurrency(vendedor.meta)}
 						</p>
