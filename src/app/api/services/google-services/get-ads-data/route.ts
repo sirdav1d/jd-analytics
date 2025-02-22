@@ -1,31 +1,30 @@
 /** @format */
 
-'use server';
-
+import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
 import { prisma } from '@/lib/prisma';
 import { enums, GoogleAdsApi } from 'google-ads-api';
-import { refreshAccessTokenAction } from './refresh-token';
+import { NextResponse } from 'next/server';
 
-export async function getADSMetricsAction() {
+export async function GET() {
 	const { success, error } = await refreshAccessTokenAction();
 
 	if (!success || error) {
 		console.log(error);
-		return {
+		return NextResponse.json({
 			error: 'Erro ao buscar dados do Google ADS' + error,
 			ok: false,
 			data: null,
-		};
+		});
 	}
 
 	const organization = await prisma.organization.findFirst();
 
 	if (!organization || !organization.googleAccessToken) {
-		return {
+		return NextResponse.json({
 			error: 'Token de acesso ausente',
 			ok: false,
 			data: null,
-		};
+		});
 	}
 
 	try {
@@ -47,41 +46,22 @@ export async function getADSMetricsAction() {
 			attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
 			metrics: ['metrics.impressions', 'metrics.clicks', 'metrics.conversions'],
 			constraints: [
-				{ key: 'campaign.status', op: '=', val: enums.CampaignStatus.ENABLED },
+				{
+					key: 'campaign.status',
+					op: '=',
+					val: enums.CampaignStatus.ENABLED,
+				},
 			],
 		});
 
 		// Verifica se há dados antes de retornar
 		if (!campaigns || campaigns.length === 0) {
-			return {
+			return NextResponse.json({
 				error: 'Nenhum dado encontrado para as campanhas',
 				ok: false,
 				data: null,
-			};
+			});
 		}
-
-		// const query = `
-		//   SELECT
-		//     campaign.id,
-		//     campaign.name,
-		//     metrics.impressions,
-		//     metrics.clicks,
-		//     metrics.conversions
-		//   FROM
-		//     campaign
-		//   WHERE
-		//     segments.date DURING LAST_30_DAYS
-		// `;
-
-		// const response = await customer.query(query);
-
-		// if (!response || response.length === 0) {
-		// 	return {
-		// 		error: 'Nenhum dado encontrado para as campanhas',
-		// 		ok: false,
-		// 		data: null,
-		// 	};
-		// }
 
 		// const campaignData = response.map((campaign) => ({
 		// 	campaignId: campaign?.campaign?.id,
@@ -91,17 +71,17 @@ export async function getADSMetricsAction() {
 		// 	conversions: campaign.metrics?.conversions,
 		// }));
 
-		return {
+		return NextResponse.json({
 			ok: true,
 			data: campaigns,
 			error: null,
-		};
+		});
 	} catch (error) {
 		console.log(error);
-		return {
+		return NextResponse.json({
 			error: 'Erro ao buscar dados do Google ADS' + JSON.stringify(error),
 			ok: false,
 			data: null,
-		};
+		});
 	}
 }

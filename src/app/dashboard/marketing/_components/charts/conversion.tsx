@@ -45,12 +45,12 @@ export function ConversionsComponent({
 }: DataConversionsComponentProps) {
 	const chartData = [
 		{
-			name: 'Tráfego Orgânico',
+			name: 'Orgânico',
 			conversions: Organic.conversions,
 			sessions: Organic.sessions,
 		},
 		{
-			name: 'Tráfego Pago',
+			name: 'Pago',
 			conversions: Paid.conversions,
 			sessions: Paid.sessions,
 		},
@@ -60,7 +60,7 @@ export function ConversionsComponent({
 			sessions: Direct.sessions,
 		},
 		{
-			name: 'Redes Sociais',
+			name: 'Social',
 			conversions: Social.conversions,
 			sessions: Social.sessions,
 		},
@@ -86,6 +86,8 @@ export function ConversionsComponent({
 					tickMargin={12}
 					tickLine={false}
 					axisLine={false}
+					
+					
 				/>
 				<ChartTooltip
 					cursor={false}
