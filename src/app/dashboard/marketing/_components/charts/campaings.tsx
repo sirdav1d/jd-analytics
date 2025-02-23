@@ -2,7 +2,14 @@
 
 'use client';
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	LabelList,
+	XAxis,
+	YAxis,
+} from 'recharts';
 
 import {
 	ChartConfig,
@@ -12,17 +19,29 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { getTop5CampaignsByConversions } from '@/utils/get-top-campaigns';
 
-const chartData = [
-	{ name: 'Verão 2023', impressions: 10000, clicks: 5000, conversions: 500 },
-	{
-		name: 'Black Friday',
-		impressions: 16000,
-		clicks: 10000,
-		conversions: 1000,
-	},
-	{ name: 'Natal', impressions: 15000, clicks: 7500, conversions: 750 },
-];
+interface MetricsProps {
+	clicks: number;
+	conversions: number;
+	impressions: number;
+}
+
+interface CampaignProps {
+	resource_name: string;
+	status: number;
+	name: string;
+	id: number;
+}
+
+export interface CampagnComponentProps {
+	campaign: CampaignProps;
+	metrics: MetricsProps;
+}
+
+interface DataProps {
+	data: CampagnComponentProps[];
+}
 
 const chartConfig = {
 	impressions: {
@@ -39,12 +58,23 @@ const chartConfig = {
 	},
 } satisfies ChartConfig;
 
-export function CampagnComponent() {
+export function CampagnComponent({ data }: DataProps) {
+	const formattedData = getTop5CampaignsByConversions(data);
+	const chartData = formattedData.map((data) => {
+		return {
+			name: data.campaign.name,
+			impressions: data.metrics.impressions,
+			clicks: data.metrics.clicks,
+			conversions: data.metrics.conversions,
+		};
+	});
+
 	return (
 		<ChartContainer
 			config={chartConfig}
 			className='w-full h-72'>
 			<BarChart
+				accessibilityLayer
 				margin={{
 					top: 28,
 				}}
@@ -56,19 +86,20 @@ export function CampagnComponent() {
 					tickLine={false}
 					axisLine={false}
 				/>
-				<ChartTooltip
-					cursor={false}
-					content={<ChartTooltipContent indicator='dot' />}
+				<YAxis
+					scale={'sqrt'}
+					hide
 				/>
 				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
 				<Bar
 					radius={4}
-					yAxisId='right'
 					dataKey='impressions'
 					fill='var(--color-impressions)'
 					name='Impressões'>
 					<LabelList
 						position='top'
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						formatter={(value: any) => value.toLocaleString('pt-BR')}
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
@@ -76,30 +107,42 @@ export function CampagnComponent() {
 				</Bar>
 				<Bar
 					radius={4}
-					yAxisId='right'
 					dataKey='clicks'
 					fill='var(--color-clicks)'
 					name='Cliques'>
 					<LabelList
 						position='top'
 						offset={12}
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						formatter={(value: any) => value.toLocaleString('pt-BR')}
 						className='fill-foreground'
 						fontSize={12}
 					/>
 				</Bar>
 				<Bar
 					radius={4}
-					yAxisId='right'
 					dataKey='conversions'
 					fill='var(--color-conversions)'
 					name='Conversões'>
 					<LabelList
 						position='top'
 						offset={12}
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						formatter={(value: any) => value.toLocaleString('pt-BR')}
 						className='fill-foreground'
 						fontSize={12}
 					/>
 				</Bar>
+				<ChartTooltip
+					cursor={false}
+					defaultIndex={1}
+					content={
+						<ChartTooltipContent
+							className='w-[200px]'
+							indicator='dot'
+						/>
+					}
+				/>
 			</BarChart>
 		</ChartContainer>
 	);

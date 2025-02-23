@@ -1,14 +1,6 @@
 /** @format */
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
 
 // Import the chart components
 import GoogleLoginButton from '@/components/google-login-button';
@@ -22,32 +14,42 @@ import {
 	Clock,
 	DollarSign,
 	GitPullRequestClosed,
-	HandCoins,
 	MonitorPlay,
-	MousePointerClick,
 	Percent,
-	SquareDashedMousePointer,
-	Trophy,
 	UserRoundCheck,
-	UserRoundPlus,
 } from 'lucide-react';
 import { CampagnComponent } from './_components/charts/campaings';
 import { ConversionsComponent } from './_components/charts/conversion';
-import { RevenueComponent } from './_components/charts/revenue-by-campagn';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
+import ListStaticADS from './_components/list-static-ads';
+import TopAdwords from './_components/tables/top-adwords';
+import TopAnuncios from './_components/tables/top-anuncios';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function MarketingPage(props: {
 	searchParams: SearchParams;
 }) {
+	function formattedEndDate() {
+		const date = new Date();
+		const endDate = date.toISOString().split('T')[0];
+		return endDate;
+	}
+
+	function formattedStartDate() {
+		const date = new Date();
+		date.setDate(date.getDate() - 7);
+		const startDate = date.toISOString().split('T')[0];
+		return startDate;
+	}
+
 	const searchParams = await props.searchParams;
-	const startDate = searchParams.startDate || '7daysAgo';
-	const endDate = searchParams.endDate || 'today';
+	const startDate = searchParams.startDate || formattedStartDate();
+	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 
-	const responseADS = await FetchADSData();
+	const responseADS = await FetchADSData(String(startDate), String(endDate));
 
 	const responseAnalytics = await FetchAnalyticsData(
 		String(startDate),
@@ -67,6 +69,7 @@ export default async function MarketingPage(props: {
 			</div>
 		);
 	}
+
 	const staticData = responseAnalytics.data[0];
 	const trafficData = responseAnalytics.data[1];
 	const channelData = responseAnalytics.data[2];
@@ -321,17 +324,17 @@ export default async function MarketingPage(props: {
 			<Card>
 				<CardHeader>
 					<CardTitle className='text-base text-balance md:text-2xl'>
-						Desempenho de Campanhas
+						Top 5 Campanhas por Conversão
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<CampagnComponent />
+					<CampagnComponent data={responseADS.data} />
 				</CardContent>
 			</Card>
 
 			{/* GOOGLE ADS */}
 
-			<Card>
+			{/* <Card>
 				<CardHeader>
 					<CardTitle className='text-base text-balance md:text-2xl'>
 						Faturamento por Campanha
@@ -340,208 +343,13 @@ export default async function MarketingPage(props: {
 				<CardContent>
 					<RevenueComponent />
 				</CardContent>
-			</Card>
+			</Card> */}
 			{/* Métricas Adicionais */}
-			<div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4'>
-				<Card>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>
-							CTR (Taxa de Cliques)
-						</CardTitle>
-						<MousePointerClick className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold'>15%</div>
-						<p className='text-xs text-muted-foreground'>
-							+0.3% em relação ao mês anterior
-						</p>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>
-							CPC (Custo por Clique)
-						</CardTitle>
-						<SquareDashedMousePointer className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold'>R$ 0.75</div>
-						<p className='text-xs text-muted-foreground'>
-							-R$ 0.05 em relação ao mês anterior
-						</p>
-					</CardContent>
-				</Card>{' '}
-				<Card>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>
-							CPA (Custo por Aquisição de Cliente)
-						</CardTitle>
-						<UserRoundPlus className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold'>R$ 0.75</div>
-						<p className='text-xs text-muted-foreground'>
-							-R$ 0.05 em relação ao mês anterior
-						</p>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>ROAS</CardTitle>
-						<HandCoins className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold'>3.2x</div>
-						<p className='text-xs text-muted-foreground'>
-							+0.4x em relação ao mês anterior
-						</p>
-					</CardContent>
-				</Card>
-			</div>
+			<ListStaticADS />
 			{/* Tabelas */}
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Top 5 Anúncios por CTR
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead className='text-left'>Anúncio</TableHead>
-									<TableHead className='text-center'>CTR</TableHead>
-									<TableHead className='text-center'>Impressões</TableHead>
-									<TableHead className='text-center'>Cliques</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								<TableRow className='text-nowrap text-center'>
-									<TableCell className='text-nowrap flex items-center gap-2'>
-										<Trophy
-											size={20}
-											className='text-amber-500'
-										/>
-										Anúncio 1
-									</TableCell>
-									<TableCell>5.2%</TableCell>
-									<TableCell>10,000</TableCell>
-									<TableCell>520</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-nowrap text-left flex items-center gap-2'>
-										<Trophy
-											size={20}
-											className='text-zinc-400'
-										/>
-										Anúncio 2
-									</TableCell>
-									<TableCell>4.8%</TableCell>
-									<TableCell>15,000</TableCell>
-									<TableCell>720</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-nowrap text-left flex items-center gap-2'>
-										<Trophy
-											size={20}
-											className='text-rose-700'
-										/>
-										Anúncio 3
-									</TableCell>
-									<TableCell>4.8%</TableCell>
-									<TableCell>15,000</TableCell>
-									<TableCell>720</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-nowrap text-left'>
-										Anúncio 4
-									</TableCell>
-									<TableCell>4.8%</TableCell>
-									<TableCell>15,000</TableCell>
-									<TableCell>720</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-nowrap text-left'>
-										Anúncio 5
-									</TableCell>
-									<TableCell>4.8%</TableCell>
-									<TableCell>15,000</TableCell>
-									<TableCell>720</TableCell>
-								</TableRow>
-							</TableBody>
-						</Table>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Top 5 Palavras-Chave por Eficiência
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead className='text-nowrap'>Palavra-Chave</TableHead>
-									<TableHead className='text-center'>CTR</TableHead>
-									<TableHead className='text-center'>Conversões</TableHead>
-									<TableHead className='text-center'>CPC</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								<TableRow className='text-center'>
-									<TableCell className='text-nowrap text-left flex items-center gap-2'>
-										<Trophy
-											size={20}
-											className='text-amber-500'
-										/>
-										marketing digital
-									</TableCell>
-									<TableCell>4.5%</TableCell>
-									<TableCell className='text-center'>50</TableCell>
-									<TableCell className='text-nowrap'>R$ 1.20</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-nowrap text-left flex items-center gap-2'>
-										<Trophy
-											size={20}
-											className='text-zinc-400'
-										/>
-										palavra 2
-									</TableCell>
-									<TableCell>3.8%</TableCell>
-									<TableCell className='text-center'>35</TableCell>
-									<TableCell>R$ 1.50</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-nowrap text-left flex items-center gap-2'>
-										<Trophy
-											size={20}
-											className='text-rose-700'
-										/>
-										palavra 3
-									</TableCell>
-									<TableCell>3.8%</TableCell>
-									<TableCell className='text-center'>35</TableCell>
-									<TableCell>R$ 1.50</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-left'>palavra 4</TableCell>
-									<TableCell>3.8%</TableCell>
-									<TableCell>35</TableCell>
-									<TableCell>R$ 1.50</TableCell>
-								</TableRow>
-								<TableRow className='text-center'>
-									<TableCell className='text-left'>palavra 5</TableCell>
-									<TableCell>3.8%</TableCell>
-									<TableCell>35</TableCell>
-									<TableCell>R$ 1.50</TableCell>
-								</TableRow>
-							</TableBody>
-						</Table>
-					</CardContent>
-				</Card>
+				<TopAnuncios />
+				<TopAdwords />
 			</div>
 		</div>
 	);

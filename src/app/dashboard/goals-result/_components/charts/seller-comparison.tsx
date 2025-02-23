@@ -1,6 +1,13 @@
 /** @format */
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	LabelList,
+	XAxis,
+	YAxis,
+} from 'recharts';
 
 import {
 	ChartConfig,
@@ -20,11 +27,11 @@ export default function SellerComparison() {
 		},
 		revenue: {
 			label: 'Faturamento',
-			color: 'hsl(var(--chart-2))',
+			color: 'hsl(var(--chart-3))',
 		},
 		ticket: {
 			label: 'Ticket Médio',
-			color: 'hsl(var(--chart-3))',
+			color: 'hsl(var(--chart-2))',
 		},
 	} satisfies ChartConfig;
 
@@ -62,7 +69,7 @@ export default function SellerComparison() {
 			<BarChart
 				margin={{
 					top: 28,
-					right:24
+					right: 24,
 				}}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
@@ -72,6 +79,10 @@ export default function SellerComparison() {
 					tickLine={false}
 					axisLine={false}
 				/>
+				<YAxis
+					scale={'sqrt'}
+					hide
+				/>
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
@@ -79,7 +90,6 @@ export default function SellerComparison() {
 				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
 				<Bar
 					radius={4}
-					yAxisId='right'
 					dataKey='sales'
 					fill='var(--color-sales)'>
 					<LabelList
@@ -91,7 +101,6 @@ export default function SellerComparison() {
 				</Bar>
 				<Bar
 					radius={4}
-					yAxisId='right'
 					dataKey='ticket'
 					fill='var(--color-ticket)'>
 					<LabelList
