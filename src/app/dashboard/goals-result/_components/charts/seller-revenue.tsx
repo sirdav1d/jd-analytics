@@ -79,7 +79,7 @@ export default function SellerRevenue() {
 				accessibilityLayer
 				layout='vertical'
 				margin={{
-					right: 60,
+					right: 80,
 				}}
 				data={chartData}>
 				<CartesianGrid horizontal={false} />
@@ -117,9 +117,9 @@ export default function SellerRevenue() {
 					<LabelList
 						dataKey={'revenue'}
 						position='right'
-						offset={12}
+						offset={8}
 						className='fill-foreground'
-						fontSize={12}
+						fontSize={10}
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>

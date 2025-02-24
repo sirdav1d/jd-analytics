@@ -66,7 +66,7 @@ export function TrafficComponent({
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square w-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}

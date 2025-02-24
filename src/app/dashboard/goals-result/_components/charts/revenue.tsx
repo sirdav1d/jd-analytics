@@ -36,8 +36,8 @@ export function Revenue() {
 				accessibilityLayer
 				data={chartData}
 				margin={{
-					left: 32,
-					right: 32,
+					left: 28,
+					right: 28,
 					top: 28,
 				}}>
 				<CartesianGrid vertical={false} />
