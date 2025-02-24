@@ -15,7 +15,6 @@ export default async function DashLayout({
 	if (!session) {
 		redirect('/login');
 	}
-
 	const cookieStore = await cookies();
 	const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
 
