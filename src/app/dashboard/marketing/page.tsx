@@ -73,6 +73,8 @@ export default async function MarketingPage(props: {
 	const staticData = responseAnalytics.data[0];
 	const trafficData = responseAnalytics.data[1];
 	const channelData = responseAnalytics.data[2];
+	const topAds = responseADS.data[1];
+	const topKeyWords = responseADS.data[2];
 
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
@@ -151,7 +153,10 @@ export default async function MarketingPage(props: {
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
-							Faturamento de Loja Física Via Tráfego
+							Faturamento de Loja Física{' '}
+							<span className='text-muted-foreground text-xs'>
+								(via tráfego)
+							</span>
 						</CardTitle>
 						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
@@ -328,7 +333,7 @@ export default async function MarketingPage(props: {
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<CampagnComponent data={responseADS.data} />
+					<CampagnComponent data={responseADS.data[0]} />
 				</CardContent>
 			</Card>
 
@@ -348,8 +353,8 @@ export default async function MarketingPage(props: {
 			<ListStaticADS />
 			{/* Tabelas */}
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				<TopAnuncios />
-				<TopAdwords />
+				<TopAnuncios data={topAds} />
+				<TopAdwords data={topKeyWords} />
 			</div>
 		</div>
 	);

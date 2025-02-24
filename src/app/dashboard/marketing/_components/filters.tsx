@@ -12,9 +12,8 @@ import {
 } from '@/components/ui/select';
 import { addDays, format } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { useSearchParams } from 'next/navigation';
 
 export default function Filters() {
 	const searchParams = useSearchParams();
@@ -38,8 +37,9 @@ export default function Filters() {
 		if (dateRange.from && dateRange.to) {
 			const formattedFrom = format(dateRange.from, 'yyyy-MM-dd');
 			const formattedTo = format(dateRange.to, 'yyyy-MM-dd');
+
 			// Atualiza a URL sem recarregar a página (opção shallow para evitar recarregamento total)
-			startTransition(() => {
+			startTransition(async () => {
 				router.push(
 					`/dashboard/marketing?startDate=${encodeURIComponent(
 						formattedFrom,

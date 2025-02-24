@@ -1,23 +1,42 @@
 /** @format */
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-	TableHeader,
-	TableRow,
-	TableHead,
+	Table,
 	TableBody,
 	TableCell,
-	Table,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from '@/components/ui/table';
 import { Trophy } from 'lucide-react';
-import React from 'react';
 
-export default function TopAdwords() {
+interface MetricsProps {
+	clicks: number;
+	conversions: number;
+	ctr: number;
+	impressions: number;
+}
+
+interface ADGroupProps {
+	keyword: { text: string };
+}
+
+interface TopAdwordsProps {
+	metrics: MetricsProps;
+	ad_group_criterion: ADGroupProps;
+}
+
+interface AllDataProps {
+	data: TopAdwordsProps[];
+}
+
+export default function TopAdwords({ data }: AllDataProps) {
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-2xl'>
-					Top 5 Palavras-Chave por Eficiência
+					Top 5 Palavras-Chave por Conversão
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
@@ -26,59 +45,57 @@ export default function TopAdwords() {
 						<TableRow>
 							<TableHead className='text-nowrap'>Palavra-Chave</TableHead>
 							<TableHead className='text-center'>CTR</TableHead>
+							<TableHead className='text-center'>Impressões</TableHead>
+							<TableHead className='text-center'>Cliques</TableHead>
 							<TableHead className='text-center'>Conversões</TableHead>
-							<TableHead className='text-center'>CPC</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						<TableRow className='text-center'>
-							<TableCell className='text-nowrap text-left flex items-center gap-2'>
-								<Trophy
-									size={20}
-									className='text-amber-500'
-								/>
-								marketing digital
-							</TableCell>
-							<TableCell>4.5%</TableCell>
-							<TableCell className='text-center'>50</TableCell>
-							<TableCell className='text-nowrap'>R$ 1.20</TableCell>
-						</TableRow>
-						<TableRow className='text-center'>
-							<TableCell className='text-nowrap text-left flex items-center gap-2'>
-								<Trophy
-									size={20}
-									className='text-zinc-400'
-								/>
-								palavra 2
-							</TableCell>
-							<TableCell>3.8%</TableCell>
-							<TableCell className='text-center'>35</TableCell>
-							<TableCell>R$ 1.50</TableCell>
-						</TableRow>
-						<TableRow className='text-center'>
-							<TableCell className='text-nowrap text-left flex items-center gap-2'>
-								<Trophy
-									size={20}
-									className='text-rose-700'
-								/>
-								palavra 3
-							</TableCell>
-							<TableCell>3.8%</TableCell>
-							<TableCell className='text-center'>35</TableCell>
-							<TableCell>R$ 1.50</TableCell>
-						</TableRow>
-						<TableRow className='text-center'>
-							<TableCell className='text-left'>palavra 4</TableCell>
-							<TableCell>3.8%</TableCell>
-							<TableCell>35</TableCell>
-							<TableCell>R$ 1.50</TableCell>
-						</TableRow>
-						<TableRow className='text-center'>
-							<TableCell className='text-left'>palavra 5</TableCell>
-							<TableCell>3.8%</TableCell>
-							<TableCell>35</TableCell>
-							<TableCell>R$ 1.50</TableCell>
-						</TableRow>
+						{data.map((item, index) => {
+							return (
+								<TableRow
+									key={index}
+									className='text-center'>
+									<TableCell className='text-nowrap text-xs text-left flex items-center gap-2'>
+										{index == 0 ? (
+											<Trophy
+												size={16}
+												className='text-amber-500'
+											/>
+										) : index == 1 ? (
+											<Trophy
+												size={16}
+												className='text-zinc-400'
+											/>
+										) : index == 2 ? (
+											<Trophy
+												size={16}
+												className='text-rose-700'
+											/>
+										) : (
+											<></>
+										)}
+										{item.ad_group_criterion.keyword.text}
+									</TableCell>
+									<TableCell>
+										{item.metrics.ctr.toLocaleString('pt-BR', {
+											style: 'percent',
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
+									</TableCell>
+									<TableCell className='text-center'>
+										{item.metrics.impressions.toLocaleString('pt-BR')}
+									</TableCell>
+									<TableCell className='text-nowrap'>
+										{item.metrics.clicks.toLocaleString('pt-BR')}
+									</TableCell>
+									<TableCell className='text-nowrap'>
+										{item.metrics.conversions.toLocaleString('pt-BR')}
+									</TableCell>
+								</TableRow>
+							);
+						})}
 					</TableBody>
 				</Table>
 			</CardContent>
