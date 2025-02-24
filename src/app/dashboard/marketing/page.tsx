@@ -31,13 +31,13 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function MarketingPage(props: {
 	searchParams: SearchParams;
 }) {
-	async function formattedEndDate() {
+	function formattedEndDate() {
 		const date = new Date();
 		const endDate = date.toISOString().split('T')[0];
 		return endDate;
 	}
 
-	async function formattedStartDate() {
+	function formattedStartDate() {
 		const date = new Date();
 		date.setDate(date.getDate() - 7);
 		const startDate = date.toISOString().split('T')[0];
@@ -45,18 +45,17 @@ export default async function MarketingPage(props: {
 	}
 
 	const searchParams = await props.searchParams;
-	const startDate = searchParams.startDate || (await formattedStartDate());
-	const endDate = searchParams.endDate || (await formattedEndDate());
+	const startDate = searchParams.startDate || formattedStartDate();
+	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 
-	const [responseADS, responseAnalytics] = await Promise.all([
-		FetchADSData(String(startDate), String(endDate)),
-		FetchAnalyticsData(
-			String(startDate),
-			String(endDate),
-			String(channelFilter),
-		),
-	]);
+	const responseADS = await FetchADSData(String(startDate), String(endDate));
+
+	const responseAnalytics = await FetchAnalyticsData(
+		String(startDate),
+		String(endDate),
+		String(channelFilter),
+	);
 
 	if (
 		!responseAnalytics.ok ||

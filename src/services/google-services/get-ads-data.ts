@@ -6,7 +6,7 @@ export async function FetchADSData(startDate: string, endDate: string) {
 		`${baseURL}/api/services/google-services/get-ads-data?startDate=${startDate}&endDate=${endDate}`,
 		{
 			method: 'GET',
-			
+			next: { revalidate: 3600 },
 		},
 	);
 
