@@ -76,6 +76,8 @@ export default async function MarketingPage(props: {
 	const topAds = responseADS.data[1];
 	const topKeyWords = responseADS.data[2];
 
+	console.log(responseADS, responseAnalytics);
+
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
 			<div className='w-full flex justify-center md:justify-start flex-wrap gap-4 mb-4'>
