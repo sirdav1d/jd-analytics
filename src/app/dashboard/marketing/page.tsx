@@ -49,22 +49,13 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 
-	// const responseADS = await FetchADSData(String(startDate), String(endDate));
+	const responseADS = await FetchADSData(String(startDate), String(endDate));
 
-	// const responseAnalytics = await FetchAnalyticsData(
-	// 	String(startDate),
-	// 	String(endDate),
-	// 	String(channelFilter),
-	// );
-
-	const [responseADS, responseAnalytics] = await Promise.all([
-		FetchADSData(String(startDate), String(endDate)),
-		FetchAnalyticsData(
-			String(startDate),
-			String(endDate),
-			String(channelFilter),
-		),
-	]);
+	const responseAnalytics = await FetchAnalyticsData(
+		String(startDate),
+		String(endDate),
+		String(channelFilter),
+	);
 
 	if (
 		!responseAnalytics.ok ||
