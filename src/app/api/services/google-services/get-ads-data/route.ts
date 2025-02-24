@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
 			login_customer_id: '8251122454',
 		});
 
-		const campaigns = await customer.report({
+		const campaignsPromise = await customer.report({
 			entity: 'campaign',
 			attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
 			metrics: ['metrics.impressions', 'metrics.clicks', 'metrics.conversions'],
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 			to_date: endDate!,
 		});
 
-		const topAds = await customer.report({
+		const topAdsPromise = await customer.report({
 			entity: 'ad_group_ad',
 			attributes: [
 				'ad_group_ad.ad.id',
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
 			to_date: endDate!,
 		});
 
-		const topKeyWords = await customer.report({
+		const topKeyWordsPromise = await customer.report({
 			entity: 'keyword_view',
 			attributes: [
 				'ad_group_criterion.keyword.text',
@@ -118,6 +118,12 @@ export async function GET(req: NextRequest) {
 			from_date: startDate!,
 			to_date: endDate!,
 		});
+
+		const [campaigns, topAds, topKeyWords] = await Promise.all([
+			campaignsPromise,
+			topAdsPromise,
+			topKeyWordsPromise,
+		]);
 
 		// Verifica se há dados antes de retornar
 		if (!campaigns || campaigns.length === 0) {
