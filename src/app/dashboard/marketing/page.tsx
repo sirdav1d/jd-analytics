@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { CampagnComponent } from './_components/charts/campaings';
 import { ConversionsComponent } from './_components/charts/conversion';
+import { CostsComponent } from './_components/charts/cost';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
 import ListStaticADS from './_components/list-static-ads';
@@ -95,17 +96,7 @@ export default async function MarketingPage(props: {
 				impressions={AccountMetrics.impressions}
 			/>
 			{/* Gráficos */}
-			<Card>
-				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
-						Top 5 Campanhas por Conversão
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<CampagnComponent data={responseADS.data[0]} />
-				</CardContent>
-			</Card>
-			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
@@ -151,20 +142,32 @@ export default async function MarketingPage(props: {
 					</CardContent>
 				</Card>
 			</div>
-
-			{/* <Card>
+			<Card>
 				<CardHeader>
 					<CardTitle className='text-base text-balance md:text-2xl'>
-						Faturamento por Campanha
+						Top 5 Campanhas por Conversão
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<RevenueComponent />
+					<CampagnComponent data={responseADS.data[0]} />
 				</CardContent>
-			</Card> */}
-
+			</Card>
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Desempenho e Custos
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<CostsComponent
+						impressions={AccountMetrics.impressions}
+						clicks={AccountMetrics.clicks}
+						cost_micros={AccountMetrics.cost_micros}
+						conversions={AccountMetrics.conversions}
+					/>
+				</CardContent>
+			</Card>
 			{/* Tabelas */}
-
 			<Card className='xl:hidden'>
 				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 					<CardTitle className='text-sm font-medium'>
@@ -250,7 +253,11 @@ export default async function MarketingPage(props: {
 						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>{staticData.sessions ?? 0}</div>
+						<div className='text-2xl font-bold'>
+							{staticData.sessions
+								? Number(staticData.sessions).toLocaleString('pt-BR')
+								: 0}
+						</div>
 						<p className='text-xs text-muted-foreground'>
 							+15% em relação ao mês anterior
 						</p>
@@ -263,7 +270,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{staticData.totalUsers ?? 0}
+							{Number(staticData.totalUsers).toLocaleString('pt-BR') ?? 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+10% em relação ao mês anterior
@@ -280,7 +287,7 @@ export default async function MarketingPage(props: {
 					<CardContent>
 						<div className='text-2xl font-bold'>
 							{staticData.sessionConversionRate
-								? Number(staticData.sessionConversionRate).toPrecision(2)
+								? Number(staticData.sessionConversionRate * 100).toFixed(2)
 								: 0}
 							%
 						</div>
@@ -299,7 +306,7 @@ export default async function MarketingPage(props: {
 					<CardContent>
 						<div className='text-2xl font-bold'>
 							{staticData.bounceRate
-								? Number(staticData.bounceRate).toPrecision(2)
+								? Number(staticData.bounceRate * 100).toFixed(2)
 								: 0}
 							%
 						</div>
@@ -339,7 +346,7 @@ export default async function MarketingPage(props: {
 								? calculatePagesPerSession(
 										Number(staticData.sessions),
 										Number(staticData.screenPageViews),
-								  ).toFixed(2)
+								  ).toLocaleString('pt-BR')
 								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>

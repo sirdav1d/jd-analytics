@@ -27,7 +27,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
-export default function AppSidebar() {
+export default function AppSidebar({ name }: { name: string }) {
 	const items = [
 		{
 			title: 'Home',
@@ -153,7 +153,7 @@ export default function AppSidebar() {
 								href={'/dashboard/profile'}
 								prefetch={true}>
 								<User2 />
-								<span>Meu Perfil</span>
+								<span className='text-ellipsis'>{name}</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

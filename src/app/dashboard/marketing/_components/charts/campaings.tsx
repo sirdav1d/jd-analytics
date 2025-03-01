@@ -19,6 +19,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsTablet } from '@/hooks/use-mobile';
 import { getTop5CampaignsByConversions } from '@/utils/get-top-campaigns';
 
 interface MetricsProps {
@@ -59,6 +60,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function CampagnComponent({ data }: DataProps) {
+	const isTablet = useIsTablet();
 	const formattedData = getTop5CampaignsByConversions(data);
 	const chartData = formattedData.map((data) => {
 		return {
@@ -85,6 +87,8 @@ export function CampagnComponent({ data }: DataProps) {
 					tickMargin={12}
 					tickLine={false}
 					axisLine={false}
+					hide={isTablet}
+					fontSize={12}
 				/>
 				<YAxis
 					scale={'sqrt'}

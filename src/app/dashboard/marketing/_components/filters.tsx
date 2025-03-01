@@ -55,7 +55,7 @@ export default function Filters() {
 	};
 
 	return (
-		<div className='md:w-fit flex items-center flex-col md:flex-row  w-full gap-4 h-fit'>
+		<div className='md:w-fit flex-wrap flex items-center flex-col md:flex-row  w-full gap-4 h-fit'>
 			<Button
 				onClick={(e) => handleDateChange(e)}
 				className='disabled:opacity-70 w-full md:w-fit'
@@ -88,9 +88,15 @@ export default function Filters() {
 					<SelectItem value='Paid Search'>Pago</SelectItem>
 					<SelectItem value='Social'>Social</SelectItem>
 					<SelectItem value='Direct'>Direto</SelectItem>
+					<SelectItem
+						disabled
+						value='Outros'>
+						Outros
+					</SelectItem>
 				</SelectContent>
 			</Select>
 			<Select
+				disabled
 				value={campaign}
 				onValueChange={setCampaign}>
 				<SelectTrigger className='w-full md:w-48'>

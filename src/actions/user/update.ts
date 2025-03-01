@@ -35,6 +35,7 @@ export async function updateUserAction({ userUp }: updateUserActionProps) {
 		}
 		//enviar credenciais para e-mail cadastrado
 		revalidateTag('users');
+		revalidateTag('user');
 		return {
 			error: null,
 			ok: true,

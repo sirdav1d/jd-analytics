@@ -14,15 +14,21 @@ export default async function UserProfile() {
 	const response = await fetch(
 		`${baseURL}/api/services/user-get-by-email`,
 
-		{ method: 'POST', body: JSON.stringify({ email: session.user?.email }) },
+		{
+			method: 'GET',
+			headers: {
+				'X-My-Custom-Header': String(session.user?.email),
+			},
+			cache: 'no-store',
+			next: { tags: ['user'] },
+		},
 	);
 
 	const { data } = await response.json();
 	return (
 		<div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
-			<div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
+			<div className='grid grid-cols-1 xl:grid-cols-2 gap-5'>
 				<UserInfo user={data} />
-
 				<UserConfigAccount userEmail={data.email} />
 			</div>
 		</div>
