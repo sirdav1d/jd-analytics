@@ -1,21 +1,20 @@
 /** @format */
 
-import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
 import { prisma } from '@/lib/prisma';
 import { GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { success, error } = await refreshAccessTokenAction();
+	// const { success, error } = await refreshAccessTokenAction();
 
-	if (!success || error) {
-		console.log(error);
-		return NextResponse.json({
-			error: 'Erro ao buscar dados do Google ADS' + error,
-			ok: false,
-			data: null,
-		});
-	}
+	// if (!success || error) {
+	// 	console.log(error);
+	// 	return NextResponse.json({
+	// 		error: 'Erro ao buscar dados do Google ADS' + error,
+	// 		ok: false,
+	// 		data: null,
+	// 	});
+	// }
 
 	const organization = await prisma.organization.findFirst();
 
@@ -119,7 +118,20 @@ export async function GET(req: NextRequest) {
 			to_date: endDate!,
 		});
 
-	
+		const dataADS = await customer.report({
+			entity: 'customer',
+			metrics: [
+				'metrics.ctr',
+				'metrics.impressions',
+				'metrics.clicks',
+				'metrics.cost_micros',
+			],
+			from_date: startDate!,
+			to_date: endDate!,
+		});
+
+		const metrics = dataADS[0].metrics;
+
 		// Verifica se há dados antes de retornar
 		if (!campaigns || campaigns.length === 0) {
 			return NextResponse.json({
@@ -131,7 +143,7 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json({
 			ok: true,
-			data: [campaigns, topAds, topKeyWords],
+			data: [campaigns, topAds, topKeyWords, metrics],
 			error: null,
 		});
 	} catch (error) {

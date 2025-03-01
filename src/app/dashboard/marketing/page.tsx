@@ -73,10 +73,10 @@ export default async function MarketingPage(props: {
 	const staticData = responseAnalytics.data[0];
 	const trafficData = responseAnalytics.data[1];
 	const channelData = responseAnalytics.data[2];
+
 	const topAds = responseADS.data[1];
 	const topKeyWords = responseADS.data[2];
-
-	console.log(responseADS, responseAnalytics);
+	const AccountMetrics = responseADS.data[3];
 
 	return (
 		<div className='w-full mx-auto space-y-4 pb-5'>
@@ -88,6 +88,83 @@ export default async function MarketingPage(props: {
 				</p>
 			</div>
 			{/* KPIs Principais */}
+			<ListStaticADS
+				clicks={AccountMetrics.clicks}
+				cost_micros={AccountMetrics.cost_micros}
+				ctr={AccountMetrics.ctr}
+				impressions={AccountMetrics.impressions}
+			/>
+			{/* Gráficos */}
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Top 5 Campanhas por Conversão
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<CampagnComponent data={responseADS.data[0]} />
+				</CardContent>
+			</Card>
+			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Distribuição de Tráfego
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						{trafficData ? (
+							<TrafficComponent
+								Organico={Number(trafficData['Organic Search'])}
+								Pago={Number(trafficData['Paid Search'])}
+								Social={Number(trafficData.Social)}
+								Direto={Number(trafficData.Direct)}
+								Outros={Number(trafficData.Other)}
+							/>
+						) : (
+							<div className='flex items-center italic text-muted-foreground'>
+								Nenhum Valor Encontrado
+							</div>
+						)}
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Performance por Canal de Mídia
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						{channelData ? (
+							<ConversionsComponent
+								Organic={channelData['Organic Search']}
+								Direct={channelData.Direct}
+								Other={channelData.Other}
+								Paid={channelData['Paid Search']}
+								Social={channelData.Social}
+							/>
+						) : (
+							<div className='flex items-center italic text-muted-foreground'>
+								Nenhum Valor Encontrado
+							</div>
+						)}
+					</CardContent>
+				</Card>
+			</div>
+
+			{/* <Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Faturamento por Campanha
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<RevenueComponent />
+				</CardContent>
+			</Card> */}
+
+			{/* Tabelas */}
+
 			<Card className='xl:hidden'>
 				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 					<CardTitle className='text-sm font-medium'>
@@ -152,7 +229,7 @@ export default async function MarketingPage(props: {
 						</p>
 					</CardContent>
 				</Card>
-				<Card>
+				<Card className='opacity-50'>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
 							Faturamento de Loja Física{' '}
@@ -163,17 +240,8 @@ export default async function MarketingPage(props: {
 						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
-							{staticData.purchaseRevenue
-								? Number(staticData.purchaseRevenue).toLocaleString('pt-br', {
-										style: 'currency',
-										currency: 'brl',
-								  })
-								: 0}
-						</div>
-						<p className='text-xs text-muted-foreground'>
-							+20% em relação ao mês anterior
-						</p>
+						<div className='text-2xl font-bold'>Entrada Manual</div>
+						<p className='text-xs text-muted-foreground'>Entrada Manual</p>
 					</CardContent>
 				</Card>
 				<Card>
@@ -280,80 +348,6 @@ export default async function MarketingPage(props: {
 					</CardContent>
 				</Card>
 			</div>
-
-			{/* Gráficos */}
-			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Distribuição de Tráfego
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{trafficData ? (
-							<TrafficComponent
-								Organico={Number(trafficData['Organic Search'])}
-								Pago={Number(trafficData['Paid Search'])}
-								Social={Number(trafficData.Social)}
-								Direto={Number(trafficData.Direct)}
-								Outros={Number(trafficData.Other)}
-							/>
-						) : (
-							<div className='flex items-center italic text-muted-foreground'>
-								Nenhum Valor Encontrado
-							</div>
-						)}
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Performance por Canal de Mídia
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{channelData ? (
-							<ConversionsComponent
-								Organic={channelData['Organic Search']}
-								Direct={channelData.Direct}
-								Other={channelData.Other}
-								Paid={channelData['Paid Search']}
-								Social={channelData.Social}
-							/>
-						) : (
-							<div className='flex items-center italic text-muted-foreground'>
-								Nenhum Valor Encontrado
-							</div>
-						)}
-					</CardContent>
-				</Card>
-			</div>
-			<Card>
-				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
-						Top 5 Campanhas por Conversão
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<CampagnComponent data={responseADS.data[0]} />
-				</CardContent>
-			</Card>
-
-			{/* GOOGLE ADS */}
-
-			{/* <Card>
-				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
-						Faturamento por Campanha
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<RevenueComponent />
-				</CardContent>
-			</Card> */}
-			{/* Métricas Adicionais */}
-			<ListStaticADS />
-			{/* Tabelas */}
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
 				<TopAnuncios data={topAds} />
 				<TopAdwords data={topKeyWords} />

@@ -11,11 +11,11 @@ export async function FetchAnalyticsData(
 		{
 			method: 'GET',
 			next: { revalidate: 120 },
+			cache: 'force-cache',
 		},
 	);
 
 	if (!response.ok) {
-		console.log(response);
 		return {
 			ok: false,
 			data: null,
