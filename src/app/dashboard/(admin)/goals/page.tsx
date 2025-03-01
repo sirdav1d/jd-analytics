@@ -36,7 +36,7 @@ export default function GoalsPage() {
 							</p>
 							<p className='space-x-2'>
 								<small>ROAS:</small>
-								<span className='font-semibold text-lg'>20</span>
+								<span className='font-semibold text-lg'>20x</span>
 							</p>
 						</div>
 						<Separator className='my-10' />
@@ -62,35 +62,35 @@ export default function GoalsPage() {
 										nome: 'Ana Silva',
 										faturamento: 'R$ 150.000,00',
 										ticketAvarage: 'R$ 1500,00',
-										vendas: 20,
+										roas: 20,
 									},
 									{
 										data: '03/2025',
 										nome: 'Carlos Santos',
 										faturamento: 'R$ 145.000,00',
 										ticketAvarage: 'R$ 1500,00',
-										vendas: 20,
+										roas: 20,
 									},
 									{
 										data: '04/2025',
 										nome: 'Mariana Oliveira',
 										faturamento: 'R$ 140.000,00',
 										ticketAvarage: 'R$ 1500,00',
-										vendas: 20,
+										roas: 20,
 									},
 									{
 										data: '05/2025',
 										nome: 'Roberto Alves',
 										faturamento: 'R$ 135.000,00',
 										ticketAvarage: 'R$ 1500,00',
-										vendas: 20,
+										roas: 20,
 									},
 									{
 										data: '06/2025',
 										nome: 'Juliana Costa',
 										faturamento: 'R$ 130.000,00',
 										ticketAvarage: 'R$ 1500,00',
-										vendas: 20,
+										roas: 20,
 									},
 								].map((vendedor) => (
 									<TableRow key={vendedor.data}>
@@ -104,7 +104,7 @@ export default function GoalsPage() {
 											{vendedor.ticketAvarage}
 										</TableCell>
 										<TableCell className='text-nowrap text-center'>
-											{vendedor.vendas}
+											{vendedor.roas}x
 										</TableCell>
 									</TableRow>
 								))}
@@ -202,19 +202,6 @@ export default function GoalsPage() {
 					</CardContent>
 				</Card>
 			</div>
-			<div className='grid md:grid-cols-2 gap-5'></div>
-			{/* <div className='grid grid-cols-1 xl:grid-cols-2 gap-5'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Metas Futuras - Comercial
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						
-					</CardContent>
-				</Card>
-			</div> */}
 		</div>
 	);
 }
