@@ -48,7 +48,7 @@ export default function GoalsPage() {
 									<TableHead>Data</TableHead>
 									<TableHead>Faturamento</TableHead>
 									<TableHead className='text-nowrap text-center'>
-										Taxa de Conversão
+										Investimento
 									</TableHead>
 									<TableHead className='text-nowrap text-center'>
 										ROAS
@@ -61,35 +61,35 @@ export default function GoalsPage() {
 										data: '02/2025',
 										nome: 'Ana Silva',
 										faturamento: 'R$ 150.000,00',
-										ticketAvarage: 'R$ 1500,00',
+										ticketAvarage: 'R$ 7500,00',
 										roas: 20,
 									},
 									{
 										data: '03/2025',
 										nome: 'Carlos Santos',
 										faturamento: 'R$ 145.000,00',
-										ticketAvarage: 'R$ 1500,00',
+										ticketAvarage: 'R$ 7250,00',
 										roas: 20,
 									},
 									{
 										data: '04/2025',
 										nome: 'Mariana Oliveira',
 										faturamento: 'R$ 140.000,00',
-										ticketAvarage: 'R$ 1500,00',
+										ticketAvarage: 'R$ 7000,00',
 										roas: 20,
 									},
 									{
 										data: '05/2025',
 										nome: 'Roberto Alves',
 										faturamento: 'R$ 135.000,00',
-										ticketAvarage: 'R$ 1500,00',
+										ticketAvarage: 'R$ 6750,00',
 										roas: 20,
 									},
 									{
 										data: '06/2025',
 										nome: 'Juliana Costa',
 										faturamento: 'R$ 130.000,00',
-										ticketAvarage: 'R$ 1500,00',
+										ticketAvarage: 'R$ 6500,00',
 										roas: 20,
 									},
 								].map((vendedor) => (
