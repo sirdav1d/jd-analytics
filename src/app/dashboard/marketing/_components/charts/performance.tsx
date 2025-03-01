@@ -19,19 +19,18 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { formatCurrency } from '@/utils/format-currency';
 
-const chartConfigCost = {
-	cpm: {
-		label: 'CPM',
+const chartConfig = {
+	impressions: {
+		label: 'Impressões',
 		color: 'hsl(var(--chart-1))',
 	},
-	cpc: {
-		label: 'CPC',
+	clicks: {
+		label: 'Cliques',
 		color: 'hsl(var(--chart-2))',
 	},
-	cpa: {
-		label: 'CPA',
+	conversions: {
+		label: 'Conversões',
 		color: 'hsl(var(--chart-3))',
 	},
 } satisfies ChartConfig;
@@ -42,44 +41,39 @@ interface CostsComponentProps {
 	cost_micros: number;
 	conversions: number;
 }
-export function CostsComponent({
+export function PerformanceComponent({
 	clicks,
 	conversions,
 	cost_micros,
 	impressions,
 }: CostsComponentProps) {
-	const milImpressions = impressions / 1000;
-	const costNormalize = cost_micros / 1000000;
-
-	const chartDataCost = [
+	const chartData = [
 		{
-			cpm: impressions === 0 ? 0 : costNormalize / milImpressions,
-			cpc: clicks == 0 ? 0 : costNormalize / clicks,
-			cpa: conversions == 0 ? 0 : costNormalize / conversions,
+			impressions: impressions ?? 0,
+			clicks: clicks ?? 0,
+			conversions: conversions ?? 0,
+			totalCost: cost_micros ?? 0,
 		},
 	];
+
 	return (
 		<ChartContainer
 			className='h-80 md:h-72 w-full'
-			config={chartConfigCost}>
+			config={chartConfig}>
 			<BarChart
 				accessibilityLayer
 				layout='vertical'
 				margin={{
 					right: 80,
 				}}
-				data={chartDataCost}>
+				data={chartData}>
 				<CartesianGrid horizontal={false} />
 				<YAxis
-					dataKey='cpm'
-					tickMargin={12}
 					type='category'
-					tickLine={false}
-					axisLine={false}
 					hide
 				/>
 				<XAxis
-					dataKey='cpm'
+					dataKey='impressions'
 					type='number'
 					scale={'sqrt'}
 					hide
@@ -91,44 +85,44 @@ export function CostsComponent({
 
 				<Bar
 					radius={4}
-					dataKey='cpm'
+					dataKey='impressions'
 					layout='vertical'
-					fill='var(--color-cpm)'>
+					fill='var(--color-impressions)'>
 					<LabelList
-						dataKey={'cpm'}
+						dataKey={'impressions'}
 						position='right'
 						offset={8}
 						className='fill-foreground'
 						fontSize={10}
-						formatter={(value: number) => formatCurrency(value)}
+						formatter={(value: number) => value.toLocaleString('pt-BR')}
 					/>
 				</Bar>
 				<Bar
 					radius={4}
-					dataKey='cpc'
+					dataKey='clicks'
 					layout='vertical'
-					fill='var(--color-cpc)'>
+					fill='var(--color-clicks)'>
 					<LabelList
-						dataKey={'cpc'}
+						dataKey={'clicks'}
 						position='right'
 						offset={8}
 						className='fill-foreground'
 						fontSize={10}
-						formatter={(value: number) => formatCurrency(value)}
+						formatter={(value: number) => value.toLocaleString('pt-BR')}
 					/>
 				</Bar>
 				<Bar
 					radius={4}
-					dataKey='cpa'
+					dataKey='conversions'
 					layout='vertical'
-					fill='var(--color-cpa)'>
+					fill='var(--color-conversions)'>
 					<LabelList
-						dataKey={'cpa'}
+						dataKey={'conversions'}
 						position='right'
 						offset={8}
 						className='fill-foreground'
 						fontSize={10}
-						formatter={(value: number) => formatCurrency(value)}
+						formatter={(value: number) => value.toLocaleString('pt-BR')}
 					/>
 				</Bar>
 				<ChartLegend content={<ChartLegendContent />} />

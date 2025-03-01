@@ -26,6 +26,7 @@ import Filters from './_components/filters';
 import ListStaticADS from './_components/list-static-ads';
 import TopAdwords from './_components/tables/top-adwords';
 import TopAnuncios from './_components/tables/top-anuncios';
+import { PerformanceComponent } from './_components/charts/performance';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -152,21 +153,39 @@ export default async function MarketingPage(props: {
 					<CampagnComponent data={responseADS.data[0]} />
 				</CardContent>
 			</Card>
-			<Card>
-				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
-						Desempenho e Custos
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<CostsComponent
-						impressions={AccountMetrics.impressions}
-						clicks={AccountMetrics.clicks}
-						cost_micros={AccountMetrics.cost_micros}
-						conversions={AccountMetrics.conversions}
-					/>
-				</CardContent>
-			</Card>
+			<div className='flex items-center gap-5 w-full flex-col xl:flex-row'>
+				<Card className='w-full'>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Desempenho Geral
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<PerformanceComponent
+							impressions={AccountMetrics.impressions}
+							clicks={AccountMetrics.clicks}
+							cost_micros={AccountMetrics.cost_micros}
+							conversions={AccountMetrics.conversions}
+						/>
+					</CardContent>
+				</Card>
+				<Card className='w-full'>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Custos por Desempenho
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<CostsComponent
+							impressions={AccountMetrics.impressions}
+							clicks={AccountMetrics.clicks}
+							cost_micros={AccountMetrics.cost_micros}
+							conversions={AccountMetrics.conversions}
+						/>
+					</CardContent>
+				</Card>
+			</div>
+
 			{/* Tabelas */}
 			<Card className='xl:hidden'>
 				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -255,7 +274,14 @@ export default async function MarketingPage(props: {
 					<CardContent>
 						<div className='text-2xl font-bold'>
 							{staticData.sessions
-								? Number(staticData.sessions).toLocaleString('pt-BR')
+								? Number(staticData.sessions).toLocaleString('pt-BR', {
+										style: 'decimal',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										minimumSignificantDigits: 2,
+										maximumSignificantDigits: 2,
+										notation: 'compact',
+								  })
 								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
