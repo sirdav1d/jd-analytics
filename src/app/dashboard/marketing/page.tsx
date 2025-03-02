@@ -36,15 +36,6 @@ type Params = { [key: string]: string | string[] | undefined };
 export default async function MarketingPage(props: {
 	searchParams: SearchParams;
 }) {
-	const searchParams = await props.searchParams;
-	return (
-		<Suspense fallback={<PageSeleton />}>
-			<Marketing searchParams={searchParams} />
-		</Suspense>
-	);
-}
-
-export async function Marketing({ searchParams }: { searchParams: Params }) {
 	function formattedEndDate() {
 		const date = new Date();
 		const endDate = date.toISOString().split('T')[0];
@@ -57,9 +48,32 @@ export async function Marketing({ searchParams }: { searchParams: Params }) {
 		const startDate = date.toISOString().split('T')[0];
 		return startDate;
 	}
+	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
+	return (
+		<Suspense fallback={<PageSeleton />}>
+			<Marketing
+				channel={channelFilter}
+				endDate={endDate}
+				startDate={startDate}
+			/>
+		</Suspense>
+	);
+}
+
+interface MarketingProps {
+	startDate: string | string[];
+	endDate: string | string[];
+	channel: string | string[];
+}
+export async function Marketing({
+	channel,
+	endDate,
+	startDate,
+}: MarketingProps) {
+	const channelFilter = channel || 'all';
 
 	const responseADS = await FetchADSData(String(startDate), String(endDate));
 
