@@ -17,15 +17,18 @@ export default function PageSeleton() {
 				<Skeleton className='w-full  h-32'></Skeleton>
 			</div>
 			<div className='flex gap-5'>
-				<Skeleton className='w-full  h-64'></Skeleton>
-				<Skeleton className='w-full  h-64'></Skeleton>
+				<Skeleton className='w-full  h-80'></Skeleton>
+				<Skeleton className='w-full  h-80'></Skeleton>
 			</div>
-			<Skeleton className='w-full  h-64'></Skeleton>
+			<Skeleton className='w-full  h-80'></Skeleton>
 			<div className='flex gap-5'>
-				<Skeleton className='w-full  h-64'></Skeleton>
-				<Skeleton className='w-full  h-64'></Skeleton>
+				<Skeleton className='w-full  h-80'></Skeleton>
+				<Skeleton className='w-full  h-80'></Skeleton>
 			</div>
 			<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5'>
+				<Skeleton className='w-full  h-32'></Skeleton>
+				<Skeleton className='w-full  h-32'></Skeleton>
+				<Skeleton className='w-full  h-32'></Skeleton>
 				<Skeleton className='w-full  h-32'></Skeleton>
 				<Skeleton className='w-full  h-32'></Skeleton>
 				<Skeleton className='w-full  h-32'></Skeleton>

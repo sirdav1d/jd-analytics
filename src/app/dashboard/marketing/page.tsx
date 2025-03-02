@@ -31,19 +31,20 @@ import { Suspense } from 'react';
 import PageSeleton from './_components/page-skeleton';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+type Params = { [key: string]: string | string[] | undefined };
 
-export default async function MarketingWrapper(props: {
+export default async function MarketingPage(props: {
 	searchParams: SearchParams;
 }) {
-	const searchParams = props.searchParams;
+	const searchParams = await props.searchParams;
 	return (
 		<Suspense fallback={<PageSeleton />}>
-			<MarketingPage searchParams={searchParams} />
+			<Marketing searchParams={searchParams} />
 		</Suspense>
 	);
 }
 
-export async function MarketingPage(props: { searchParams: SearchParams }) {
+export async function Marketing(props: { searchParams: Params }) {
 	function formattedEndDate() {
 		const date = new Date();
 		const endDate = date.toISOString().split('T')[0];
@@ -57,7 +58,7 @@ export async function MarketingPage(props: { searchParams: SearchParams }) {
 		return startDate;
 	}
 
-	const searchParams = await props.searchParams;
+	const searchParams = props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
