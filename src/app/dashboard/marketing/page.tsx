@@ -18,20 +18,19 @@ import {
 	Percent,
 	UserRoundCheck,
 } from 'lucide-react';
+import { Suspense } from 'react';
 import { CampagnComponent } from './_components/charts/campaings';
 import { ConversionsComponent } from './_components/charts/conversion';
 import { CostsComponent } from './_components/charts/cost';
+import { PerformanceComponent } from './_components/charts/performance';
 import { TrafficComponent } from './_components/charts/traffic';
 import Filters from './_components/filters';
 import ListStaticADS from './_components/list-static-ads';
+import PageSeleton from './_components/page-skeleton';
 import TopAdwords from './_components/tables/top-adwords';
 import TopAnuncios from './_components/tables/top-anuncios';
-import { PerformanceComponent } from './_components/charts/performance';
-import { Suspense } from 'react';
-import PageSeleton from './_components/page-skeleton';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-type Params = { [key: string]: string | string[] | undefined };
 
 export default async function MarketingPage(props: {
 	searchParams: SearchParams;
