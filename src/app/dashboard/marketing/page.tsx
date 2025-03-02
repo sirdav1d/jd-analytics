@@ -44,7 +44,7 @@ export default async function MarketingPage(props: {
 	);
 }
 
-export async function Marketing(props: { searchParams: Params }) {
+export async function Marketing({ searchParams }: { searchParams: Params }) {
 	function formattedEndDate() {
 		const date = new Date();
 		const endDate = date.toISOString().split('T')[0];
@@ -57,8 +57,6 @@ export async function Marketing(props: { searchParams: Params }) {
 		const startDate = date.toISOString().split('T')[0];
 		return startDate;
 	}
-
-	const searchParams = props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
