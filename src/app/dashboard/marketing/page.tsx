@@ -27,12 +27,23 @@ import ListStaticADS from './_components/list-static-ads';
 import TopAdwords from './_components/tables/top-adwords';
 import TopAnuncios from './_components/tables/top-anuncios';
 import { PerformanceComponent } from './_components/charts/performance';
+import { Suspense } from 'react';
+import PageSeleton from './_components/page-skeleton';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export default async function MarketingPage(props: {
+export default async function MarketingWrapper(props: {
 	searchParams: SearchParams;
 }) {
+	const searchParams = props.searchParams;
+	return (
+		<Suspense fallback={<PageSeleton />}>
+			<MarketingPage searchParams={searchParams} />
+		</Suspense>
+	);
+}
+
+export async function MarketingPage(props: { searchParams: SearchParams }) {
 	function formattedEndDate() {
 		const date = new Date();
 		const endDate = date.toISOString().split('T')[0];
