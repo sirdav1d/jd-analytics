@@ -22,14 +22,14 @@ import MetaComercialForm from './_components/meta-comercial-form';
 export default function GoalsPage() {
 	return (
 		<div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
-			<div className='grid md:grid-cols-2 gap-5'>
-				<Card>
+			<div className='grid xl:grid-cols-2 gap-5'>
+				<Card className='max-w-[348px] w-full md:max-w-full mx-auto'>
 					<CardHeader>
 						<CardTitle>Meta de Marketing</CardTitle>
 						<CardDescription>Meta válida para 02/2025</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className='flex items-center gap-10 w-full'>
+						<div className='flex flex-col md:flex-row md:items-center md:gap-10'>
 							<p className='space-x-2'>
 								<small>Faturamento:</small>
 								<span className='font-semibold text-lg'>R$ 100.000,00</span>
@@ -112,7 +112,7 @@ export default function GoalsPage() {
 						</Table>
 					</CardContent>
 				</Card>
-				<Card className='opacity-50'>
+				<Card className='opacity-50 max-w-[356px] w-full md:max-w-full mx-auto'>
 					<CardHeader>
 						<CardTitle>Meta Comercial Atual</CardTitle>
 						<CardDescription>Meta válida para 02/2025</CardDescription>

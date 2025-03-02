@@ -110,7 +110,11 @@ export function SignInForm({
 						)}></FormField>
 
 					<Button
-						disabled={form.formState.isSubmitting || form.formState.isLoading}
+						disabled={
+							form.formState.isSubmitting ||
+							form.formState.isLoading ||
+							!form.formState.isValid
+						}
 						type='submit'
 						className='w-full font-semibold disabled:opacity-70'>
 						{form.formState.isSubmitting || form.formState.isLoading ? (

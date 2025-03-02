@@ -273,16 +273,7 @@ export default async function MarketingPage(props: {
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{staticData.sessions
-								? Number(staticData.sessions).toLocaleString('pt-BR', {
-										style: 'decimal',
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2,
-										minimumSignificantDigits: 2,
-										maximumSignificantDigits: 2,
-										notation: 'compact',
-								  })
-								: 0}
+							{Number(staticData.sessions).toLocaleString('pt-BR')}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							+15% em relação ao mês anterior
@@ -372,7 +363,7 @@ export default async function MarketingPage(props: {
 								? calculatePagesPerSession(
 										Number(staticData.sessions),
 										Number(staticData.screenPageViews),
-								  ).toLocaleString('pt-BR')
+								  )
 								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>

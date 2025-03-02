@@ -36,7 +36,7 @@ export default function MetaMarketingForm() {
 	return (
 		<form
 			onSubmit={handleMarketingSubmit}
-			className='space-y-4'>
+			className='space-y-4 '>
 			<div className='space-y-2'>
 				<Label htmlFor='marketingGoalType'>Tipo de Meta</Label>
 				<Select
@@ -65,7 +65,7 @@ export default function MetaMarketingForm() {
 			</div>
 
 			<div className='space-y-2'>
-				<Label htmlFor='marketingGoalDateValue'>Validade</Label>
+				<Label htmlFor='marketingGoalDateValue'>Vigência</Label>
 				<Input
 					id='marketingGoalDateValue'
 					type='date'

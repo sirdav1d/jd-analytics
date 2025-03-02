@@ -3,6 +3,10 @@
 export function calculatePagesPerSession(
 	sessions: number,
 	screenPageViews: number,
-): number {
-	return screenPageViews / sessions;
+) {
+	const resp = screenPageViews / sessions;
+	return resp.toLocaleString('pt-BR', {
+		style: 'decimal',
+		maximumFractionDigits: 2,
+	});
 }
