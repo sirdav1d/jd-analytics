@@ -115,8 +115,11 @@ export default function FormCreate() {
 								</FormControl>
 								<SelectContent>
 									<SelectItem value='JD Centro'>JD Centro</SelectItem>
-									<SelectItem value='JD Icaraí'>JD Icaraí</SelectItem>
-									<SelectItem value='JSEG'>JSEG</SelectItem>
+									<SelectItem
+										disabled
+										value='JD Icaraí'>
+										JD Icaraí
+									</SelectItem>
 								</SelectContent>
 							</Select>
 							<FormMessage />

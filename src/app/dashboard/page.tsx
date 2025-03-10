@@ -20,7 +20,6 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { addDays } from 'date-fns';
-import { motion } from 'framer-motion';
 import {
 	DollarSign,
 	ShoppingBag,
@@ -116,24 +115,15 @@ export default function OverviewPage() {
 		},
 	} satisfies ChartConfig;
 
-	const fadeIn = {
-		hidden: { opacity: 0 },
-		visible: { opacity: 1, transition: { duration: 0.5 } },
-	};
-
 	const totalSales = React.useMemo(() => {
 		return customerData.reduce((acc, curr) => acc + curr.value, 0);
 	}, [customerData]);
 
 	return (
-		<div className='pb-4 w-full mx-auto space-y-4 min-h-screen'>
-			<motion.div
-				initial='hidden'
-				animate='visible'
-				variants={fadeIn}
-				className='space-y-4'>
-				{/* Filters */}
-				<div className='flex flex-wrap gap-4 mb-4'>
+		<>
+			<div className='text-muted-foreground italic'>Em construção...</div>
+			{/* <div className='pb-4 w-full mx-auto space-y-5 min-h-screen'>
+				<div className='flex flex-wrap gap-5 mb-4'>
 					<DatePickerWithRange
 						date={dateRange}
 						setDate={() => setDateRange}
@@ -164,8 +154,7 @@ export default function OverviewPage() {
 					</Select>
 				</div>
 
-				{/* Main KPIs */}
-				<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
+				<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5'>
 					<Card>
 						<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 							<CardTitle className='text-sm font-medium '>
@@ -252,8 +241,7 @@ export default function OverviewPage() {
 					</Card>
 				</div>
 
-				{/* Charts */}
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+				<div className='grid grid-cols-1 lg:grid-cols-2 gap-5'>
 					<Card>
 						<CardHeader>
 							<CardTitle className='text-base text-balance md:text-2xl'>
@@ -365,8 +353,7 @@ export default function OverviewPage() {
 					</Card>
 				</div>
 
-				{/* ROI of Marketing Campaigns */}
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4'>
+				<div className='grid grid-cols-1 lg:grid-cols-2 gap-5 mb-4'>
 					<Card>
 						<CardHeader>
 							<CardTitle className='text-base text-balance md:text-2xl'>
@@ -432,7 +419,7 @@ export default function OverviewPage() {
 						</CardContent>
 					</Card>
 				</div>
-				<div className='grid grid-cols-1 xl:grid-cols-2 gap-4 mb-4'>
+				<div className='grid grid-cols-1 xl:grid-cols-2 gap-5 mb-4'>
 					<Card>
 						<CardHeader>
 							<CardTitle className='text-base text-balance md:text-2xl'>
@@ -558,7 +545,7 @@ export default function OverviewPage() {
 						</CardContent>
 					</Card>
 				</div>
-			</motion.div>
-		</div>
+			</div> */}
+		</>
 	);
 }

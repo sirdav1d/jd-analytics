@@ -34,11 +34,7 @@ export default function AppSidebar({ name }: { name: string }) {
 			url: '/dashboard',
 			icon: Home,
 		},
-		{
-			title: 'Acompanhamento',
-			url: '/dashboard/goals-result',
-			icon: Trophy,
-		},
+
 		{
 			title: 'Marketing',
 			url: '/dashboard/marketing',
@@ -48,6 +44,11 @@ export default function AppSidebar({ name }: { name: string }) {
 			title: 'Comercial',
 			url: '/dashboard/comercial',
 			icon: ShoppingCart,
+		},
+		{
+			title: 'Acompanhamento',
+			url: '/dashboard/goals-result',
+			icon: Trophy,
 		},
 	];
 

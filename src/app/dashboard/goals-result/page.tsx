@@ -81,102 +81,101 @@ export default function GoalResultPage() {
 	};
 
 	return (
-		<div className='w-full  mx-auto space-y-5 pb-5'>
-			{/* Header e Filtros */}
-			<div className='space-y-4'>
-				<div className='grid grid-cols-1 md:flex items-start gap-4 '>
-					<Button
-						onClick={handleRefresh}
-						disabled={isLoading}
-						className='bg-red-600 disabled:opacity-70 w-full md:w-fit hover:bg-red-700'>
-						{isLoading ? (
-							<>
-								Atualizar <Loader2 className='animate-spin' />
-							</>
-						) : (
-							<>
-								Atualizar <Zap />
-							</>
-						)}
-					</Button>
-					<div className='w-full md:max-w-[220px]'>
-						<Select
-							value={selectedVendedor}
-							onValueChange={setSelectedVendedor}>
-							<SelectTrigger>
-								<SelectValue placeholder='Selecione um vendedor' />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value='all'>Todos os Vendedores</SelectItem>
-								{vendedoresData.map((vendedor, index) => (
-									<SelectItem
-										key={index}
-										value={vendedor.name.toLowerCase()}>
-										{vendedor.name}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-					<div className='w-full md:max-w-[220px]'>
-						<DatePickerWithRange
-							date={dateRange}
-							setDate={() => setDateRange}
-						/>
+		<>
+			<div className='text-muted-foreground italic'>Em construção...</div>
+			{/* <div className='w-full  mx-auto space-y-5 pb-5'>
+				<div className='space-y-4'>
+					<div className='grid grid-cols-1 md:flex items-start gap-4 '>
+						<Button
+							onClick={handleRefresh}
+							disabled={isLoading}
+							className='bg-red-600 disabled:opacity-70 w-full md:w-fit hover:bg-red-700'>
+							{isLoading ? (
+								<>
+									Atualizar <Loader2 className='animate-spin' />
+								</>
+							) : (
+								<>
+									Atualizar <Zap />
+								</>
+							)}
+						</Button>
+						<div className='w-full md:max-w-[220px]'>
+							<Select
+								value={selectedVendedor}
+								onValueChange={setSelectedVendedor}>
+								<SelectTrigger>
+									<SelectValue placeholder='Selecione um vendedor' />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value='all'>Todos os Vendedores</SelectItem>
+									{vendedoresData.map((vendedor, index) => (
+										<SelectItem
+											key={index}
+											value={vendedor.name.toLowerCase()}>
+											{vendedor.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<div className='w-full md:max-w-[220px]'>
+							<DatePickerWithRange
+								date={dateRange}
+								setDate={() => setDateRange}
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			{/* Card da Loja do Centro */}
-			<div className='grid grid-cols-1 xl:grid-cols-2 w-full my-5 gap-4 md:items-center'>
-				<Card className='w-full h-full'>
+				<div className='grid grid-cols-1 xl:grid-cols-2 w-full my-5 gap-4 md:items-center'>
+					<Card className='w-full h-full'>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								{storeData.name}
+							</CardTitle>
+							<p className='text-sm'>Meta: {formatCurrency(storeData.meta)}</p>
+						</CardHeader>
+						<CardContent>
+							<PieStore />
+						</CardContent>
+					</Card>
+					<Card className='w-full h-full'>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Faturamento
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<SellerRevenue />
+						</CardContent>
+					</Card>
+				</div>
+				<Card className='w-full '>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
-							{storeData.name}
-						</CardTitle>
-						<p className='text-sm'>Meta: {formatCurrency(storeData.meta)}</p>
-					</CardHeader>
-					<CardContent>
-						<PieStore />
-					</CardContent>
-				</Card>
-				<Card className='w-full h-full'>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento
+							Performance
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<SellerRevenue />
+						<SellerComparison />
 					</CardContent>
 				</Card>
-			</div>
-			<Card className='w-full '>
-				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
-						Performance
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<SellerComparison />
-				</CardContent>
-			</Card>
-			{/* Gráficos */}
 
-			<SalesmanList />
-			<div className='grid grid-cols-1 gap-6 my-5'>
-				{/* Vendas ao Longo do Tempo - Centro */}
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento ao Longo do Tempo
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Revenue />
-					</CardContent>
-				</Card>
-			</div>
-		</div>
+				<SalesmanList />
+				<div className='grid grid-cols-1 gap-6 my-5'>
+					<Card>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Faturamento ao Longo do Tempo
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<Revenue />
+						</CardContent>
+					</Card>
+				</div>
+			</div> */}
+		</>
 	);
 }
