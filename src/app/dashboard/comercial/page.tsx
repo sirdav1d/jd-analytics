@@ -1,140 +1,105 @@
 /** @format */
 
-'use client';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
-import { addDays } from 'date-fns';
-import { useState } from 'react';
-import { SalesByCategoryChart } from './_components/category-sales';
-import { CustomerComparisonChartComponent } from './_components/customer-comparison';
-import { GrowthChartComponent } from './_components/growth-chart';
-import { SalesChartComponent } from './_components/sales-chart-commercial';
-import {
-	CirclePercent,
-	DollarSign,
-	ShoppingBag,
-	SquarePercent,
-	Timer,
-	Trophy,
-	UserRoundPlus,
-} from 'lucide-react';
-
 // Mock data (replace with actual data in a real application)
 
 export default function ComercialDashboard() {
-	const [dateRange, setDateRange] = useState({
-		from: new Date(),
-		to: addDays(new Date(), 7),
-	});
-	const [channel, setChannel] = useState('all');
-	const [category, setCategory] = useState('all');
-	const [representative, setRepresentative] = useState('all');
-	const [customerType, setCustomerType] = useState('all');
+	// const [dateRange, setDateRange] = useState({
+	// 	from: new Date(),
+	// 	to: addDays(new Date(), 7),
+	// });
+	// const [channel, setChannel] = useState('all');
+	// const [category, setCategory] = useState('all');
+	// const [representative, setRepresentative] = useState('all');
+	// const [customerType, setCustomerType] = useState('all');
 
-	const topProducts = [
-		{ posicao: 1, name: 'Notebook Gamer XYZ', sales: 50, revenue: 150000 },
-		{ posicao: 2, name: 'SSD 1TB', sales: 100, revenue: 50000 },
-		{ posicao: 3, name: 'Placa de Vídeo RTX 3080', sales: 30, revenue: 90000 },
-		{ posicao: 4, name: 'Monitor 4K 27"', sales: 40, revenue: 60000 },
-		{ posicao: 5, name: 'Serviço de Montagem', sales: 80, revenue: 40000 },
-	];
+	// const topProducts = [
+	// 	{ posicao: 1, name: 'Notebook Gamer XYZ', sales: 50, revenue: 150000 },
+	// 	{ posicao: 2, name: 'SSD 1TB', sales: 100, revenue: 50000 },
+	// 	{ posicao: 3, name: 'Placa de Vídeo RTX 3080', sales: 30, revenue: 90000 },
+	// 	{ posicao: 4, name: 'Monitor 4K 27"', sales: 40, revenue: 60000 },
+	// 	{ posicao: 5, name: 'Serviço de Montagem', sales: 80, revenue: 40000 },
+	// ];
 
-	const topCustomers = [
-		{ posicao: 1, name: 'Empresa A', purchases: 10, revenue: 100000 },
-		{ posicao: 2, name: 'João Silva', purchases: 5, revenue: 50000 },
-		{ posicao: 3, name: 'Empresa B', purchases: 8, revenue: 80000 },
-		{ posicao: 4, name: 'Maria Oliveira', purchases: 6, revenue: 60000 },
-		{ posicao: 5, name: 'Empresa C', purchases: 7, revenue: 70000 },
-	];
+	// const topCustomers = [
+	// 	{ posicao: 1, name: 'Empresa A', purchases: 10, revenue: 100000 },
+	// 	{ posicao: 2, name: 'João Silva', purchases: 5, revenue: 50000 },
+	// 	{ posicao: 3, name: 'Empresa B', purchases: 8, revenue: 80000 },
+	// 	{ posicao: 4, name: 'Maria Oliveira', purchases: 6, revenue: 60000 },
+	// 	{ posicao: 5, name: 'Empresa C', purchases: 7, revenue: 70000 },
+	// ];
 
-	const topSalespeople = [
-		{
-			posicao: 1,
-			name: 'Carlos Souza',
-			sales: 50,
-			revenue: 270000,
-			conversion: 80,
-		},
-		{
-			posicao: 2,
-			name: 'Ana Rodrigues',
-			sales: 45,
-			revenue: 235000,
-			conversion: 90,
-		},
-		{
-			posicao: 3,
-			name: 'Pedro Santos',
-			sales: 40,
-			revenue: 202000,
-			conversion: 70,
-		},
-		{
-			posicao: 4,
-			name: 'Juliana Lima',
-			sales: 35,
-			revenue: 180000,
-			conversion: 75,
-		},
-		{
-			posicao: 5,
-			name: 'Bianca Martins',
-			sales: 30,
-			revenue: 160000,
-			conversion: 65,
-		},
-		{
-			posicao: 6,
-			name: 'Gustavo Ferreira',
-			sales: 50,
-			revenue: 270000,
-			conversion: 74,
-		},
-		{
-			posicao: 7,
-			name: 'Fernanda Oliveira',
-			sales: 45,
-			revenue: 235000,
-			conversion: 60,
-		},
-		{
-			posicao: 8,
-			name: 'Leonardo Mendes',
-			sales: 40,
-			revenue: 202000,
-			conversion: 55,
-		},
-		{
-			posicao: 9,
-			name: 'Thiago Barbosa',
-			sales: 35,
-			revenue: 180000,
-			conversion: 58,
-		},
-		{
-			posicao: 10,
-			name: 'Amanda Nogueira',
-			sales: 30,
-			revenue: 160000,
-			conversion: 45,
-		},
-	];
+	// const topSalespeople = [
+	// 	{
+	// 		posicao: 1,
+	// 		name: 'Carlos Souza',
+	// 		sales: 50,
+	// 		revenue: 270000,
+	// 		conversion: 80,
+	// 	},
+	// 	{
+	// 		posicao: 2,
+	// 		name: 'Ana Rodrigues',
+	// 		sales: 45,
+	// 		revenue: 235000,
+	// 		conversion: 90,
+	// 	},
+	// 	{
+	// 		posicao: 3,
+	// 		name: 'Pedro Santos',
+	// 		sales: 40,
+	// 		revenue: 202000,
+	// 		conversion: 70,
+	// 	},
+	// 	{
+	// 		posicao: 4,
+	// 		name: 'Juliana Lima',
+	// 		sales: 35,
+	// 		revenue: 180000,
+	// 		conversion: 75,
+	// 	},
+	// 	{
+	// 		posicao: 5,
+	// 		name: 'Bianca Martins',
+	// 		sales: 30,
+	// 		revenue: 160000,
+	// 		conversion: 65,
+	// 	},
+	// 	{
+	// 		posicao: 6,
+	// 		name: 'Gustavo Ferreira',
+	// 		sales: 50,
+	// 		revenue: 270000,
+	// 		conversion: 74,
+	// 	},
+	// 	{
+	// 		posicao: 7,
+	// 		name: 'Fernanda Oliveira',
+	// 		sales: 45,
+	// 		revenue: 235000,
+	// 		conversion: 60,
+	// 	},
+	// 	{
+	// 		posicao: 8,
+	// 		name: 'Leonardo Mendes',
+	// 		sales: 40,
+	// 		revenue: 202000,
+	// 		conversion: 55,
+	// 	},
+	// 	{
+	// 		posicao: 9,
+	// 		name: 'Thiago Barbosa',
+	// 		sales: 35,
+	// 		revenue: 180000,
+	// 		conversion: 58,
+	// 	},
+	// 	{
+	// 		posicao: 10,
+	// 		name: 'Amanda Nogueira',
+	// 		sales: 30,
+	// 		revenue: 160000,
+	// 		conversion: 45,
+	// 	},
+	// ];
 
 	return (
 		<>

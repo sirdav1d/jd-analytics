@@ -1,123 +1,67 @@
 /** @format */
-'use client';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
-
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import { addDays } from 'date-fns';
-import {
-	DollarSign,
-	ShoppingBag,
-	SquarePercent,
-	TrendingUp,
-	Trophy,
-	UserPlus,
-	UsersRound,
-} from 'lucide-react';
-import { useState } from 'react';
-import {
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Cell,
-	Label,
-	LabelList,
-	Line,
-	LineChart,
-	Pie,
-	PieChart,
-	XAxis,
-} from 'recharts';
-import { SalesVsRepairRevenue } from './_components/sales-vs-repair-revenue';
-
-import {
-	ChartConfig,
-	ChartContainer,
-	ChartLegend,
-	ChartLegendContent,
-	ChartTooltip,
-	ChartTooltipContent,
-} from '@/components/ui/chart';
-
-import React from 'react';
 
 export default function OverviewPage() {
 	// Mock data (replace with actual data in a real application)
-	const salesData = [
-		{ name: 'Jan', total: 15000 },
-		{ name: 'Feb', total: 20000 },
-		{ name: 'Mar', total: 18000 },
-		{ name: 'Apr', total: 22000 },
-		{ name: 'May', total: 25000 },
-		{ name: 'Jun', total: 30000 },
-	];
+	// const salesData = [
+	// 	{ name: 'Jan', total: 15000 },
+	// 	{ name: 'Feb', total: 20000 },
+	// 	{ name: 'Mar', total: 18000 },
+	// 	{ name: 'Apr', total: 22000 },
+	// 	{ name: 'May', total: 25000 },
+	// 	{ name: 'Jun', total: 30000 },
+	// ];
 
-	const customerData = React.useMemo(
-		() => [
-			{ name: 'Novos', value: 30 },
-			{ name: 'Recorrentes', value: 90 },
-		],
-		[],
-	);
+	// const customerData = React.useMemo(
+	// 	() => [
+	// 		{ name: 'Novos', value: 30 },
+	// 		{ name: 'Recorrentes', value: 90 },
+	// 	],
+	// 	[],
+	// );
 
-	const topProducts = [
-		{ name: 'Laptop Pro X', sales: 200, revenue: 400000, posicao: 1 },
-		{ name: 'Smartphone Y', sales: 180, revenue: 180000, posicao: 2 },
-		{ name: 'Tablet Z', sales: 150, revenue: 112500, posicao: 3 },
-		{ name: 'Smartwatch A', sales: 120, revenue: 48000, posicao: 4 },
-		{ name: 'Wireless Earbuds B', sales: 100, revenue: 20000, posicao: 5 },
-	];
+	// const topProducts = [
+	// 	{ name: 'Laptop Pro X', sales: 200, revenue: 400000, posicao: 1 },
+	// 	{ name: 'Smartphone Y', sales: 180, revenue: 180000, posicao: 2 },
+	// 	{ name: 'Tablet Z', sales: 150, revenue: 112500, posicao: 3 },
+	// 	{ name: 'Smartwatch A', sales: 120, revenue: 48000, posicao: 4 },
+	// 	{ name: 'Wireless Earbuds B', sales: 100, revenue: 20000, posicao: 5 },
+	// ];
 
-	const [dateRange, setDateRange] = useState({
-		from: new Date(),
-		to: addDays(new Date(), 7),
-	});
-	const [customerType, setCustomerType] = useState('all');
-	const [salesChannel, setSalesChannel] = useState('all');
+	// const [dateRange, setDateRange] = useState({
+	// 	from: new Date(),
+	// 	to: addDays(new Date(), 7),
+	// });
+	// const [customerType, setCustomerType] = useState('all');
+	// const [salesChannel, setSalesChannel] = useState('all');
 
-	const chartConfig = {
-		Novos: {
-			label: 'Novos',
-			color: 'hsl(var(--chart-1))',
-		},
-		Recorrentes: {
-			label: 'Recorrentes',
-			color: 'hsl(var(--chart-2))',
-		},
-	} satisfies ChartConfig;
+	// const chartConfig = {
+	// 	Novos: {
+	// 		label: 'Novos',
+	// 		color: 'hsl(var(--chart-1))',
+	// 	},
+	// 	Recorrentes: {
+	// 		label: 'Recorrentes',
+	// 		color: 'hsl(var(--chart-2))',
+	// 	},
+	// } satisfies ChartConfig;
 
-	const ROIChartConfig = {
-		total: {
-			label: 'ROI',
-			color: 'hsl(var(--chart-1))',
-		},
-	} satisfies ChartConfig;
+	// const ROIChartConfig = {
+	// 	total: {
+	// 		label: 'ROI',
+	// 		color: 'hsl(var(--chart-1))',
+	// 	},
+	// } satisfies ChartConfig;
 
-	const salesChartConfig = {
-		total: {
-			label: 'Faturamento',
-			color: 'hsl(var(--chart-1))',
-		},
-	} satisfies ChartConfig;
+	// const salesChartConfig = {
+	// 	total: {
+	// 		label: 'Faturamento',
+	// 		color: 'hsl(var(--chart-1))',
+	// 	},
+	// } satisfies ChartConfig;
 
-	const totalSales = React.useMemo(() => {
-		return customerData.reduce((acc, curr) => acc + curr.value, 0);
-	}, [customerData]);
+	// const totalSales = React.useMemo(() => {
+	// 	return customerData.reduce((acc, curr) => acc + curr.value, 0);
+	// }, [customerData]);
 
 	return (
 		<>

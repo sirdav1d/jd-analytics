@@ -1,24 +1,5 @@
 /** @format */
 
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
-import MetaMarketingForm from './_components/meta-marketing-form';
-import MetaComercialForm from './_components/meta-comercial-form';
-
 export default function GoalsPage() {
 	return (
 		<>
