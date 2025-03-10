@@ -30,7 +30,7 @@ export default function Greeting() {
 			return 'Gestão de Meta';
 		}
 		if (pathname == '/dashboard/goals-result') {
-			return 'Resultados de Meta';
+			return 'Acompanhamento de Meta';
 		}
 	}
 

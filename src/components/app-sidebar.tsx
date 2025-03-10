@@ -35,7 +35,7 @@ export default function AppSidebar({ name }: { name: string }) {
 			icon: Home,
 		},
 		{
-			title: 'Resultados',
+			title: 'Acompanhamento',
 			url: '/dashboard/goals-result',
 			icon: Trophy,
 		},

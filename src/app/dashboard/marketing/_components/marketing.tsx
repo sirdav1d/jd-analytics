@@ -142,7 +142,7 @@ export async function Marketing({
 					<CampagnComponent data={responseADS.data[0]} />
 				</CardContent>
 			</Card>
-			<div className='flex items-center gap-5 w-full flex-col xl:flex-row'>
+			<div className='grid grid-cols-1 2xl:grid-cols-2 gap-5 w-full'>
 				<Card className='w-full'>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>

@@ -9,33 +9,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import { $Enums, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { ColumnDef } from '@tanstack/react-table';
 import { Pencil } from 'lucide-react';
 import DialogDeleteUser from './dialog-delete-user';
 import FormUpdate from './form-update';
-import { updateUserAction } from '@/actions/user/update';
-import { toast } from 'sonner';
-
-async function handleUpdateRole(user: Partial<User>, role: $Enums.Role) {
-	const { name, email } = user;
-	const response = await updateUserAction({
-		userUp: { role: role, name, email },
-	});
-	console.log(user, role, response);
-	if (!response.ok) {
-		toast.error('Algo deu errado', { description: String(response.error) });
-	} else {
-		toast.success('Usuário cadastrado com sucesso');
-	}
-}
+import SelectRole from './select-role';
 
 export const columns: ColumnDef<User>[] = [
 	{
@@ -49,30 +28,13 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: 'role',
 		header: 'Cargo',
-		cell: ({ row }) => (
-			<Select
-				value={row.original.role}
-				onValueChange={(value: 'ADMIN' | 'MANAGER') =>
-					handleUpdateRole(row.original, value)
-				}>
-				<SelectTrigger className='w-[180px]'>
-					<SelectValue>
-						{row.original.role == 'ADMIN' ? 'Administrador' : 'Gerente'}
-					</SelectValue>
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value='ADMIN'>Administrador</SelectItem>
-					<SelectItem value='MANAGER'>Gerente</SelectItem>
-				</SelectContent>
-			</Select>
-		),
+		cell: ({ row }) => <SelectRole user={row.original} />,
 	},
 	{
 		id: 'actions',
 		header: 'Ações',
 		cell: ({ row }) => {
 			const user = row.original;
-
 			return (
 				<div className='flex gap-2'>
 					<Dialog>

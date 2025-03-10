@@ -43,7 +43,7 @@ export default function Home() {
 				</div>
 				<span className='absolute z-10 inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] md:bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-background to-background' />
 
-				<div className='flex relative h-full z-20 justify-center items-center text-center flex-col gap-5 '>
+				<div className='flex relative h-full z-20 justify-center items-center text-center flex-col gap-5 px-5'>
 					<Logo />
 					<h2 className='2xl:text-nowrap text-center text-balance text-3xl lg:text-5xl 2xl:text-7xl font-bold'>
 						Impulsione Sua{' '}

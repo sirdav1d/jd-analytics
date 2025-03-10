@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react';
 import { Marketing } from './_components/marketing';
-import PageSeleton from './_components/page-skeleton';
+import PageSkeleton from './_components/page-skeleton';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -26,7 +26,7 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 	return (
-		<Suspense fallback={<PageSeleton />}>
+		<Suspense fallback={<PageSkeleton />}>
 			<Marketing
 				channel={channelFilter}
 				endDate={endDate}
