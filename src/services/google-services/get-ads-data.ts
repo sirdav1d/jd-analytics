@@ -6,9 +6,15 @@ export async function FetchADSData(startDate: string, endDate: string) {
 		`${baseURL}/api/services/google-services/get-ads-data?startDate=${startDate}&endDate=${endDate}`,
 		{
 			method: 'GET',
-			next: { revalidate: 120 },
 		},
 	);
+	if (!response.ok) {
+		return {
+			ok: false,
+			data: null,
+			error: 'Algo deu errado - Erro interno do servidor',
+		};
+	}
 
 	const dataADS = await response.json();
 

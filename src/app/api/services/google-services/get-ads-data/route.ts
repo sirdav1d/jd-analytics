@@ -1,21 +1,20 @@
 /** @format */
 
-import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
 import { prisma } from '@/lib/prisma';
 import { GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { success, error } = await refreshAccessTokenAction();
+	// const { success, error } = await refreshAccessTokenAction();
 
-	if (!success || error) {
-		console.log(error);
-		return NextResponse.json({
-			error: 'Erro ao buscar dados do Google ADS' + error,
-			ok: false,
-			data: null,
-		});
-	}
+	// if (!success || error) {
+	// 	console.log(error);
+	// 	return NextResponse.json({
+	// 		error: 'Erro ao buscar dados do Google ADS' + error,
+	// 		ok: false,
+	// 		data: null,
+	// 	});
+	// }
 
 	const organization = await prisma.organization.findFirst();
 
