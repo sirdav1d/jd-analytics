@@ -74,25 +74,24 @@ export async function GET(req: NextRequest) {
 		// Instancia o cliente da API Analytics Data (v1beta)
 		const analyticsData = google.analyticsdata('v1beta');
 
-		const responseStatic = await analyticsData.properties.runReport({
-			property: `properties/${propertyId}`,
-			requestBody: staticBody,
-			auth,
-		});
-		const responseTraffic = await analyticsData.properties.runReport({
-			property: `properties/${propertyId}`,
-			requestBody: trafficBody,
-			auth,
-		});
-		
-		const responseChannel = await analyticsData.properties.runReport({
-			property: `properties/${propertyId}`,
-			requestBody: channelBody,
-			auth,
-		});
-		
-
-		
+		const [responseStatic, responseTraffic, responseChannel] =
+			await Promise.all([
+				await analyticsData.properties.runReport({
+					property: `properties/${propertyId}`,
+					requestBody: staticBody,
+					auth,
+				}),
+				await analyticsData.properties.runReport({
+					property: `properties/${propertyId}`,
+					requestBody: trafficBody,
+					auth,
+				}),
+				await analyticsData.properties.runReport({
+					property: `properties/${propertyId}`,
+					requestBody: channelBody,
+					auth,
+				}),
+			]);
 
 		const [dataStatic, dataTraffic, dataChannel] = [
 			responseStatic.data,
