@@ -1,20 +1,21 @@
 /** @format */
 
+import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
 import { prisma } from '@/lib/prisma';
 import { GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	// const { success, error } = await refreshAccessTokenAction();
+	const { success, error } = await refreshAccessTokenAction();
 
-	// if (!success || error) {
-	// 	console.log(error);
-	// 	return NextResponse.json({
-	// 		error: 'Erro ao buscar dados do Google ADS' + error,
-	// 		ok: false,
-	// 		data: null,
-	// 	});
-	// }
+	if (!success || error) {
+		console.log(error);
+		return NextResponse.json({
+			error: 'Erro ao buscar dados do Google ADS' + error,
+			ok: false,
+			data: null,
+		});
+	}
 
 	const organization = await prisma.organization.findFirst();
 
@@ -43,93 +44,96 @@ export async function GET(req: NextRequest) {
 			login_customer_id: '8251122454',
 		});
 
-		const campaigns = await customer.report({
-			entity: 'campaign',
-			attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
-			metrics: ['metrics.impressions', 'metrics.clicks', 'metrics.conversions'],
-			constraints: [
-				{
-					key: 'campaign.status',
-					op: '=',
-					val: 'ENABLED',
-				},
-			],
-			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
-			limit: 5,
-			from_date: startDate!,
-			to_date: endDate!,
-		});
-
-		const topAds = await customer.report({
-			entity: 'ad_group_ad',
-			attributes: [
-				'ad_group_ad.ad.id',
-				'ad_group_ad.ad.name',
-				'ad_group_ad.status',
-				'ad_group_ad.ad.responsive_search_ad.headlines',
-			],
-			metrics: [
-				'metrics.ctr',
-				'metrics.impressions',
-				'metrics.clicks',
-				'metrics.conversions',
-			],
-			constraints: [
-				{
-					key: 'ad_group_ad.status',
-					op: '=',
-					val: 'ENABLED',
-				},
-			],
-			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
-			limit: 5,
-			from_date: startDate!,
-			to_date: endDate!,
-		});
-
-		const topKeyWords = await customer.report({
-			entity: 'keyword_view',
-			attributes: [
-				'ad_group_criterion.keyword.text',
-				'ad_group_criterion.status', // Status da palavra-chave
-				'campaign.status',
-			],
-			metrics: [
-				'metrics.ctr',
-				'metrics.impressions',
-				'metrics.clicks',
-				'metrics.conversions',
-			],
-			constraints: [
-				{
-					key: 'campaign.status',
-					op: '=',
-					val: 'ENABLED',
-				},
-				{
-					key: 'ad_group_criterion.status',
-					op: '=',
-					val: 'ENABLED',
-				},
-			],
-			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
-			limit: 5,
-			from_date: startDate!,
-			to_date: endDate!,
-		});
-
-		const dataADS = await customer.report({
-			entity: 'customer',
-			metrics: [
-				'metrics.ctr',
-				'metrics.impressions',
-				'metrics.clicks',
-				'metrics.cost_micros',
-				'metrics.conversions',
-			],
-			from_date: startDate!,
-			to_date: endDate!,
-		});
+		const [campaigns, topAds, topKeyWords, dataADS] = await Promise.all([
+			await customer.report({
+				entity: 'campaign',
+				attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
+				metrics: [
+					'metrics.impressions',
+					'metrics.clicks',
+					'metrics.conversions',
+				],
+				constraints: [
+					{
+						key: 'campaign.status',
+						op: '=',
+						val: 'ENABLED',
+					},
+				],
+				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
+				limit: 5,
+				from_date: startDate!,
+				to_date: endDate!,
+			}),
+			await customer.report({
+				entity: 'ad_group_ad',
+				attributes: [
+					'ad_group_ad.ad.id',
+					'ad_group_ad.ad.name',
+					'ad_group_ad.status',
+					'ad_group_ad.ad.responsive_search_ad.headlines',
+				],
+				metrics: [
+					'metrics.ctr',
+					'metrics.impressions',
+					'metrics.clicks',
+					'metrics.conversions',
+				],
+				constraints: [
+					{
+						key: 'ad_group_ad.status',
+						op: '=',
+						val: 'ENABLED',
+					},
+				],
+				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
+				limit: 5,
+				from_date: startDate!,
+				to_date: endDate!,
+			}),
+			await customer.report({
+				entity: 'keyword_view',
+				attributes: [
+					'ad_group_criterion.keyword.text',
+					'ad_group_criterion.status', // Status da palavra-chave
+					'campaign.status',
+				],
+				metrics: [
+					'metrics.ctr',
+					'metrics.impressions',
+					'metrics.clicks',
+					'metrics.conversions',
+				],
+				constraints: [
+					{
+						key: 'campaign.status',
+						op: '=',
+						val: 'ENABLED',
+					},
+					{
+						key: 'ad_group_criterion.status',
+						op: '=',
+						val: 'ENABLED',
+					},
+				],
+				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
+				limit: 5,
+				from_date: startDate!,
+				to_date: endDate!,
+			}),
+			await customer.report({
+				entity: 'customer',
+				metrics: [
+					'metrics.ctr',
+					'metrics.impressions',
+					'metrics.clicks',
+					'metrics.cost_micros',
+					'metrics.conversions',
+				],
+				from_date: startDate!,
+				to_date: endDate!,
+			}),
+		]);
 
 		const metrics = dataADS[0].metrics;
 
