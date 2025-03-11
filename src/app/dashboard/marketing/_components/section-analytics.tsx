@@ -1,13 +1,11 @@
 /** @format */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-// Import the chart components
-import GoogleLoginButton from '@/components/google-login-button';
-import { FetchADSData } from '@/services/google-services/get-ads-data';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import React from 'react';
+import { ConversionsComponent } from './charts/conversion';
+import { TrafficComponent } from './charts/traffic';
 import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
-import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
-import { formatDuration } from '@/utils/normalize-duration-session';
+import GoogleLoginButton from '@/components/google-login-button';
 import {
 	BookUser,
 	CheckCircle,
@@ -18,29 +16,24 @@ import {
 	Percent,
 	UserRoundCheck,
 } from 'lucide-react';
-import { CampagnComponent } from './charts/campaings';
-import { ConversionsComponent } from './charts/conversion';
-import { CostsComponent } from './charts/cost';
-import { PerformanceComponent } from './charts/performance';
-import { TrafficComponent } from './charts/traffic';
-import Filters from './filters';
-import ListStaticADS from './list-static-ads';
-import TopAdwords from './tables/top-adwords';
-import TopAnuncios from './tables/top-anuncios';
+import { formatDuration } from '@/utils/normalize-duration-session';
+import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
+import Filters from './filter-analytics';
+import Image from 'next/image';
+import analytics from '@/assets/analytics.svg';
 
-interface MarketingProps {
+interface SectionAnalyticsProps {
 	startDate: string | string[];
 	endDate: string | string[];
 	channel: string | string[];
 }
-export async function Marketing({
+
+export default async function SectionAnalytics({
 	channel,
 	endDate,
 	startDate,
-}: MarketingProps) {
+}: SectionAnalyticsProps) {
 	const channelFilter = channel || 'all';
-
-	const responseADS = await FetchADSData(String(startDate), String(endDate));
 
 	const responseAnalytics = await FetchAnalyticsData(
 		String(startDate),
@@ -48,12 +41,7 @@ export async function Marketing({
 		String(channelFilter),
 	);
 
-	if (
-		!responseAnalytics.ok ||
-		!responseAnalytics.data ||
-		!responseADS.ok ||
-		!responseADS.data
-	) {
+	if (!responseAnalytics.ok) {
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
@@ -64,29 +52,26 @@ export async function Marketing({
 	const staticData = responseAnalytics.data[0];
 	const trafficData = responseAnalytics.data[1];
 	const channelData = responseAnalytics.data[2];
-
-	const topAds = responseADS.data[1];
-	const topKeyWords = responseADS.data[2];
-	const AccountMetrics = responseADS.data[3];
-
 	return (
-		<div className='w-full mx-auto space-y-4 pb-5'>
-			<div className='w-full flex justify-center md:justify-start flex-wrap gap-4 mb-4'>
+		<div className='grid gap-5 mb-20'>
+			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-4'>
 				<Filters />
-				<p className='dark:text-emerald-400 text-emerald-500 flex gap-1.5 items-center text-center text-sm md:text-base font-medium'>
+				<p className='dark:text-emerald-400 text-emerald-500 flex gap-1.5 items-center text-center text-xs font-medium'>
 					<CheckCircle size={16} />
 					Dados Sincronizados Com Google API
 				</p>
+				<div className='flex items-center gap-2'>
+					<Image
+						src={analytics}
+						alt='Logo Google Analytics'
+						height={24}
+						width={24}
+					/>
+					<h2 className='font-semibold text-sm'>Google Analytics</h2>
+				</div>
 			</div>
-			{/* KPIs Principais */}
-			<ListStaticADS
-				clicks={AccountMetrics.clicks}
-				cost_micros={AccountMetrics.cost_micros}
-				ctr={AccountMetrics.ctr}
-				impressions={AccountMetrics.impressions}
-			/>
-			{/* Gráficos */}
-			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+
+			<div className='grid grid-cols-1 lg:grid-cols-2 gap-5'>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
@@ -132,50 +117,6 @@ export async function Marketing({
 					</CardContent>
 				</Card>
 			</div>
-			<Card>
-				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
-						Top 5 Campanhas por Conversão
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<CampagnComponent data={responseADS.data[0]} />
-				</CardContent>
-			</Card>
-			<div className='grid grid-cols-1 2xl:grid-cols-2 gap-5 w-full'>
-				<Card className='w-full'>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Desempenho Geral
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<PerformanceComponent
-							impressions={AccountMetrics.impressions}
-							clicks={AccountMetrics.clicks}
-							cost_micros={AccountMetrics.cost_micros}
-							conversions={AccountMetrics.conversions}
-						/>
-					</CardContent>
-				</Card>
-				<Card className='w-full'>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Custos por Desempenho
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<CostsComponent
-							impressions={AccountMetrics.impressions}
-							clicks={AccountMetrics.clicks}
-							cost_micros={AccountMetrics.cost_micros}
-							conversions={AccountMetrics.conversions}
-						/>
-					</CardContent>
-				</Card>
-			</div>
-
-			{/* Tabelas */}
 			<Card className='xl:hidden'>
 				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 					<CardTitle className='text-sm font-medium'>
@@ -360,10 +301,6 @@ export async function Marketing({
 						</p>
 					</CardContent>
 				</Card>
-			</div>
-			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				<TopAnuncios data={topAds} />
-				<TopAdwords data={topKeyWords} />
 			</div>
 		</div>
 	);

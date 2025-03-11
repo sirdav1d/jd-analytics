@@ -21,9 +21,7 @@ export default function Filters() {
 		to: searchParams.get('endDate') || new Date(),
 		from: searchParams.get('startDate') || addDays(new Date(), -7),
 	});
-	const [trafficSource, setTrafficSource] = useState(
-		searchParams.get('channel') || 'all',
-	);
+
 	const [campaign, setCampaign] = useState('all');
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
@@ -43,9 +41,7 @@ export default function Filters() {
 				router.push(
 					`/dashboard/marketing?startDate=${encodeURIComponent(
 						formattedFrom,
-					)}&endDate=${encodeURIComponent(
-						formattedTo,
-					)}&channel=${trafficSource}`,
+					)}&endDate=${encodeURIComponent(formattedTo)}`,
 					{ scroll: false },
 				);
 			});
@@ -77,29 +73,9 @@ export default function Filters() {
 				}
 			/>
 			<Select
-				value={trafficSource}
-				onValueChange={setTrafficSource}>
-				<SelectTrigger className='w-full md:w-48'>
-					<SelectValue placeholder='Fonte de Tráfego' />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value='all'>Todas as Fontes</SelectItem>
-					<SelectItem value='Organic Search'>Orgânico</SelectItem>
-					<SelectItem value='Paid Search'>Pago</SelectItem>
-					<SelectItem value='Social'>Social</SelectItem>
-					<SelectItem value='Direct'>Direto</SelectItem>
-					<SelectItem
-						disabled
-						value='Outros'>
-						Outros
-					</SelectItem>
-				</SelectContent>
-			</Select>
-			<Select
-				disabled
 				value={campaign}
 				onValueChange={setCampaign}>
-				<SelectTrigger className='w-full md:w-48'>
+				<SelectTrigger className='w-full md:w-56'>
 					<SelectValue placeholder='Campanha' />
 				</SelectTrigger>
 				<SelectContent>

@@ -128,7 +128,7 @@ export function TrafficComponent({
 				</Pie>
 				<ChartLegend
 					content={<ChartLegendContent nameKey='name' />}
-					className='text-xs 2xl:text-sm pt-2 2xl:text-nowrap flex-wrap 2xl:flex-nowrap'
+					className='text-xs pt-2 2xl:text-nowrap flex-wrap 2xl:flex-nowrap'
 				/>
 			</PieChart>
 		</ChartContainer>
