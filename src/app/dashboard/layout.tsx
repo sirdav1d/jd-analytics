@@ -37,7 +37,7 @@ export default async function DashLayout({
 
 	return (
 		<SidebarProvider defaultOpen={defaultOpen}>
-			<AppSidebar name={data.name} />
+			<AppSidebar name={data ? data.name : 'Dado Não Encontrado'} />
 			<div className='w-full px-4  flex flex-col xl:mx-5 '>
 				<SidebarTrigger className='mt-2 z-50' />
 				<HeaderDashboard />

@@ -46,22 +46,20 @@ const handler = NextAuth({
 		error: '/',
 	},
 	callbacks: {
-		jwt: async ({ token, user, session, account, profile }) => {
-			return {
-				...token,
-				...user,
-				...session,
-				...account,
-				...profile,
-			};
+		jwt: async ({ token, user }) => {
+			if (user) {
+				token.name = user.name;
+				token.email = user.email;
+				return token;
+			}
+			return token;
 		},
-		session: async ({ session, token, newSession, user }) => {
-			return {
-				...token,
-				...user,
-				...session,
-				...newSession,
-			};
+		session: async ({ session, token }) => {
+			if (token) {
+				session.user = token;
+				return session;
+			}
+			return session;
 		},
 	},
 });

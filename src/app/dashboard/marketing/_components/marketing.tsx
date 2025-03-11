@@ -47,7 +47,7 @@ export async function Marketing({
 		String(endDate),
 		String(channelFilter),
 	);
-
+	console.log(responseADS);
 	if (
 		!responseAnalytics.ok ||
 		!responseAnalytics.data ||
