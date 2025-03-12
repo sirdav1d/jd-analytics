@@ -61,7 +61,7 @@ export default function ListStaticADS({
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{impressions.toLocaleString('pt-BR')}
+							{impressions ? impressions.toLocaleString('pt-BR') : 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							-R$ 0.05 em relação ao mês anterior
@@ -75,7 +75,7 @@ export default function ListStaticADS({
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>
-							{clicks.toLocaleString('pt-BR')}
+							{clicks ? clicks.toLocaleString('pt-BR') : 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							-R$ 0.05 em relação ao mês anterior

@@ -27,6 +27,7 @@ export default async function MarketingPage(props: {
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
+	const campaignId = searchParams.campaignId || 'all';
 	return (
 		<Suspense fallback={<PageSkeleton />}>
 			<div className='w-full mx-auto space-y-5 pb-5 h-full'>
@@ -39,6 +40,7 @@ export default async function MarketingPage(props: {
 				<SectionAds
 					startDate={startDate}
 					endDate={endDate}
+					campaignId={campaignId}
 				/>
 			</div>
 		</Suspense>

@@ -15,14 +15,30 @@ import { Loader2, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
-export default function Filters() {
+interface CampaignProps {
+	resource_name: string;
+	status: number;
+	name: string;
+	id: number;
+}
+
+export interface CampagnComponentProps {
+	campaign: CampaignProps;
+}
+
+interface DataProps {
+	data: CampagnComponentProps[];
+}
+export default function Filters({ data }: DataProps) {
 	const searchParams = useSearchParams();
 	const [dateRange, setDateRange] = useState({
 		to: searchParams.get('endDate') || new Date(),
 		from: searchParams.get('startDate') || addDays(new Date(), -7),
 	});
 
-	const [campaign, setCampaign] = useState('all');
+	const [campaign, setCampaign] = useState(
+		searchParams.get('campaignId') || 'all',
+	);
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 
@@ -41,7 +57,7 @@ export default function Filters() {
 				router.push(
 					`/dashboard/marketing?startDate=${encodeURIComponent(
 						formattedFrom,
-					)}&endDate=${encodeURIComponent(formattedTo)}`,
+					)}&endDate=${encodeURIComponent(formattedTo)}&campaignId=${campaign}`,
 					{ scroll: false },
 				);
 			});
@@ -79,10 +95,16 @@ export default function Filters() {
 					<SelectValue placeholder='Campanha' />
 				</SelectTrigger>
 				<SelectContent>
-					<SelectItem value='all'>Todas as Campanhas</SelectItem>
-					<SelectItem value='summer'>Verão 2023</SelectItem>
-					<SelectItem value='blackfriday'>Black Friday</SelectItem>
-					<SelectItem value='christmas'>Natal</SelectItem>
+					<SelectItem value={'all'}>Todas as Campanhas</SelectItem>
+					{data.map((item, index) => {
+						return (
+							<SelectItem
+								key={index}
+								value={item.campaign.id.toString()}>
+								{item.campaign.name}
+							</SelectItem>
+						);
+					})}
 				</SelectContent>
 			</Select>
 		</div>

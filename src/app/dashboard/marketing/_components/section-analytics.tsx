@@ -1,14 +1,13 @@
 /** @format */
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import React from 'react';
-import { ConversionsComponent } from './charts/conversion';
-import { TrafficComponent } from './charts/traffic';
-import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
+import analytics from '@/assets/analytics.svg';
 import GoogleLoginButton from '@/components/google-login-button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
+import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
+import { formatDuration } from '@/utils/normalize-duration-session';
 import {
 	BookUser,
-	CheckCircle,
 	Clock,
 	DollarSign,
 	GitPullRequestClosed,
@@ -16,11 +15,10 @@ import {
 	Percent,
 	UserRoundCheck,
 } from 'lucide-react';
-import { formatDuration } from '@/utils/normalize-duration-session';
-import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
-import Filters from './filter-analytics';
 import Image from 'next/image';
-import analytics from '@/assets/analytics.svg';
+import { ConversionsComponent } from './charts/conversion';
+import { TrafficComponent } from './charts/traffic';
+import Filters from './filter-analytics';
 
 interface SectionAnalyticsProps {
 	startDate: string | string[];
@@ -56,10 +54,7 @@ export default async function SectionAnalytics({
 		<div className='grid gap-5 mb-20'>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-4'>
 				<Filters />
-				<p className='dark:text-emerald-400 text-emerald-500 flex gap-1.5 items-center text-center text-xs font-medium'>
-					<CheckCircle size={16} />
-					Dados Sincronizados Com Google API
-				</p>
+
 				<div className='flex items-center gap-2'>
 					<Image
 						src={analytics}

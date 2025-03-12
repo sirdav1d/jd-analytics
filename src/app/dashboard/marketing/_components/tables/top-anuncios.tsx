@@ -32,6 +32,8 @@ interface ADProps {
 	responsive_search_ad: {
 		headlines: HeadlinesProps[];
 	};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	smart_campaign_ad: any;
 }
 
 interface HeadlinesProps {
@@ -72,7 +74,7 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 						</TableHeader>
 						<TableBody>
 							{data.map((item, index) => {
-								return (
+								return item.ad_group_ad.ad.responsive_search_ad ? (
 									<TableRow
 										key={index}
 										className='text-nowrap text-center'>
@@ -95,28 +97,40 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 											) : (
 												<></>
 											)}
-											{item.ad_group_ad.ad.name ??
-												item.ad_group_ad.ad.responsive_search_ad.headlines[3]
-													.text}
+											{item.ad_group_ad.ad.responsive_search_ad
+												? item.ad_group_ad.ad.responsive_search_ad.headlines[
+														index
+												  ].text
+												: item.ad_group_ad.ad.name
+												? item.ad_group_ad.ad.name
+												: null}
 										</TableCell>
 										<TableCell>
-											{item.metrics.ctr.toLocaleString('pt-BR', {
-												style: 'percent',
-												minimumFractionDigits: 2,
-												maximumFractionDigits: 2,
-											})}
+											{item.metrics.ctr
+												? item.metrics.ctr.toLocaleString('pt-BR', {
+														style: 'percent',
+														minimumFractionDigits: 2,
+														maximumFractionDigits: 2,
+												  })
+												: 0}
 										</TableCell>
 										<TableCell>
-											{item.metrics.impressions.toLocaleString('pt-BR')}
+											{item.metrics.impressions
+												? item.metrics.impressions.toLocaleString('pt-BR')
+												: 0}
 										</TableCell>
 										<TableCell>
-											{item.metrics.clicks.toLocaleString('pt-BR')}
+											{item.metrics.clicks
+												? item.metrics.clicks.toLocaleString('pt-BR')
+												: 0}
 										</TableCell>
 										<TableCell>
-											{item.metrics.conversions.toLocaleString('pt-BR')}
+											{item.metrics.conversions
+												? item.metrics.conversions.toLocaleString('pt-BR')
+												: 0}
 										</TableCell>
 									</TableRow>
-								);
+								) : null;
 							})}
 						</TableBody>
 					</Table>

@@ -78,20 +78,28 @@ export default function TopAdwords({ data }: AllDataProps) {
 										{item.ad_group_criterion.keyword.text}
 									</TableCell>
 									<TableCell>
-										{item.metrics.ctr.toLocaleString('pt-BR', {
-											style: 'percent',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-										})}
+										{item.metrics.ctr
+											? item.metrics.ctr.toLocaleString('pt-BR', {
+													style: 'percent',
+													minimumFractionDigits: 2,
+													maximumFractionDigits: 2,
+											  })
+											: 0}
 									</TableCell>
 									<TableCell className='text-center'>
-										{item.metrics.impressions.toLocaleString('pt-BR')}
+										{item.metrics.impressions
+											? item.metrics.impressions.toLocaleString('pt-BR')
+											: 0}
 									</TableCell>
 									<TableCell className='text-nowrap'>
-										{item.metrics.clicks.toLocaleString('pt-BR')}
+										{item.metrics.clicks
+											? item.metrics.clicks.toLocaleString('pt-BR')
+											: 0}
 									</TableCell>
 									<TableCell className='text-nowrap'>
-										{item.metrics.conversions.toLocaleString('pt-BR')}
+										{item.metrics.conversions
+											? item.metrics.conversions.toLocaleString('pt-BR')
+											: 0}
 									</TableCell>
 								</TableRow>
 							);
