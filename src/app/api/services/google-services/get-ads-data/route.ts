@@ -99,11 +99,6 @@ export async function GET(req: NextRequest) {
 						'metrics.conversions',
 						'metrics.engagements',
 						'metrics.all_conversions',
-						'metrics.average_page_views',
-						'metrics.video_views',
-						'metrics.active_view_impressions',
-						'metrics.active_view_measurable_impressions',
-						'metrics.all_conversions_from_location_asset_click_to_call',
 					],
 					constraints: [
 						{
