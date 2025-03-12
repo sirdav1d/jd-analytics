@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 		const searchParams = req.nextUrl.searchParams;
 		const startDate = searchParams.get('startDate');
 		const endDate = searchParams.get('endDate');
-		const campaignId = searchParams.get('campaignId'); // Captura o ID da campanha
+		const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 
 		const campaignConstraints: Constraints | undefined = [];
 
