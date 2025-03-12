@@ -38,10 +38,11 @@ export default async function SectionAds({
 		);
 	}
 
-	const topAds = responseADS.data[1];
-	const topKeyWords = responseADS.data[2];
-	const AccountMetrics = responseADS.data[3];
-	const campaings = responseADS.data[4];
+	console.log(responseADS);
+	const topAds = await responseADS.data[1];
+	const topKeyWords = await responseADS.data[2];
+	const AccountMetrics = await responseADS.data[3];
+	const campaings = await responseADS.data[4];
 	return (
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-4 mt-10'>
