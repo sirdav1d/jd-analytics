@@ -119,7 +119,6 @@ export async function GET(req: NextRequest) {
 						'ad_group_criterion.keyword.text',
 						'ad_group_criterion.status', // Status da palavra-chave
 						'campaign.status',
-						'campaign.id',
 					],
 					metrics: [
 						'metrics.ctr',
