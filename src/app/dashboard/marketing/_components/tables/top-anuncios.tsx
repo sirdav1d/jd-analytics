@@ -74,7 +74,7 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 						</TableHeader>
 						<TableBody>
 							{data.map((item, index) => {
-								return item.ad_group_ad.ad.responsive_search_ad ? (
+								return  (
 									<TableRow
 										key={index}
 										className='text-nowrap text-center'>
@@ -130,7 +130,7 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 												: 0}
 										</TableCell>
 									</TableRow>
-								) : null;
+								) 
 							})}
 						</TableBody>
 					</Table>

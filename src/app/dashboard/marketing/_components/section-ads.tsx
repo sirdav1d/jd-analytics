@@ -30,7 +30,8 @@ export default async function SectionAds({
 		String(campaignId),
 	);
 
-	if (!responseADS.ok) {
+	if (!responseADS.ok || !responseADS.data) {
+		console.log(responseADS.error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
@@ -38,16 +39,15 @@ export default async function SectionAds({
 		);
 	}
 
-	console.log(responseADS);
 	const topAds = await responseADS.data[1];
 	const topKeyWords = await responseADS.data[2];
 	const AccountMetrics = await responseADS.data[3];
 	const campaings = await responseADS.data[4];
+
 	return (
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-4 mt-10'>
 				<Filters data={campaings} />
-
 				<div className='flex items-center gap-2'>
 					<Image
 						src={ads}

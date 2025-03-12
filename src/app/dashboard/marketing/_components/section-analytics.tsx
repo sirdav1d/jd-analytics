@@ -39,7 +39,8 @@ export default async function SectionAnalytics({
 		String(channelFilter),
 	);
 
-	if (!responseAnalytics.ok) {
+	if (!responseAnalytics.ok || !responseAnalytics.data) {
+		console.log(responseAnalytics.error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
