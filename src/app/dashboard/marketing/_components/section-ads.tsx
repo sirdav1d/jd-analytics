@@ -46,9 +46,9 @@ export default async function SectionAds({
 
 	return (
 		<div className='grid gap-5 '>
-			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-4 mt-10'>
+			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
 				<Filters data={campaings} />
-				<div className='flex items-center gap-2'>
+				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
 						src={ads}
 						alt='Logo Google Analytics'

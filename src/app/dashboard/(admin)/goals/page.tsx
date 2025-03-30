@@ -1,15 +1,53 @@
 /** @format */
 
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import MetaComercialForm from './_components/meta-comercial-form';
+
+import { Separator } from '@/components/ui/separator';
+import ModalFormGoal from './_components/modal-form-goal';
+import FilterCompany from './_components/filter-company';
+
 export default function GoalsPage() {
 	return (
-		<>
-			<div className='text-muted-foreground italic'>Em construção...</div>
-			{/* <div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
-				<div className='grid xl:grid-cols-2 gap-5'>
-					<Card className='max-w-[348px] w-full md:max-w-full mx-auto'>
+		<div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
+			<Tabs
+				defaultValue='Marketing'
+				className='w-full'>
+				<TabsList className='grid w-full grid-cols-2'>
+					<TabsTrigger value='Marketing'>Marketing</TabsTrigger>
+					<TabsTrigger
+						disabled
+						value='Comercial'>
+						Comercial
+					</TabsTrigger>
+				</TabsList>
+				<TabsContent value='Marketing'>
+					<Card className='w-full md:max-w-full mx-auto '>
 						<CardHeader>
-							<CardTitle>Meta de Marketing</CardTitle>
-							<CardDescription>Meta válida para 02/2025</CardDescription>
+							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between'>
+								Meta Atual de Marketing <ModalFormGoal />
+							</CardTitle>
+							<CardDescription>
+								Meta válida para{' '}
+								{new Date().toLocaleDateString('pt-Br', { dateStyle: 'short' })}
+							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className='flex flex-col md:flex-row md:items-center md:gap-10'>
@@ -22,9 +60,11 @@ export default function GoalsPage() {
 									<span className='font-semibold text-lg'>20x</span>
 								</p>
 							</div>
-							<Separator className='my-10' />
-							<MetaMarketingForm />
-							<Separator className='my-10' />
+							<Separator
+								orientation='horizontal'
+								className='my-10'
+							/>
+							<FilterCompany />
 							<Table>
 								<TableHeader>
 									<TableRow>
@@ -95,6 +135,8 @@ export default function GoalsPage() {
 							</Table>
 						</CardContent>
 					</Card>
+				</TabsContent>
+				<TabsContent value='Comercial'>
 					<Card className='opacity-50 max-w-[356px] w-full md:max-w-full mx-auto'>
 						<CardHeader>
 							<CardTitle>Meta Comercial Atual</CardTitle>
@@ -184,8 +226,8 @@ export default function GoalsPage() {
 							</Table>
 						</CardContent>
 					</Card>
-				</div>
-			</div> */}
-		</>
+				</TabsContent>
+			</Tabs>
+		</div>
 	);
 }

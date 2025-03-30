@@ -54,6 +54,7 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 		} else {
 			toast.success('Usuário atualizado com sucesso');
 			form.reset();
+			window.location.reload();
 		}
 	}
 	return (

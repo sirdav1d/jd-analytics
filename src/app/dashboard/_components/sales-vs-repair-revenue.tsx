@@ -2,32 +2,33 @@
 
 'use client';
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
+import { CartesianGrid, LabelList, Line, LineChart, XAxis } from 'recharts';
 
 import {
 	ChartConfig,
 	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
 	ChartLegend,
 	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
 } from '@/components/ui/chart';
-const chartData = [
-	{ month: 'January', vendas: 186, servicos: 80 },
-	{ month: 'February', vendas: 305, servicos: 200 },
-	{ month: 'March', vendas: 237, servicos: 120 },
-	{ month: 'April', vendas: 73, servicos: 190 },
-	{ month: 'May', vendas: 209, servicos: 130 },
-	{ month: 'June', vendas: 214, servicos: 140 },
+
+const salesData = [
+	{ name: 'Jan', centro: 1800, icarai: 1200 },
+	{ name: 'Feb', centro: 2000, icarai: 1000 },
+	{ name: 'Mar', centro: 1400, icarai: 2950 },
+	{ name: 'Apr', centro: 2200, icarai: 1580 },
+	{ name: 'May', centro: 2500, icarai: 1900 },
+	{ name: 'Jun', centro: 3000, icarai: 1780 },
 ];
 
 const chartConfig = {
-	vendas: {
-		label: 'Vendas',
+	centro: {
+		label: 'JD Centro',
 		color: 'hsl(var(--chart-1))',
 	},
-	servicos: {
-		label: 'Serviços',
+	icarai: {
+		label: 'JD Icaraí',
 		color: 'hsl(var(--chart-2))',
 	},
 } satisfies ChartConfig;
@@ -37,13 +38,13 @@ export function SalesVsRepairRevenue() {
 		<ChartContainer
 			className='h-72 w-full'
 			config={chartConfig}>
-			<BarChart
+			<LineChart
 				accessibilityLayer
-				margin={{ top: 28 }}
-				data={chartData}>
+				margin={{ top: 28, right: 40, left: 40 }}
+				data={salesData}>
 				<CartesianGrid vertical={false} />
 				<XAxis
-					dataKey='month'
+					dataKey='name'
 					tickLine={false}
 					tickMargin={10}
 					axisLine={false}
@@ -53,30 +54,46 @@ export function SalesVsRepairRevenue() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
-				<Bar
-					dataKey='vendas'
-					fill='var(--color-vendas)'
+				<ChartLegend content={<ChartLegendContent className='text-xs' />} />
+				<Line
+					dataKey='centro'
+					dot={{
+						fill: 'var(--color-centro)',
+					}}
+					activeDot={{
+						r: 6,
+					}}
+					type='natural'
+					stroke='var(--color-centro)'
 					radius={4}>
 					<LabelList
 						position='top'
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
+						formatter={(val: number) => val.toLocaleString('pt-BR')}
 					/>
-				</Bar>
-				<Bar
-					dataKey='servicos'
-					fill='var(--color-servicos)'
+				</Line>
+				<Line
+					dataKey='icarai'
+					type='natural'
+					dot={{
+						fill: 'var(--color-icarai)',
+					}}
+					activeDot={{
+						r: 6,
+					}}
+					stroke='var(--color-icarai)'
 					radius={4}>
 					<LabelList
 						position='top'
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
+						formatter={(val: number) => val.toLocaleString('pt-BR')}
 					/>
-				</Bar>
-			</BarChart>
+				</Line>
+			</LineChart>
 		</ChartContainer>
 	);
 }

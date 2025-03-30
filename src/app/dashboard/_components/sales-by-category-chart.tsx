@@ -54,7 +54,7 @@ export function SalesByCategoryChart() {
 					nameKey='name'
 					label={{ fontSize: '14px' }}
 					labelLine={false}
-					innerRadius={isMobile ? 70 : 100}
+					innerRadius={isMobile ? 80 : 80}
 					strokeWidth={4}>
 					<Label
 						content={({ viewBox }) => {

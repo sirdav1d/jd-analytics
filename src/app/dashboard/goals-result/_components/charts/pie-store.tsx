@@ -10,6 +10,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { formatCurrency } from '@/utils/format-currency';
 import React from 'react';
 import { Cell, Label, Pie, PieChart } from 'recharts';
@@ -31,7 +32,7 @@ export function PieStore() {
 		{ name: 'Restante', value: 40 },
 	];
 	const totaltraffic = 158;
-
+	const isMobile = useIsMobile();
 	return (
 		<ChartContainer
 			config={chartConfig}
@@ -45,7 +46,7 @@ export function PieStore() {
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					innerRadius={68}
+					innerRadius={isMobile ? 80 : 68}
 					label={({ percent, ...props }) => {
 						return (
 							<text

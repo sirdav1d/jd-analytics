@@ -2,7 +2,7 @@
 
 'use client';
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, LabelList, XAxis } from 'recharts';
 
 import {
 	ChartConfig,
@@ -21,19 +21,23 @@ const chartData = [
 ];
 const chartConfig = {
 	total: {
-		label: 'Vendas',
+		label: 'Faturamento',
 		color: 'hsl(var(--chart-1))',
 	},
 } satisfies ChartConfig;
 
 export function SalesChartComponent() {
 	return (
-		<ChartContainer className='h-72 w-full' config={chartConfig}>
-			<BarChart
+		<ChartContainer
+			className='h-72 w-full'
+			config={chartConfig}>
+			<AreaChart
 				accessibilityLayer
 				data={chartData}
 				margin={{
 					top: 28,
+					left: 40,
+					right: 40,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -47,18 +51,46 @@ export function SalesChartComponent() {
 					cursor={false}
 					content={<ChartTooltipContent hideLabel />}
 				/>
-				<Bar
+				<defs>
+					<linearGradient
+						id='fillDesktop'
+						x1='0'
+						y1='0'
+						x2='0'
+						y2='1'>
+						<stop
+							offset='5%'
+							stopColor='var(--color-total)'
+							stopOpacity={0.8}
+						/>
+						<stop
+							offset='95%'
+							stopColor='var(--color-total)'
+							stopOpacity={0.1}
+						/>
+					</linearGradient>
+				</defs>
+				<Area
 					dataKey='total'
-					fill='var(--color-total)'
+					fillOpacity={0.4}
+					fill='url(#fillDesktop)'
+					stroke='var(--color-total)'
+					type={'natural'}
 					radius={4}>
 					<LabelList
 						position='top'
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
+						formatter={(val: number) =>
+							val.toLocaleString('pt-BR', {
+								style: 'currency',
+								currency: 'brl',
+							})
+						}
 					/>
-				</Bar>
-			</BarChart>
+				</Area>
+			</AreaChart>
 		</ChartContainer>
 	);
 }

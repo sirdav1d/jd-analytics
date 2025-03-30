@@ -7,7 +7,6 @@ import {
 	Dialog,
 	DialogClose,
 	DialogContent,
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -48,11 +47,11 @@ export default function DialogDeleteUser({ userId }: { userId: string }) {
 					<DialogTitle>
 						Tem certeza de que deseja excluir este usuário?
 					</DialogTitle>
-					<DialogDescription>
-						Esta ação não pode ser desfeita. Isso excluirá permanentemente a
-						conta do usuário e removerá seus dados dos nossos servidores.
-					</DialogDescription>
 				</DialogHeader>
+				<p className='text-muted-foreground'>
+					Esta ação não pode ser desfeita. Isso excluirá permanentemente a conta
+					do usuário e removerá seus dados dos nossos servidores.
+				</p>
 				<DialogFooter>
 					<DialogClose asChild>
 						<Button variant='outline'>Cancelar</Button>

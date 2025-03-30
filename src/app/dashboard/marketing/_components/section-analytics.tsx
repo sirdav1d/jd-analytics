@@ -53,10 +53,10 @@ export default async function SectionAnalytics({
 	const channelData = responseAnalytics.data[2];
 	return (
 		<div className='grid gap-5 mb-20'>
-			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-4'>
+			<div className='w-full flex flex-col-reverse md:flex-row items-center justify-center md:justify-start flex-wrap gap-5'>
 				<Filters />
 
-				<div className='flex items-center gap-2'>
+				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
 						src={analytics}
 						alt='Logo Google Analytics'

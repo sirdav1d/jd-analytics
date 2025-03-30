@@ -32,6 +32,18 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { DataTablePagination } from './data-table-pagination';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
+import { Plus } from 'lucide-react';
+
+import FormCreate from '../users/_components/form-create';
+import { Button } from '@/components/ui/button';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -64,6 +76,22 @@ export function DataTable<TData, TValue>({
 	return (
 		<div>
 			<div className='flex items-center flex-col gap-5 md:flex-row  py-4'>
+				<Dialog>
+					<DialogTrigger asChild>
+						<Button className='bg-red-600 hover:bg-red-700 w-full md:w-fit'>
+							<Plus className='mr-1 h-4 w-4' /> Adicionar Usuário
+						</Button>
+					</DialogTrigger>
+					<DialogContent className='sm:max-w-[425px]'>
+						<DialogHeader>
+							<DialogTitle>Adicionar Novo Usuário</DialogTitle>
+							<DialogDescription>
+								Insira os detalhes do novo usuário aqui
+							</DialogDescription>
+						</DialogHeader>
+						<FormCreate />
+					</DialogContent>
+				</Dialog>
 				<Input
 					placeholder='Filtrar por nome'
 					value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -117,7 +145,9 @@ export function DataTable<TData, TValue>({
 									key={row.id}
 									data-state={row.getIsSelected() && 'selected'}>
 									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id} className='text-sm text-nowrap'>
+										<TableCell
+											key={cell.id}
+											className='text-sm text-nowrap'>
 											{flexRender(
 												cell.column.columnDef.cell,
 												cell.getContext(),
