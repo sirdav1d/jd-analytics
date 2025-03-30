@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 
 export default function FilterCompany() {
-	const [customerType, setCustomerType] = useState('');
+	const [customerType, setCustomerType] = useState('new');
 	return (
 		<Select
 			value={customerType}

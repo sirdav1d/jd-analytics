@@ -2,7 +2,7 @@
 
 'use client';
 
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, LabelList, XAxis } from 'recharts';
 
 import {
 	ChartConfig,
@@ -12,12 +12,12 @@ import {
 } from '@/components/ui/chart';
 
 const chartData = [
-	{ name: 'Jan', total: 15000 },
-	{ name: 'Feb', total: 20000 },
-	{ name: 'Mar', total: 18000 },
-	{ name: 'Apr', total: 22000 },
-	{ name: 'May', total: 25000 },
-	{ name: 'Jun', total: 30000 },
+	{ name: 'Jan', total: 1900 },
+	{ name: 'Feb', total: 2000 },
+	{ name: 'Mar', total: 1900 },
+	{ name: 'Apr', total: 2700 },
+	{ name: 'May', total: 2100 },
+	{ name: 'Jun', total: 2000 },
 ];
 const chartConfig = {
 	total: {
@@ -31,7 +31,7 @@ export function GrowthChartComponent() {
 		<ChartContainer
 			className='h-72 w-full'
 			config={chartConfig}>
-			<LineChart
+			<AreaChart
 				accessibilityLayer
 				data={chartData}
 				margin={{
@@ -51,10 +51,29 @@ export function GrowthChartComponent() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<Line
+				<defs>
+					<linearGradient
+						id='fillDesktop'
+						x1='0'
+						y1='0'
+						x2='0'
+						y2='1'>
+						<stop
+							offset='5%'
+							stopColor='var(--color-total)'
+							stopOpacity={0.8}
+						/>
+						<stop
+							offset='95%'
+							stopColor='var(--color-total)'
+							stopOpacity={0.1}
+						/>
+					</linearGradient>
+				</defs>
+				<Area
 					dataKey='total'
 					type='natural'
-					fill='var(--color-total)'
+					fill='url(#fillDesktop)'
 					fillOpacity={0.4}
 					stroke='var(--color-total)'
 					strokeWidth={2}
@@ -69,9 +88,10 @@ export function GrowthChartComponent() {
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
+						formatter={(val: number) => val.toLocaleString('pt-BR')}
 					/>
-				</Line>
-			</LineChart>
+				</Area>
+			</AreaChart>
 		</ChartContainer>
 	);
 }

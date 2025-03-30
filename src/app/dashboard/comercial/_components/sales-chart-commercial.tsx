@@ -73,6 +73,12 @@ export function SalesChartComponent() {
 				<Area
 					dataKey='total'
 					fillOpacity={0.4}
+					dot={{
+						fill: 'var(--color-total)',
+					}}
+					activeDot={{
+						r: 6,
+					}}
 					fill='url(#fillDesktop)'
 					stroke='var(--color-total)'
 					type={'natural'}

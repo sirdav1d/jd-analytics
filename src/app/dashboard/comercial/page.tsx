@@ -44,7 +44,6 @@ export default function ComercialDashboard() {
 		from: new Date(),
 		to: addDays(new Date(), 7),
 	});
-	const [channel, setChannel] = useState('all');
 	const [category, setCategory] = useState('all');
 	const [representative, setRepresentative] = useState('all');
 	const [customerType, setCustomerType] = useState('all');
@@ -153,18 +152,6 @@ export default function ComercialDashboard() {
 						})
 					}
 				/>
-				<Select
-					value={channel}
-					onValueChange={setChannel}>
-					<SelectTrigger className='w-full md:w-48'>
-						<SelectValue placeholder='Canal de Venda' />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value='all'>Todos os Canais</SelectItem>
-						<SelectItem value='physical'>Loja Física</SelectItem>
-						<SelectItem value='ecommerce'>E-commerce</SelectItem>
-					</SelectContent>
-				</Select>
 				<Select
 					value={category}
 					onValueChange={setCategory}>

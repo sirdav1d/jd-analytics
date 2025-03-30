@@ -23,8 +23,8 @@ import {
 	User2,
 	UserCog,
 } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { Link } from 'next-view-transitions';
+import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
 
 export default function AppSidebar({ name }: { name: string }) {
@@ -64,19 +64,8 @@ export default function AppSidebar({ name }: { name: string }) {
 			icon: Target,
 		},
 	];
-	const [isPending, startTransition] = useTransition();
-	const router = useRouter();
+	const [isPending] = useTransition();
 	const pathname = usePathname();
-
-	const handleNavigation = (url: string) => {
-		// Inicia a navegação e mostra o loader
-
-		startTransition(() => {
-			router.push(url, { scroll: false });
-		});
-
-		// Depois de a navegação ser concluída, oculta o loader
-	};
 
 	return (
 		<Sidebar collapsible='icon'>
@@ -94,13 +83,13 @@ export default function AppSidebar({ name }: { name: string }) {
 												? 'bg-primary hover:bg-primary/90 text-slate-50 hover:text-slate-50 active:bg-primary/90  active:text-slate-50'
 												: 'bg-transparent'
 										}`}>
-										<button
+										<Link
 											key={item.title}
-											onClick={() => handleNavigation(item.url)}>
+											href={item.url}>
 											<item.icon />
 
 											<span>{item.title}</span>
-										</button>
+										</Link>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
@@ -126,13 +115,13 @@ export default function AppSidebar({ name }: { name: string }) {
 												? 'bg-primary hover:bg-primary/90 text-slate-50 hover:text-slate-50 active:bg-primary/90  active:text-slate-50'
 												: 'bg-transparent'
 										}`}>
-										<button
+										<Link
 											key={item.title}
-											onClick={() => handleNavigation(item.url)}>
+											href={item.url}>
 											<item.icon />
 
 											<span>{item.title}</span>
-										</button>
+										</Link>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
@@ -150,9 +139,7 @@ export default function AppSidebar({ name }: { name: string }) {
 									? 'bg-primary hover:bg-primary/90 hover:text-slate-50 text-slate-50 active:bg-primary/90 active:shadow-md active:text-slate-50'
 									: 'bg-transparent'
 							}`}>
-							<Link
-								href={'/dashboard/profile'}
-								prefetch={true}>
+							<Link href={'/dashboard/profile'}>
 								<User2 />
 								<span className='text-ellipsis'>{name}</span>
 							</Link>
