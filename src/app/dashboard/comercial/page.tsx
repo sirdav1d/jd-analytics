@@ -322,7 +322,9 @@ export default function ComercialDashboard() {
 				<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
 					<Card>
 						<CardHeader>
-							<CardTitle>Top 5 Produtos</CardTitle>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Top 5 Produtos
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<Table>
@@ -380,7 +382,9 @@ export default function ComercialDashboard() {
 					</Card>
 					<Card>
 						<CardHeader>
-							<CardTitle>Top 5 Clientes</CardTitle>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Top 5 Clientes
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<Table>
@@ -435,7 +439,9 @@ export default function ComercialDashboard() {
 				</div>
 				<Card>
 					<CardHeader>
-						<CardTitle>Ranking de Vendedores</CardTitle>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Ranking de Vendedores
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<Table>

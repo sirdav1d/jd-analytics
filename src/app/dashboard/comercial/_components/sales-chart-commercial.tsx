@@ -36,8 +36,8 @@ export function SalesChartComponent() {
 				data={chartData}
 				margin={{
 					top: 28,
-					left: 40,
-					right: 40,
+					left: 36,
+					right: 36,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -87,7 +87,7 @@ export function SalesChartComponent() {
 						position='top'
 						offset={12}
 						className='fill-foreground'
-						fontSize={12}
+						fontSize={10}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',

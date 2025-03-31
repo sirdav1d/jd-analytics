@@ -37,8 +37,8 @@ export function Revenue() {
 				data={chartData}
 				margin={{
 					left: 28,
-					right: 28,
-					top: 28,
+					right: 24,
+					top: 24,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -75,6 +75,12 @@ export function Revenue() {
 					dataKey='desktop'
 					type='natural'
 					fill='url(#fillDesktop)'
+					dot={{
+						fill: 'var(--color-desktop)',
+					}}
+					activeDot={{
+						r: 6,
+					}}
 					fillOpacity={0.4}
 					stroke='var(--color-desktop)'
 					stackId='a'>

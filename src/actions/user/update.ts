@@ -7,7 +7,6 @@ import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutur
 import { User } from '@prisma/client';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
 import bcrypt from 'bcrypt';
-
 import { revalidateTag } from 'next/cache';
 
 interface updateUserActionProps {
@@ -15,14 +14,16 @@ interface updateUserActionProps {
 }
 
 export async function updateUserAction({ userUp }: updateUserActionProps) {
+	const hashPassword = userUp.password
+		? await bcrypt.hash(userUp.password, 10)
+		: undefined;
+
 	try {
-		const hashPassword =
-			userUp.password && (await bcrypt.hash(userUp.password, 10));
 		const user = await prisma.user.update({
 			where: { email: userUp.email },
 			data: {
-				password: hashPassword, // Certifique-se de criptografar a senha antes de salvar!
 				...userUp,
+				password: hashPassword, // Certifique-se de criptografar a senha antes de salvar!
 			},
 		});
 

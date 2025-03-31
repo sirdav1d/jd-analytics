@@ -36,8 +36,8 @@ export function GrowthChartComponent() {
 				data={chartData}
 				margin={{
 					top: 28,
-					left: 28,
-					right: 28,
+					left: 24,
+					right: 24,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -87,7 +87,7 @@ export function GrowthChartComponent() {
 						position='top'
 						offset={12}
 						className='fill-foreground'
-						fontSize={12}
+						fontSize={10}
 						formatter={(val: number) => val.toLocaleString('pt-BR')}
 					/>
 				</Area>

@@ -119,8 +119,8 @@ export function SignInForm({
 						className='w-full font-semibold disabled:opacity-70'>
 						{form.formState.isSubmitting || form.formState.isLoading ? (
 							<>
-								<Loader2 className='animate-spin' />
 								Entrar
+								<Loader2 className='animate-spin' />
 							</>
 						) : (
 							<>Entrar</>
