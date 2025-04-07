@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
 
 		const [campaigns, topCampaigns, topAds, topKeyWords, dataADS] =
 			await Promise.all([
-				await customer.report({
+				customer.report({
 					entity: 'campaign',
 					attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
 					metrics: ['metrics.conversions'],
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
 					from_date: startDate!,
 					to_date: endDate!,
 				}),
-				await customer.report({
+				customer.report({
 					entity: 'campaign',
 					attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
 					metrics: [
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
 					from_date: startDate!,
 					to_date: endDate!,
 				}),
-				await customer.report({
+				customer.report({
 					entity: 'ad_group_ad',
 					attributes: [
 						'ad_group_ad.ad.id',
@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
 					from_date: startDate!,
 					to_date: endDate!,
 				}),
-				await customer.report({
+				customer.report({
 					entity: 'keyword_view',
 					attributes: [
 						'ad_group_criterion.keyword.text',
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
 					from_date: startDate!,
 					to_date: endDate!,
 				}),
-				await customer.report({
+				customer.report({
 					entity: 'customer',
 					metrics: [
 						'metrics.ctr',

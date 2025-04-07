@@ -39,32 +39,22 @@ export async function GET(request: Request) {
 
 		const tokens = await response.json();
 
-		console.log(tokens);
-
-		// if (!response.ok) {
-		// 	console.error('Erro ao obter token:', tokens);
-		// 	return NextResponse.json(
-		// 		{
-		// 			error: 'Falha ao obter token',
-		// 		},
-		// 		{ status: 500 },
-		// 	);
-		// }
-
 		const organizationId = '75d5e26d-5030-4abf-ac16-9351b73a4a20';
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const dataToUpdate: any = {
+			googleAccessToken: tokens.access_token,
+			googleExpiresIn: tokens.expires_in,
+			googleScopes: tokens.scope,
+		};
+
+		if (tokens.refresh_token) {
+			dataToUpdate.googleRefreshToken = tokens.refresh_token;
+		}
 
 		const updatedOrganization = await prisma.organization.update({
 			where: { id: organizationId },
-			data: {
-				googleAccessToken: tokens.access_token,
-				googleRefreshToken: tokens.refresh_token,
-				googleExpiresIn: tokens.expires_in,
-				googleScopes: tokens.scope,
-				// Se tiver o campo para data de expiração, pode atualizar assim:
-				// googleExpiresAt: expiresAt,
-			},
+			data: dataToUpdate,
 		});
-		console.log(updatedOrganization);
 
 		if (!updatedOrganization) {
 			console.log(updatedOrganization);

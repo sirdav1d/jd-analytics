@@ -1,7 +1,6 @@
 /** @format */
 
-import { refreshAccessTokenAction } from '@/actions/google/refresh-token';
-import { prisma } from '@/lib/prisma';
+import { refreshAccessToken } from '@/lib/refresh-token';
 import { formatMetricsChannel } from '@/utils/format-channel-data-google';
 import { formatMetrics } from '@/utils/format-static-data-google';
 import { formatMetricsTraffic } from '@/utils/format-traffic-data-google';
@@ -12,7 +11,7 @@ import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { success, error } = await refreshAccessTokenAction();
+	const { success, accessToken, error } = await refreshAccessToken();
 
 	if (!success || error) {
 		console.log(error);
@@ -23,18 +22,7 @@ export async function GET(req: NextRequest) {
 		});
 	}
 
-	const organization = await prisma.organization.findFirst({
-		select: { googleAccessToken: true },
-	});
 	const propertyId = '295260064';
-
-	if (!organization || !organization.googleAccessToken || !propertyId) {
-		return NextResponse.json({
-			error: 'Token de acesso ou ID da propriedade ausente',
-			ok: false,
-			data: null,
-		});
-	}
 
 	const searchParams = req.nextUrl.searchParams;
 	const startDate = searchParams.get('startDate');
@@ -69,24 +57,24 @@ export async function GET(req: NextRequest) {
 		];
 
 		const auth = new google.auth.OAuth2();
-		auth.setCredentials({ access_token: organization.googleAccessToken });
+		auth.setCredentials({ access_token: accessToken });
 
 		// Instancia o cliente da API Analytics Data (v1beta)
 		const analyticsData = google.analyticsdata('v1beta');
 
 		const [responseStatic, responseTraffic, responseChannel] =
 			await Promise.all([
-				await analyticsData.properties.runReport({
+				analyticsData.properties.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: staticBody,
 					auth,
 				}),
-				await analyticsData.properties.runReport({
+				analyticsData.properties.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: trafficBody,
 					auth,
 				}),
-				await analyticsData.properties.runReport({
+				analyticsData.properties.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: channelBody,
 					auth,
