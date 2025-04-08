@@ -37,9 +37,9 @@ export const FileUpload = ({
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFileChange = (newFiles: File[]) => {
-		setFiles((prevFiles) => [...prevFiles, ...newFiles]);
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		onChange && onChange(newFiles);
+		setFiles((prevFiles) => [...prevFiles, ...newFiles]);
 	};
 
 	const handleClick = () => {

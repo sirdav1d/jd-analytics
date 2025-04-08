@@ -44,7 +44,6 @@ export default function UploadForm() {
 
 		if (json.ok) {
 			toast.success('Upload feito com sucesso!');
-			handleFileChange(null);
 		} else {
 			setMessage(`Erro: ${json.error}`);
 		}
@@ -62,7 +61,9 @@ export default function UploadForm() {
 				disabled={loading}>
 				{loading ? 'Enviando...' : 'Enviar CSV'}
 			</Button>
-			{message && <p className='text-sm -translate-y-20 text-destructive'>{message}</p>}
+			{message && (
+				<p className='text-sm -translate-y-20 text-destructive'>{message}</p>
+			)}
 		</form>
 	);
 }
