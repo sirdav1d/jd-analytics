@@ -32,6 +32,9 @@ export default function Greeting() {
 		if (pathname == '/dashboard/goals-result') {
 			return 'Acompanhamento de Meta';
 		}
+		if (pathname == '/dashboard/upload') {
+			return 'Upload de CSV para base de dados';
+		}
 	}
 
 	return (

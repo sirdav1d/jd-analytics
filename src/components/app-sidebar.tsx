@@ -20,6 +20,7 @@ import {
 	ShoppingCart,
 	Target,
 	Trophy,
+	UploadCloud,
 	User2,
 	UserCog,
 } from 'lucide-react';
@@ -62,6 +63,11 @@ export default function AppSidebar({ name }: { name: string }) {
 			title: 'Definição de Meta',
 			url: '/dashboard/goals',
 			icon: Target,
+		},
+		{
+			title: 'Upload CSV',
+			url: '/dashboard/upload',
+			icon: UploadCloud,
 		},
 	];
 	const [isPending] = useTransition();
