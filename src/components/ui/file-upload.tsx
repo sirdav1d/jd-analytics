@@ -166,7 +166,7 @@ export const FileUpload = ({
 			<Button
 				variant={'outline'}
 				type='button'
-				className='z-[999999999999999999999999] w-full translate-y-24'
+				className='z-[999999999999999999999999] w-full translate-y-24 mt-2'
 				onClick={() => setFiles(Array.from([]))}>
 				Resetar
 			</Button>

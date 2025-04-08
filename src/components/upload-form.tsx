@@ -55,14 +55,14 @@ export default function UploadForm() {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className='flex flex-col max-w-md mx-auto'>
+			className='flex flex-col md:max-w-md mx-auto'>
 			<FileUpload onChange={handleFileChange} />
 			<Button
 				type='submit'
 				disabled={loading}>
 				{loading ? 'Enviando...' : 'Enviar CSV'}
 			</Button>
-			{message && <p className='text-sm mt-2 text-destructive'>{message}</p>}
+			{message && <p className='text-sm -translate-y-20 text-destructive'>{message}</p>}
 		</form>
 	);
 }
