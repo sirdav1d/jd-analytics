@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
 		const parsed = parseCSV(fileData, {
 			header: true,
 			skipEmptyLines: true,
+			delimiter: ',',
 		});
 
 		// 4. Verifica se houve erros durante o parsing
