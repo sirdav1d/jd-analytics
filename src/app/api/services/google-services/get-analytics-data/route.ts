@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
 	const { success, accessToken, error } = await refreshAccessToken();
 
-	if (!success || error) {
+	if (!success || error || !accessToken) {
 		console.log(error);
 		return NextResponse.json({
 			error: 'Erro ao buscar dados do Google Analytics' + error,
@@ -57,7 +57,9 @@ export async function GET(req: NextRequest) {
 		];
 
 		const auth = new google.auth.OAuth2();
-		auth.setCredentials({ access_token: accessToken });
+		auth.setCredentials({
+			access_token: accessToken,
+		});
 
 		// Instancia o cliente da API Analytics Data (v1beta)
 		const analyticsData = google.analyticsdata('v1beta');

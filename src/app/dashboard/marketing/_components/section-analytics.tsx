@@ -18,7 +18,7 @@ import {
 import Image from 'next/image';
 import { ConversionsComponent } from './charts/conversion';
 import { TrafficComponent } from './charts/traffic';
-import Filters from './filter-analytics';
+import Filters from './filter';
 
 interface SectionAnalyticsProps {
 	startDate: string | string[];
@@ -54,7 +54,7 @@ export default async function SectionAnalytics({
 	return (
 		<div className='grid gap-5 mb-20'>
 			<div className='w-full flex flex-col-reverse md:flex-row items-center justify-center md:justify-start flex-wrap gap-5'>
-				<Filters />
+				<Filters data={[]} />
 
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
@@ -79,7 +79,7 @@ export default async function SectionAnalytics({
 							<TrafficComponent
 								Organico={Number(trafficData['Organic Search'])}
 								Pago={Number(trafficData['Paid Search'])}
-								Social={Number(trafficData.Social)}
+								Social={Number(trafficData['Organic Social'])}
 								Direto={Number(trafficData.Direct)}
 								Outros={Number(trafficData.Other)}
 							/>
@@ -103,7 +103,7 @@ export default async function SectionAnalytics({
 								Direct={channelData.Direct}
 								Other={channelData.Other}
 								Paid={channelData['Paid Search']}
-								Social={channelData.Social}
+								Social={channelData['Organic Social']}
 							/>
 						) : (
 							<div className='flex items-center italic text-muted-foreground'>
@@ -126,7 +126,7 @@ export default async function SectionAnalytics({
 							? Number(staticData.purchaseRevenue).toLocaleString('pt-br', {
 									style: 'currency',
 									currency: 'brl',
-							  })
+								})
 							: 0}
 					</div>
 					<p className='text-xs text-muted-foreground'>
@@ -148,7 +148,7 @@ export default async function SectionAnalytics({
 								? Number(staticData.purchaseRevenue).toLocaleString('pt-br', {
 										style: 'currency',
 										currency: 'brl',
-								  })
+									})
 								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -169,7 +169,7 @@ export default async function SectionAnalytics({
 								? Number(staticData.purchaseRevenue).toLocaleString('pt-br', {
 										style: 'currency',
 										currency: 'brl',
-								  })
+									})
 								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -289,7 +289,7 @@ export default async function SectionAnalytics({
 								? calculatePagesPerSession(
 										Number(staticData.sessions),
 										Number(staticData.screenPageViews),
-								  )
+									)
 								: 0}
 						</div>
 						<p className='text-xs text-muted-foreground'>

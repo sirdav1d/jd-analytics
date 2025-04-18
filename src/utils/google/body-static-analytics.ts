@@ -28,7 +28,7 @@ export function generateBodyStaticAnalytics({
 		],
 	};
 
-	if (channel && channel !== 'all') {
+	if (channel && channel !== 'all' ) {
 		body.dimensionFilter = {
 			filter: {
 				fieldName: 'sessionDefaultChannelGrouping',

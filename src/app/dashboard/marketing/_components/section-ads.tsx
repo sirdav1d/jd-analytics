@@ -8,10 +8,11 @@ import Image from 'next/image';
 import { CampagnComponent } from './charts/campaings';
 import { CostsComponent } from './charts/cost';
 import { PerformanceComponent } from './charts/performance';
-import Filters from './filter-ads';
+
 import ListStaticADS from './list-static-ads';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';
+import Filters from './filter';
 
 interface SectionADSProps {
 	startDate: string | string[];
@@ -48,6 +49,7 @@ export default async function SectionAds({
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
 				<Filters data={campaings} />
+
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
 						src={ads}

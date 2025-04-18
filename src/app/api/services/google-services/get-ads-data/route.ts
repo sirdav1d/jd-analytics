@@ -5,11 +5,12 @@ import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { refreshToken } = await refreshAccessToken();
+	const { refreshToken, success, error } = await refreshAccessToken();
 
-	if (!refreshToken) {
+	if (!success || error || !refreshToken) {
+		console.log(error);
 		return NextResponse.json({
-			error: 'Erro ao buscar o token de atualização',
+			error: 'Erro ao buscar dados do Google Analytics' + error,
 			ok: false,
 			data: null,
 		});

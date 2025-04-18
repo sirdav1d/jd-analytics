@@ -15,7 +15,22 @@ import { Loader2, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
-export default function Filters() {
+interface CampaignProps {
+	resource_name: string;
+	status: number;
+	name: string;
+	id: number;
+}
+
+export interface CampagnComponentProps {
+	campaign: CampaignProps;
+}
+
+interface DataProps {
+	data: CampagnComponentProps[];
+}
+
+export default function Filters({ data }: DataProps) {
 	const searchParams = useSearchParams();
 	const [dateRange, setDateRange] = useState({
 		to: searchParams.get('endDate') || new Date(),
@@ -23,6 +38,9 @@ export default function Filters() {
 	});
 	const [trafficSource, setTrafficSource] = useState(
 		searchParams.get('channel') || 'all',
+	);
+	const [campaign, setCampaign] = useState(
+		searchParams.get('campaignId') || 'all',
 	);
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
@@ -75,25 +93,43 @@ export default function Filters() {
 					setDateRange({ from: e?.from ?? new Date(), to: e?.to ?? new Date() })
 				}
 			/>
-			<Select
-				value={trafficSource}
-				onValueChange={setTrafficSource}>
-				<SelectTrigger className='w-full md:w-48'>
-					<SelectValue placeholder='Fonte de Tráfego' />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value='all'>Todas as Fontes</SelectItem>
-					<SelectItem value='Organic Search'>Orgânico</SelectItem>
-					<SelectItem value='Paid Search'>Pago</SelectItem>
-					<SelectItem value='Social'>Social</SelectItem>
-					<SelectItem value='Direct'>Direto</SelectItem>
-					<SelectItem
-						disabled
-						value='Outros'>
-						Outros
-					</SelectItem>
-				</SelectContent>
-			</Select>
+			{data.length === 0 && (
+				<Select
+					value={trafficSource}
+					onValueChange={setTrafficSource}>
+					<SelectTrigger className='w-full md:w-48'>
+						<SelectValue placeholder='Fonte de Tráfego' />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value='all'>Todas as Fontes</SelectItem>
+						<SelectItem value='Organic Search'>Orgânico</SelectItem>
+						<SelectItem value='Paid Search'>Pago</SelectItem>
+						<SelectItem value='Organic Social'>Social</SelectItem>
+						<SelectItem value='Direct'>Direto</SelectItem>
+					</SelectContent>
+				</Select>
+			)}
+			{data.length > 0 && (
+				<Select
+					value={campaign}
+					onValueChange={setCampaign}>
+					<SelectTrigger className='w-full md:w-56'>
+						<SelectValue placeholder='Campanha' />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value={'all'}>Todas as Campanhas</SelectItem>
+						{data.map((item, index) => {
+							return (
+								<SelectItem
+									key={index}
+									value={item.campaign.id.toString()}>
+									{item.campaign.name}
+								</SelectItem>
+							);
+						})}
+					</SelectContent>
+				</Select>
+			)}
 		</div>
 	);
 }

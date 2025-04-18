@@ -8,7 +8,7 @@ export function formatMetricsChannel(data: any) {
 		'Organic Search': { conversions: 0, sessions: 0 },
 		'Paid Search': { conversions: 0, sessions: 0 },
 		Direct: { conversions: 0, sessions: 0 },
-		Social: { conversions: 0, sessions: 0 },
+		'Organic Social': { conversions: 0, sessions: 0 },
 		Other: { conversions: 0, sessions: 0 }, // Acumula as demais origens
 	};
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
