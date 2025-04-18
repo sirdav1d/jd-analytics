@@ -1,15 +1,15 @@
 /** @format */
 
-import { prisma } from '@/lib/prisma';
+import { refreshAccessToken } from '@/lib/refresh-token';
 import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const organization = await prisma.organization.findFirst();
+	const { refreshToken } = await refreshAccessToken();
 
-	if (!organization || !organization.googleAccessToken) {
+	if (!refreshToken) {
 		return NextResponse.json({
-			error: 'Token de acesso ausente',
+			error: 'Erro ao buscar o token de atualização',
 			ok: false,
 			data: null,
 		});
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 
 		const customer = client.Customer({
 			customer_id: '2971952651', // ID do cliente
-			refresh_token: organization.googleRefreshToken!, // O refresh token
+			refresh_token: refreshToken, // O refresh token
 			login_customer_id: '8251122454',
 		});
 
