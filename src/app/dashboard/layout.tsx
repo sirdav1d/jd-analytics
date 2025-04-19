@@ -35,7 +35,7 @@ export default async function DashLayout({
 	);
 
 	const { data } = await response.json();
-	refreshAccessToken();
+	await refreshAccessToken();
 	return (
 		<SidebarProvider defaultOpen={defaultOpen}>
 			<AppSidebar name={data ? data.name : 'Dado Não Encontrado'} />
