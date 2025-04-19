@@ -62,7 +62,7 @@ export default function Filters({ data }: DataProps) {
 						formattedFrom,
 					)}&endDate=${encodeURIComponent(
 						formattedTo,
-					)}&channel=${trafficSource}`,
+					)}&channel=${trafficSource}&campaignId=${campaign}`,
 					{ scroll: false },
 				);
 			});
