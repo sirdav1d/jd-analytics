@@ -44,6 +44,7 @@ const handler = NextAuth({
 		signIn: '/sign-in',
 		signOut: '/sign-in',
 		error: '/',
+		verifyRequest: '/sign-in',
 	},
 	callbacks: {
 		jwt: async ({ token, user }) => {
