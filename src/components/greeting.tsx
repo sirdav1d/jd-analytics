@@ -38,7 +38,7 @@ export default function Greeting() {
 	}
 
 	return (
-		<p className='font-bold text-2xl xl:text-4xl'>
+		<p className='font-bold text-2xl xl:text-4xl text-balance md:text-pretty'>
 			{normalizePathname(pathname)}
 		</p>
 	);

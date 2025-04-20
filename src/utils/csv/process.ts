@@ -3,6 +3,23 @@
 import formidable, { File } from 'formidable';
 import { NextRequest } from 'next/server';
 import { Readable } from 'stream';
+import fs from 'fs/promises';
+// Defina aqui os cabeçalhos obrigatórios do CSV
+const expectedHeaders = [
+	'Data do Pedido',
+	'Data de Aprovação do Pedido',
+	'Cancelada',
+	'Faturado',
+	'Pedido',
+	'Cod. Produto',
+	'Setor',
+	'Produto',
+	'Preco Unitario',
+	'Qtde.',
+	'Valor Total',
+	'Cliente',
+	'Vendedor',
+];
 
 export async function convertRequestToStream(
 	req: NextRequest,
@@ -23,9 +40,13 @@ export async function parseFormData(req: NextRequest): Promise<File> {
 		// Vamos simular isso injetando os headers e a stream.
 		const fakeReq = Object.assign(nodeReq, { headers });
 
-		const form = formidable({ multiples: false });
+		const form = formidable({
+			multiples: false,
+			maxFileSize: 10 * 1024 * 1024, // 10 MB
+			allowEmptyFiles: false,
+		});
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		form.parse(fakeReq as any, (err, fields, files) => {
+		form.parse(fakeReq as any, (err, _fields, files) => {
 			if (err) {
 				return reject(err);
 			}
@@ -40,11 +61,30 @@ export async function parseFormData(req: NextRequest): Promise<File> {
 	});
 }
 
-export function validateCSV(file: File): boolean {
+export async function validateCSV(file: File): Promise<boolean> {
 	// Se o file.mimetype estiver disponível, pode validar também
 	if (file.mimetype && !file.mimetype.includes('csv')) {
 		console.log('MIME type inválido:', file.mimetype);
 		return false;
 	}
-	return true;
+
+	try {
+		// Lê apenas as primeiras linhas para verificar cabeçalhos
+		const content = await fs.readFile(file.filepath, 'utf-8');
+		const firstLine = content.split(/\r?\n/)[0];
+		const headers = firstLine
+			.split(',')
+			.map((h) => h.trim().replace(/^"+|"+$/g, ''));
+
+		const missing = expectedHeaders.filter((h) => !headers.includes(h));
+		if (missing.length) {
+			console.log('Cabeçalhos faltando no CSV:', missing);
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		console.log('Erro ao ler CSV para validação:', err);
+		return false;
+	}
 }
