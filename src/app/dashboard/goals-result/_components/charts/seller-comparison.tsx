@@ -1,5 +1,5 @@
 /** @format */
-
+'use client';
 import {
 	Bar,
 	BarChart,

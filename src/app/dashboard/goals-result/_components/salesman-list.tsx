@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import { PieStore } from './charts/pie-store';
+import { Badge } from '@/components/ui/badge';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 
 export default function SalesmanList() {
 	const vendedoresData = [
@@ -55,13 +57,27 @@ export default function SalesmanList() {
 					<CardContent>
 						<PieStore />
 
-						<div className='flex flex-col gap-2 mt-8'>
+						<div className='flex flex-col gap-2 mt-0'>
 							<span className='font-bold text-sm'>META PROJETADA</span>
 							<div className='flex gap-4'>
 								<span className='font-bold text-sm'>
 									{formatCurrency(vendedor.metaProjetada)}
 								</span>
-								<span> {vendedor.metaProjetadaPercentual}%</span>
+
+								{vendedor.metaProjetadaPercentual >= 100 ? (
+									<Badge variant={'success'}>
+										<span className='flex items-center gap-2'>
+											{vendedor.metaProjetadaPercentual}% <ArrowUp size={12} />
+										</span>
+									</Badge>
+								) : (
+									<Badge variant={'destructive'}>
+										<span className='flex items-center gap-2'>
+											{vendedor.metaProjetadaPercentual}%{' '}
+											<ArrowDown size={12} />
+										</span>
+									</Badge>
+								)}
 							</div>
 						</div>
 					</CardContent>

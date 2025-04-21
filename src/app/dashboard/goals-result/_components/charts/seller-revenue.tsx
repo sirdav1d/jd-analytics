@@ -1,5 +1,7 @@
 /** @format */
 
+'use client';
+
 import {
 	Bar,
 	BarChart,
@@ -16,83 +18,79 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { formatCurrency } from '@/utils/format-currency';
+import { IOverview } from '@/services/data-services/types';
+import { normalizeVendedor } from '@/utils/normalize-name-vendor';
+import { normalizeVendedorLabel } from '@/utils/normalize-name-vendor-label';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-export default function SellerRevenue() {
+interface SellerRevenueProps {
+	sellerData: IOverview[];
+}
+
+export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
+	const isMobile = useIsMobile();
+	const config = sellerData.map((item, index) => {
+		return {
+			[normalizeVendedor(item.vendedor)]: {
+				label: normalizeVendedorLabel(item.vendedor),
+				color: `hsl(var(--chart-${index + 1}))`,
+			},
+		};
+	});
+
+	const chartData = sellerData.map((item) => {
+		console.log(item);
+		return {
+			name: normalizeVendedor(item.vendedor),
+			revenue: item.totalRevenue,
+			fill: `var(--color-${normalizeVendedor(item.vendedor)})`,
+		};
+	});
+
 	const chartConfig = {
 		revenue: {
 			label: 'Faturamento',
 		},
-		Paulo: {
-			label: 'Paulo',
-			color: 'hsl(var(--chart-1))',
-		},
-		Weliton: {
-			label: 'Weliton',
-			color: 'hsl(var(--chart-2))',
-		},
-		Lucas: {
-			label: 'Lucas',
-			color: 'hsl(var(--chart-3))',
-		},
-		Joyce: {
-			label: 'Joyce',
-			color: 'hsl(var(--chart-4))',
-		},
+		...config.reduce((acc, curr) => {
+			return { ...acc, ...curr };
+		}, {}),
 	} satisfies ChartConfig;
-
-	const chartData = [
-		{
-			name: 'Paulo',
-			sales: 40,
-			revenue: 12800,
-			ticket: 320,
-			fill: 'var(--color-Paulo)',
-		},
-		{
-			name: 'Weliton',
-			sales: 30,
-			revenue: 12900,
-			ticket: 430,
-			fill: 'var(--color-Weliton)',
-		},
-		{
-			name: 'Lucas',
-			sales: 70,
-			revenue: 19500,
-			ticket: 278,
-			fill: 'var(--color-Lucas)',
-		},
-		{
-			name: 'Joyce',
-			sales: 50,
-			revenue: 13600,
-			ticket: 272,
-			fill: 'var(--color-Joyce)',
-		},
-	];
 
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-80 md:h-72 w-full'>
+			className='h-80 w-full'>
 			<BarChart
 				accessibilityLayer
 				layout='vertical'
 				margin={{
-					right: 80,
+					right: isMobile ? 76 : 90,
+					left: -12,
 				}}
 				data={chartData}>
 				<CartesianGrid horizontal={false} />
 				<YAxis
+					width={isMobile ? 80 : 184}
 					dataKey='name'
-					tickMargin={12}
+					tickMargin={8}
 					type='category'
 					tickLine={false}
 					axisLine={false}
-					hide
+					tickFormatter={(value) =>
+						isMobile
+							? chartConfig[value as keyof typeof chartConfig]?.label.slice(
+									4,
+									12,
+								)
+							: chartConfig[value as keyof typeof chartConfig]?.label.slice(
+									4,
+									24,
+								)
+					}
 				/>
 				<XAxis
 					dataKey='revenue'
+					scale='sqrt'
 					type='number'
 					hide
 				/>
@@ -100,26 +98,17 @@ export default function SellerRevenue() {
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-
 				<Bar
 					radius={4}
 					dataKey='revenue'
-					layout='vertical'
-					fill='var(--color-fill)'>
-					<LabelList
-						dataKey={'name'}
-						position='insideLeft'
-						offset={12}
-						className='fill-[--color-label]'
-						fontSize={14}
-						fontWeight={700}
-					/>
+					fill='var(--color-fill)'
+					layout='vertical'>
 					<LabelList
 						dataKey={'revenue'}
 						position='right'
 						offset={8}
 						className='fill-foreground'
-						fontSize={10}
+						fontSize={isMobile ? 10 : 12}
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>

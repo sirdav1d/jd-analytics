@@ -5,15 +5,10 @@
 import {
 	ChartConfig,
 	ChartContainer,
-	ChartLegend,
-	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { formatCurrency } from '@/utils/format-currency';
-import React from 'react';
-import { Cell, Label, Pie, PieChart } from 'recharts';
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from 'recharts';
 
 const chartConfig = {
 	Atingido: {
@@ -27,48 +22,26 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function PieStore() {
-	const chartData = [
-		{ name: 'Atingido', value: 80 },
-		{ name: 'Restante', value: 40 },
-	];
-	const totaltraffic = 158;
-	const isMobile = useIsMobile();
+	const chartData = [{ data: 'Janeiro', Atingido: 80, Restante: 40 }];
+	const totaltraffic = chartData[0].Atingido + chartData[0].Restante;
+
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square  md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
-			<PieChart>
+			className='mx-auto aspect-square w-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
+			<RadialBarChart
+				data={chartData}
+				endAngle={180}
+				innerRadius={120}
+				outerRadius={180}>
 				<ChartTooltip
 					cursor={false}
-					content={<ChartTooltipContent />}
+					content={<ChartTooltipContent hideLabel />}
 				/>
-				<Pie
-					data={chartData}
-					dataKey='value'
-					nameKey='name'
-					innerRadius={isMobile ? 80 : 68}
-					label={({ percent, ...props }) => {
-						return (
-							<text
-								className='text-foreground'
-								cx={props.cx}
-								cy={props.cy}
-								x={props.x - 14}
-								y={props.y}
-								textAnchor={props.textAnchor + 1}
-								dominantBaseline={props.dominantBaseline}
-								fill='hsla(var(--foreground))'>{` ${(percent * 100).toFixed(
-								0,
-							)}%`}</text>
-						);
-					}}
-					labelLine={false}>
-					{chartData.map((entry, index) => (
-						<Cell
-							key={`cell-${index}`}
-							fill={`var(--color-${entry.name})`}
-						/>
-					))}
+				<PolarRadiusAxis
+					tick={false}
+					tickLine={false}
+					axisLine={false}>
 					<Label
 						content={({ viewBox }) => {
 							if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
@@ -76,30 +49,43 @@ export function PieStore() {
 									<text
 										x={viewBox.cx}
 										y={viewBox.cy}
-										textAnchor='middle'
-										dominantBaseline='middle'>
+										textAnchor='middle'>
 										<tspan
 											x={viewBox.cx}
-											y={viewBox.cy}
-											className='fill-foreground text-xl font-bold'>
-											{formatCurrency(totaltraffic)}
+											y={(viewBox.cy || 0) - 16}
+											className='fill-foreground text-2xl font-bold'>
+											{totaltraffic.toLocaleString('pt-br', {
+												style: 'currency',
+												currency: 'BRL',
+											})}
+										</tspan>
+										<tspan
+											x={viewBox.cx}
+											y={(viewBox.cy || 0) + 4}
+											className='fill-muted-foreground text-sm'>
+											Atingido
 										</tspan>
 									</text>
 								);
 							}
 						}}
 					/>
-				</Pie>
-				<ChartLegend
-					content={
-						<ChartLegendContent
-							nameKey='name'
-							className='md:text-sm'
-						/>
-					}
-					className='text-xs md:text-sm pt-3 md:text-nowrap flex-wrap md:flex-nowrap'
+				</PolarRadiusAxis>
+				<RadialBar
+					dataKey='Atingido'
+					stackId='a'
+					cornerRadius={5}
+					fill='var(--color-Atingido)'
+					className='stroke-transparent stroke-2'
 				/>
-			</PieChart>
+				<RadialBar
+					dataKey='Restante'
+					fill='var(--color-Restante)'
+					stackId='a'
+					cornerRadius={5}
+					className='stroke-transparent stroke-2'
+				/>
+			</RadialBarChart>
 		</ChartContainer>
 	);
 }
