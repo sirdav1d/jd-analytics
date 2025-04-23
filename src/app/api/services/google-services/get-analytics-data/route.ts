@@ -1,27 +1,15 @@
 /** @format */
 
-import { refreshAccessToken } from '@/lib/refresh-token';
+import { createAnalyticsDataClient } from '@/lib/google-analytics-client';
 import { formatMetricsChannel } from '@/utils/format-channel-data-google';
 import { formatMetrics } from '@/utils/format-static-data-google';
 import { formatMetricsTraffic } from '@/utils/format-traffic-data-google';
 import { generateBodyChannelAnalytics } from '@/utils/google/body-channel-analytics';
 import { generateBodyStaticAnalytics } from '@/utils/google/body-static-analytics';
 import { generateBodyTrafficAnalytics } from '@/utils/google/body-traffic-analytics';
-import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { success, accessToken, error } = await refreshAccessToken();
-
-	if (!success || error || !accessToken) {
-		console.log(error);
-		return NextResponse.json({
-			error: 'Erro ao buscar dados do Google Analytics' + error,
-			ok: false,
-			data: null,
-		});
-	}
-
 	const propertyId = '295260064';
 
 	const searchParams = req.nextUrl.searchParams;
@@ -56,15 +44,7 @@ export async function GET(req: NextRequest) {
 			}),
 		];
 
-		const auth = new google.auth.OAuth2();
-		auth.setCredentials({
-			access_token: accessToken,
-		});
-
-		auth.forceRefreshOnFailure = true;
-
-		// Instancia o cliente da API Analytics Data (v1beta)
-		const analyticsData = google.analyticsdata('v1beta');
+		const { analyticsData, auth } = await createAnalyticsDataClient();
 
 		const [responseStatic, responseTraffic, responseChannel] =
 			await Promise.all([

@@ -1,21 +1,10 @@
 /** @format */
 
-import { refreshAccessToken } from '@/lib/refresh-token';
-import { Constraints, GoogleAdsApi } from 'google-ads-api';
+import { createGoogleAdsCustomer } from '@/lib/google-ads-client';
+import { Constraints } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { refreshToken, success, error } = await refreshAccessToken();
-
-	if (!success || error || !refreshToken) {
-		console.log(error);
-		return NextResponse.json({
-			error: 'Erro ao buscar dados do Google Analytics' + error,
-			ok: false,
-			data: null,
-		});
-	}
-
 	try {
 		const searchParams = req.nextUrl.searchParams;
 		const startDate = searchParams.get('startDate');
@@ -32,19 +21,7 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		// Instancia o cliente da API Analytics Data (v1beta)
-		const client = new GoogleAdsApi({
-			client_id: process.env.GOOGLE_CLIENT_ID!,
-			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
-			
-		});
-
-		const customer = client.Customer({
-			customer_id: '2971952651', // ID do cliente
-			refresh_token: refreshToken, // O refresh token
-			login_customer_id: '8251122454',
-		});
+		const customer = await createGoogleAdsCustomer();
 
 		const [campaigns, topCampaigns, topAds, topKeyWords, dataADS] =
 			await Promise.all([

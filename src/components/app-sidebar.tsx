@@ -27,8 +27,9 @@ import {
 import { Link } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
+import { useSession } from 'next-auth/react';
 
-export default function AppSidebar({ name }: { name: string }) {
+export default function AppSidebar() {
 	const items = [
 		{
 			title: 'Home',
@@ -72,7 +73,12 @@ export default function AppSidebar({ name }: { name: string }) {
 	];
 	const [isPending] = useTransition();
 	const pathname = usePathname();
+	const session = useSession();
 
+	if (!session.data || !session.data.user) {
+		console.log('usuário não encontrado');
+		return <></>;
+	}
 	return (
 		<Sidebar collapsible='icon'>
 			<SidebarContent className='bg-white dark:bg-slate-900'>
@@ -147,7 +153,7 @@ export default function AppSidebar({ name }: { name: string }) {
 							}`}>
 							<Link href={'/dashboard/profile'}>
 								<User2 />
-								<span className='text-ellipsis'>{name}</span>
+								<span className='text-ellipsis'>{session.data.user?.name}</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

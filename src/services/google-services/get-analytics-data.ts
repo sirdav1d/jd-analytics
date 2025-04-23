@@ -11,6 +11,7 @@ export async function FetchAnalyticsData(
 		{
 			method: 'GET',
 			next: { revalidate: 30 },
+			cache: 'force-cache',
 		},
 	);
 
