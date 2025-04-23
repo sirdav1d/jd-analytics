@@ -26,19 +26,22 @@ export default async function SectionAds({
 	campaignId,
 	startDate,
 }: SectionADSProps) {
-	const [Allcampaings, AccountMetricsData, adsAndWords] = await Promise.all([
-		FetchADSDataCampaign(
-			String(startDate),
-			String(endDate),
-			String(campaignId),
-		),
-		FetchADSDataMetrics(String(startDate), String(endDate), String(campaignId)),
-		FetchADSDataWordsAndAds(
-			String(startDate),
-			String(endDate),
-			String(campaignId),
-		),
-	]);
+	const Allcampaings = await FetchADSDataCampaign(
+		String(startDate),
+		String(endDate),
+		String(campaignId),
+	);
+
+	const AccountMetricsData = await FetchADSDataMetrics(
+		String(startDate),
+		String(endDate),
+		String(campaignId),
+	);
+	const adsAndWords = await FetchADSDataWordsAndAds(
+		String(startDate),
+		String(endDate),
+		String(campaignId),
+	);
 
 	if (!Allcampaings.ok || !AccountMetricsData.ok || !adsAndWords.ok) {
 		console.log(
