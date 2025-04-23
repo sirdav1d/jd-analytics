@@ -1,8 +1,6 @@
 /** @format */
 
 import { Separator } from '@/components/ui/separator';
-import { Suspense } from 'react';
-import PageSkeleton from './_components/page-skeleton';
 import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 
@@ -28,21 +26,20 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 	const campaignId = searchParams.campaignId || 'all';
+
 	return (
-		<Suspense fallback={<PageSkeleton />}>
-			<div className='w-full mx-auto space-y-5 pb-5 h-full'>
-				<SectionAnalytics
-					startDate={startDate}
-					endDate={endDate}
-					channel={channelFilter}
-				/>
-				<Separator className='my-40 w-full' />
-				<SectionAds
-					startDate={startDate}
-					endDate={endDate}
-					campaignId={campaignId}
-				/>
-			</div>
-		</Suspense>
+		<div className='w-full mx-auto space-y-5 pb-5 h-full'>
+			<SectionAnalytics
+				startDate={startDate}
+				endDate={endDate}
+				channel={channelFilter}
+			/>
+			<Separator className='my-40 w-full' />
+			<SectionAds
+				startDate={startDate}
+				endDate={endDate}
+				campaignId={campaignId}
+			/>
+		</div>
 	);
 }

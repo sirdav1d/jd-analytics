@@ -11,42 +11,46 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { formatCurrency } from '@/utils/format-currency';
-const chartData = [
-	{ month: 'January', desktop: 186 },
-	{ month: 'February', desktop: 305 },
-	{ month: 'March', desktop: 237 },
-	{ month: 'April', desktop: 73 },
-	{ month: 'May', desktop: 209 },
-	{ month: 'June', desktop: 214 },
-];
+import { ITimeSeries } from '@/services/data-services/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-const chartConfig = {
-	desktop: {
-		label: 'Faturamento',
-		color: 'hsl(var(--chart-1))',
-	},
-} satisfies ChartConfig;
+interface RevenueProps {
+	revanueData: ITimeSeries[];
+}
 
-export function Revenue() {
+export function Revenue({ revanueData }: RevenueProps) {
+	console.log('revenueData', revanueData);
+
+	const chartConfig = {
+		revenue: {
+			label: 'Faturamento',
+			color: 'hsl(var(--chart-1))',
+		},
+	} satisfies ChartConfig;
+
+	const isMobile = useIsMobile();
+	const chartData = revanueData;
 	return (
 		<ChartContainer
-			className='h-80 md:h-72 w-full'
+			className='h-80 w-full'
 			config={chartConfig}>
 			<AreaChart
 				accessibilityLayer
 				data={chartData}
 				margin={{
 					left: 28,
-					right: 24,
-					top: 24,
+					right: 32,
+					top: 20,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
-					dataKey='month'
+					dataKey='period'
+					fontSize={9}
 					tickLine={false}
 					axisLine={false}
 					tickMargin={8}
-					tickFormatter={(value) => value.slice(0, 3)}
+					tick={isMobile ? false : true}
+					
 				/>
 				<ChartTooltip
 					cursor={false}
@@ -61,37 +65,39 @@ export function Revenue() {
 						y2='1'>
 						<stop
 							offset='5%'
-							stopColor='var(--color-desktop)'
+							stopColor='var(--color-revenue)'
 							stopOpacity={0.8}
 						/>
 						<stop
 							offset='95%'
-							stopColor='var(--color-desktop)'
+							stopColor='var(--color-revenue)'
 							stopOpacity={0.1}
 						/>
 					</linearGradient>
 				</defs>
 				<Area
-					dataKey='desktop'
+					dataKey='revenue'
 					type='natural'
 					fill='url(#fillDesktop)'
 					dot={{
-						fill: 'var(--color-desktop)',
+						fill: 'var(--color-revenue)',
 					}}
 					activeDot={{
 						r: 6,
 					}}
 					fillOpacity={0.4}
-					stroke='var(--color-desktop)'
+					stroke='var(--color-revenue)'
 					stackId='a'>
-					<LabelList
-						dataKey='desktop'
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={10}
-						formatter={(value: number) => formatCurrency(value)}
-					/>
+					{!isMobile && (
+						<LabelList
+							dataKey='revenue'
+							position='top'
+							offset={12}
+							className='fill-foreground'
+							fontSize={10}
+							formatter={(value: number) => formatCurrency(value)}
+						/>
+					)}
 				</Area>
 			</AreaChart>
 		</ChartContainer>

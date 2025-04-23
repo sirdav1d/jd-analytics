@@ -11,8 +11,7 @@ import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { success, accessToken, error, refreshToken } =
-		await refreshAccessToken();
+	const { success, accessToken, error } = await refreshAccessToken();
 
 	if (!success || error || !accessToken) {
 		console.log(error);
@@ -60,7 +59,6 @@ export async function GET(req: NextRequest) {
 		const auth = new google.auth.OAuth2();
 		auth.setCredentials({
 			access_token: accessToken,
-			refresh_token: refreshToken,
 		});
 
 		// Instancia o cliente da API Analytics Data (v1beta)

@@ -3,15 +3,13 @@
 export async function FetchGoalTrackingData(
 	startDate: string,
 	endDate: string,
-	vendor: string,
 ) {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		`${baseURL}/api/services/data-services/tracking-goal?startDate=${startDate}&endDate=${endDate}&vendor=${vendor}`,
+		`${baseURL}/api/services/data-services/tracking-goal?startDate=${startDate}&endDate=${endDate}`,
 		{
 			method: 'GET',
-			next: { revalidate: 60 },
-			cache: 'force-cache',
+			next: { revalidate: 2 },
 		},
 	);
 

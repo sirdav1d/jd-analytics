@@ -7,5 +7,7 @@ export interface IOverview {
 	avgTicket: number;
 }
 
-
-
+export interface ITimeSeries {
+	period: string;
+	revenue: number;
+}

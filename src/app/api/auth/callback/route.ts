@@ -57,7 +57,6 @@ export async function GET(request: Request) {
 		});
 
 		if (!updatedOrganization) {
-			console.log(updatedOrganization);
 			return NextResponse.json({
 				error: 'Algo deu errado, org tokens não atualizados',
 				ok: false,

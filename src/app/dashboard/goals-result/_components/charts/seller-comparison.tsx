@@ -17,17 +17,21 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { IOverview } from '@/services/data-services/types';
 import { formatCurrency } from '@/utils/format-currency';
+import { normalizeVendedorLabel } from '@/utils/normalize-name-vendor-label';
 
-export default function SellerComparison() {
+interface SellerComparisonProps {
+	sellerData: IOverview[];
+}
+
+export default function SellerComparison({
+	sellerData,
+}: SellerComparisonProps) {
 	const chartConfig = {
 		sales: {
 			label: 'Vendas',
 			color: 'hsl(var(--chart-1))',
-		},
-		revenue: {
-			label: 'Faturamento',
-			color: 'hsl(var(--chart-3))',
 		},
 		ticket: {
 			label: 'Ticket Médio',
@@ -35,38 +39,20 @@ export default function SellerComparison() {
 		},
 	} satisfies ChartConfig;
 
-	const chartData = [
-		{
-			name: 'Paulo',
-			sales: 40,
-			revenue: 12800,
-			ticket: 320,
-		},
-		{
-			name: 'Weliton',
-			sales: 30,
-			revenue: 12900,
-			ticket: 430,
-		},
-		{
-			name: 'Lucas',
-			sales: 70,
-			revenue: 19500,
-			ticket: 278,
-		},
-		{
-			name: 'Joyce',
-			sales: 50,
-			revenue: 13600,
-			ticket: 272,
-		},
-	];
+	const chartData = sellerData.map((item) => {
+		return {
+			name: normalizeVendedorLabel(item.vendedor),
+			ticket: item.avgTicket,
+			sales: item.orderCount,
+		};
+	});
 
 	return (
 		<ChartContainer
 			config={chartConfig}
 			className='h-80 md:h-72 w-full'>
 			<BarChart
+				accessibilityLayer
 				margin={{
 					top: 28,
 					right: 24,
@@ -78,6 +64,7 @@ export default function SellerComparison() {
 					tickMargin={12}
 					tickLine={false}
 					axisLine={false}
+					tickFormatter={(value: string) => value.slice(4, 18) + '...'}
 				/>
 				<YAxis
 					scale={'sqrt'}
@@ -111,18 +98,6 @@ export default function SellerComparison() {
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>
-				{/* <Bar
-					radius={4}
-					yAxisId='right'
-					dataKey='revenue'
-					fill='var(--color-revenue)'>
-					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={12}
-					/>
-				</Bar> */}
 			</BarChart>
 		</ChartContainer>
 	);

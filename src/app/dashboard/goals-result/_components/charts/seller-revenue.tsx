@@ -39,7 +39,6 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 	});
 
 	const chartData = sellerData.map((item) => {
-		console.log(item);
 		return {
 			name: normalizeVendedor(item.vendedor),
 			revenue: item.totalRevenue,
@@ -81,11 +80,11 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 							? chartConfig[value as keyof typeof chartConfig]?.label.slice(
 									4,
 									12,
-								)
+								) + '...'
 							: chartConfig[value as keyof typeof chartConfig]?.label.slice(
 									4,
 									24,
-								)
+								) + '...'
 					}
 				/>
 				<XAxis

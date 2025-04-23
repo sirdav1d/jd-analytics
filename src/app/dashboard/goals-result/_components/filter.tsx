@@ -4,61 +4,18 @@
 
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import { addDays, format } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
 export default function Filter() {
-	const vendedoresData = [
-		{
-			name: 'PAULO',
-			meta: 143000,
-			realizado: 137761.22,
-			percentual: 96,
-			metaProjetada: 275522.44,
-			metaProjetadaPercentual: 193,
-		},
-		{
-			name: 'WELITON',
-			meta: 120000,
-			realizado: 35405.01,
-			percentual: 30,
-			metaProjetada: 70810.02,
-			metaProjetadaPercentual: 59,
-		},
-		{
-			name: 'LUCAS SILVEIRA',
-			meta: 55000,
-			realizado: 18372.6,
-			percentual: 33,
-			metaProjetada: 55117.8,
-			metaProjetadaPercentual: 100,
-		},
-		{
-			name: 'B2B JOYCE',
-			meta: 90000,
-			realizado: 20222.1,
-			percentual: 22,
-			metaProjetada: 60666.3,
-			metaProjetadaPercentual: 67,
-		},
-	];
-
 	const searchParams = useSearchParams();
 	const [dateRange, setDateRange] = useState({
 		to: searchParams.get('endDate') || new Date(),
 		from: searchParams.get('startDate') || addDays(new Date(), -7),
 	});
 
-	const [selectedVendedor, setSelectedVendedor] = useState('all');
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 
@@ -77,9 +34,7 @@ export default function Filter() {
 				router.push(
 					`/dashboard/goals-result?startDate=${encodeURIComponent(
 						formattedFrom,
-					)}&endDate=${encodeURIComponent(
-						formattedTo,
-					)}&vendor=${selectedVendedor}`,
+					)}&endDate=${encodeURIComponent(formattedTo)}`,
 					{ scroll: false },
 				);
 			});
@@ -110,24 +65,6 @@ export default function Filter() {
 					setDateRange({ from: e?.from ?? new Date(), to: e?.to ?? new Date() })
 				}
 			/>
-
-			<Select
-				value={selectedVendedor}
-				onValueChange={setSelectedVendedor}>
-				<SelectTrigger className='w-full md:max-w-[220px] border-2'>
-					<SelectValue placeholder='Selecione um vendedor' />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value='all'>Todos os Vendedores</SelectItem>
-					{vendedoresData.map((vendedor, index) => (
-						<SelectItem
-							key={index}
-							value={vendedor.name.toLowerCase()}>
-							{vendedor.name}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
 		</div>
 	);
 }

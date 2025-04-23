@@ -37,18 +37,17 @@ export default async function GoalResultPage(props: {
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
-	const vendor = searchParams.vendor || 'all';
 
 	const dataGoal = await FetchGoalTrackingData(
 		String(startDate),
 		String(endDate),
-		String(vendor),
 	);
 
 	if (!dataGoal.ok) {
 		console.log(dataGoal.error);
 		return <div>Nenhum dado foi encontrado</div>;
 	}
+
 	return (
 		<div className='w-full  mx-auto space-y-5 pb-5'>
 			<Filter />
@@ -60,7 +59,7 @@ export default async function GoalResultPage(props: {
 						</CardTitle>
 						<p className='text-sm'>Meta: {formatCurrency(storeData.meta)}</p>
 					</CardHeader>
-					<CardContent className='scale-125 pt-10'>
+					<CardContent className='scale-125  translate-y-12'>
 						<PieStore />
 					</CardContent>
 				</Card>
@@ -82,7 +81,7 @@ export default async function GoalResultPage(props: {
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<SellerComparison />
+					<SellerComparison sellerData={dataGoal.overview} />
 				</CardContent>
 			</Card>
 
@@ -95,7 +94,7 @@ export default async function GoalResultPage(props: {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<Revenue />
+						<Revenue revanueData={dataGoal.timeSeries} />
 					</CardContent>
 				</Card>
 			</div>

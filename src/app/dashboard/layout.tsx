@@ -2,7 +2,6 @@
 import AppSidebar from '@/components/app-sidebar';
 import HeaderDashboard from '@/components/header-dashboard';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { refreshAccessToken } from '@/lib/refresh-token';
 import { getServerSession } from 'next-auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -35,7 +34,7 @@ export default async function DashLayout({
 	);
 
 	const { data } = await response.json();
-	await refreshAccessToken();
+
 	return (
 		<SidebarProvider defaultOpen={defaultOpen}>
 			<AppSidebar name={data ? data.name : 'Dado Não Encontrado'} />

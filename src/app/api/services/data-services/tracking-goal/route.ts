@@ -8,7 +8,6 @@ export async function GET(req: NextRequest) {
 		const { searchParams } = req.nextUrl;
 		const startParam = searchParams.get('startDate');
 		const endParam = searchParams.get('endDate');
-		const vendorFilter = searchParams.get('vendor');
 
 		if (!startParam || !endParam) {
 			return NextResponse.json(
@@ -24,7 +23,10 @@ export async function GET(req: NextRequest) {
 		}
 
 		const startDate = new Date(startParam);
+		startDate.setHours(0, 0, 0, 0);
 		const endDate = new Date(endParam);
+		endDate.setHours(23, 59, 59, 999);
+
 		const msInDay = 1000 * 60 * 60 * 24;
 		const diffDays = (endDate.getTime() - startDate.getTime()) / msInDay;
 		const useDaily = diffDays < 31;
@@ -36,54 +38,68 @@ export async function GET(req: NextRequest) {
 			avgTicket: number;
 		}[] = [];
 
-		if (!vendorFilter || vendorFilter === 'all') {
-			const rawVendas = await prisma.pedido.groupBy({
-				by: ['vendedor'],
-				where: { dataPedido: { gte: startDate, lte: endDate } },
-				_sum: { valorTotal: true },
-				_count: { id: true },
-				_avg: { valorTotal: true },
-			});
+		const rawVendas = await prisma.pedido.groupBy({
+			by: ['vendedor'],
+			where: { dataPedido: { gte: startDate, lte: endDate } },
+			_sum: { valorTotal: true },
+			_count: { id: true },
+			_avg: { valorTotal: true },
+		});
 
-			vendasPorVendedor = rawVendas
-				.map((v) => ({
-					vendedor: v.vendedor,
-					totalRevenue: v._sum.valorTotal?.toNumber() ?? 0,
-					orderCount: v._count.id,
-					avgTicket: v._avg.valorTotal?.toNumber() ?? 0,
-				}))
-				.sort((a, b) => b.totalRevenue - a.totalRevenue);
-		}
+		vendasPorVendedor = rawVendas
+			.map((v) => ({
+				vendedor: v.vendedor,
+				totalRevenue: v._sum.valorTotal?.toNumber() ?? 0,
+				orderCount: v._count.id,
+				avgTicket: v._avg.valorTotal?.toNumber() ?? 0,
+			}))
+			.sort((a, b) => b.totalRevenue - a.totalRevenue);
 
 		// 2. Série temporal (diária se período < 31 dias, senão mensal)
 		let timeSeries: Array<{ period: string; revenue: number }>;
 		if (useDaily) {
 			timeSeries = await prisma.$queryRaw<
 				Array<{ period: string; revenue: number }>
-			>`
-        SELECT
-          to_char(date_trunc('day', "data_pedido"), 'YYYY-MM-DD') AS period,
-          SUM("valor_total")::float AS revenue
-        FROM "pedidos"
-        WHERE "data_pedido" BETWEEN ${startDate} AND ${endDate}
-        ${vendorFilter && vendorFilter !== 'all' ? Prisma.sql`AND "vendedor" = ${vendorFilter}` : Prisma.empty}
-        GROUP BY period
-        ORDER BY period
-      `;
+			>(
+				Prisma.sql`
+          WITH days AS (
+            SELECT generate_series(
+              ${startDate}::date,
+              ${endDate}::date,
+              '1 day'::interval
+            ) AS day
+          ), agg AS (
+            SELECT date_trunc('day', data_pedido)::date AS day,
+                   SUM(valor_total)::float AS revenue
+            FROM pedidos
+            WHERE data_pedido >= ${startDate}
+              AND data_pedido <= ${endDate}
+            GROUP BY day
+          )
+          SELECT to_char(days.day, 'YYYY-MM-DD') AS period,
+                 COALESCE(agg.revenue, 0) AS revenue
+          FROM days
+          LEFT JOIN agg ON days.day = agg.day
+          ORDER BY days.day
+        `,
+			);
 		} else {
 			timeSeries = await prisma.$queryRaw<
 				Array<{ period: string; revenue: number }>
-			>`
-        SELECT
-          to_char(date_trunc('month', "data_pedido"), 'YYYY-MM') AS period,
-          SUM("valor_total")::float AS revenue
-        FROM "pedidos"
-        WHERE "data_pedido" BETWEEN ${startDate} AND ${endDate}
-        ${vendorFilter && vendorFilter !== 'all' ? Prisma.sql`AND "vendedor" = ${vendorFilter}` : Prisma.empty}
-        GROUP BY period
-        ORDER BY period
-      `;
+			>(
+				Prisma.sql`
+          SELECT
+            to_char(date_trunc('month', data_pedido), 'YYYY-MM') AS period,
+            SUM(valor_total)::float AS revenue
+          FROM pedidos
+          WHERE data_pedido >= ${startDate}
+            AND data_pedido <= ${endDate}
+          GROUP BY period
+          ORDER BY period
+        `,
+			);
 		}
+		console.log(timeSeries);
 
 		const allVendors = await prisma.pedido.findMany({
 			select: { vendedor: true },
