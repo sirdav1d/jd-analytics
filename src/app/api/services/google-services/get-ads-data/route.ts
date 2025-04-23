@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 		const endDate = searchParams.get('endDate');
 		const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 
-		const campaignConstraints: Constraints | undefined = [];
+		const campaignConstraints: Constraints = [];
 
 		if (campaignId && campaignId !== 'all') {
 			campaignConstraints.push({
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 		}
 
 		const customer = await createGoogleAdsCustomer();
-
+		console.time('allReports');
 		const [campaigns, topCampaigns, topAds, topKeyWords, dataADS] =
 			await Promise.all([
 				customer.report({
@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
 					to_date: endDate!,
 				}),
 			]);
-
+		console.timeEnd('allReports');
 		const metrics = dataADS[0].metrics;
 
 		// Verifica se há dados antes de retornar

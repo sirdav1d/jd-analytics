@@ -1,5 +1,5 @@
 /** @format */
-import 'server-only';
+
 import { GoogleAdsApi } from 'google-ads-api';
 import { refreshAccessToken } from './refresh-token';
 
