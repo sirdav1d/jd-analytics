@@ -132,18 +132,20 @@ export function DataTable<TData, TValue>({
 			</div>
 			<div className='rounded-md border'>
 				<Table>
-					<TableHeader>
+					<TableHeader className='bg-secondary'>
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {
 									return (
-										<TableHead key={header.id}>
+										<TableHead
+											className='text-foreground font-semibold'
+											key={header.id}>
 											{header.isPlaceholder
 												? null
 												: flexRender(
 														header.column.columnDef.header,
 														header.getContext(),
-												  )}
+													)}
 										</TableHead>
 									);
 								})}

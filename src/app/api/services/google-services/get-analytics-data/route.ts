@@ -62,6 +62,8 @@ export async function GET(req: NextRequest) {
 			expiry_date: 999999999999999,
 		});
 
+		auth.forceRefreshOnFailure = true;
+
 		// Instancia o cliente da API Analytics Data (v1beta)
 		const analyticsData = google.analyticsdata('v1beta');
 
