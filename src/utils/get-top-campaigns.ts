@@ -5,6 +5,7 @@ import { CampagnComponentProps } from '@/app/dashboard/marketing/_components/cha
 export function getTop5CampaignsByConversions(
 	campaigns: CampagnComponentProps[],
 ) {
+	console.log('getTop5CampaignsByConversions', campaigns);
 	return campaigns
 		.sort((a, b) => b.metrics.conversions - a.metrics.conversions)
 		.slice(0, 5);

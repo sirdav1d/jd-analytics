@@ -1,13 +1,13 @@
 /** @format */
 
-export async function FetchADSData(
+export async function FetchADSDataMetrics(
 	startDate: string,
 	endDate: string,
 	campaignId: string,
 ) {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		`${baseURL}/api/services/google-services/get-ads-data?startDate=${startDate}&endDate=${endDate}&campaignId=${campaignId}`,
+		`${baseURL}/api/services/google-services/get-ads-data/metrics?startDate=${startDate}&endDate=${endDate}&campaignId=${campaignId}`,
 		{
 			method: 'GET',
 			next: { revalidate: 30 },

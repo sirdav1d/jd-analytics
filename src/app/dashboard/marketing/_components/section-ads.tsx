@@ -1,9 +1,12 @@
 /** @format */
 
+import Filters from '@/app/dashboard/marketing/_components/filters';
 import ads from '@/assets/ads.svg';
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FetchADSData } from '@/services/google-services/get-ads-data';
+import { FetchADSDataCampaign } from '@/services/google-services/campaign';
+import { FetchADSDataMetrics } from '@/services/google-services/metrics';
+import { FetchADSDataWordsAndAds } from '@/services/google-services/word-and-ads';
 import Image from 'next/image';
 import { CampagnComponent } from './charts/campaings';
 import { CostsComponent } from './charts/cost';
@@ -11,7 +14,6 @@ import { PerformanceComponent } from './charts/performance';
 import ListStaticADS from './list-static-ads';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';
-import Filters from '@/app/dashboard/marketing/_components/filters';
 
 interface SectionADSProps {
 	startDate: string | string[];
@@ -24,14 +26,28 @@ export default async function SectionAds({
 	campaignId,
 	startDate,
 }: SectionADSProps) {
-	const responseADS = await FetchADSData(
-		String(startDate),
-		String(endDate),
-		String(campaignId),
-	);
+	const [Allcampaings, AccountMetricsData, adsAndWords] = await Promise.all([
+		await FetchADSDataCampaign(
+			String(startDate),
+			String(endDate),
+			String(campaignId),
+		),
+		await FetchADSDataMetrics(
+			String(startDate),
+			String(endDate),
+			String(campaignId),
+		),
+		await FetchADSDataWordsAndAds(
+			String(startDate),
+			String(endDate),
+			String(campaignId),
+		),
+	]);
 
-	if (!responseADS.ok || !responseADS.data) {
-		console.log(responseADS.error);
+	if (!Allcampaings.ok || !AccountMetricsData.ok || !adsAndWords.ok) {
+		console.log(
+			Allcampaings.error || AccountMetricsData.error || adsAndWords.error,
+		);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
@@ -39,15 +55,19 @@ export default async function SectionAds({
 		);
 	}
 
-	const topAds = await responseADS.data[1];
-	const topKeyWords = await responseADS.data[2];
-	const AccountMetrics = await responseADS.data[3];
-	const campaings = await responseADS.data[4];
+	const topAds = adsAndWords.data[0];
+	const topKeyWords = adsAndWords.data[1];
+	const campaigns = Allcampaings.data;
+	const AccountMetrics = AccountMetricsData.data;
 
+	
 	return (
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
-				<Filters key={'ads'} data={campaings} />
+				<Filters
+					key={'ads'}
+					data={campaigns}
+				/>
 
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
@@ -67,7 +87,7 @@ export default async function SectionAds({
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<CampagnComponent data={responseADS.data[0]} />
+						<CampagnComponent data={campaigns} />
 					</CardContent>
 				</Card>
 				<div className='grid grid-cols-1 2xl:grid-cols-2 gap-5 w-full'>
