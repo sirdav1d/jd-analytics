@@ -5,6 +5,7 @@ import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 import { Suspense } from 'react';
 import PageSkeleton from './_components/page-skeleton';
+import { refreshAccessToken } from '@/lib/refresh-token';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -28,7 +29,7 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 	const campaignId = searchParams.campaignId || 'all';
-
+	await refreshAccessToken();
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5 h-full'>
 			<Suspense fallback={<PageSkeleton />}>

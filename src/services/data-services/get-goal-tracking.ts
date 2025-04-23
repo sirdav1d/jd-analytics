@@ -9,7 +9,7 @@ export async function FetchGoalTrackingData(
 		`${baseURL}/api/services/data-services/tracking-goal?startDate=${startDate}&endDate=${endDate}`,
 		{
 			method: 'GET',
-			next: { revalidate: 2 },
+			next: { revalidate: 30 },
 		},
 	);
 

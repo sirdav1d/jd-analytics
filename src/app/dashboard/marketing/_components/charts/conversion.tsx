@@ -36,6 +36,7 @@ interface DataConversionsComponentProps {
 	Social: ConversionsComponentProps;
 	Other: ConversionsComponentProps;
 }
+
 export function ConversionsComponent({
 	Organic,
 	Direct,
@@ -86,8 +87,6 @@ export function ConversionsComponent({
 					tickMargin={12}
 					tickLine={false}
 					axisLine={false}
-					
-					
 				/>
 				<ChartTooltip
 					cursor={false}

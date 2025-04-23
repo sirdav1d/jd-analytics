@@ -8,7 +8,6 @@ import Image from 'next/image';
 import { CampagnComponent } from './charts/campaings';
 import { CostsComponent } from './charts/cost';
 import { PerformanceComponent } from './charts/performance';
-
 import ListStaticADS from './list-static-ads';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';

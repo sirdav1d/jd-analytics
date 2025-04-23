@@ -13,13 +13,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 const formSchema = z.object({
 	email: z.string().email({ message: 'Digite um e-mail válido' }),
@@ -50,7 +50,6 @@ export function SignInForm({
 			password,
 			redirect: false,
 		});
-		console.log(values);
 
 		if (response?.ok) {
 			router.refresh();
