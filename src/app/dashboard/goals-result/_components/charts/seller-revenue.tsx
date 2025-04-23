@@ -63,13 +63,13 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 				accessibilityLayer
 				layout='vertical'
 				margin={{
-					right: isMobile ? 76 : 90,
+					right: isMobile ? 76 : 92,
 					left: -12,
 				}}
 				data={chartData}>
 				<CartesianGrid horizontal={false} />
 				<YAxis
-					width={isMobile ? 80 : 184}
+					width={isMobile ? 80 : 188}
 					dataKey='name'
 					tickMargin={8}
 					type='category'
@@ -83,7 +83,7 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 								) + '...'
 							: chartConfig[value as keyof typeof chartConfig]?.label.slice(
 									4,
-									24,
+									22,
 								) + '...'
 					}
 				/>
