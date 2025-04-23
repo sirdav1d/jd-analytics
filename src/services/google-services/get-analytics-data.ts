@@ -10,8 +10,8 @@ export async function FetchAnalyticsData(
 		`${baseURL}/api/services/google-services/get-analytics-data?startDate=${startDate}&endDate=${endDate}&channelFilter=${Channel}`,
 		{
 			method: 'GET',
-			next: { revalidate: 120 },
-			cache: 'force-cache',
+			next: { revalidate: 40 },
+			
 		},
 	);
 	if (!response.ok) {

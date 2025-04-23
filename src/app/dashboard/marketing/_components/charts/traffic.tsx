@@ -51,17 +51,14 @@ export function TrafficComponent({
 	Social,
 	Outros,
 }: TrafficComponentProps) {
-	const { totaltraffic, chartData } = React.useMemo(() => {
-		const chartData = [
-			{ name: 'Organico', value: Organico },
-			{ name: 'Pago', value: Pago },
-			{ name: 'Direta', value: Direto },
-			{ name: 'Social', value: Social },
-			{ name: 'Outros', value: Outros },
-		];
-		const totaltraffic = chartData.reduce((acc, curr) => acc + curr.value, 0);
-		return { totaltraffic, chartData };
-	}, [Organico, Direto, Pago, Social, Outros]);
+	const chartData = [
+		{ name: 'Organico', value: Organico },
+		{ name: 'Pago', value: Pago },
+		{ name: 'Direta', value: Direto },
+		{ name: 'Social', value: Social },
+		{ name: 'Outros', value: Outros },
+	];
+	const totaltraffic = chartData.reduce((acc, curr) => acc + curr.value, 0);
 
 	return (
 		<ChartContainer

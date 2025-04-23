@@ -9,7 +9,7 @@ export default async function UserProfile() {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const session = await getServerSession();
 	if (!session) {
-		redirect('/login');
+		redirect('/sign-in');
 	}
 	const response = await fetch(
 		`${baseURL}/api/services/user-get-by-email`,

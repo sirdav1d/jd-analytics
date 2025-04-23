@@ -10,8 +10,8 @@ export async function FetchADSData(
 		`${baseURL}/api/services/google-services/get-ads-data?startDate=${startDate}&endDate=${endDate}&campaignId=${campaignId}`,
 		{
 			method: 'GET',
-			next: { revalidate: 120 },
-			cache: 'force-cache',
+			next: { revalidate: 40 },
+			
 		},
 	);
 	if (!response.ok) {
