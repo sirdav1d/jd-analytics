@@ -23,10 +23,7 @@ export async function GET(req: NextRequest) {
 		}
 
 		const startDate = new Date(startParam);
-		startDate.setHours(0, 0, 0, 0);
 		const endDate = new Date(endParam);
-		endDate.setHours(23, 59, 59, 999);
-
 		const msInDay = 1000 * 60 * 60 * 24;
 		const diffDays = (endDate.getTime() - startDate.getTime()) / msInDay;
 		const useDaily = diffDays < 31;
@@ -99,7 +96,6 @@ export async function GET(req: NextRequest) {
         `,
 			);
 		}
-		console.log(timeSeries);
 
 		const allVendors = await prisma.pedido.findMany({
 			select: { vendedor: true },

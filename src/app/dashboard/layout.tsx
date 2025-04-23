@@ -13,7 +13,7 @@ export default async function DashLayout({
 }>) {
 	const session = await getServerSession();
 	if (!session) {
-		redirect('/login');
+		redirect('/sign-in');
 	}
 	const cookieStore = await cookies();
 	const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
