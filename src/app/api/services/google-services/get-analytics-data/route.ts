@@ -59,7 +59,6 @@ export async function GET(req: NextRequest) {
 		const auth = new google.auth.OAuth2();
 		auth.setCredentials({
 			access_token: accessToken,
-			expiry_date: 999999999999999,
 		});
 
 		auth.forceRefreshOnFailure = true;

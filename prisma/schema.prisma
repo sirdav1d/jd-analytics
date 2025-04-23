@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "src/generated/prisma/client"
 }
 
 datasource db {
@@ -35,24 +36,23 @@ model User {
 }
 
 model Pedido {
-  id             String   @id @default(uuid())
-  dataPedido     DateTime @map("data_pedido")
-  dataAprovacao  DateTime @map("data_aprovacao")
-  cancelada      Boolean
-  faturado       Boolean
-  codigoPedido   String   @map("codigo_pedido")
-  codigoProduto  String   @map("codigo_produto")
-  setor          String
-  produto        String
-  precoUnitario  Decimal  @db.Decimal(12,2) @map("preco_unitario")
-  quantidade     Decimal  @db.Decimal(12,2)
-  valorTotal     Decimal  @db.Decimal(12,2) @map("valor_total")
-  cliente        String
-  vendedor       String
+  id            String   @id @default(uuid())
+  dataPedido    DateTime @map("data_pedido")
+  dataAprovacao DateTime @map("data_aprovacao")
+  cancelada     Boolean
+  faturado      Boolean
+  codigoPedido  String   @map("codigo_pedido")
+  codigoProduto String   @map("codigo_produto")
+  setor         String
+  produto       String
+  precoUnitario Decimal  @map("preco_unitario") @db.Decimal(12, 2)
+  quantidade    Decimal  @db.Decimal(12, 2)
+  valorTotal    Decimal  @map("valor_total") @db.Decimal(12, 2)
+  cliente       String
+  vendedor      String
 
   @@map("pedidos")
 }
-
 
 model DashboardMarketing {
   id                   String             @id @default(uuid())

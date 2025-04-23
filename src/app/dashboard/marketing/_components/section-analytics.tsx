@@ -18,7 +18,7 @@ import {
 import Image from 'next/image';
 import { ConversionsComponent } from './charts/conversion';
 import { TrafficComponent } from './charts/traffic';
-import Filters from './filter';
+import Filters from '@/app/dashboard/marketing/_components/filters';
 
 interface SectionAnalyticsProps {
 	startDate: string | string[];
@@ -54,7 +54,10 @@ export default async function SectionAnalytics({
 	return (
 		<div className='grid gap-5 mb-20'>
 			<div className='w-full flex flex-col-reverse md:flex-row items-center justify-center md:justify-start flex-wrap gap-5'>
-				<Filters data={[]} />
+				<Filters
+					key={'analytics'}
+					data={[]}
+				/>
 
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image

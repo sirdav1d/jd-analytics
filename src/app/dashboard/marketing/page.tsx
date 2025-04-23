@@ -1,7 +1,7 @@
 /** @format */
 
 import { Separator } from '@/components/ui/separator';
-// import SectionAds from './_components/section-ads';
+import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 import { Suspense } from 'react';
 import PageSkeleton from './_components/page-skeleton';
@@ -28,7 +28,7 @@ export default async function MarketingPage(props: {
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
-	// const campaignId = searchParams.campaignId || 'all';
+	const campaignId = searchParams.campaignId || 'all';
 	const { success } = await refreshAccessToken();
 	console.log(success, 'refreshAccessToken');
 	return (
@@ -40,11 +40,11 @@ export default async function MarketingPage(props: {
 					channel={channelFilter}
 				/>
 				<Separator className='my-40 w-full' />
-				{/* <SectionAds
+				<SectionAds
 					startDate={startDate}
 					endDate={endDate}
 					campaignId={campaignId}
-				/> */}
+				/>
 			</Suspense>
 		</div>
 	);
