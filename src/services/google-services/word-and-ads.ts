@@ -11,7 +11,6 @@ export async function FetchADSDataWordsAndAds(
 		{
 			method: 'GET',
 			next: { revalidate: 30 },
-			cache: 'force-cache',
 		},
 	);
 	if (!response.ok) {

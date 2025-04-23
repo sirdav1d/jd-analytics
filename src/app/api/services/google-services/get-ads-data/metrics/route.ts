@@ -1,10 +1,20 @@
 /** @format */
 
-import { createGoogleAdsCustomer } from '@/lib/google-ads-client';
+import { client } from '@/lib/google-ads-client';
+import { refreshAccessToken } from '@/lib/refresh-token';
 import { Constraints } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
+	const { refreshToken, success, error } = await refreshAccessToken();
+	if (!success || !refreshToken) {
+		return NextResponse.json({
+			ok: false,
+			data: null,
+			error: 'Erro ao atualizar o token de acesso: ' + error,
+		});
+	}
+
 	try {
 		const searchParams = req.nextUrl.searchParams;
 		const startDate = searchParams.get('startDate');
@@ -21,7 +31,11 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const customer = await createGoogleAdsCustomer();
+		const customer = client.Customer({
+			customer_id: '2971952651', // ID do cliente
+			refresh_token: refreshToken, // O refresh token
+			login_customer_id: '8251122454',
+		});
 
 		const dataADS = await customer.report({
 			entity: 'customer',

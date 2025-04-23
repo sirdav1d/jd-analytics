@@ -11,7 +11,7 @@ export async function FetchADSDataMetrics(
 		{
 			method: 'GET',
 			next: { revalidate: 30 },
-			cache: 'force-cache',
+			
 		},
 	);
 	if (!response.ok) {
