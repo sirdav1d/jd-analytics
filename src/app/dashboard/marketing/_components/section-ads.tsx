@@ -1,6 +1,5 @@
 /** @format */
 
-import Filters from '@/app/dashboard/marketing/_components/filters';
 import ads from '@/assets/ads.svg';
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,9 +8,10 @@ import { FetchADSDataMetrics } from '@/services/google-services/metrics';
 import { FetchADSDataWordsAndAds } from '@/services/google-services/word-and-ads';
 import Image from 'next/image';
 import { CampagnComponent } from './charts/campaings';
-// import { CostsComponent } from './charts/cost';
-// import { PerformanceComponent } from './charts/performance';
-// import ListStaticADS from './list-static-ads';
+import { CostsComponent } from './charts/cost';
+import { PerformanceComponent } from './charts/performance';
+import ListStaticADS from './list-static-ads';
+import FilterAds from '@/app/dashboard/marketing/_components/filter-ads';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';
 
@@ -27,17 +27,13 @@ export default async function SectionAds({
 	startDate,
 }: SectionADSProps) {
 	const [Allcampaings, AccountMetricsData, adsAndWords] = await Promise.all([
-		await FetchADSDataCampaign(
+		FetchADSDataCampaign(
 			String(startDate),
 			String(endDate),
 			String(campaignId),
 		),
-		await FetchADSDataMetrics(
-			String(startDate),
-			String(endDate),
-			String(campaignId),
-		),
-		await FetchADSDataWordsAndAds(
+		FetchADSDataMetrics(String(startDate), String(endDate), String(campaignId)),
+		FetchADSDataWordsAndAds(
 			String(startDate),
 			String(endDate),
 			String(campaignId),
@@ -58,15 +54,12 @@ export default async function SectionAds({
 	const topAds = await adsAndWords.data[0];
 	const topKeyWords = await adsAndWords.data[1];
 	const campaigns = await Allcampaings.data;
-	// const AccountMetrics = await AccountMetricsData.data;
+	const AccountMetrics = await AccountMetricsData.data;
 
 	return (
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
-				<Filters
-					key={'ads'}
-					data={campaigns}
-				/>
+				<FilterAds data={campaigns} />
 
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
@@ -97,12 +90,12 @@ export default async function SectionAds({
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							{/* <PerformanceComponent
+							<PerformanceComponent
 								impressions={AccountMetrics.impressions}
 								clicks={AccountMetrics.clicks}
 								cost_micros={AccountMetrics.cost_micros}
 								conversions={AccountMetrics.conversions}
-							/> */}
+							/>
 						</CardContent>
 					</Card>
 					<Card className='w-full'>
@@ -112,22 +105,22 @@ export default async function SectionAds({
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							{/* <CostsComponent
+							<CostsComponent
 								impressions={AccountMetrics.impressions}
 								clicks={AccountMetrics.clicks}
 								cost_micros={AccountMetrics.cost_micros}
 								conversions={AccountMetrics.conversions}
-							/> */}
+							/>
 						</CardContent>
 					</Card>
 				</div>
 			</div>
-			{/* <ListStaticADS
+			<ListStaticADS
 				clicks={AccountMetrics.clicks}
 				cost_micros={AccountMetrics.cost_micros}
 				ctr={AccountMetrics.ctr}
 				impressions={AccountMetrics.impressions}
-			/> */}
+			/>
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
 				<TopAnuncios data={topAds} />
 				<TopAdwords data={topKeyWords} />
