@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
 			client_id: process.env.GOOGLE_CLIENT_ID!,
 			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
 			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
+			
 		});
 
 		const customer = client.Customer({

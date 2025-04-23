@@ -29,8 +29,8 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 	const campaignId = searchParams.campaignId || 'all';
-	const {success}=await refreshAccessToken();
-	console.log(success,'refreshAccessToken');
+	const { success } = await refreshAccessToken();
+	console.log(success, 'refreshAccessToken');
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5 h-full'>
 			<Suspense fallback={<PageSkeleton />}>
@@ -40,11 +40,11 @@ export default async function MarketingPage(props: {
 					channel={channelFilter}
 				/>
 				<Separator className='my-40 w-full' />
-				<SectionAds
+				{/* <SectionAds
 					startDate={startDate}
 					endDate={endDate}
 					campaignId={campaignId}
-				/>
+				/> */}
 			</Suspense>
 		</div>
 	);
