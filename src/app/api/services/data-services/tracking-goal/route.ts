@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 		const endDate = new Date(endParam);
 		const msInDay = 1000 * 60 * 60 * 24;
 		const diffDays = (endDate.getTime() - startDate.getTime()) / msInDay;
-		const useDaily = diffDays < 31;
+		const useDaily = diffDays < 30;
 
 		let vendasPorVendedor: {
 			vendedor: string;

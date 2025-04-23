@@ -29,7 +29,8 @@ export default async function MarketingPage(props: {
 	const endDate = searchParams.endDate || formattedEndDate();
 	const channelFilter = searchParams.channel || 'all';
 	const campaignId = searchParams.campaignId || 'all';
-	await refreshAccessToken();
+	const {success}=await refreshAccessToken();
+	console.log(success,'refreshAccessToken');
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5 h-full'>
 			<Suspense fallback={<PageSkeleton />}>

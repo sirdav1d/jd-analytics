@@ -19,8 +19,6 @@ interface RevenueProps {
 }
 
 export function Revenue({ revanueData }: RevenueProps) {
-	console.log('revenueData', revanueData);
-
 	const chartConfig = {
 		revenue: {
 			label: 'Faturamento',
@@ -50,7 +48,6 @@ export function Revenue({ revanueData }: RevenueProps) {
 					axisLine={false}
 					tickMargin={8}
 					tick={isMobile ? false : true}
-					
 				/>
 				<ChartTooltip
 					cursor={false}
