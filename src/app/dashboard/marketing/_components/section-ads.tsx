@@ -55,12 +55,11 @@ export default async function SectionAds({
 		);
 	}
 
-	const topAds = adsAndWords.data[0];
-	const topKeyWords = adsAndWords.data[1];
-	const campaigns = Allcampaings.data;
-	const AccountMetrics = AccountMetricsData.data;
+	const topAds = await adsAndWords.data[0];
+	const topKeyWords = await adsAndWords.data[1];
+	const campaigns = await Allcampaings.data;
+	const AccountMetrics = await AccountMetricsData.data;
 
-	
 	return (
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
