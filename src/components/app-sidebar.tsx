@@ -75,10 +75,6 @@ export default function AppSidebar() {
 	const [isPending] = useTransition();
 	const pathname = usePathname();
 
-	if (!session.data || !session.data.user) {
-		console.log('usuário não encontrado', session);
-	}
-
 	return (
 		<Sidebar collapsible='icon'>
 			<SidebarContent className='bg-white dark:bg-slate-900'>

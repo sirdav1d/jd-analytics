@@ -41,8 +41,6 @@ export async function GET(req: NextRequest) {
 			to_date: endDate!,
 		});
 
-		console.log('topCampaigns', topCampaigns);
-
 		// Verifica se há dados antes de retornar
 		if (!topCampaigns) {
 			return NextResponse.json({

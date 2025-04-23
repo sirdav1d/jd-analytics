@@ -60,7 +60,6 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function CampagnComponent({ data }: DataProps) {
-	console.log(data);
 	const isTablet = useIsTablet();
 	const formattedData = getTop5CampaignsByConversions(data);
 	const chartData = formattedData.map((data) => {
