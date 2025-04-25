@@ -40,11 +40,7 @@ export async function GET(req: NextRequest) {
 		const topCampaigns = await customer.report({
 			entity: 'campaign',
 			attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
-			metrics: [
-				'metrics.impressions',
-				'metrics.clicks',
-				'metrics.all_conversions',
-			],
+			metrics: ['metrics.impressions', 'metrics.clicks', 'metrics.conversions'],
 			constraints: [
 				{
 					key: 'campaign.status',
@@ -53,13 +49,12 @@ export async function GET(req: NextRequest) {
 				},
 				...campaignConstraints,
 			],
-			order: [{ field: 'metrics.all_conversions', sort_order: 'DESC' }],
+			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
 			limit: 5,
 			from_date: startDate!,
 			to_date: endDate!,
 		});
 
-		console.log('Top Campaigns:', topCampaigns);
 		// Verifica se há dados antes de retornar
 		if (!topCampaigns) {
 			return NextResponse.json({
