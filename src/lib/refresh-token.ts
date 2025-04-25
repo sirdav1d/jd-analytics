@@ -91,17 +91,13 @@ export async function refreshAccessToken() {
 			where: { id: organization.id },
 			data: {
 				googleAccessToken: access_token,
-				googleRefreshToken: refresh_token || organization.googleRefreshToken,
+				googleRefreshToken: refresh_token,
 				googleExpiresIn: expires_in,
 				updatedAt: new Date(),
 			},
 		});
 
-		setCachedTokens(
-			access_token,
-			refresh_token || organization.googleRefreshToken,
-			expires_in,
-		);
+		setCachedTokens(access_token, refresh_token, expires_in);
 
 		return {
 			success: true,
