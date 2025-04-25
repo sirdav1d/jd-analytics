@@ -7,10 +7,12 @@
 import { google } from 'googleapis';
 import { refreshAccessToken } from '@/lib/refresh-token';
 import type { OAuth2Client } from 'google-auth-library';
+import { GoogleAdsApi } from 'google-ads-api';
 
 export async function createAnalyticsDataClient() {
-	const { success, accessToken, error } = await refreshAccessToken();
-	if (!success || error || !accessToken) {
+	const { success, accessToken, error, refreshToken } =
+		await refreshAccessToken();
+	if (!success || error || !accessToken || !refreshToken) {
 		console.error('[AnalyticsService] Falha ao obter access token:', error);
 		throw new Error('Falha ao obter access token: ' + error);
 	}
@@ -21,5 +23,18 @@ export async function createAnalyticsDataClient() {
 	auth.forceRefreshOnFailure = true;
 
 	const analyticsData = google.analyticsdata('v1beta');
-	return { analyticsData, auth };
+
+	const client = new GoogleAdsApi({
+		client_id: process.env.GOOGLE_CLIENT_ID!,
+		client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+		developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
+	});
+
+	const customer = client.Customer({
+		customer_id: '2971952651', // ID do cliente
+		refresh_token: refreshToken, // O refresh token
+		login_customer_id: '8251122454',
+	});
+
+	return { analyticsData, auth, customer };
 }
