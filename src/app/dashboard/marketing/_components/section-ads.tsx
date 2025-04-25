@@ -3,16 +3,15 @@
 import ads from '@/assets/ads.svg';
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-// import { FetchADSDataWordsAndAds } from '@/services/google-services/word-and-ads';
 import Image from 'next/image';
 import { CampagnComponent } from './charts/campaings';
 import { CostsComponent } from './charts/cost';
 import { PerformanceComponent } from './charts/performance';
-// import ListStaticADS from './list-static-ads';
+import ListStaticADS from './list-static-ads';
 import FilterAds from '@/app/dashboard/marketing/_components/filter-ads';
 import { FetchADSData } from '@/services/google-services/get-ads-data';
-// import TopAdwords from './tables/top-adwords';
-// import TopAnuncios from './tables/top-anuncios';
+import TopAdwords from './tables/top-adwords';
+import TopAnuncios from './tables/top-anuncios';
 
 interface SectionADSProps {
 	startDate: string | string[];
@@ -31,11 +30,7 @@ export default async function SectionAds({
 		String(campaignId),
 	);
 
-	// const adsAndWords = await FetchADSDataWordsAndAds(
-	// 	String(startDate),
-	// 	String(endDate),
-	// 	String(campaignId),
-	// );
+
 
 	if (!data.ok) {
 		console.log(data.error);
@@ -46,8 +41,8 @@ export default async function SectionAds({
 		);
 	}
 
-	// const topAds = await adsAndWords.data[0];
-	// const topKeyWords = await adsAndWords.data[1];
+	const topAds = await data.data[2];
+	const topKeyWords = await data.data[3];
 	const campaigns = await data.data[0];
 	const AccountMetrics = await data.data[1];
 
@@ -110,15 +105,15 @@ export default async function SectionAds({
 					</Card>
 				</div>
 			</div>
-			{/* <ListStaticADS
+			<ListStaticADS
 				clicks={AccountMetrics.clicks}
 				cost_micros={AccountMetrics.cost_micros}
 				ctr={AccountMetrics.ctr}
 				impressions={AccountMetrics.impressions}
-			/> */}
+			/>
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				{/* <TopAnuncios data={topAds} />
-				<TopAdwords data={topKeyWords} /> */}
+				<TopAnuncios data={topAds} />
+				<TopAdwords data={topKeyWords} />
 			</div>
 		</div>
 	);

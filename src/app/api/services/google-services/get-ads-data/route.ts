@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 			login_customer_id: '8251122454',
 		});
 
-		const [topCampaigns, dataADS] = await Promise.all([
+		const [topCampaigns, dataADS, topAds, topKeyWords] = await Promise.all([
 			customer.report({
 				entity: 'campaign',
 				attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
@@ -76,6 +76,67 @@ export async function GET(req: NextRequest) {
 				from_date: startDate!,
 				to_date: endDate!,
 			}),
+			customer.report({
+				entity: 'ad_group_ad',
+				attributes: [
+					'ad_group_ad.ad.id',
+					'ad_group_ad.ad.name',
+					'ad_group_ad.status',
+					'ad_group_ad.ad.responsive_search_ad.headlines',
+					'ad_group_ad.ad.smart_campaign_ad.headlines',
+				],
+				metrics: [
+					'metrics.ctr',
+					'metrics.impressions',
+					'metrics.clicks',
+					'metrics.conversions',
+					'metrics.engagements',
+					'metrics.all_conversions',
+				],
+				constraints: [
+					{
+						key: 'ad_group_ad.status',
+						op: '=',
+						val: 'ENABLED',
+					},
+					...campaignConstraints,
+				],
+				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
+				limit: 5,
+				from_date: startDate!,
+				to_date: endDate!,
+			}),
+			customer.report({
+				entity: 'keyword_view',
+				attributes: [
+					'ad_group_criterion.keyword.text',
+					'ad_group_criterion.status', // Status da palavra-chave
+					'campaign.status',
+				],
+				metrics: [
+					'metrics.ctr',
+					'metrics.impressions',
+					'metrics.clicks',
+					'metrics.conversions',
+				],
+				constraints: [
+					{
+						key: 'campaign.status',
+						op: '=',
+						val: 'ENABLED',
+					},
+					{
+						key: 'ad_group_criterion.status',
+						op: '=',
+						val: 'ENABLED',
+					},
+					...campaignConstraints,
+				],
+				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
+				limit: 5,
+				from_date: startDate!,
+				to_date: endDate!,
+			}),
 		]);
 
 		// Verifica se há dados antes de retornar
@@ -100,7 +161,7 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json({
 			ok: true,
-			data: [topCampaigns, metrics],
+			data: [topCampaigns, metrics, topAds, topKeyWords],
 			error: null,
 		});
 	} catch (error) {
