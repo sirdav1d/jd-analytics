@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/chart';
 import { useIsTablet } from '@/hooks/use-mobile';
 import { getTop5CampaignsByConversions } from '@/utils/get-top-campaigns';
-import { useEffect, useState } from 'react';
 
 interface MetricsProps {
 	clicks: number;
@@ -61,8 +60,6 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function CampagnComponent({ data }: DataProps) {
-	const [mount, setMount] = useState(false);
-
 	const isTablet = useIsTablet();
 	const formattedData = getTop5CampaignsByConversions(data);
 	const chartData = formattedData.map((data) => {
@@ -73,10 +70,6 @@ export function CampagnComponent({ data }: DataProps) {
 			conversions: data.metrics.conversions,
 		};
 	});
-
-	useEffect(() => {
-		setMount(true);
-	}, [mount]);
 
 	return (
 		<ChartContainer

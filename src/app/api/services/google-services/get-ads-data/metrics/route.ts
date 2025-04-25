@@ -1,8 +1,7 @@
 /** @format */
 
-import { client } from '@/lib/google-ads-client';
 import { refreshAccessToken } from '@/lib/refresh-token';
-import { Constraints } from 'google-ads-api';
+import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -30,6 +29,12 @@ export async function GET(req: NextRequest) {
 				val: campaignId,
 			});
 		}
+
+		const client = new GoogleAdsApi({
+			client_id: process.env.GOOGLE_CLIENT_ID!,
+			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
+		});
 
 		const customer = client.Customer({
 			customer_id: '2971952651', // ID do cliente
