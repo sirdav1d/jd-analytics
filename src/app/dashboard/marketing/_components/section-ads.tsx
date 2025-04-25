@@ -3,8 +3,6 @@
 import ads from '@/assets/ads.svg';
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FetchADSDataCampaign } from '@/services/google-services/campaign';
-import { FetchADSDataMetrics } from '@/services/google-services/metrics';
 // import { FetchADSDataWordsAndAds } from '@/services/google-services/word-and-ads';
 import Image from 'next/image';
 import { CampagnComponent } from './charts/campaings';
@@ -12,6 +10,7 @@ import { CostsComponent } from './charts/cost';
 import { PerformanceComponent } from './charts/performance';
 // import ListStaticADS from './list-static-ads';
 import FilterAds from '@/app/dashboard/marketing/_components/filter-ads';
+import { FetchADSData } from '@/services/google-services/get-ads-data';
 // import TopAdwords from './tables/top-adwords';
 // import TopAnuncios from './tables/top-anuncios';
 
@@ -26,25 +25,20 @@ export default async function SectionAds({
 	campaignId,
 	startDate,
 }: SectionADSProps) {
-	const Allcampaings = await FetchADSDataCampaign(
+	const data = await FetchADSData(
 		String(startDate),
 		String(endDate),
 		String(campaignId),
 	);
 
-	const AccountMetricsData = await FetchADSDataMetrics(
-		String(startDate),
-		String(endDate),
-		String(campaignId),
-	);
 	// const adsAndWords = await FetchADSDataWordsAndAds(
 	// 	String(startDate),
 	// 	String(endDate),
 	// 	String(campaignId),
 	// );
 
-	if (!Allcampaings.ok) {
-		console.log(Allcampaings.error);
+	if (!data.ok) {
+		console.log(data.error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
@@ -54,8 +48,8 @@ export default async function SectionAds({
 
 	// const topAds = await adsAndWords.data[0];
 	// const topKeyWords = await adsAndWords.data[1];
-	const campaigns = await Allcampaings.data;
-	const AccountMetrics = await AccountMetricsData.data;
+	const campaigns = await data.data[0];
+	const AccountMetrics = await data.data[1];
 
 	return (
 		<div className='grid gap-5 '>
