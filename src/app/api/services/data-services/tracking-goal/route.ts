@@ -35,20 +35,20 @@ export async function GET(req: NextRequest) {
 			avgTicket: number;
 		}[] = [];
 
-		const rawVendas = await prisma.pedido.groupBy({
+		const rawVendas = await prisma.pedidos.groupBy({
 			by: ['vendedor'],
-			where: { dataPedido: { gte: startDate, lte: endDate } },
-			_sum: { valorTotal: true },
+			where: { data_pedido: { gte: startDate, lte: endDate } },
+			_sum: { valor_total: true },
 			_count: { id: true },
-			_avg: { valorTotal: true },
+			_avg: { valor_total: true },
 		});
 
 		vendasPorVendedor = rawVendas
 			.map((v) => ({
 				vendedor: v.vendedor,
-				totalRevenue: v._sum.valorTotal?.toNumber() ?? 0,
+				totalRevenue: v._sum.valor_total?.toNumber() ?? 0,
 				orderCount: v._count.id,
-				avgTicket: v._avg.valorTotal?.toNumber() ?? 0,
+				avgTicket: v._avg.valor_total?.toNumber() ?? 0,
 			}))
 			.sort((a, b) => b.totalRevenue - a.totalRevenue);
 
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
           ), agg AS (
             SELECT date_trunc('day', data_pedido)::date AS day,
                    SUM(valor_total)::float AS revenue
-            FROM pedidos
+            FROM Pedidos
             WHERE data_pedido >= ${startDate}
               AND data_pedido <= ${endDate}
             GROUP BY day
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
           SELECT
             to_char(date_trunc('month', data_pedido), 'YYYY-MM') AS period,
             SUM(valor_total)::float AS revenue
-          FROM pedidos
+          FROM Pedidos
           WHERE data_pedido >= ${startDate}
             AND data_pedido <= ${endDate}
           GROUP BY period
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
 			);
 		}
 
-		const allVendors = await prisma.pedido.findMany({
+		const allVendors = await prisma.pedidos.findMany({
 			select: { vendedor: true },
 			distinct: ['vendedor'],
 		});

@@ -64,7 +64,7 @@ export default function SellerComparison({
 					tickMargin={12}
 					tickLine={false}
 					axisLine={false}
-					tickFormatter={(value: string) => value.slice(4, 18) + '...'}
+					tickFormatter={(value: string) => value.slice(0, 18) + '...'}
 				/>
 				<YAxis
 					scale={'sqrt'}

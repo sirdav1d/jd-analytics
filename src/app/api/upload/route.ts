@@ -13,18 +13,10 @@ export const config = {
 };
 
 type Pedido = {
-	dataPedido: Date;
-	dataAprovacao: Date;
-	cancelada: boolean;
-	faturado: boolean;
-	codigoPedido: string;
-	codigoProduto: string;
-	setor: string;
-	produto: string;
-	precoUnitario: number;
-	quantidade: number;
-	valorTotal: number;
-	cliente: string;
+	data_pedido: Date;
+	documento: string;
+	valor_total: number;
+	operacao: string;
 	vendedor: string;
 };
 
@@ -55,18 +47,10 @@ function parseLinhaBruta(rawObj: Record<string, string>): Pedido[] {
 		});
 
 		const pedido: Pedido = {
-			dataPedido: parseDate(obj['Data do Pedido']),
-			dataAprovacao: parseDate(obj['Data de Aprovação do Pedido']),
-			cancelada: obj['Cancelada'] === 'Sim',
-			faturado: obj['Faturado'] === 'Sim',
-			codigoPedido: obj['Pedido'],
-			codigoProduto: obj['Cod. Produto'],
-			setor: obj['Setor'],
-			produto: obj['Produto'],
-			precoUnitario: parseDecimal(obj['Preco Unitario']),
-			quantidade: parseDecimal(obj['Qtde.']),
-			valorTotal: parseDecimal(obj['Valor Total']),
-			cliente: obj['Cliente'],
+			data_pedido: parseDate(obj['Data']),
+			documento: obj['Documento'],
+			operacao: obj['Operacao'],
+			valor_total: parseDecimal(obj['Valor Total']),
 			vendedor: obj['Vendedor'],
 		};
 
@@ -116,15 +100,13 @@ export async function POST(req: NextRequest) {
 
 		const pedidos = data.flat(); // Flatten para uma lista única de pedidos
 
-		const createdPedidos = await prisma.pedido.createMany({
+		const resp = await prisma.pedidos.createMany({
 			data: pedidos,
 		});
 
-		console.log('Pedidos criados:', createdPedidos);
-
 		return NextResponse.json({
 			ok: true,
-			data: createdPedidos.count,
+			data: resp.count,
 		});
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (err: any) {

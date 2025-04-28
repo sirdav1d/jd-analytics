@@ -39,7 +39,7 @@ export async function GET(request: Request) {
 
 		const tokens = await response.json();
 
-		const organizationId = '75d5e26d-5030-4abf-ac16-9351b73a4a20';
+		const organizationId = '01967ad9-30a6-7b4c-b938-8310f0bfa7ad';
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const dataToUpdate: any = {
 			googleAccessToken: tokens.access_token,

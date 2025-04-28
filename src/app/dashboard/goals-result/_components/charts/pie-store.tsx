@@ -8,7 +8,13 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from 'recharts';
+import {
+	Label,
+	LabelList,
+	PolarRadiusAxis,
+	RadialBar,
+	RadialBarChart,
+} from 'recharts';
 
 const chartConfig = {
 	Atingido: {
@@ -32,11 +38,11 @@ export function PieStore() {
 			<RadialBarChart
 				data={chartData}
 				endAngle={180}
-				innerRadius={120}
+				innerRadius={110}
 				outerRadius={180}>
 				<ChartTooltip
 					cursor={false}
-					content={<ChartTooltipContent hideLabel />}
+					content={<ChartTooltipContent />}
 				/>
 				<PolarRadiusAxis
 					tick={false}
@@ -62,8 +68,8 @@ export function PieStore() {
 										<tspan
 											x={viewBox.cx}
 											y={(viewBox.cy || 0) + 4}
-											className='fill-muted-foreground text-sm'>
-											Atingido
+											className='fill-muted-foreground text-xs text-center'>
+											Meta de Faturamento
 										</tspan>
 									</text>
 								);
@@ -71,20 +77,33 @@ export function PieStore() {
 						}}
 					/>
 				</PolarRadiusAxis>
+
 				<RadialBar
 					dataKey='Atingido'
 					stackId='a'
 					cornerRadius={5}
 					fill='var(--color-Atingido)'
-					className='stroke-transparent stroke-2'
-				/>
+					className='stroke-transparent stroke-2'>
+					<LabelList
+						position='top'
+						dataKey='Atingido'
+						className='fill-white capitalize mix-blend-luminosity font-semibold'
+						fontSize={12}
+					/>
+				</RadialBar>
 				<RadialBar
 					dataKey='Restante'
 					fill='var(--color-Restante)'
 					stackId='a'
 					cornerRadius={5}
-					className='stroke-transparent stroke-2'
-				/>
+					className='stroke-transparent stroke-2'>
+					<LabelList
+						position='top'
+						dataKey='Restante'
+						className='fill-white capitalize mix-blend-luminosity font-semibold'
+						fontSize={12}
+					/>
+				</RadialBar>
 			</RadialBarChart>
 		</ChartContainer>
 	);

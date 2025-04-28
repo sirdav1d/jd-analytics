@@ -69,7 +69,7 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 				data={chartData}>
 				<CartesianGrid horizontal={false} />
 				<YAxis
-					width={isMobile ? 80 : 188}
+					width={isMobile ? 120 : 188}
 					dataKey='name'
 					tickMargin={8}
 					type='category'
@@ -78,12 +78,12 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 					tickFormatter={(value) =>
 						isMobile
 							? chartConfig[value as keyof typeof chartConfig]?.label.slice(
-									4,
-									12,
+									0,
+									9,
 								) + '...'
 							: chartConfig[value as keyof typeof chartConfig]?.label.slice(
-									4,
-									22,
+									0,
+									16,
 								) + '...'
 					}
 				/>
