@@ -20,7 +20,7 @@ export async function updateOrganizationTokens(
 			data: {
 				googleAccessToken: accessToken,
 				googleRefreshToken: refreshToken,
-				googleExpiresIn: expiresIn,
+				googleExpiresAt: expiresIn,
 				// Se tiver o campo para data de expiração, pode atualizar assim:
 				// googleExpiresAt: expiresAt,
 			},
