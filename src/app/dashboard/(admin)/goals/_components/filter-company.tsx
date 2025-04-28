@@ -21,7 +21,11 @@ export default function FilterCompany() {
 			</SelectTrigger>
 			<SelectContent>
 				<SelectItem value='new'>JD Centro</SelectItem>
-				<SelectItem value='recurring'>JD Icaraí</SelectItem>
+				<SelectItem
+					disabled
+					value='recurring'>
+					JD Icaraí
+				</SelectItem>
 			</SelectContent>
 		</Select>
 	);

@@ -3,8 +3,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
 import {
 	Select,
 	SelectContent,
@@ -12,12 +18,17 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function MetaComercialForm() {
 	const [commercialGoalType, setCommercialGoalType] = useState('revenue');
+	const [commercialGoalVendor, setCommercialGoalVendor] = useState('');
 	const [commercialGoalValue, setCommercialGoalValue] = useState('');
+	const [commercialDate, setCommercialDate] = useState('');
 
 	const handleCommercialSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -61,14 +72,58 @@ export default function MetaComercialForm() {
 				/>
 			</div>
 			<div className='space-y-2'>
+				<Label htmlFor='commercialGoalVendor'>Vendedor</Label>
+				<Select
+					value={commercialGoalVendor}
+					onValueChange={setCommercialGoalVendor}>
+					<SelectTrigger id='commercialGoalVendor'>
+						<SelectValue
+							className='placeholder:text-muted-foreground'
+							placeholder='Selecione o vendedor'
+						/>
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value='a'>VICTOR DE SOUZA SILVEIRA</SelectItem>
+						<SelectItem value='b'>WELITON ALEXANDRE</SelectItem>
+						<SelectItem value='c'>
+							Paulo Vinicius da Conceição de Sousa
+						</SelectItem>
+						<SelectItem value='d'>ROBERTO PEREIRA PESSOA</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+			<div className='space-y-2 flex flex-col'>
 				<Label htmlFor='commercialGoalDateValue'>Validade</Label>
-				<Input
-					id='commercialGoalDateValue'
-					type='date'
-					value={commercialGoalValue}
-					onChange={(e) => setCommercialGoalValue(e.target.value)}
-					required
-				/>
+				<Popover>
+					<PopoverTrigger asChild>
+						<Button
+							variant={'outline'}
+							className={cn(
+								'w-full pl-3 text-left font-normal',
+								!commercialDate && 'text-muted-foreground',
+							)}>
+							{commercialDate ? (
+								format(commercialDate, 'PPP')
+							) : (
+								<span className='text-muted-foreground'>Escolha uma data</span>
+							)}
+							<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent
+						className='w-auto p-0'
+						align='start'>
+						<Calendar
+							mode='single'
+							selected={new Date(commercialDate)}
+							onSelect={(date) => setCommercialDate(date?.toISOString() || '')}
+							disabled={(date) =>
+								date > new Date() || date < new Date('1900-01-01')
+							}
+							initialFocus
+						/>
+					</PopoverContent>
+				</Popover>
 			</div>
 			<Button
 				disabled

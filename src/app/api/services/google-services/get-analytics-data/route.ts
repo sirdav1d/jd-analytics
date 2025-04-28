@@ -48,17 +48,17 @@ export async function GET(req: NextRequest) {
 
 		const [responseStatic, responseTraffic, responseChannel] =
 			await Promise.all([
-				analyticsData.properties.runReport({
+				analyticsData?.properties.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: staticBody,
 					auth,
 				}),
-				analyticsData.properties.runReport({
+				analyticsData?.properties.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: trafficBody,
 					auth,
 				}),
-				analyticsData.properties.runReport({
+				analyticsData?.properties.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: channelBody,
 					auth,
@@ -66,9 +66,9 @@ export async function GET(req: NextRequest) {
 			]);
 
 		const [dataStatic, dataTraffic, dataChannel] = [
-			responseStatic.data,
-			responseTraffic.data,
-			responseChannel.data,
+			responseStatic?.data,
+			responseTraffic?.data,
+			responseChannel?.data,
 		];
 
 		if (!dataStatic || !dataTraffic || !dataChannel) {
