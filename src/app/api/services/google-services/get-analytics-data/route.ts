@@ -1,12 +1,13 @@
 /** @format */
 
-import { createAnalyticsDataClient } from '@/lib/google-analytics-client';
+import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { formatMetricsChannel } from '@/utils/format-channel-data-google';
 import { formatMetrics } from '@/utils/format-static-data-google';
 import { formatMetricsTraffic } from '@/utils/format-traffic-data-google';
 import { generateBodyChannelAnalytics } from '@/utils/google/body-channel-analytics';
 import { generateBodyStaticAnalytics } from '@/utils/google/body-static-analytics';
 import { generateBodyTrafficAnalytics } from '@/utils/google/body-traffic-analytics';
+import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -26,6 +27,14 @@ export async function GET(req: NextRequest) {
 	}
 
 	try {
+		const orgId = process.env.JD_CENTRO_ID;
+
+		const authClient = await getAuthenticatedClient(orgId!);
+
+		await authClient.getAccessToken();
+
+		const analytics = google.analyticsdata('v1beta').properties;
+
 		const [staticBody, trafficBody, channelBody] = [
 			generateBodyStaticAnalytics({
 				startDate,
@@ -44,29 +53,27 @@ export async function GET(req: NextRequest) {
 			}),
 		];
 
-		const { analyticsData, auth } = await createAnalyticsDataClient();
-
 		const [responseStatic, responseTraffic, responseChannel] =
 			await Promise.all([
-				analyticsData?.properties.runReport({
+				analytics.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: staticBody,
-					auth,
+					auth: authClient,
 				}),
-				analyticsData?.properties.runReport({
+				analytics.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: trafficBody,
-					auth,
+					auth: authClient,
 				}),
-				analyticsData?.properties.runReport({
+				analytics.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: channelBody,
-					auth,
+					auth: authClient,
 				}),
 			]);
 
 		const [dataStatic, dataTraffic, dataChannel] = [
-			responseStatic?.data,
+			responseStatic.data,
 			responseTraffic?.data,
 			responseChannel?.data,
 		];

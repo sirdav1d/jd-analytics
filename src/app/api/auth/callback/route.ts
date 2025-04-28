@@ -1,59 +1,47 @@
 /** @format */
 
 import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { getOAuth2Client } from '@/lib/google-client';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
 	const url = new URL(request.url);
 	const code = url.searchParams.get('code');
 
 	if (!code) {
 		return NextResponse.json(
-			{
-				error: 'Código de autorização ausente',
-				redirectUri: new URL('/dashboard/marketing', request.url),
-			},
+			{ error: 'Código de autorização (code) não encontrado' },
 			{ status: 400 },
 		);
 	}
 
-	const tokenEndpoint = 'https://oauth2.googleapis.com/token';
-	const clientId = process.env.GOOGLE_CLIENT_ID!;
-	const clientSecret = process.env.GOOGLE_CLIENT_SECRET!;
-	const redirectUri = process.env.GOOGLE_REDIRECT_URI!;
+	const oauth2Client = getOAuth2Client();
+
+	let tokens;
+	try {
+		const { tokens: t } = await oauth2Client.getToken(code);
+		tokens = t;
+	} catch (err) {
+		console.error(
+			'[Google OAuth Callback] Erro ao trocar code por token:',
+			err,
+		);
+		return NextResponse.json(
+			{ error: 'Falha na autenticação com o Google' },
+			{ status: 500 },
+		);
+	}
 
 	try {
-		const response = await fetch(tokenEndpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-			body: new URLSearchParams({
-				code,
-				client_id: clientId,
-				client_secret: clientSecret,
-				redirect_uri: redirectUri,
-				grant_type: 'authorization_code',
-			}),
-		});
-
-		const tokens = await response.json();
-
 		const organizationId = process.env.JD_CENTRO_ID;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const dataToUpdate: any = {
-			googleAccessToken: tokens.access_token,
-			googleExpiresIn: tokens.expires_in,
-			googleScopes: tokens.scope,
-		};
-
-		if (tokens.refresh_token) {
-			dataToUpdate.googleRefreshToken = tokens.refresh_token;
-		}
 
 		const updatedOrganization = await prisma.organization.update({
 			where: { id: organizationId },
-			data: dataToUpdate,
+			data: {
+				googleAccessToken: tokens.access_token!,
+				googleRefreshToken: tokens.refresh_token!,
+				googleExpiresAt: tokens.expiry_date!,
+			},
 		});
 
 		if (!updatedOrganization) {
@@ -66,7 +54,7 @@ export async function GET(request: Request) {
 
 		return NextResponse.redirect(new URL('/dashboard/marketing', request.url));
 	} catch (error) {
-		console.log('Erro na requisição do token:', error);
+		console.log('Erro na requisição de callback:', error);
 		return NextResponse.json(
 			{
 				error: 'Erro interno',

@@ -16,7 +16,7 @@ model Organization {
   googleScopes       String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  googleExpiresIn    Float?
+  googleExpiresAt    Int?
   dashboardComercial DashboardComercial?
   dashboardMarketing DashboardMarketing?
   users              User[]

@@ -1,20 +1,31 @@
 /** @format */
 
-import { refreshAccessToken } from '@/lib/refresh-token';
-import { Constraints, GoogleAdsApi } from 'google-ads-api';
+import { googleAdsClient } from '@/lib/google-client';
+import { prisma } from '@/lib/prisma';
+import { Constraints } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { refreshToken, success, error } = await refreshAccessToken();
-	if (!success || !refreshToken) {
+	const orgId = process.env.JD_CENTRO_ID;
+	const organizationToken = await prisma.organization.findUnique({
+		where: { id: orgId },
+		select: { googleRefreshToken: true },
+	});
+
+	if (!organizationToken?.googleRefreshToken) {
 		return NextResponse.json({
 			ok: false,
+			error: 'Token não encontrado',
 			data: null,
-			error: 'Erro ao atualizar o token de acesso: ' + error,
 		});
 	}
-
 	try {
+		const customer = googleAdsClient.Customer({
+			customer_id: '2971952651',
+			refresh_token: organizationToken.googleRefreshToken,
+			login_customer_id: '8251122454',
+		});
+
 		const searchParams = req.nextUrl.searchParams;
 		const startDate = searchParams.get('startDate');
 		const endDate = searchParams.get('endDate');
@@ -29,17 +40,6 @@ export async function GET(req: NextRequest) {
 				val: campaignId,
 			});
 		}
-		const client = new GoogleAdsApi({
-			client_id: process.env.GOOGLE_CLIENT_ID!,
-			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
-		});
-
-		const customer = client.Customer({
-			customer_id: '2971952651', // ID do cliente
-			refresh_token: refreshToken, // O refresh token
-			login_customer_id: '8251122454',
-		});
 
 		const [topCampaigns, dataADS, topAds, topKeyWords] = await Promise.all([
 			customer.report({
