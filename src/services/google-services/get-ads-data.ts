@@ -23,6 +23,8 @@ export async function FetchADSData(
 
 	const dataADS = await response.json();
 
+	console.log(dataADS);
+
 	if (!dataADS.ok) {
 		return {
 			ok: false,

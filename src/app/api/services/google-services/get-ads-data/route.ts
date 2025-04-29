@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
 					'metrics.cost_micros',
 					'metrics.conversions',
 				],
-				...campaignConstraints,
+				constraints: [...campaignConstraints],
 				from_date: startDate!,
 				to_date: endDate!,
 			}),
@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const metrics = dataADS[0].metrics;
+		const metrics = dataADS.length > 0 ? dataADS[0].metrics : null;
 
 		return NextResponse.json({
 			ok: true,

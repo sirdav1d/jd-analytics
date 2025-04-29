@@ -31,7 +31,7 @@ export default async function SectionAds({
 	);
 
 	if (!data.ok) {
-		console.log(data.error);
+		console.log(data);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
