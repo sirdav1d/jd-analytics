@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 		const customer = googleAdsClient.Customer({
 			customer_id: '2971952651',
 			refresh_token: refreshToken,
-			login_customer_id: '8251122454',
+			linked_customer_id: '8251122454',
 		});
 
 		const searchParams = req.nextUrl.searchParams;

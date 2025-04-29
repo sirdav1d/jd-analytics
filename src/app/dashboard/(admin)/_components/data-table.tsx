@@ -43,7 +43,7 @@ import { useState } from 'react';
 import { DataTablePagination } from './data-table-pagination';
 
 import { Button } from '@/components/ui/button';
-import { unstable_ViewTransition as ViewTransition } from 'react';
+
 import FormCreate from '../users/_components/form-create';
 
 interface DataTableProps<TData, TValue> {
@@ -161,22 +161,20 @@ export function DataTable<TData, TValue>({
 					<TableBody>
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
-								<ViewTransition key={row.id}>
-									<TableRow
-										key={row.id}
-										data-state={row.getIsSelected() && 'selected'}>
-										{row.getVisibleCells().map((cell) => (
-											<TableCell
-												key={cell.id}
-												className='text-sm text-nowrap'>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext(),
-												)}
-											</TableCell>
-										))}
-									</TableRow>
-								</ViewTransition>
+								<TableRow
+									key={row.id}
+									data-state={row.getIsSelected() && 'selected'}>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell
+											key={cell.id}
+											className='text-sm text-nowrap'>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									))}
+								</TableRow>
 							))
 						) : (
 							<TableRow>
