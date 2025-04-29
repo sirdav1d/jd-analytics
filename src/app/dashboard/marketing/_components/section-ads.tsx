@@ -15,6 +15,7 @@ import FilterAds from '@/app/dashboard/marketing/_components/filter-ads';
 import { FetchADSData } from '@/services/google-services/get-ads-data';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface SectionADSProps {
 	startDate: string | string[];
@@ -31,10 +32,12 @@ export default function SectionAds({
 		queryKey: ['adsData', startDate, endDate, campaignId],
 		queryFn: async () =>
 			FetchADSData(String(startDate), String(endDate), String(campaignId)),
+		refetchOnWindowFocus: false,
+		staleTime: 1000 * 60 * 5, // 5 minutos
 	});
 
-	if (error || !data) {
-		console.log(error);
+	if (error) {
+		console.log(error, data);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
@@ -43,7 +46,25 @@ export default function SectionAds({
 	}
 
 	if (isLoading) {
-		return <p>Carregando..</p>;
+		return (
+			<>
+				<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5'>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+					<Skeleton className='w-full  h-32'></Skeleton>
+				</div>
+				<div className='flex gap-5'>
+					<Skeleton className='w-full  h-80'></Skeleton>
+					<Skeleton className='w-full  h-80'></Skeleton>
+				</div>
+			</>
+		);
 	}
 
 	const topAds = data.data[2];

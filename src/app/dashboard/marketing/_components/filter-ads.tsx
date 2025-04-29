@@ -14,6 +14,7 @@ import { addDays, format } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CampaignProps {
 	resource_name: string;
@@ -44,13 +45,14 @@ export default function Filters({ data }: DataProps) {
 	);
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const handleDateChange = async (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 	) => {
 		e.stopPropagation();
 		e.preventDefault();
-
+		queryClient.invalidateQueries({ queryKey: ['adsData'] });
 		if (dateRange.from && dateRange.to) {
 			const formattedFrom = format(dateRange.from, 'yyyy-MM-dd');
 			const formattedTo = format(dateRange.to, 'yyyy-MM-dd');
