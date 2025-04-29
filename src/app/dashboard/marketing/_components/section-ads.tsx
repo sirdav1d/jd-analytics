@@ -30,7 +30,7 @@ export default function SectionAds({
 }: SectionADSProps) {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['adsData', startDate, endDate, campaignId],
-		queryFn: async () =>
+		queryFn: () =>
 			FetchADSData(String(startDate), String(endDate), String(campaignId)),
 		refetchOnWindowFocus: false,
 		staleTime: 1000 * 60 * 5, // 5 minutos
