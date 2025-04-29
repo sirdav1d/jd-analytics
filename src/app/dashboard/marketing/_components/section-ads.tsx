@@ -43,10 +43,10 @@ export default function SectionAds({
 
 	useEffect(() => {
 		console.log('re-render');
-	}, []);
+	}, [data]);
 
-	if (error || !data?.ok) {
-		console.log(error, data);
+	if (error) {
+		console.log(error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
