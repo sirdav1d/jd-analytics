@@ -30,7 +30,7 @@ import { z } from 'zod';
 const formSchema = z.object({
 	name: z.string().min(2).max(50),
 	email: z.string().email(),
-	role: z.enum(['ADMIN', 'MANAGER']),
+	role: z.enum(['ADMIN', 'MANAGER', 'SELLER']),
 	organizationName: z.enum(['JD Centro', 'JD Icaraí', 'JSEG']),
 });
 
@@ -143,6 +143,7 @@ export default function FormCreate() {
 								<SelectContent>
 									<SelectItem value='ADMIN'>Administrador</SelectItem>
 									<SelectItem value='MANAGER'>Gerente</SelectItem>
+									<SelectItem value='SELLER'>Vendedor</SelectItem>
 								</SelectContent>
 							</Select>
 							<FormMessage />

@@ -116,6 +116,7 @@ export function DataTable<TData, TValue>({
 						<SelectItem value='all'>Todos os Cargos</SelectItem>
 						<SelectItem value='ADMIN'>Administrador</SelectItem>
 						<SelectItem value='MANAGER'>Gerente</SelectItem>
+						<SelectItem value='SELLER'>Vendedor</SelectItem>
 					</SelectContent>
 				</Select>
 				<Select
@@ -126,7 +127,11 @@ export function DataTable<TData, TValue>({
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value='new'>JD Centro</SelectItem>
-						<SelectItem value='recurring'>JD Icaraí</SelectItem>
+						<SelectItem
+							disabled
+							value='recurring'>
+							JD Icaraí
+						</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>

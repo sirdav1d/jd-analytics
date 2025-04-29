@@ -17,7 +17,7 @@ type Pedido = {
 	documento: string;
 	valor_total: number;
 	operacao: string;
-	vendedor: string;
+	user_name: string;
 };
 
 function parseDate(dateStr: string): Date {
@@ -51,7 +51,7 @@ function parseLinhaBruta(rawObj: Record<string, string>): Pedido[] {
 			documento: obj['Documento'],
 			operacao: obj['Operacao'],
 			valor_total: parseDecimal(obj['Valor Total']),
-			vendedor: obj['Vendedor'],
+			user_name: obj['Vendedor'],
 		};
 
 		pedidos.push(pedido);
@@ -98,10 +98,57 @@ export async function POST(req: NextRequest) {
 			return parseLinhaBruta(row);
 		});
 
-		const pedidos = data.flat(); // Flatten para uma lista única de pedidos
+		const pedidosBrutos = data.flat();
+
+		const nomesUnicos = [...new Set(pedidosBrutos.map((p) => p.user_name))];
+
+		const usuarios = await prisma.user.findMany({
+			where: {
+				name: {
+					in: nomesUnicos,
+				},
+			},
+			select: {
+				id: true,
+				name: true,
+			},
+		});
+
+		const mapaUsuarios = new Map(usuarios.map((u) => [u.name.trim(), u.id]));
+
+		const pedidosComId = pedidosBrutos
+			.map((pedido) => {
+				const idUsuario = mapaUsuarios.get(pedido.user_name.trim());
+
+				if (!idUsuario) {
+					console.warn(`Usuário não encontrado: ${pedido.user_name}`);
+					return null; // Pula se não encontrar
+				}
+
+				return {
+					data_pedido: pedido.data_pedido,
+					documento: pedido.documento,
+					valor_total: pedido.valor_total,
+					operacao: pedido.operacao,
+					userId: idUsuario, // Aqui está o ID do banco
+				};
+			})
+			.filter(
+				(pedido): pedido is NonNullable<typeof pedido> => pedido !== null,
+			); // Remove nulos com tipo explícito
+
+		if (!pedidosComId.length || !pedidosComId) {
+			return NextResponse.json(
+				{
+					ok: false,
+					error: 'Nenhum usuário encontrado para os vendedores informados.',
+				},
+				{ status: 400 },
+			);
+		}
 
 		const resp = await prisma.pedidos.createMany({
-			data: pedidos,
+			data: pedidosComId,
 		});
 
 		return NextResponse.json({

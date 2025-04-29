@@ -53,6 +53,7 @@ export default function SelectRole({ user }: { user: Partial<User> }) {
 			<SelectContent>
 				<SelectItem value='ADMIN'>Administrador</SelectItem>
 				<SelectItem value='MANAGER'>Gerente</SelectItem>
+				<SelectItem value='SELLER'>Vendedor</SelectItem>
 			</SelectContent>
 		</Select>
 	);

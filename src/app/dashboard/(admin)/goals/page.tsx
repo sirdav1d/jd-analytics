@@ -22,8 +22,14 @@ import { Separator } from '@/components/ui/separator';
 import FilterCompany from './_components/filter-company';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
+import getAllSellers from '@/actions/user/get-all';
 
-export default function GoalsPage() {
+export default async function GoalsPage() {
+	const data = await getAllSellers();
+
+	if (!data.ok) {
+		console.log(data.error);
+	}
 	return (
 		<div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
 			<Tabs
@@ -134,26 +140,31 @@ export default function GoalsPage() {
 				<TabsContent value='Comercial'>
 					<Card className='w-full md:max-w-full mx-auto '>
 						<CardHeader>
-							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between'>
-								Meta Atual Comercial <ModalFormComercialGoal />
+							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-4xl'>
+								JD INFO CENTRO
+								{data.data && <ModalFormComercialGoal sellers={data.data} />}
 							</CardTitle>
-							<CardDescription>
-								Meta válida para{' '}
-								{new Date().toLocaleDateString('pt-Br', {
-									dateStyle: 'short',
-								})}
-							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className='flex flex-col md:flex-row md:items-center md:gap-10'>
-								<p className='space-x-2'>
-									<small>Faturamento:</small>
-									<span className='font-semibold text-lg'>R$ 100.000,00</span>
-								</p>
-								<p className='space-x-2'>
-									<small>Ticket Médio:</small>
-									<span className='font-semibold text-lg'>R$ 10.000,00</span>
-								</p>
+								<Card>
+									<CardHeader>
+										<CardTitle>R$ 100.000,00</CardTitle>
+										<CardDescription>Faturamento</CardDescription>
+									</CardHeader>
+								</Card>
+								<Card>
+									<CardHeader>
+										<CardTitle>R$ 1.000,00</CardTitle>
+										<CardDescription>Ticket Médio</CardDescription>
+									</CardHeader>
+								</Card>
+								<Card>
+									<CardHeader>
+										<CardTitle>100</CardTitle>
+										<CardDescription>Média de vendas</CardDescription>
+									</CardHeader>
+								</Card>
 							</div>
 							<Separator
 								orientation='horizontal'

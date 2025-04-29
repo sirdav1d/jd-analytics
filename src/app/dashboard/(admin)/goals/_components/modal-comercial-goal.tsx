@@ -12,11 +12,19 @@ import {
 import { Plus } from 'lucide-react';
 import MetaComercialForm from './meta-comercial-form';
 
-export default function ModalFormComercialGoal() {
+interface IModalFormComercialGoal {
+	sellers: {
+		name: string;
+	}[];
+}
+
+export default function ModalFormComercialGoal({
+	sellers,
+}: IModalFormComercialGoal) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button className='w-full md:w-fit'>
+				<Button className='w-full md:w-fit tracking-wide antialiased'>
 					Cadastrar Nova Meta <Plus />
 				</Button>
 			</DialogTrigger>
@@ -27,7 +35,7 @@ export default function ModalFormComercialGoal() {
 						Preencha os dados abaixo para registrar nova meta
 					</DialogDescription>
 				</DialogHeader>
-				<MetaComercialForm />
+				<MetaComercialForm sellers={sellers} />
 			</DialogContent>
 		</Dialog>
 	);

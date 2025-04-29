@@ -6,12 +6,14 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { FileUpload } from './ui/file-upload';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function UploadForm() {
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState('');
 	const [file, setFile] = useState<File | null>(null);
 
+	const router = useRouter();
 	const handleFileChange = (files: File[] | null) => {
 		if (!files) {
 			setFile(null);
@@ -44,6 +46,8 @@ export default function UploadForm() {
 
 		if (json.ok) {
 			toast.success('Upload feito com sucesso!');
+			setFile(null);
+			router.push('/');
 		} else {
 			setMessage(`Erro: ${json.error}`);
 		}

@@ -10,6 +10,9 @@ export default async function AdminPage() {
 	});
 
 	const { data } = await response.json();
+	if (!data) {
+		return <p>Sem dados encontrados...</p>;
+	}
 	return (
 		<div className='w-full mx-auto pb-5'>
 			<DataTable
