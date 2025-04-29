@@ -33,7 +33,7 @@ export default function SectionAds({
 		queryFn: () =>
 			FetchADSData(String(startDate), String(endDate), String(campaignId)),
 		refetchOnWindowFocus: false,
-		staleTime: 1000 * 60 * 5, // 5 minutos
+		staleTime: 1000, // 5 minutos
 	});
 
 	if (error) {
@@ -59,7 +59,7 @@ export default function SectionAds({
 					<Skeleton className='w-full  h-32'></Skeleton>
 					<Skeleton className='w-full  h-32'></Skeleton>
 				</div>
-				<div className='flex gap-5'>
+				<div className='flex gap-5 flex-col md:flex-row'>
 					<Skeleton className='w-full  h-80'></Skeleton>
 					<Skeleton className='w-full  h-80'></Skeleton>
 				</div>
