@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
 				googleAccessToken: tokens.access_token!,
 				googleRefreshToken: tokens.refresh_token!,
 				googleExpiresAt: tokens.expiry_date!,
+				googleScopes: tokens.scope!,
 			},
 		});
 
