@@ -1,5 +1,8 @@
 /** @format */
 
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
 import ads from '@/assets/ads.svg';
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,19 +22,19 @@ interface SectionADSProps {
 	campaignId: string | string[];
 }
 
-export default async function SectionAds({
+export default function SectionAds({
 	endDate,
 	campaignId,
 	startDate,
 }: SectionADSProps) {
-	const data = await FetchADSData(
-		String(startDate),
-		String(endDate),
-		String(campaignId),
-	);
+	const { data, error, isLoading } = useQuery({
+		queryKey: ['adsData', startDate, endDate, campaignId],
+		queryFn: async () =>
+			FetchADSData(String(startDate), String(endDate), String(campaignId)),
+	});
 
-	if (!data.ok) {
-		console.log(data.error);
+	if (error || !data) {
+		console.log(error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
@@ -39,11 +42,14 @@ export default async function SectionAds({
 		);
 	}
 
-	const topAds = await data.data[2];
-	const topKeyWords = await data.data[3];
-	const campaigns = await data.data[0];
-	const AccountMetrics = await data.data[1];
+	if (isLoading) {
+		return <p>Carregando..</p>;
+	}
 
+	const topAds = data.data[2];
+	const topKeyWords = data.data[3];
+	const campaigns = data.data[0];
+	const AccountMetrics = data.data[1];
 	return (
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>

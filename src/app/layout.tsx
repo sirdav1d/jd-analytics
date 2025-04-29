@@ -6,7 +6,8 @@ import { ThemeProvider } from '@/providers/theme-provider';
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
-import {ViewTransitions} from 'next-view-transitions'
+import { ViewTransitions } from 'next-view-transitions';
+import { ReactQueryProvider } from '@/providers/react-query-provider';
 
 const montserrat = Montserrat({
 	weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -31,14 +32,16 @@ export default function RootLayout({
 				lang='pt-BR'
 				suppressHydrationWarning>
 				<body className={`${montserrat.className} antialiased`}>
-					<ThemeProvider
-						attribute={'class'}
-						defaultTheme='dark'
-						enableSystem
-						disableTransitionOnChange>
-						<AuthSessionProvider>{children}</AuthSessionProvider>
-						<Toaster />
-					</ThemeProvider>
+					<ReactQueryProvider>
+						<ThemeProvider
+							attribute={'class'}
+							defaultTheme='dark'
+							enableSystem
+							disableTransitionOnChange>
+							<AuthSessionProvider>{children}</AuthSessionProvider>
+							<Toaster />
+						</ThemeProvider>
+					</ReactQueryProvider>
 				</body>
 			</html>
 		</ViewTransitions>
