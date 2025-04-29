@@ -1,26 +1,28 @@
 /** @format */
 
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
-import { Constraints } from 'google-ads-api';
+import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
 	const orgId = process.env.JD_CENTRO_ID;
-
+	const searchParams = req.nextUrl.searchParams;
+	const startDate = searchParams.get('startDate');
+	const endDate = searchParams.get('endDate');
+	const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 	try {
-		const { googleAdsClient, refreshToken } = await getAuthenticatedClient(
-			orgId!,
-		);
+		const { refreshToken } = await getAuthenticatedClient(orgId!);
+
+		const googleAdsClient = new GoogleAdsApi({
+			client_id: process.env.GOOGLE_CLIENT_ID!,
+			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
+		});
 		const customer = googleAdsClient.Customer({
 			customer_id: '2971952651',
 			refresh_token: refreshToken,
 			linked_customer_id: '8251122454',
 		});
-
-		const searchParams = req.nextUrl.searchParams;
-		const startDate = searchParams.get('startDate');
-		const endDate = searchParams.get('endDate');
-		const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 
 		const campaignConstraints: Constraints = [];
 

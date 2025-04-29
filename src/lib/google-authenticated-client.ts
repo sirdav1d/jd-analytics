@@ -2,7 +2,6 @@
 
 import { getOAuth2Client } from '@/lib/google-client';
 import { prisma } from '@/lib/prisma';
-import { GoogleAdsApi } from 'google-ads-api';
 
 export async function getAuthenticatedClient(orgId: string) {
 	// 1) Busca credenciais no banco
@@ -40,15 +39,8 @@ export async function getAuthenticatedClient(orgId: string) {
 		});
 	});
 
-	const googleAdsClient = new GoogleAdsApi({
-		client_id: process.env.GOOGLE_CLIENT_ID!,
-		client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-		developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
-	});
-
 	return {
 		oauth2Client,
-		googleAdsClient,
 		refreshToken: org.googleRefreshToken,
 	};
 }
