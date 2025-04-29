@@ -16,6 +16,7 @@ import { FetchADSData } from '@/services/google-services/get-ads-data';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useEffect } from 'react';
 
 interface SectionADSProps {
 	startDate: string | string[];
@@ -30,11 +31,19 @@ export default function SectionAds({
 }: SectionADSProps) {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['adsData', startDate, endDate, campaignId],
-		queryFn: () =>
-			FetchADSData(String(startDate), String(endDate), String(campaignId)),
+		queryFn: async () =>
+			await FetchADSData(
+				String(startDate),
+				String(endDate),
+				String(campaignId),
+			),
 		refetchOnWindowFocus: false,
 		staleTime: 100000, // 5 minutos
 	});
+
+	useEffect(() => {
+		console.log('re-render');
+	}, []);
 
 	if (error || !data?.ok) {
 		console.log(error, data);
@@ -71,6 +80,7 @@ export default function SectionAds({
 	const topKeyWords = data.data[3];
 	const campaigns = data.data[0];
 	const AccountMetrics = data.data[1];
+
 	return (
 		<div className='grid gap-5 '>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>

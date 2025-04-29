@@ -37,13 +37,13 @@ export default async function MarketingPage(props: {
 					endDate={endDate}
 					channel={channelFilter}
 				/>
+				<Separator className='my-40 w-full' />
+				<SectionAds
+					startDate={startDate}
+					endDate={endDate}
+					campaignId={campaignId}
+				/>
 			</Suspense>
-			<Separator className='my-40 w-full' />
-			<SectionAds
-				startDate={startDate}
-				endDate={endDate}
-				campaignId={campaignId}
-			/>
 		</div>
 	);
 }
