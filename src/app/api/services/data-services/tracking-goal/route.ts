@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 		}[] = [];
 
 		const rawVendas = await prisma.pedidos.groupBy({
-			by: ['vendedor'],
+			by: ['userId'],
 			where: { data_pedido: { gte: startDate, lte: endDate } },
 			_sum: { valor_total: true },
 			_count: { id: true },
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 
 		vendasPorVendedor = rawVendas
 			.map((v) => ({
-				vendedor: v.vendedor,
+				vendedor: v.userId,
 				totalRevenue: v._sum.valor_total?.toNumber() ?? 0,
 				orderCount: v._count.id,
 				avgTicket: v._avg.valor_total?.toNumber() ?? 0,
@@ -97,12 +97,11 @@ export async function GET(req: NextRequest) {
 			);
 		}
 
-		const allVendors = await prisma.pedidos.findMany({
-			select: { vendedor: true },
-			distinct: ['vendedor'],
+		const allVendors = await prisma.user.findMany({
+			select: { name: true },
 		});
 
-		const vendors = allVendors.map((v) => v.vendedor);
+		const vendors = allVendors.map((v) => v.name);
 
 		return NextResponse.json(
 			{
