@@ -43,14 +43,24 @@ export async function GET(req: NextRequest) {
 			_avg: { valor_total: true },
 		});
 
-		vendasPorVendedor = rawVendas
-			.map((v) => ({
-				vendedor: v.userId,
+		const resolvedVendas = await Promise.all(
+			rawVendas.map(async (v) => ({
+				vendedor:
+					(
+						await prisma.user.findUnique({
+							where: { id: v.userId },
+							select: { name: true },
+						})
+					)?.name ?? 'Unknown',
 				totalRevenue: v._sum.valor_total?.toNumber() ?? 0,
 				orderCount: v._count.id,
 				avgTicket: v._avg.valor_total?.toNumber() ?? 0,
-			}))
-			.sort((a, b) => b.totalRevenue - a.totalRevenue);
+			})),
+		);
+
+		vendasPorVendedor = resolvedVendas.sort(
+			(a, b) => b.totalRevenue - a.totalRevenue,
+		);
 
 		// 2. Série temporal (diária se período < 31 dias, senão mensal)
 		let timeSeries: Array<{ period: string; revenue: number }>;

@@ -1,8 +1,7 @@
 /** @format */
 
-import { googleAdsClient } from '@/lib/google-client';
 import { prisma } from '@/lib/prisma';
-import { Constraints } from 'google-ads-api';
+import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -20,6 +19,12 @@ export async function GET(req: NextRequest) {
 		});
 	}
 	try {
+		const googleAdsClient = new GoogleAdsApi({
+			client_id: process.env.GOOGLE_CLIENT_ID!,
+			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
+		});
+
 		const customer = googleAdsClient.Customer({
 			customer_id: '2971952651',
 			refresh_token: organizationToken.googleRefreshToken,
