@@ -24,6 +24,7 @@ export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
 	const [commercialGoalVendor, setCommercialGoalVendor] = useState('');
 	const [commercialGoalValue, setCommercialGoalValue] = useState('');
 	const [year, setYear] = useState(new Date().getFullYear());
+	const [mes, setMes] = useState(new Date().getMonth().toLocaleString());
 
 	const handleCommercialSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -32,7 +33,7 @@ export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
 			type: commercialGoalType,
 			value: commercialGoalValue,
 		});
-		toast('Meta Comercial Definida', {
+		toast.success('Meta Comercial Definida', {
 			description: `Tipo: ${commercialGoalType}, Valor: R$ ${commercialGoalValue}`,
 		});
 	};
@@ -94,8 +95,8 @@ export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
 				<div className='w-full space-y-2'>
 					<Label htmlFor='meta-mes'>Mês</Label>
 					<Select
-						value={commercialGoalVendor}
-						onValueChange={setCommercialGoalVendor}>
+						value={mes}
+						onValueChange={setMes}>
 						<SelectTrigger id='meta-mes'>
 							<SelectValue
 								className='placeholder:text-muted-foreground'
@@ -125,7 +126,6 @@ export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
 				</div>
 			</div>
 			<Button
-				disabled
 				type='submit'
 				className='bg-red-600 w-full text-white hover:bg-red-700'>
 				Definir Meta Comercial

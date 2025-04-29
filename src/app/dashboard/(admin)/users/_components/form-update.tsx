@@ -31,7 +31,7 @@ import { z } from 'zod';
 const formSchema = z.object({
 	name: z.string().min(2).max(50).optional(),
 	email: z.string().email().optional(),
-	role: z.enum(['ADMIN', 'MANAGER']).optional(),
+	role: z.enum(['ADMIN', 'MANAGER', 'SELLER']).optional(),
 });
 
 export default function FormUpdate({ user }: { user: Partial<User> }) {
@@ -111,6 +111,7 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 								<SelectContent>
 									<SelectItem value='ADMIN'>Administrador</SelectItem>
 									<SelectItem value='MANAGER'>Gerente</SelectItem>
+									<SelectItem value='SELLER'>Vendedor</SelectItem>
 								</SelectContent>
 							</Select>
 							<FormMessage />

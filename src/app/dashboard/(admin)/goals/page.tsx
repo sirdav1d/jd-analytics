@@ -140,8 +140,8 @@ export default async function GoalsPage() {
 				<TabsContent value='Comercial'>
 					<Card className='w-full md:max-w-full mx-auto '>
 						<CardHeader>
-							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-4xl'>
-								JD INFO CENTRO
+							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-3xl'>
+								JD Info Centro
 								{data.data && <ModalFormComercialGoal sellers={data.data} />}
 							</CardTitle>
 						</CardHeader>
