@@ -4,34 +4,16 @@
 
 import {
 	type ColumnDef,
+	type ColumnFiltersState,
+	type SortingState,
 	flexRender,
 	getCoreRowModel,
-	useReactTable,
-	getPaginationRowModel,
-	type SortingState,
-	getSortedRowModel,
-	type ColumnFiltersState,
 	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
 } from '@tanstack/react-table';
 
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { useState } from 'react';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import { DataTablePagination } from './data-table-pagination';
 import {
 	Dialog,
 	DialogContent,
@@ -40,10 +22,29 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import { DataTablePagination } from './data-table-pagination';
 
-import FormCreate from '../users/_components/form-create';
 import { Button } from '@/components/ui/button';
+import { unstable_ViewTransition as ViewTransition } from 'react';
+import FormCreate from '../users/_components/form-create';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -160,20 +161,22 @@ export function DataTable<TData, TValue>({
 					<TableBody>
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() && 'selected'}>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell
-											key={cell.id}
-											className='text-sm text-nowrap'>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</TableCell>
-									))}
-								</TableRow>
+								<ViewTransition key={row.id}>
+									<TableRow
+										key={row.id}
+										data-state={row.getIsSelected() && 'selected'}>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell
+												key={cell.id}
+												className='text-sm text-nowrap'>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)}
+											</TableCell>
+										))}
+									</TableRow>
+								</ViewTransition>
 							))
 						) : (
 							<TableRow>

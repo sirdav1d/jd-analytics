@@ -36,18 +36,24 @@ export default function SelectRole({ user }: { user: Partial<User> }) {
 		<Select
 			disabled={isPending}
 			value={user.role}
-			onValueChange={(value: 'ADMIN' | 'MANAGER') =>
+			onValueChange={(value: 'ADMIN' | 'MANAGER' | 'SELLER') =>
 				handleUpdateRole(user, value)
 			}>
 			<SelectTrigger className='w-[180px]'>
 				<SelectValue>
-					{isPending ? (
-						<Loader2 className='animate-spin text-center' />
-					) : user.role == 'ADMIN' ? (
-						'Administrador'
-					) : (
-						'Gerente'
-					)}
+					<p className='flex items-center gap-2'>
+						{user.role == 'ADMIN'
+							? 'Administrador'
+							: user.role == 'MANAGER'
+								? 'Gerente'
+								: 'Vendedor'}{' '}
+						{isPending && (
+							<Loader2
+								size={16}
+								className='animate-spin'
+							/>
+						)}
+					</p>
 				</SelectValue>
 			</SelectTrigger>
 			<SelectContent>

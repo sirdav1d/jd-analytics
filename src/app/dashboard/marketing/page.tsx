@@ -37,7 +37,9 @@ export default async function MarketingPage(props: {
 					endDate={endDate}
 					channel={channelFilter}
 				/>
-				<Separator className='my-40 w-full' />
+			</Suspense>
+			<Separator className='my-40 w-full' />
+			<Suspense fallback={<PageSkeleton />}>
 				<SectionAds
 					startDate={startDate}
 					endDate={endDate}
