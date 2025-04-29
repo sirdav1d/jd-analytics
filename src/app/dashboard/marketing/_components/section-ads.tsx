@@ -1,22 +1,17 @@
 /** @format */
 
-'use client';
-
-import { useQuery } from '@tanstack/react-query';
+import FilterAds from '@/app/dashboard/marketing/_components/filter-ads';
 import ads from '@/assets/ads.svg';
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FetchADSData } from '@/services/google-services/get-ads-data';
 import Image from 'next/image';
 import { CampagnComponent } from './charts/campaings';
 import { CostsComponent } from './charts/cost';
 import { PerformanceComponent } from './charts/performance';
 import ListStaticADS from './list-static-ads';
-import FilterAds from '@/app/dashboard/marketing/_components/filter-ads';
-import { FetchADSData } from '@/services/google-services/get-ads-data';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useEffect } from 'react';
 
 interface SectionADSProps {
 	startDate: string | string[];
@@ -24,55 +19,23 @@ interface SectionADSProps {
 	campaignId: string | string[];
 }
 
-export default function SectionAds({
+export default async function SectionAds({
 	endDate,
 	campaignId,
 	startDate,
 }: SectionADSProps) {
-	const { data, error, isLoading } = useQuery({
-		queryKey: ['adsData', startDate, endDate, campaignId],
-		queryFn: async () =>
-			await FetchADSData(
-				String(startDate),
-				String(endDate),
-				String(campaignId),
-			),
-		refetchOnWindowFocus: false,
-		staleTime: 100000, // 5 minutos
-	});
+	const data = await FetchADSData(
+		String(startDate),
+		String(endDate),
+		String(campaignId),
+	);
 
-	useEffect(() => {
-		console.log('re-render');
-	}, [data]);
-
-	if (error) {
-		console.log(error);
+	if (!data) {
+		console.log(data.error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />
 			</div>
-		);
-	}
-
-	if (isLoading) {
-		return (
-			<>
-				<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5'>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-					<Skeleton className='w-full  h-32'></Skeleton>
-				</div>
-				<div className='flex gap-5 flex-col md:flex-row'>
-					<Skeleton className='w-full  h-80'></Skeleton>
-					<Skeleton className='w-full  h-80'></Skeleton>
-				</div>
-			</>
 		);
 	}
 
