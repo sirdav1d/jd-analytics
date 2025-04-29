@@ -46,7 +46,7 @@ export default function SectionAds({
 		staleTime: 1000, // 5 minutos
 	});
 
-	if (error) {
+	if (error || !data?.ok) {
 		console.log(error, data);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
