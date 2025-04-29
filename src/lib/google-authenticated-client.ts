@@ -1,12 +1,10 @@
 /** @format */
 
-import { prisma } from '@/lib/prisma';
 import { getOAuth2Client } from '@/lib/google-client';
-import type { OAuth2Client } from 'googleapis-common';
+import { prisma } from '@/lib/prisma';
+import { GoogleAdsApi } from 'google-ads-api';
 
-export async function getAuthenticatedClient(
-	orgId: string,
-): Promise<OAuth2Client> {
+export async function getAuthenticatedClient(orgId: string) {
 	// 1) Busca credenciais no banco
 	const org = await prisma.organization.findUnique({ where: { id: orgId } });
 	if (
@@ -42,5 +40,15 @@ export async function getAuthenticatedClient(
 		});
 	});
 
-	return oauth2Client;
+	const googleAdsClient = new GoogleAdsApi({
+		client_id: process.env.GOOGLE_CLIENT_ID!,
+		client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+		developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
+	});
+
+	return {
+		oauth2Client,
+		googleAdsClient,
+		refreshToken: org.googleRefreshToken,
+	};
 }

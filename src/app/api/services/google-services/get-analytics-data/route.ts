@@ -29,9 +29,9 @@ export async function GET(req: NextRequest) {
 	try {
 		const orgId = process.env.JD_CENTRO_ID;
 
-		const authClient = await getAuthenticatedClient(orgId!);
+		const { oauth2Client } = await getAuthenticatedClient(orgId!);
 
-		await authClient.getAccessToken();
+		await oauth2Client.getAccessToken();
 
 		const analytics = google.analyticsdata('v1beta').properties;
 
@@ -58,17 +58,17 @@ export async function GET(req: NextRequest) {
 				analytics.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: staticBody,
-					auth: authClient,
+					auth: oauth2Client,
 				}),
 				analytics.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: trafficBody,
-					auth: authClient,
+					auth: oauth2Client,
 				}),
 				analytics.runReport({
 					property: `properties/${propertyId}`,
 					requestBody: channelBody,
-					auth: authClient,
+					auth: oauth2Client,
 				}),
 			]);
 

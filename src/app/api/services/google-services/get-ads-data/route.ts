@@ -1,33 +1,19 @@
 /** @format */
 
-import { prisma } from '@/lib/prisma';
-import { Constraints, GoogleAdsApi } from 'google-ads-api';
+import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
+import { Constraints } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
 	const orgId = process.env.JD_CENTRO_ID;
-	const organizationToken = await prisma.organization.findUnique({
-		where: { id: orgId },
-		select: { googleRefreshToken: true },
-	});
 
-	if (!organizationToken?.googleRefreshToken) {
-		return NextResponse.json({
-			ok: false,
-			error: 'Token não encontrado',
-			data: null,
-		});
-	}
 	try {
-		const googleAdsClient = new GoogleAdsApi({
-			client_id: process.env.GOOGLE_CLIENT_ID!,
-			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
-		});
-
+		const { googleAdsClient, refreshToken } = await getAuthenticatedClient(
+			orgId!,
+		);
 		const customer = googleAdsClient.Customer({
 			customer_id: '2971952651',
-			refresh_token: organizationToken.googleRefreshToken,
+			refresh_token: refreshToken,
 			login_customer_id: '8251122454',
 		});
 
@@ -145,7 +131,7 @@ export async function GET(req: NextRequest) {
 		]);
 
 		// Verifica se há dados antes de retornar
-		if (!topCampaigns) {
+		if (!dataADS || !topCampaigns) {
 			return NextResponse.json({
 				error: 'Nenhum dado encontrado para as campanhas',
 				ok: false,
@@ -154,15 +140,6 @@ export async function GET(req: NextRequest) {
 		}
 
 		const metrics = dataADS[0].metrics;
-
-		// Verifica se há dados antes de retornar
-		if (!dataADS || dataADS.length === 0) {
-			return NextResponse.json({
-				error: 'Nenhum dado encontrado para as campanhas',
-				ok: false,
-				data: null,
-			});
-		}
 
 		return NextResponse.json({
 			ok: true,
