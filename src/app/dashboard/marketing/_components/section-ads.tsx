@@ -30,7 +30,7 @@ export default async function SectionAds({
 		String(campaignId),
 	);
 
-	if (!data) {
+	if (!data.ok) {
 		console.log(data.error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
