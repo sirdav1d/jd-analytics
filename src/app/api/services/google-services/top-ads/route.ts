@@ -5,20 +5,13 @@ import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	interface TopAdIdRow {
-		'ad_group_ad.ad.id': string;
-		metrics: { conversions: number };
-	}
-
 	const orgId = process.env.JD_CENTRO_ID;
 	const searchParams = req.nextUrl.searchParams;
 	const startDate = searchParams.get('startDate');
 	const endDate = searchParams.get('endDate');
 	const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 	try {
-		console.time('auth');
 		const { refreshToken } = await getAuthenticatedClient(orgId!);
-		console.timeEnd('auth');
 
 		const googleAdsClient = new GoogleAdsApi({
 			client_id: process.env.GOOGLE_CLIENT_ID!,
@@ -42,12 +35,29 @@ export async function GET(req: NextRequest) {
 		}
 
 		console.time('report-top-ads');
-		const topAdIdsResults = await customer.report<TopAdIdRow[]>({
+		const topAds = await customer.report({
 			entity: 'ad_group_ad',
-			attributes: ['ad_group_ad.ad.id'],
-			metrics: ['metrics.conversions'],
+			attributes: [
+				'ad_group_ad.ad.id',
+				'ad_group_ad.ad.name',
+				'ad_group_ad.status',
+				'ad_group_ad.ad.responsive_search_ad.headlines',
+				'ad_group_ad.ad.smart_campaign_ad.headlines',
+			],
+			metrics: [
+				'metrics.ctr',
+				'metrics.impressions',
+				'metrics.clicks',
+				'metrics.conversions',
+				'metrics.engagements',
+				'metrics.all_conversions',
+			],
 			constraints: [
-				{ key: 'ad_group_ad.status', op: '=', val: 'ENABLED' },
+				{
+					key: 'ad_group_ad.status',
+					op: '=',
+					val: 'ENABLED',
+				},
 				...campaignConstraints,
 			],
 			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
@@ -55,25 +65,10 @@ export async function GET(req: NextRequest) {
 			from_date: startDate!,
 			to_date: endDate!,
 		});
-
-		const topAdIds = topAdIdsResults.map((r) => r['ad_group_ad.ad.id']);
-		const topAds = await customer.report({
-			entity: 'ad_group_ad',
-			attributes: [
-				'ad_group_ad.ad.id',
-				'ad_group_ad.ad.name',
-				'ad_group_ad.ad.responsive_search_ad.headlines',
-			],
-			metrics: ['metrics.impressions', 'metrics.clicks', 'metrics.conversions'],
-			constraints: [
-				{ key: 'ad_group_ad.status', op: '=', val: 'ENABLED' },
-				{ key: 'ad_group_ad.ad.id', op: 'IN', val: topAdIds.join(',') },
-			],
-		});
 		console.timeEnd('report-top-ads');
 
 		// Verifica se há dados antes de retornar
-		if (!topAds || topAds.length === 0) {
+		if (!topAds || topAds.length == 0) {
 			return NextResponse.json({
 				error: 'Nenhum dado encontrado para as campanhas',
 				ok: false,

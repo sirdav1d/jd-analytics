@@ -1,7 +1,7 @@
 /** @format */
 
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
-import { Constraints, GoogleAdsApi } from 'google-ads-api';
+import { Constraints, enums, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -44,11 +44,7 @@ export async function GET(req: NextRequest) {
 					'metrics.conversions',
 				],
 				constraints: [
-					{
-						key: 'campaign.status',
-						op: '=',
-						val: 'ENABLED',
-					},
+					{ 'campaign.status': enums.CampaignStatus.ENABLED },
 					...campaignConstraints,
 				],
 				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
