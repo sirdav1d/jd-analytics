@@ -11,7 +11,9 @@ export async function GET(req: NextRequest) {
 	const endDate = searchParams.get('endDate');
 	const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 	try {
+		console.time('auth');
 		const { refreshToken } = await getAuthenticatedClient(orgId!);
+		console.timeEnd('auth');
 
 		const googleAdsClient = new GoogleAdsApi({
 			client_id: process.env.GOOGLE_CLIENT_ID!,
