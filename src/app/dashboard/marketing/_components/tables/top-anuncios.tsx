@@ -77,7 +77,7 @@ export default function TopAnuncios({
 		fetchData();
 	}, [endDate, campaignId, startDate]);
 
-	if (!data?.ok || !data.data) {
+	if (!data?.ok) {
 		console.log(data);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
@@ -86,7 +86,7 @@ export default function TopAnuncios({
 		);
 	}
 
-	const topADS: AllProps[] = data.data;
+	const topADS: AllProps[] = data.data ?? [];
 
 	return (
 		<Card>
