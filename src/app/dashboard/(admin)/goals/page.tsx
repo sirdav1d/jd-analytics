@@ -18,11 +18,11 @@ import {
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import getAllSellers from '@/actions/user/get-all';
 import { Separator } from '@/components/ui/separator';
 import FilterCompany from './_components/filter-company';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
-import getAllSellers from '@/actions/user/get-all';
 
 export default async function GoalsPage() {
 	const data = await getAllSellers();
@@ -138,7 +138,7 @@ export default async function GoalsPage() {
 					</Card>
 				</TabsContent>
 				<TabsContent value='Comercial'>
-					<Card className='w-full md:max-w-full mx-auto '>
+					<Card className='w-full md:max-w-full mx-auto bg-background border-none '>
 						<CardHeader>
 							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-3xl'>
 								JD Info Centro
@@ -146,7 +146,7 @@ export default async function GoalsPage() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<div className='flex flex-col md:flex-row md:items-center md:gap-10'>
+							<div className='grid grid-cols-1 md:grid-cols-3 gap-10'>
 								<Card>
 									<CardHeader>
 										<CardTitle>R$ 100.000,00</CardTitle>
@@ -166,12 +166,9 @@ export default async function GoalsPage() {
 									</CardHeader>
 								</Card>
 							</div>
-							<Separator
-								orientation='horizontal'
-								className='my-10'
-							/>
-							<FilterCompany />
-							<div className='rounded-md border'>
+
+							{/* <FilterCompany /> */}
+							<div className='rounded-md border mt-10'>
 								<Table>
 									<TableHeader>
 										<TableRow className='bg-secondary'>
