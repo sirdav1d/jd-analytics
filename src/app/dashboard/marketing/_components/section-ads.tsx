@@ -28,6 +28,7 @@ export default async function SectionAds({
 		String(campaignId),
 	);
 
+	console.log(data)
 	if (!data.ok) {
 		console.log(data);
 		return (

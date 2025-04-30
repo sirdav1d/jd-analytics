@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
 		const startDate = searchParams.get('startDate');
 		const endDate = searchParams.get('endDate');
 		const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
+		
+		
 		const googleAdsClient = new GoogleAdsApi({
 			client_id: process.env.GOOGLE_CLIENT_ID!,
 			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
