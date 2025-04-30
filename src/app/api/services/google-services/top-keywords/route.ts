@@ -34,45 +34,40 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const [topCampaigns, dataADS] = await Promise.all([
-			customer.report({
-				entity: 'campaign',
-				attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
-				metrics: [
-					'metrics.impressions',
-					'metrics.clicks',
-					'metrics.conversions',
-				],
-				constraints: [
-					{
-						key: 'campaign.status',
-						op: '=',
-						val: 'ENABLED',
-					},
-					...campaignConstraints,
-				],
-				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
-				limit: 5,
-				from_date: startDate!,
-				to_date: endDate!,
-			}),
-			customer.report({
-				entity: 'customer',
-				metrics: [
-					'metrics.ctr',
-					'metrics.impressions',
-					'metrics.clicks',
-					'metrics.cost_micros',
-					'metrics.conversions',
-				],
-				constraints: [...campaignConstraints],
-				from_date: startDate!,
-				to_date: endDate!,
-			}),
-		]);
+		const topKeyWords = await customer.report({
+			entity: 'keyword_view',
+			attributes: [
+				'ad_group_criterion.keyword.text',
+				'ad_group_criterion.status', // Status da palavra-chave
+				'campaign.status',
+			],
+			metrics: [
+				'metrics.ctr',
+				'metrics.impressions',
+				'metrics.clicks',
+				'metrics.conversions',
+			],
+			constraints: [
+				{
+					key: 'campaign.status',
+					op: '=',
+					val: 'ENABLED',
+				},
+				{
+					key: 'ad_group_criterion.status',
+					op: '=',
+					val: 'ENABLED',
+				},
+				...campaignConstraints,
+			],
+			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
+			limit: 5,
+			from_date: startDate!,
+			to_date: endDate!,
+		});
 
 		// Verifica se há dados antes de retornar
-		if (!dataADS || !topCampaigns) {
+		if (!topKeyWords) {
 			return NextResponse.json({
 				error: 'Nenhum dado encontrado para as campanhas',
 				ok: false,
@@ -80,11 +75,9 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const metrics = dataADS.length > 0 ? dataADS[0].metrics : null;
-
 		return NextResponse.json({
 			ok: true,
-			data: [topCampaigns, metrics],
+			data: topKeyWords,
 			error: null,
 		});
 	} catch (error) {

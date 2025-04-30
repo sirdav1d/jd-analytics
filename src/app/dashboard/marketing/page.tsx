@@ -39,13 +39,11 @@ export default async function MarketingPage(props: {
 				/>
 			</Suspense>
 			<Separator className='my-40 w-full' />
-			<Suspense fallback={<PageSkeleton />}>
-				<SectionAds
-					startDate={startDate}
-					endDate={endDate}
-					campaignId={campaignId}
-				/>
-			</Suspense>
+			<SectionAds
+				startDate={startDate}
+				endDate={endDate}
+				campaignId={campaignId}
+			/>
 		</div>
 	);
 }

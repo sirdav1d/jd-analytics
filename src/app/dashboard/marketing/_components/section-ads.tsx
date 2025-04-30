@@ -12,6 +12,8 @@ import { PerformanceComponent } from './charts/performance';
 import ListStaticADS from './list-static-ads';
 import TopAdwords from './tables/top-adwords';
 import TopAnuncios from './tables/top-anuncios';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface SectionADSProps {
 	startDate: string | string[];
@@ -39,8 +41,6 @@ export default async function SectionAds({
 		);
 	}
 
-	const topAds = data.data[2];
-	const topKeyWords = data.data[3];
 	const campaigns = data.data[0];
 	const AccountMetrics = data.data[1];
 
@@ -59,58 +59,76 @@ export default async function SectionAds({
 				</div>
 			</div>
 			<div className='grid grid-cols-1 gap-5 w-full'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Top 5 Campanhas por Conversão
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<CampagnComponent data={campaigns} />
-					</CardContent>
-				</Card>
+				<Suspense>
+					<Card>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Top 5 Campanhas por Conversão
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<CampagnComponent data={campaigns} />
+						</CardContent>
+					</Card>
+				</Suspense>
 				<div className='grid grid-cols-1 2xl:grid-cols-2 gap-5 w-full'>
-					<Card className='w-full'>
-						<CardHeader>
-							<CardTitle className='text-base text-balance md:text-2xl'>
-								Desempenho Geral
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<PerformanceComponent
-								impressions={AccountMetrics.impressions}
-								clicks={AccountMetrics.clicks}
-								cost_micros={AccountMetrics.cost_micros}
-								conversions={AccountMetrics.conversions}
-							/>
-						</CardContent>
-					</Card>
-					<Card className='w-full'>
-						<CardHeader>
-							<CardTitle className='text-base text-balance md:text-2xl'>
-								Custos por Desempenho
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<CostsComponent
-								impressions={AccountMetrics.impressions}
-								clicks={AccountMetrics.clicks}
-								cost_micros={AccountMetrics.cost_micros}
-								conversions={AccountMetrics.conversions}
-							/>
-						</CardContent>
-					</Card>
+					<Suspense>
+						<Card className='w-full'>
+							<CardHeader>
+								<CardTitle className='text-base text-balance md:text-2xl'>
+									Desempenho Geral
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<PerformanceComponent
+									impressions={AccountMetrics.impressions}
+									clicks={AccountMetrics.clicks}
+									cost_micros={AccountMetrics.cost_micros}
+									conversions={AccountMetrics.conversions}
+								/>
+							</CardContent>
+						</Card>
+						<Card className='w-full'>
+							<CardHeader>
+								<CardTitle className='text-base text-balance md:text-2xl'>
+									Custos por Desempenho
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<CostsComponent
+									impressions={AccountMetrics.impressions}
+									clicks={AccountMetrics.clicks}
+									cost_micros={AccountMetrics.cost_micros}
+									conversions={AccountMetrics.conversions}
+								/>
+							</CardContent>
+						</Card>
+					</Suspense>
 				</div>
 			</div>
-			<ListStaticADS
-				clicks={AccountMetrics.clicks}
-				cost_micros={AccountMetrics.cost_micros}
-				ctr={AccountMetrics.ctr}
-				impressions={AccountMetrics.impressions}
-			/>
+			<Suspense>
+				<ListStaticADS
+					clicks={AccountMetrics.clicks}
+					cost_micros={AccountMetrics.cost_micros}
+					ctr={AccountMetrics.ctr}
+					impressions={AccountMetrics.impressions}
+				/>
+			</Suspense>
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				<TopAnuncios data={topAds} />
-				<TopAdwords data={topKeyWords} />
+				<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
+					<TopAnuncios
+						startDate={startDate}
+						endDate={endDate}
+						campaignId={campaignId}
+					/>
+				</Suspense>
+				<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
+					<TopAdwords
+						startDate={startDate}
+						endDate={endDate}
+						campaignId={campaignId}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);

@@ -1,5 +1,6 @@
 /** @format */
 
+import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	Table,
@@ -9,6 +10,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { FetchKeywordADSData } from '@/services/google-services/get-top-keywords';
 import { Trophy } from 'lucide-react';
 
 interface MetricsProps {
@@ -27,11 +29,34 @@ interface TopAdwordsProps {
 	ad_group_criterion: ADGroupProps;
 }
 
-interface AllDataProps {
-	data: TopAdwordsProps[];
+interface SectionADSProps {
+	startDate: string | string[];
+	endDate: string | string[];
+	campaignId: string | string[];
 }
 
-export default function TopAdwords({ data }: AllDataProps) {
+export default async function TopAdwords({
+	endDate,
+	campaignId,
+	startDate,
+}: SectionADSProps) {
+	const data = await FetchKeywordADSData(
+		String(startDate),
+		String(endDate),
+		String(campaignId),
+	);
+
+	if (!data.ok) {
+		console.log(data);
+		return (
+			<div className='w-full mx-auto space-y-4 pb-5'>
+				<GoogleLoginButton />
+			</div>
+		);
+	}
+
+	const topKeywords: TopAdwordsProps[] = data.data;
+
 	return (
 		<Card>
 			<CardHeader>
@@ -51,7 +76,7 @@ export default function TopAdwords({ data }: AllDataProps) {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{data.map((item, index) => {
+						{topKeywords.map((item, index) => {
 							return (
 								<TableRow
 									key={index}
@@ -83,7 +108,7 @@ export default function TopAdwords({ data }: AllDataProps) {
 													style: 'percent',
 													minimumFractionDigits: 2,
 													maximumFractionDigits: 2,
-											  })
+												})
 											: 0}
 									</TableCell>
 									<TableCell className='text-center'>

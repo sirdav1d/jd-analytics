@@ -34,45 +34,39 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const [topCampaigns, dataADS] = await Promise.all([
-			customer.report({
-				entity: 'campaign',
-				attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
-				metrics: [
-					'metrics.impressions',
-					'metrics.clicks',
-					'metrics.conversions',
-				],
-				constraints: [
-					{
-						key: 'campaign.status',
-						op: '=',
-						val: 'ENABLED',
-					},
-					...campaignConstraints,
-				],
-				order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
-				limit: 5,
-				from_date: startDate!,
-				to_date: endDate!,
-			}),
-			customer.report({
-				entity: 'customer',
-				metrics: [
-					'metrics.ctr',
-					'metrics.impressions',
-					'metrics.clicks',
-					'metrics.cost_micros',
-					'metrics.conversions',
-				],
-				constraints: [...campaignConstraints],
-				from_date: startDate!,
-				to_date: endDate!,
-			}),
-		]);
+		const topAds = await customer.report({
+			entity: 'ad_group_ad',
+			attributes: [
+				'ad_group_ad.ad.id',
+				'ad_group_ad.ad.name',
+				'ad_group_ad.status',
+				'ad_group_ad.ad.responsive_search_ad.headlines',
+				'ad_group_ad.ad.smart_campaign_ad.headlines',
+			],
+			metrics: [
+				'metrics.ctr',
+				'metrics.impressions',
+				'metrics.clicks',
+				'metrics.conversions',
+				'metrics.engagements',
+				'metrics.all_conversions',
+			],
+			constraints: [
+				{
+					key: 'ad_group_ad.status',
+					op: '=',
+					val: 'ENABLED',
+				},
+				...campaignConstraints,
+			],
+			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
+			limit: 5,
+			from_date: startDate!,
+			to_date: endDate!,
+		});
 
 		// Verifica se há dados antes de retornar
-		if (!dataADS || !topCampaigns) {
+		if (!topAds) {
 			return NextResponse.json({
 				error: 'Nenhum dado encontrado para as campanhas',
 				ok: false,
@@ -80,11 +74,9 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const metrics = dataADS.length > 0 ? dataADS[0].metrics : null;
-
 		return NextResponse.json({
 			ok: true,
-			data: [topCampaigns, metrics],
+			data: topAds,
 			error: null,
 		});
 	} catch (error) {

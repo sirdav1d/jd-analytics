@@ -1,5 +1,6 @@
 /** @format */
 
+import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	TableHeader,
@@ -9,6 +10,7 @@ import {
 	TableCell,
 	Table,
 } from '@/components/ui/table';
+import { FetchTopADSData } from '@/services/google-services/get-top-ads';
 import { Trophy } from 'lucide-react';
 import React from 'react';
 
@@ -46,11 +48,34 @@ interface AllProps {
 	ad_group_ad: ADGroupProps;
 }
 
-interface TopAnunciosProps {
-	data: AllProps[];
+interface SectionADSProps {
+	startDate: string | string[];
+	endDate: string | string[];
+	campaignId: string | string[];
 }
 
-export default function TopAnuncios({ data }: TopAnunciosProps) {
+export default async function TopAnuncios({
+	endDate,
+	campaignId,
+	startDate,
+}: SectionADSProps) {
+	const data = await FetchTopADSData(
+		String(startDate),
+		String(endDate),
+		String(campaignId),
+	);
+
+	if (!data.ok) {
+		console.log(data);
+		return (
+			<div className='w-full mx-auto space-y-4 pb-5'>
+				<GoogleLoginButton />
+			</div>
+		);
+	}
+
+	const topADS: AllProps[] = data.data;
+
 	return (
 		<Card>
 			<CardHeader>
@@ -59,7 +84,7 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				{!data ? (
+				{topADS.length < 0 ? (
 					<p className='text-muted-foreground'>Nenhum dado encontrado</p>
 				) : (
 					<Table>
@@ -73,8 +98,8 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{data.map((item, index) => {
-								return  (
+							{topADS.map((item, index) => {
+								return (
 									<TableRow
 										key={index}
 										className='text-nowrap text-center'>
@@ -100,10 +125,10 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 											{item.ad_group_ad.ad.responsive_search_ad
 												? item.ad_group_ad.ad.responsive_search_ad.headlines[
 														index
-												  ].text
+													].text
 												: item.ad_group_ad.ad.name
-												? item.ad_group_ad.ad.name
-												: null}
+													? item.ad_group_ad.ad.name
+													: null}
 										</TableCell>
 										<TableCell>
 											{item.metrics.ctr
@@ -111,7 +136,7 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 														style: 'percent',
 														minimumFractionDigits: 2,
 														maximumFractionDigits: 2,
-												  })
+													})
 												: 0}
 										</TableCell>
 										<TableCell>
@@ -130,7 +155,7 @@ export default function TopAnuncios({ data }: TopAnunciosProps) {
 												: 0}
 										</TableCell>
 									</TableRow>
-								) 
+								);
 							})}
 						</TableBody>
 					</Table>
