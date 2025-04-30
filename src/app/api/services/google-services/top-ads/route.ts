@@ -1,18 +1,27 @@
 /** @format */
 
-import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
+import { prisma } from '@/lib/prisma';
 import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const orgId = process.env.JD_CENTRO_ID;
+	const refreshToken = await prisma.organization.findFirst({
+		select: { googleRefreshToken: true },
+	});
+
+	if (!refreshToken) {
+		return NextResponse.json({
+			error: 'Refresh Token não encontrado',
+			ok: false,
+			data: null,
+		});
+	}
+
 	const searchParams = req.nextUrl.searchParams;
 	const startDate = searchParams.get('startDate');
 	const endDate = searchParams.get('endDate');
 	const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 	try {
-		const { refreshToken } = await getAuthenticatedClient(orgId!);
-
 		const googleAdsClient = new GoogleAdsApi({
 			client_id: process.env.GOOGLE_CLIENT_ID!,
 			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -20,7 +29,7 @@ export async function GET(req: NextRequest) {
 		});
 		const customer = googleAdsClient.Customer({
 			customer_id: '2971952651',
-			refresh_token: refreshToken,
+			refresh_token: refreshToken.googleRefreshToken!,
 			linked_customer_id: '8251122454',
 		});
 
