@@ -5,6 +5,11 @@ import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
+	interface TopAdIdRow {
+		'ad_group_ad.ad.id': string;
+		metrics: { conversions: number };
+	}
+
 	const orgId = process.env.JD_CENTRO_ID;
 	const searchParams = req.nextUrl.searchParams;
 	const startDate = searchParams.get('startDate');
@@ -37,35 +42,33 @@ export async function GET(req: NextRequest) {
 		}
 
 		console.time('report-top-ads');
-		const topAds = await customer.report({
+		const topAdIdsResults = await customer.report<TopAdIdRow[]>({
 			entity: 'ad_group_ad',
-			attributes: [
-				'ad_group_ad.ad.id',
-				'ad_group_ad.ad.name',
-				'ad_group_ad.status',
-				'ad_group_ad.ad.responsive_search_ad.headlines',
-				'ad_group_ad.ad.smart_campaign_ad.headlines',
-			],
-			metrics: [
-				'metrics.ctr',
-				'metrics.impressions',
-				'metrics.clicks',
-				'metrics.conversions',
-				'metrics.engagements',
-				'metrics.all_conversions',
-			],
+			attributes: ['ad_group_ad.ad.id'],
+			metrics: ['metrics.conversions'],
 			constraints: [
-				{
-					key: 'ad_group_ad.status',
-					op: '=',
-					val: 'ENABLED',
-				},
+				{ key: 'ad_group_ad.status', op: '=', val: 'ENABLED' },
 				...campaignConstraints,
 			],
 			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
 			limit: 5,
 			from_date: startDate!,
 			to_date: endDate!,
+		});
+
+		const topAdIds = topAdIdsResults.map((r) => r['ad_group_ad.ad.id']);
+		const topAds = await customer.report({
+			entity: 'ad_group_ad',
+			attributes: [
+				'ad_group_ad.ad.id',
+				'ad_group_ad.ad.name',
+				'ad_group_ad.ad.responsive_search_ad.headlines',
+			],
+			metrics: ['metrics.impressions', 'metrics.clicks', 'metrics.conversions'],
+			constraints: [
+				{ key: 'ad_group_ad.status', op: '=', val: 'ENABLED' },
+				{ key: 'ad_group_ad.ad.id', op: 'IN', val: topAdIds.join(',') },
+			],
 		});
 		console.timeEnd('report-top-ads');
 
