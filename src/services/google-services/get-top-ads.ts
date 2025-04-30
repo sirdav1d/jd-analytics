@@ -14,6 +14,7 @@ export async function FetchTopADSData(
 		},
 	);
 	if (!response.ok) {
+		console.log(response);
 		return {
 			ok: false,
 			data: null,
@@ -23,6 +24,7 @@ export async function FetchTopADSData(
 
 	const dataADS = await response.json();
 
+	console.log(dataADS);
 	if (!dataADS.ok) {
 		return {
 			ok: false,
