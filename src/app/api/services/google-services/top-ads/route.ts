@@ -22,8 +22,7 @@ export async function GET(req: NextRequest) {
 		const startDate = searchParams.get('startDate');
 		const endDate = searchParams.get('endDate');
 		const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
-		
-		
+
 		const googleAdsClient = new GoogleAdsApi({
 			client_id: process.env.GOOGLE_CLIENT_ID!,
 			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -45,43 +44,41 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		console.time('report-top-ads');
-		const topAds = await customer.report({
-			entity: 'ad_group_ad',
-			attributes: [
-				'ad_group_ad.ad.id',
-				'ad_group_ad.ad.name',
-				'ad_group_ad.status',
-				'ad_group_ad.ad.responsive_search_ad.headlines',
-				'ad_group_ad.ad.smart_campaign_ad.headlines',
-			],
-			metrics: [
-				'metrics.ctr',
-				'metrics.impressions',
-				'metrics.clicks',
-				'metrics.conversions',
-				'metrics.engagements',
-				'metrics.all_conversions',
-			],
-			constraints: [
-				{
-					key: 'ad_group_ad.status',
-					op: '=',
-					val: 'ENABLED',
-				},
-				...campaignConstraints,
-			],
-			order: [{ field: 'metrics.conversions', sort_order: 'DESC' }],
-			limit: 5,
-			from_date: startDate!,
-			to_date: endDate!,
-		});
-		console.timeEnd('report-top-ads');
+		// Montar cláusula WHERE do GAQL
+		const where: string[] = [`ad_group_ad.status = 'ENABLED'`];
+		if (campaignId !== 'all') {
+			where.push(`campaign.id = ${campaignId}`);
+		}
+		where.push(`segments.date BETWEEN '${startDate}' AND '${endDate}'`);
+
+		const query = `
+      SELECT
+        ad_group_ad.ad.id,
+        ad_group_ad.ad.name,
+        ad_group_ad.status,
+        ad_group_ad.ad.responsive_search_ad.headlines,
+        ad_group_ad.ad.smart_campaign_ad.headlines,
+        metrics.ctr,
+        metrics.impressions,
+        metrics.clicks,
+        metrics.conversions,
+        metrics.engagements,
+        metrics.all_conversions
+      FROM ad_group_ad
+      WHERE ${where.join('\n        AND ')}
+      ORDER BY metrics.conversions DESC
+      LIMIT 5
+    `;
+
+		console.time('query-top-ads');
+		const result = await customer.query(query);
+
+		console.timeEnd('query-top-ads');
 
 		// Verifica se há dados antes de retornar
-		if (!topAds || topAds.length == 0) {
+		if (!result || result.length === 0) {
 			return NextResponse.json({
-				error: 'Nenhum dado encontrado para as campanhas',
+				error: 'Nenhum dado encontrado para os anúncios',
 				ok: false,
 				data: null,
 			});
@@ -89,7 +86,7 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json({
 			ok: true,
-			data: topAds,
+			data: result,
 			error: null,
 		});
 	} catch (error) {

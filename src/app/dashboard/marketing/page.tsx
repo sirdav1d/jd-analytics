@@ -52,11 +52,13 @@ export default async function MarketingPage(props: {
 				/>
 			</Suspense> */}
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				<TopAnuncios
-					startDate={startDate}
-					endDate={endDate}
-					campaignId={campaignId}
-				/>
+				<Suspense fallback={<PageSkeleton />}>
+					<TopAnuncios
+						startDate={startDate}
+						endDate={endDate}
+						campaignId={campaignId}
+					/>
+				</Suspense>
 
 				{/* <Suspense fallback={<p>carregando top keywords</p>}>
 					<TopAdwords
