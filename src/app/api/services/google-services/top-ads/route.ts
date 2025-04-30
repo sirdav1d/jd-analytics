@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
+		console.time('report-top-ads');
 		const topAds = await customer.report({
 			entity: 'ad_group_ad',
 			attributes: [
@@ -64,9 +65,10 @@ export async function GET(req: NextRequest) {
 			from_date: startDate!,
 			to_date: endDate!,
 		});
+		console.timeEnd('report-top-ads');
 
 		// Verifica se há dados antes de retornar
-		if (!topAds) {
+		if (!topAds || topAds.length === 0) {
 			return NextResponse.json({
 				error: 'Nenhum dado encontrado para as campanhas',
 				ok: false,

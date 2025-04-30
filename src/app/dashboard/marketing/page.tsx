@@ -6,7 +6,7 @@ import PageSkeleton from './_components/page-skeleton';
 // import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 import TopAnuncios from './_components/tables/top-anuncios';
-import TopAdwords from './_components/tables/top-adwords';
+// import TopAdwords from './_components/tables/top-adwords';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -49,20 +49,20 @@ export default async function MarketingPage(props: {
 				/>
 			</Suspense> */}
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				<Suspense fallback={<p>carregando top ads</p>}>
+				<Suspense fallback={<p>carregando top ads...</p>}>
 					<TopAnuncios
 						startDate={startDate}
 						endDate={endDate}
 						campaignId={campaignId}
 					/>
 				</Suspense>
-				<Suspense fallback={<p>carregando top keywords</p>}>
+				{/* <Suspense fallback={<p>carregando top keywords</p>}>
 					<TopAdwords
 						startDate={startDate}
 						endDate={endDate}
 						campaignId={campaignId}
 					/>
-				</Suspense>
+				</Suspense> */}
 			</div>
 		</div>
 	);

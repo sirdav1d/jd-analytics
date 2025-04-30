@@ -84,7 +84,7 @@ export default async function TopAnuncios({
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				{topADS.length < 0 ? (
+				{topADS.length == 0 ? (
 					<p className='text-muted-foreground'>Nenhum dado encontrado</p>
 				) : (
 					<Table>
