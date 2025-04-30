@@ -13,6 +13,9 @@ export async function FetchTopADSData(
 			next: { revalidate: 60 },
 		},
 	);
+
+	console.log(response);
+
 	if (!response.ok) {
 		console.log(response);
 		return {
