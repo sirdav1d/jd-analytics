@@ -17,11 +17,11 @@ export async function GET(req: NextRequest) {
 		});
 	}
 
-	const searchParams = req.nextUrl.searchParams;
-	const startDate = searchParams.get('startDate');
-	const endDate = searchParams.get('endDate');
-	const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 	try {
+		const searchParams = req.nextUrl.searchParams;
+		const startDate = searchParams.get('startDate');
+		const endDate = searchParams.get('endDate');
+		const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
 		const googleAdsClient = new GoogleAdsApi({
 			client_id: process.env.GOOGLE_CLIENT_ID!,
 			client_secret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 		const customer = googleAdsClient.Customer({
 			customer_id: '2971952651',
 			refresh_token: refreshToken.googleRefreshToken!,
-			linked_customer_id: '8251122454',
+			login_customer_id: '8251122454',
 		});
 
 		const campaignConstraints: Constraints = [];
