@@ -1,5 +1,5 @@
 /** @format */
-'use client';
+
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table';
 import { FetchTopADSData } from '@/services/google-services/get-top-ads';
 import { Trophy } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface MetricsProps {
 	clicks: number;
@@ -54,30 +54,18 @@ interface SectionADSProps {
 	campaignId: string | string[];
 }
 
-export default function TopAnuncios({
+export default async function TopAnuncios({
 	endDate,
 	campaignId,
 	startDate,
 }: SectionADSProps) {
-	const [data, setData] = useState<{
-		ok: boolean;
-		data: AllProps[] | null;
-		error: string | null;
-	} | null>(null);
+	const data = await FetchTopADSData(
+		String(startDate),
+		String(endDate),
+		String(campaignId),
+	);
 
-	useEffect(() => {
-		async function fetchData() {
-			const resp = await FetchTopADSData(
-				String(startDate),
-				String(endDate),
-				String(campaignId),
-			);
-			setData(resp);
-		}
-		fetchData();
-	}, [endDate, campaignId, startDate]);
-
-	if (!data?.ok) {
+	if (!data.ok) {
 		console.log(data);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
@@ -86,7 +74,7 @@ export default function TopAnuncios({
 		);
 	}
 
-	const topADS: AllProps[] = data.data ?? [];
+	const topADS: AllProps[] = data.data;
 
 	return (
 		<Card>
