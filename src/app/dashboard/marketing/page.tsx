@@ -33,9 +33,7 @@ export default async function MarketingPage(props: {
 	const campaignId = searchParams.campaignId || 'all';
 
 	return (
-		<div className='w-full mx-auto space-y-5 pb-5 h-full'>
-			<div className='relative w-0 h-0 border-l-[15px] border-r-[15px] border-b-[26px] border-l-transparent border-r-transparent border-b-black' />
-
+		<div className='w-full mx-auto h-full pb-5'>
 			<Suspense fallback={<PageSkeleton />}>
 				<SectionAnalytics
 					startDate={startDate}
@@ -43,7 +41,7 @@ export default async function MarketingPage(props: {
 					channel={channelFilter}
 				/>
 			</Suspense>
-			<Separator className='my-40 w-full' />
+			<Separator className='w-full mt-10' />
 			<Suspense fallback={<p>carregando section ads</p>}>
 				<SectionAds
 					startDate={startDate}

@@ -41,7 +41,7 @@ export default async function SectionAds({
 	const AccountMetrics = data.data[1];
 
 	return (
-		<div className='grid gap-5 '>
+		<div className='grid gap-5 pb-5'>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
 				<FilterAds data={campaigns} />
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>

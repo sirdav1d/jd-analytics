@@ -17,6 +17,7 @@ import {
 } from 'recharts';
 
 const chartConfig = {
+	Vendas: { label: 'Vendas' },
 	Atingido: {
 		label: 'Atingido',
 		color: 'hsl(var(--chart-1))',
@@ -36,6 +37,7 @@ export function PieStore() {
 			config={chartConfig}
 			className='mx-auto aspect-square w-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<RadialBarChart
+				accessibilityLayer
 				data={chartData}
 				endAngle={180}
 				innerRadius={110}
@@ -85,10 +87,11 @@ export function PieStore() {
 					fill='var(--color-Atingido)'
 					className='stroke-transparent stroke-2'>
 					<LabelList
-						position='top'
+						position='outside'
 						dataKey='Atingido'
 						className='fill-white capitalize mix-blend-luminosity font-semibold'
 						fontSize={12}
+						offset={16}
 					/>
 				</RadialBar>
 				<RadialBar
@@ -98,10 +101,11 @@ export function PieStore() {
 					cornerRadius={5}
 					className='stroke-transparent stroke-2'>
 					<LabelList
-						position='top'
+						position='outside'
 						dataKey='Restante'
 						className='fill-white capitalize mix-blend-luminosity font-semibold'
 						fontSize={12}
+						offset={16}
 					/>
 				</RadialBar>
 			</RadialBarChart>

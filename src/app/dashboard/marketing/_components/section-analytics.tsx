@@ -52,9 +52,8 @@ export default async function SectionAnalytics({
 	const trafficData = responseAnalytics.data[1];
 	const channelData = responseAnalytics.data[2];
 
-	
 	return (
-		<div className='grid gap-5 mb-20'>
+		<div className='grid gap-5'>
 			<div className='w-full flex flex-col-reverse md:flex-row items-center justify-center md:justify-start flex-wrap gap-5'>
 				<FilterAnalytics />
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
