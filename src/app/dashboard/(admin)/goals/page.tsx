@@ -30,6 +30,13 @@ export default async function GoalsPage() {
 	if (!data.ok) {
 		console.log(data.error);
 	}
+
+	const today = new Date();
+
+	const formattedToday = today.toLocaleString('pt-BR', {
+		month: '2-digit',
+		year: 'numeric',
+	});
 	return (
 		<div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
 			<Tabs
@@ -141,7 +148,12 @@ export default async function GoalsPage() {
 					<Card className='w-full md:max-w-full mx-auto bg-background border-none '>
 						<CardHeader>
 							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-3xl'>
-								JD Info Centro
+								<span>
+									JD Info Centro <br />
+									<span className='text-muted-foreground font-normal text-xl'>
+										{formattedToday}
+									</span>
+								</span>
 								{data.data && <ModalFormComercialGoal sellers={data.data} />}
 							</CardTitle>
 						</CardHeader>
@@ -150,19 +162,19 @@ export default async function GoalsPage() {
 								<Card>
 									<CardHeader>
 										<CardTitle>R$ 100.000,00</CardTitle>
-										<CardDescription>Faturamento</CardDescription>
-									</CardHeader>
-								</Card>
-								<Card>
-									<CardHeader>
-										<CardTitle>R$ 1.000,00</CardTitle>
-										<CardDescription>Ticket Médio</CardDescription>
+										<CardDescription>Meta de faturamento atual</CardDescription>
 									</CardHeader>
 								</Card>
 								<Card>
 									<CardHeader>
 										<CardTitle>100</CardTitle>
-										<CardDescription>Média de vendas</CardDescription>
+										<CardDescription>Média móvel de vendas atual</CardDescription>
+									</CardHeader>
+								</Card>
+								<Card>
+									<CardHeader>
+										<CardTitle>R$ 1.000,00</CardTitle>
+										<CardDescription>Ticket médio previsto atual</CardDescription>
 									</CardHeader>
 								</Card>
 							</div>
@@ -179,13 +191,13 @@ export default async function GoalsPage() {
 												Nome
 											</TableHead>
 											<TableHead className='text-foreground font-semibold'>
-												Faturamento
+												Meta de Faturamento
 											</TableHead>
 											<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-												Total de Vendas
+												Média Móvel de Vendas
 											</TableHead>
 											<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-												Ticket Médio
+												Ticket Médio Previsto
 											</TableHead>
 										</TableRow>
 									</TableHeader>

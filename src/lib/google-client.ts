@@ -1,13 +1,8 @@
 /** @format */
 
 import { google } from 'googleapis';
-// lib/google-ads-client.ts
 import { GoogleAdsApi } from 'google-ads-api';
-/**
- * Cria e retorna uma instância do cliente OAuth2 do Google.
- *
- * @throws Error se as variáveis de ambiente não estiverem configuradas.
- */
+
 export function getOAuth2Client() {
 	const clientId = process.env.GOOGLE_CLIENT_ID;
 	const clientSecret = process.env.GOOGLE_CLIENT_SECRET;

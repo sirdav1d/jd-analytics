@@ -2,11 +2,10 @@
 
 import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
-import PageSkeleton from './_components/page-skeleton';
 import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 import TopAnuncios from './_components/tables/top-anuncios';
-
+import { Skeleton } from '@/components/ui/skeleton';
 import TopAdwords from './_components/tables/top-adwords';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -34,7 +33,32 @@ export default async function MarketingPage(props: {
 
 	return (
 		<div className='w-full mx-auto h-full pb-5'>
-			<Suspense fallback={<PageSkeleton />}>
+			<Suspense
+				fallback={
+					<div className='flex w-full flex-col gap-5'>
+						<div className='flex flex-col lg:flex-row gap-5'>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+						</div>
+						<div className='h-full w-full flex flex-col lg:flex-row gap-5'>
+							<Skeleton className='h-80 w-full' />
+							<Skeleton className='h-80 w-full' />
+						</div>
+						<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+						</div>
+					</div>
+				}>
 				<SectionAnalytics
 					startDate={startDate}
 					endDate={endDate}
@@ -42,7 +66,32 @@ export default async function MarketingPage(props: {
 				/>
 			</Suspense>
 			<Separator className='w-full mt-10' />
-			<Suspense fallback={<p>carregando section ads</p>}>
+			<Suspense
+				fallback={
+					<div>
+						<div className='flex flex-col lg:flex-row gap-5'>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-[240px]'></Skeleton>
+						</div>
+						<Skeleton className='h-80 w-full'></Skeleton>
+						<div className='h-full w-full flex flex-col lg:flex-row gap-5'>
+							<Skeleton className='h-80 w-full'></Skeleton>
+							<Skeleton className='h-80 w-full'></Skeleton>
+						</div>
+						<div className='h-full w-full flex flex-col lg:flex-row gap-5'>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+						</div>
+						<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+							<Skeleton className='h-28 w-full'></Skeleton>
+						</div>
+					</div>
+				}>
 				<SectionAds
 					startDate={startDate}
 					endDate={endDate}
@@ -50,14 +99,14 @@ export default async function MarketingPage(props: {
 				/>
 			</Suspense>
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-				<Suspense fallback={<PageSkeleton />}>
+				<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
 					<TopAnuncios
 						startDate={startDate}
 						endDate={endDate}
 						campaignId={campaignId}
 					/>
 				</Suspense>
-				<Suspense fallback={<p>carregando top keywords</p>}>
+				<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
 					<TopAdwords
 						startDate={startDate}
 						endDate={endDate}

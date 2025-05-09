@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 export default async function getAllSellers() {
 	const resp = await prisma.user.findMany({
 		where: { role: 'SELLER' },
-		select: { name: true },
+		select: { name: true, id: true },
 	});
 
 	if (!resp) {

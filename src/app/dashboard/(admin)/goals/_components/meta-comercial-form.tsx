@@ -4,7 +4,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
 import {
 	Select,
 	SelectContent,
@@ -12,124 +12,209 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { useState } from 'react';
+
 import { toast } from 'sonner';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
+import { CreateSalesGoalAction } from '@/actions/goals/create';
+import { useTransition } from 'react';
+import { Loader2 } from 'lucide-react';
 
 interface IMetaComercialForm {
-	sellers: { name: string }[];
+	sellers: { name: string; id: string }[];
 }
 
-export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
-	const [commercialGoalType, setCommercialGoalType] = useState('revenue');
-	const [commercialGoalVendor, setCommercialGoalVendor] = useState('');
-	const [commercialGoalValue, setCommercialGoalValue] = useState('');
-	const [year, setYear] = useState(new Date().getFullYear());
-	const [mes, setMes] = useState(new Date().getMonth().toLocaleString());
+const formSchema = z.object({
+	seller: z.string({
+		coerce: true,
+		required_error: 'É necessário incluir um vendedor',
+	}),
+	goal: z.number({
+		coerce: true,
+		required_error: 'É necessário incluir uma meta',
+	}),
+	month: z.number({
+		coerce: true,
+		required_error: 'É necessário incluir um mês',
+	}),
+	year: z.number({
+		coerce: true,
+		required_error: 'É necessário incluir um ano',
+	}),
+});
 
-	const handleCommercialSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		// Here you would typically send this data to your backend
-		console.log('Commercial Goal:', {
-			type: commercialGoalType,
-			value: commercialGoalValue,
+export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
+	const [isPending, startTransition] = useTransition();
+
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			seller: '',
+			goal: 0,
+			month: new Date().getMonth(),
+			year: new Date().getFullYear(),
+		},
+	});
+
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		const { goal, month, seller, year } = values;
+		const goalDateRef = new Date(year, month);
+
+		startTransition(async () => {
+			const resp = await CreateSalesGoalAction({
+				goalDateRef: goalDateRef,
+				revenue: goal,
+				userId: seller,
+			});
+
+			if (!resp.ok) {
+				console.log(resp.error);
+				toast.error('Algo deu errado, tente novamente');
+			} else {
+				toast.success(
+					`Meta atualizada com sucesso: ${resp.goal?.revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'brl' })}`,
+				);
+				form.reset();
+			}
 		});
-		toast.success('Meta Comercial Definida', {
-			description: `Tipo: ${commercialGoalType}, Valor: R$ ${commercialGoalValue}`,
-		});
-	};
+	}
+
 	return (
-		<form
-			onSubmit={handleCommercialSubmit}
-			className='space-y-4'>
-			<div className='space-y-2'>
-				<Label htmlFor='commercialGoalType'>Tipo de Meta</Label>
-				<Select
-					value={commercialGoalType}
-					onValueChange={setCommercialGoalType}>
-					<SelectTrigger id='commercialGoalType'>
-						<SelectValue placeholder='Selecione o tipo de meta' />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value='revenue'>Faturamento</SelectItem>
-						<SelectItem value='averageTicket'>Ticket Médio</SelectItem>
-					</SelectContent>
-				</Select>
-			</div>
-			<div className='space-y-2'>
-				<Label htmlFor='commercialGoalValue'>Valor da Meta</Label>
-				<Input
-					id='commercialGoalValue'
-					type='number'
-					placeholder='Digite o valor da meta'
-					value={commercialGoalValue}
-					onChange={(e) => setCommercialGoalValue(e.target.value)}
-					className='placeholder:text-slate-500'
-					required
+		<Form {...form}>
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className='flex flex-col gap-5'>
+				<FormField
+					control={form.control}
+					name='seller'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Vendedor</FormLabel>
+							<Select
+								required
+								onValueChange={field.onChange}
+								defaultValue={field.value}>
+								<FormControl>
+									<SelectTrigger>
+										<SelectValue placeholder='Selecione um vendedor' />
+									</SelectTrigger>
+								</FormControl>
+								<SelectContent>
+									{sellers.map((seller, index) => {
+										return (
+											<SelectItem
+												key={index}
+												value={seller.id}>
+												{seller.name}
+											</SelectItem>
+										);
+									})}
+								</SelectContent>
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
 				/>
-			</div>
-			<div className='space-y-2'>
-				<Label htmlFor='commercialGoalVendor'>Vendedor</Label>
-				<Select
-					value={commercialGoalVendor}
-					onValueChange={setCommercialGoalVendor}>
-					<SelectTrigger id='commercialGoalVendor'>
-						<SelectValue
-							className='placeholder:text-muted-foreground'
-							placeholder='Selecione o vendedor'
-						/>
-					</SelectTrigger>
-					<SelectContent>
-						{sellers.map((seller, index) => {
-							return (
-								<SelectItem
-									key={index}
-									value={seller.name}>
-									{seller.name}
-								</SelectItem>
-							);
-						})}
-					</SelectContent>
-				</Select>
-			</div>
-			<div className='justify-between gap-5 flex items-center'>
-				<div className='w-full space-y-2'>
-					<Label htmlFor='meta-mes'>Mês</Label>
-					<Select
-						value={mes}
-						onValueChange={setMes}>
-						<SelectTrigger id='meta-mes'>
-							<SelectValue
-								className='placeholder:text-muted-foreground'
-								placeholder='Selecione o mês'
-							/>
-						</SelectTrigger>
-						<SelectContent>
-							{Array.from({ length: 12 }).map((_, index) => (
-								<SelectItem
-									key={index}
-									value={`${index}`}>
-									{index + 1}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
+				<FormField
+					control={form.control}
+					name='goal'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Valor da Meta</FormLabel>
+							<FormControl>
+								<Input
+									required
+									placeholder='Digite uma meta de faturamento'
+									type='text'
+									inputMode='numeric'
+									value={formatCurrency(field.value)}
+									onChange={(e) => {
+										const raw = e.target.value.replace(/\D/g, '');
+										const numeric = Number(raw) / 100;
+										form.setValue('goal', numeric, { shouldValidate: true });
+									}}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<div className='justify-between gap-5 flex items-center'>
+					<FormField
+						control={form.control}
+						name='month'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Mês</FormLabel>
+								<Select
+									required
+									onValueChange={field.onChange}
+									defaultValue={field.value.toString()}>
+									<FormControl>
+										<SelectTrigger className='w-[220px]'>
+											<SelectValue placeholder='Selecione o mês' />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										{Array.from({ length: 12 }).map((_, index) => (
+											<SelectItem
+												key={index}
+												value={`${index}`}>
+												{index + 1}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='year'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Valor da Meta</FormLabel>
+								<FormControl>
+									<Input
+										required
+										type='number'
+										min={2025}
+										placeholder='Selecione o ano'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 				</div>
-				<div className='w-full space-y-2'>
-					<Label htmlFor='meta-ano'>Ano</Label>
-					<Input
-						value={year}
-						onChange={(e) => setYear(Number(e.target.value))}
-						id='meta-ano'
-						min={2025}
-						type='number'
-						placeholder='Selecione o ano'></Input>
-				</div>
-			</div>
-			<Button
-				type='submit'
-				className='bg-red-600 w-full text-white hover:bg-red-700'>
-				Definir Meta Comercial
-			</Button>
-		</form>
+				<Button
+					disabled={isPending}
+					type='submit'
+					className='w-full mt-5'>
+					Definir Meta Comercial{' '}
+					{isPending && <Loader2 className='animate-spin' />}
+				</Button>
+			</form>
+		</Form>
 	);
+}
+
+function formatCurrency(value: number) {
+	if (!value) return '';
+	return new Intl.NumberFormat('pt-BR', {
+		style: 'currency',
+		currency: 'BRL',
+	}).format(value);
 }

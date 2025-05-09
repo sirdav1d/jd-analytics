@@ -34,7 +34,7 @@ export async function getAuthenticatedClient(
 	oauth2Client.setCredentials({
 		access_token: org.googleAccessToken,
 		refresh_token: org.googleRefreshToken,
-		expiry_date: org.googleExpiresAt,
+		expiry_date: Number(org.googleExpiresAt),
 	});
 
 	// 4) Registra o listener UMA ÚNICA VEZ (no primeiro cold-start)

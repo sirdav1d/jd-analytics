@@ -15,6 +15,7 @@ import MetaComercialForm from './meta-comercial-form';
 interface IModalFormComercialGoal {
 	sellers: {
 		name: string;
+		id: string;
 	}[];
 }
 
