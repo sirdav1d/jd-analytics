@@ -50,7 +50,7 @@ export default function SellerComparison({
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-80 md:h-72 w-full'>
+			className='h-80 w-full'>
 			<BarChart
 				accessibilityLayer
 				margin={{
@@ -63,8 +63,9 @@ export default function SellerComparison({
 					dataKey='name'
 					tickMargin={12}
 					tickLine={false}
+					style={{ textTransform: 'lowercase' }}
 					axisLine={false}
-					tickFormatter={(value: string) => value.slice(0, 18) + '...'}
+					tickFormatter={(value: string) => value.slice(0, 12) + '...'}
 				/>
 				<YAxis
 					scale={'sqrt'}

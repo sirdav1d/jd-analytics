@@ -28,94 +28,100 @@ export async function GET(req: NextRequest) {
 		const diffDays = (endDate.getTime() - startDate.getTime()) / msInDay;
 		const useDaily = diffDays < 30;
 
-		let vendasPorVendedor: {
-			vendedor: string;
-			totalRevenue: number;
-			orderCount: number;
-			avgTicket: number;
-		}[] = [];
-
-		const rawVendas = await prisma.pedidos.groupBy({
+		// 1. Overview: vendas por vendedor
+		const rawOverview = await prisma.pedido.groupBy({
 			by: ['userId'],
-			where: { data_pedido: { gte: startDate, lte: endDate } },
-			_sum: { valor_total: true },
+			where: {
+				data_pedido: { gte: startDate, lte: endDate },
+			},
 			_count: { id: true },
-			_avg: { valor_total: true },
 		});
 
-		const resolvedVendas = await Promise.all(
-			rawVendas.map(async (v) => ({
-				vendedor:
-					(
-						await prisma.user.findUnique({
-							where: { id: v.userId },
-							select: { name: true },
-						})
-					)?.name ?? 'Unknown',
-				totalRevenue: v._sum.valor_total?.toNumber() ?? 0,
-				orderCount: v._count.id,
-				avgTicket: v._avg.valor_total?.toNumber() ?? 0,
-			})),
+		// build overview with revenue and avgTicket
+		const overview = await Promise.all(
+			rawOverview.map(async (item) => {
+				// soma de itens por venda do vendedor no período
+				const revenue = await prisma.saleItem.aggregate({
+					_sum: { totalValue: true },
+					where: {
+						sale: {
+							userId: item.userId,
+							data_pedido: { gte: startDate, lte: endDate },
+						},
+					},
+				});
+
+				const totalRevenue = revenue._sum.totalValue ?? 0;
+				const orderCount = item._count.id;
+				const avgTicket = orderCount ? totalRevenue / orderCount : 0;
+				const seller = await prisma.user.findUnique({
+					where: { id: item.userId },
+					select: { name: true },
+				});
+				return {
+					vendedor: seller?.name ?? 'Unknown',
+					totalRevenue,
+					orderCount,
+					avgTicket,
+				};
+			}),
 		);
 
-		vendasPorVendedor = resolvedVendas.sort(
-			(a, b) => b.totalRevenue - a.totalRevenue,
-		);
+		// sort descending revenue
+		const overResp = overview.sort((a, b) => b.totalRevenue - a.totalRevenue);
 
-		// 2. Série temporal (diária se período < 31 dias, senão mensal)
+		// 2. Série temporal
 		let timeSeries: Array<{ period: string; revenue: number }>;
 		if (useDaily) {
 			timeSeries = await prisma.$queryRaw<
 				Array<{ period: string; revenue: number }>
 			>(
 				Prisma.sql`
-          WITH days AS (
-            SELECT generate_series(
-              ${startDate}::date,
-              ${endDate}::date,
-              '1 day'::interval
-            ) AS day
-          ), agg AS (
-            SELECT date_trunc('day', data_pedido)::date AS day,
-                   SUM(valor_total)::float AS revenue
-            FROM Pedidos
-            WHERE data_pedido >= ${startDate}
-              AND data_pedido <= ${endDate}
-            GROUP BY day
-          )
-          SELECT to_char(days.day, 'YYYY-MM-DD') AS period,
-                 COALESCE(agg.revenue, 0) AS revenue
-          FROM days
-          LEFT JOIN agg ON days.day = agg.day
-          ORDER BY days.day
-        `,
+					 WITH days AS (
+						 SELECT generate_series(
+							 ${startDate}::date,
+							 ${endDate}::date,
+							 '1 day'::interval
+						 ) AS day
+					 ), agg AS (
+						 SELECT date_trunc('day', p.data_pedido)::date AS day,
+										SUM(si.total_value)::float AS revenue
+						 FROM "Pedido" p
+						 JOIN "SaleItem" si ON si.sale_id = p.id
+						 WHERE p.data_pedido BETWEEN ${startDate} AND ${endDate}
+						 GROUP BY day
+					 )
+					 SELECT to_char(days.day, 'YYYY-MM-DD') AS period,
+									COALESCE(agg.revenue, 0) AS revenue
+					 FROM days
+					 LEFT JOIN agg ON days.day = agg.day
+					 ORDER BY days.day
+				 `,
 			);
 		} else {
 			timeSeries = await prisma.$queryRaw<
 				Array<{ period: string; revenue: number }>
 			>(
 				Prisma.sql`
-          SELECT
-            to_char(date_trunc('month', data_pedido), 'YYYY-MM') AS period,
-            SUM(valor_total)::float AS revenue
-          FROM Pedidos
-          WHERE data_pedido >= ${startDate}
-            AND data_pedido <= ${endDate}
-          GROUP BY period
-          ORDER BY period
-        `,
+					 SELECT
+						 to_char(date_trunc('month', p.data_pedido), 'YYYY-MM') AS period,
+						 SUM(si.total_value)::float AS revenue
+					 FROM "Pedido" p
+					 JOIN "SaleItem" si ON si.sale_id = p.id
+					 WHERE p.data_pedido BETWEEN ${startDate} AND ${endDate}
+					 GROUP BY period
+					 ORDER BY period
+				 `,
 			);
 		}
 
-		const allVendors = await prisma.user.findMany({
-			select: { name: true },
-		});
-
-		const vendors = allVendors.map((v) => v.name);
+		// 3. Lista de vendedores
+		const sellers = await prisma.user.findMany({ select: { name: true } });
+		const vendors = sellers.map((s) => s.name);
 
 		return NextResponse.json(
 			{
-				overview: vendasPorVendedor,
+				overview: overResp,
 				timeSeries,
 				vendors,
 				ok: true,

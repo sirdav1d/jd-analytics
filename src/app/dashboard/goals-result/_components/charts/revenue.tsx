@@ -30,14 +30,14 @@ export function Revenue({ revanueData }: RevenueProps) {
 	const chartData = revanueData;
 	return (
 		<ChartContainer
-			className='h-80 w-full'
+			className='h-80 w-full '
 			config={chartConfig}>
 			<AreaChart
 				accessibilityLayer
 				data={chartData}
 				margin={{
-					left: 28,
-					right: 32,
+					left: isMobile ? 12 : 40,
+					right: isMobile ? 12 : 40,
 					top: 20,
 				}}>
 				<CartesianGrid vertical={false} />
@@ -85,16 +85,14 @@ export function Revenue({ revanueData }: RevenueProps) {
 					fillOpacity={0.4}
 					stroke='var(--color-revenue)'
 					stackId='a'>
-					{!isMobile && (
-						<LabelList
-							dataKey='revenue'
-							position='top'
-							offset={12}
-							className='fill-foreground'
-							fontSize={10}
-							formatter={(value: number) => formatCurrency(value)}
-						/>
-					)}
+					<LabelList
+						dataKey='revenue'
+						position='top'
+						offset={12}
+						className='fill-foreground'
+						fontSize={10}
+						formatter={(value: number) => formatCurrency(value)}
+					/>
 				</Area>
 			</AreaChart>
 		</ChartContainer>

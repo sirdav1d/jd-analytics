@@ -12,52 +12,38 @@ export const config = {
 	},
 };
 
-type Pedido = {
-	data_pedido: Date;
-	documento: string;
-	valor_total: number;
-	operacao: string;
-	user_name: string;
-};
+type CsvRow = Record<string, string>;
 
-function parseDate(dateStr: string): Date {
-	const [dia, mes, ano] = dateStr.split('/');
-	return new Date(+ano, +mes - 1, +dia);
+type ParsedRow = Record<string, string>;
+
+function normalizeRow(raw: CsvRow): ParsedRow {
+	const keys = Object.keys(raw);
+	if (keys.length === 1) {
+		// Linha mal parseada: cabeçalho e valores em um único campo
+		const [headerStr, valueStr] = Object.entries(raw)[0];
+		const headers = headerStr.replace(/^"+|"+$/g, '').split('","');
+		const values = valueStr.replace(/^"+|"+$/g, '').split('","');
+		const obj: ParsedRow = {};
+		headers.forEach((h, i) => (obj[h] = values[i] || ''));
+		return obj;
+	}
+	return raw as ParsedRow;
+}
+
+function parseDateBR(dateStr: string | undefined): Date {
+	if (!dateStr) {
+		throw new Error('Data do Lançamento ausente ou inválida');
+	}
+	const parts = dateStr.split('/');
+	if (parts.length !== 3) {
+		throw new Error(`Formato de data inválido: ${dateStr}`);
+	}
+	const [day, month, year] = parts;
+	return new Date(+year, +month - 1, +day);
 }
 
 function parseDecimal(valor: string): number {
-	return parseFloat(valor.replace('.', '').replace(',', '.'));
-}
-
-function parseLinhaBruta(rawObj: Record<string, string>): Pedido[] {
-	const [headerStr, valueStr] = Object.entries(rawObj)[0];
-
-	const headers = headerStr.replace(/^"+|"+$/g, '').split('","');
-
-	const values = valueStr.replace(/^"+|"+$/g, '').split('","');
-
-	const pedidos: Pedido[] = [];
-
-	for (let i = 0; i < values.length; i += headers.length) {
-		const linha = values.slice(i, i + headers.length);
-		const obj: Record<string, string> = {};
-
-		headers.forEach((h, idx) => {
-			obj[h] = linha[idx];
-		});
-
-		const pedido: Pedido = {
-			data_pedido: parseDate(obj['Data']),
-			documento: obj['Documento'],
-			operacao: obj['Operacao'],
-			valor_total: parseDecimal(obj['Valor Total']),
-			user_name: obj['Vendedor'],
-		};
-
-		pedidos.push(pedido);
-	}
-
-	return pedidos;
+	return parseFloat(valor.replace(/\./g, '').replace(/,/g, '.'));
 }
 
 // Função principal
@@ -75,9 +61,9 @@ export async function POST(req: NextRequest) {
 		let fileData = await fs.readFile(file.filepath, 'utf-8');
 
 		// Normaliza quebras de linha
-		fileData = fileData.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+		fileData = fileData.replace(/\r\n/g, '\n').trim();
 
-		const parsed = parseCSV(fileData, {
+		const parsed = parseCSV<CsvRow>(fileData, {
 			header: true,
 			skipEmptyLines: true,
 			delimiter: ',',
@@ -92,69 +78,110 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		// Trata caso especial de linha mal lida (chave única como texto inteiro)
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const data = parsed.data.map((row: any) => {
-			return parseLinhaBruta(row);
-		});
+		const rows: ParsedRow[] = parsed.data.map(normalizeRow);
 
-		const pedidosBrutos = data.flat();
+		for (const row of rows) {
+			// Extração de campos
+			console.log('row[0]', row['Data do Lançamento']);
+			const launchDate = parseDateBR(row['Data do Lançamento']);
+			const documentNumber = row['Documento'];
+			const natureOperation = row['Natureza de Operação'];
+			const operationType = row['Operação'];
+			const origin = row['Origem'];
+			const cancelled = row['Cancelada'].toLowerCase() === 'sim';
 
-		const nomesUnicos = [...new Set(pedidosBrutos.map((p) => p.user_name))];
+			console.log('launchDate', launchDate);
+			// Cliente
+			const clienteCode = parseInt(row['Código Cliente'], 10);
+			const clienteName = row['Nome Cliente'];
+			const personType =
+				row['Tipo Pessoa'].toUpperCase() === 'JURÍDICA' ? 'JURIDICA' : 'FISICA';
+			const customer = await prisma.customer.upsert({
+				where: { externalCode: clienteCode },
+				update: { name: clienteName, personType },
+				create: { name: clienteName, personType, externalCode: clienteCode },
+			});
 
-		const usuarios = await prisma.user.findMany({
-			where: {
-				name: {
-					in: nomesUnicos,
+			// Seller
+			const sellerParts = row['Vendedor'].split(' - ');
+			const sellerName =
+				sellerParts.length > 1 ? sellerParts[1].trim() : row['Vendedor'];
+			const seller = await prisma.user.upsert({
+				where: { email: `${sellerName}@infojd.com` }, // Replace with a valid unique field
+				update: {},
+				create: {
+					name: sellerName,
+					email: `${sellerName}@infojd.com`,
+					role: 'SELLER',
+					password: 'Senha@123', // Replace with a secure default password or logic
+					organization: { connect: { id: process.env.JD_CENTRO_ID } }, // Replace with valid organization logic
 				},
-			},
-			select: {
-				id: true,
-				name: true,
-			},
-		});
+			});
 
-		const mapaUsuarios = new Map(usuarios.map((u) => [u.name.trim(), u.id]));
-
-		const pedidosComId = pedidosBrutos
-			.map((pedido) => {
-				const idUsuario = mapaUsuarios.get(pedido.user_name.trim());
-
-				if (!idUsuario) {
-					console.warn(`Usuário não encontrado: ${pedido.user_name}`);
-					return null; // Pula se não encontrar
-				}
-
-				return {
-					data_pedido: pedido.data_pedido,
-					documento: pedido.documento,
-					valor_total: pedido.valor_total,
-					operacao: pedido.operacao,
-					userId: idUsuario, // Aqui está o ID do banco
-				};
-			})
-			.filter(
-				(pedido): pedido is NonNullable<typeof pedido> => pedido !== null,
-			); // Remove nulos com tipo explícito
-
-		if (!pedidosComId.length || !pedidosComId) {
-			return NextResponse.json(
-				{
-					ok: false,
-					error: 'Nenhum usuário encontrado para os vendedores informados.',
+			// Product
+			const prodCode = parseInt(row['Código Produto'], 10);
+			const prodDesc = row['Descrição Produto'];
+			const brand = row['Marca Produto'];
+			const sector = row['Setor Produto'];
+			const product = await prisma.product.upsert({
+				where: { externalCode: prodCode },
+				update: {},
+				create: {
+					description: prodDesc,
+					brand,
+					sector,
+					externalCode: prodCode,
 				},
-				{ status: 400 },
-			);
+			});
+
+			// PaymentMethod
+			const method = row['Forma de Pagamento'];
+			const paymentMethod = await prisma.paymentMethod.upsert({
+				where: { method: method },
+				update: {},
+				create: { method },
+			});
+
+			// Sale
+			const sale = await prisma.pedido.upsert({
+				where: { documentNumber: documentNumber },
+				update: {},
+				create: {
+					documentNumber,
+					data_pedido: launchDate,
+					natureOperation,
+					operationType,
+					origin,
+					cancelled,
+					customer: { connect: { id: customer.id } },
+					user: { connect: { id: seller.id } },
+					paymentMethod: { connect: { id: paymentMethod.id } },
+				},
+			});
+
+			// SaleItem
+			const quantity = parseDecimal(row['Qtde Item']);
+			const unitValue = parseDecimal(row['Valor Unitário Item']);
+			const totalValue = parseDecimal(row['Valor Total Item']);
+			await prisma.saleItem.create({
+				data: {
+					sale: { connect: { id: sale.id } },
+					product: { connect: { id: product.id } },
+					quantity,
+					unitValue,
+					totalValue,
+				},
+			});
 		}
 
-		const resp = await prisma.pedidos.createMany({
-			data: pedidosComId,
-		});
-
-		return NextResponse.json({
-			ok: true,
-			data: resp.count,
-		});
+		return NextResponse.json(
+			{
+				ok: true,
+				data: `Importação concluída - ${parsed.data.length}`,
+				error: null,
+			},
+			{ status: 201 },
+		);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (err: any) {
 		console.error('Erro na rota de upload CSV:', err);

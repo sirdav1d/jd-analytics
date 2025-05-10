@@ -47,7 +47,7 @@ export default function UploadForm() {
 		if (json.ok) {
 			toast.success('Upload feito com sucesso!');
 			setFile(null);
-			router.push('/');
+			router.push('/dashboard/goals-result');
 		} else {
 			setMessage(`Erro: ${json.error}`);
 		}

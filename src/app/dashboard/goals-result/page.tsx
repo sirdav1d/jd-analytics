@@ -51,19 +51,19 @@ export default async function GoalResultPage(props: {
 	return (
 		<div className='w-full  mx-auto space-y-5 pb-5'>
 			<Filter />
-			<div className='grid grid-cols-1 xl:grid-cols-2 w-full my-5 gap-4 md:items-center'>
-				<Card className='w-full h-full'>
+			<div className='grid grid-cols-1 xl:grid-cols-3 w-full my-5 gap-4 md:items-center'>
+				<Card className='w-full col-span-1 h-full'>
 					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
+						<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
 							{storeData.name}
 						</CardTitle>
 						<p className='text-sm'>Meta: {formatCurrency(storeData.meta)}</p>
 					</CardHeader>
-					<CardContent className='scale-125  translate-y-12'>
+					<CardContent className='scale-110 2xl:scale-125  translate-y-12'>
 						<PieStore />
 					</CardContent>
 				</Card>
-				<Card className='w-full h-full'>
+				<Card className='w-full col-span-2 h-full'>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
 							Faturamento por vendedor

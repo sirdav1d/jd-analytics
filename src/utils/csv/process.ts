@@ -6,11 +6,24 @@ import { Readable } from 'stream';
 import fs from 'fs/promises';
 // Defina aqui os cabeçalhos obrigatórios do CSV
 const expectedHeaders = [
-	'Data',
+	'Data do Lançamento',
 	'Documento',
-	'Operacao',
-	'Valor Total',
+	'Natureza de Operação',
+	'Operação',
+	'Origem',
+	'Nome Cliente',
+	'Descrição Produto',
+	'Valor Total Item',
+	'Forma de Pagamento',
+	'Marca Produto',
+	'Qtde Item',
+	'Valor Unitário Item',
+	'Setor Produto',
+	'Tipo Pessoa',
 	'Vendedor',
+	'Cancelada',
+	'Código Cliente',
+	'Código Produto',
 ];
 
 export async function convertRequestToStream(

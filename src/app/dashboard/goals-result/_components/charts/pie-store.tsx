@@ -89,7 +89,7 @@ export function PieStore() {
 					<LabelList
 						position='outside'
 						dataKey='Atingido'
-						className='fill-white capitalize mix-blend-luminosity font-semibold'
+						className='fill-foreground capitalize mix-blend-luminosity font-semibold'
 						fontSize={12}
 						offset={16}
 					/>
@@ -103,7 +103,7 @@ export function PieStore() {
 					<LabelList
 						position='outside'
 						dataKey='Restante'
-						className='fill-white capitalize mix-blend-luminosity font-semibold'
+						className='fill-foreground capitalize mix-blend-luminosity font-semibold'
 						fontSize={12}
 						offset={16}
 					/>

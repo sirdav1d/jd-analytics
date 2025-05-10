@@ -58,16 +58,19 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-80 w-full'>
+			className={'h-[480px] md:h-96 w-full'}>
 			<BarChart
 				accessibilityLayer
 				layout='vertical'
 				margin={{
-					right: isMobile ? 76 : 92,
-					left: -12,
+					right: isMobile ? 80 : 92,
+					left: -18,
 				}}
 				data={chartData}>
-				<CartesianGrid horizontal={false} />
+				<CartesianGrid
+					horizontal={false}
+					vertical={isMobile ? false : true}
+				/>
 				<YAxis
 					width={isMobile ? 120 : 188}
 					dataKey='name'
@@ -75,6 +78,8 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 					type='category'
 					tickLine={false}
 					axisLine={false}
+					fontSize={12}
+					style={{ textTransform: 'lowercase' }}
 					tickFormatter={(value) =>
 						isMobile
 							? chartConfig[value as keyof typeof chartConfig]?.label.slice(
