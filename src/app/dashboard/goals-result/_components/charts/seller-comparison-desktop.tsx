@@ -59,7 +59,7 @@ export default function SellerComparison({
 					left: 0,
 				}}
 				data={chartData}>
-				<CartesianGrid horizontal={false} />
+				<CartesianGrid vertical={false} />
 
 				<YAxis
 					scale={'sqrt'}

@@ -1,6 +1,7 @@
 /** @format */
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { addMonths } from 'date-fns';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -137,12 +138,20 @@ export async function GET(req: NextRequest) {
 		const vendors = sellers.map((s) => s.name);
 
 		// 4. Company Summary: Meta total e Receita total
+
+		const startMonthRefCompany = new Date(
+			startDate.getFullYear(),
+			startDate.getMonth(),
+			1,
+		);
+		const nextMonthRef = addMonths(startMonthRefCompany, 1);
+
 		const salesGoalSum = await prisma.salesGoal.aggregate({
 			_sum: { revenue: true },
 			where: {
 				goalDateRef: {
-					gte: startDate,
-					lte: endDate,
+					gte: startMonthRef, // >= 1º dia do mês selecionado
+					lt: nextMonthRef, // < 1º dia do mês seguinte
 				},
 			},
 		});

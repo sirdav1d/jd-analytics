@@ -62,7 +62,7 @@ export default async function GoalResultPage(props: {
 							Meta: {formatCurrency(dataGoal.companySummary.meta)}
 						</p>
 					</CardHeader>
-					<CardContent className='2xl:scale-125 w-full translate-y-12'>
+					<CardContent className='2xl:scale-110 w-full translate-y-12'>
 						<PieStore companySummary={dataGoal.companySummary} />
 					</CardContent>
 				</Card>
