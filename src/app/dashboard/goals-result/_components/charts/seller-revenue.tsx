@@ -72,7 +72,7 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 					vertical={isMobile ? false : true}
 				/>
 				<YAxis
-					width={isMobile ? 120 : 188}
+					width={isMobile ? 120 : 148}
 					dataKey='name'
 					tickMargin={8}
 					type='category'

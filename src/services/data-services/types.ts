@@ -5,6 +5,7 @@ export interface IOverview {
 	totalRevenue: number;
 	orderCount: number;
 	avgTicket: number;
+	meta: number;
 }
 
 export interface ITimeSeries {

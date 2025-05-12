@@ -3,72 +3,47 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import { PieStore } from './charts/pie-store';
-import { Badge } from '@/components/ui/badge';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+// import { Badge } from '@/components/ui/badge';
+// import { ArrowDown, ArrowUp } from 'lucide-react';
+import { IOverview } from '@/services/data-services/types';
 
-export default function SalesmanList() {
-	const vendedoresData = [
-		{
-			name: 'PAULO',
-			meta: 143000,
-			realizado: 137761.22,
-			percentual: 96,
-			metaProjetada: 275522.44,
-			metaProjetadaPercentual: 193,
-		},
-		{
-			name: 'WELITON',
-			meta: 120000,
-			realizado: 35405.01,
-			percentual: 30,
-			metaProjetada: 70810.02,
-			metaProjetadaPercentual: 59,
-		},
-		{
-			name: 'LUCAS SILVEIRA',
-			meta: 55000,
-			realizado: 18372.6,
-			percentual: 33,
-			metaProjetada: 55117.8,
-			metaProjetadaPercentual: 100,
-		},
-		{
-			name: 'B2B JOYCE',
-			meta: 90000,
-			realizado: 20222.1,
-			percentual: 22,
-			metaProjetada: 60666.3,
-			metaProjetadaPercentual: 67,
-		},
-	];
+interface SalesmanListProps {
+	sellerData: IOverview[];
+}
+
+export default function SalesmanList({ sellerData }: SalesmanListProps) {
 	return (
-		<div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4  gap-5'>
-			{vendedoresData.map((vendedor, index) => (
+		<div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3  gap-5'>
+			{sellerData.map((vendedor, index) => (
 				<Card key={index}>
 					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-xl'>
-							{vendedor.name}
+						<CardTitle className='text-base lowercase text-balance lg:text-xl'>
+							{vendedor.vendedor}
 						</CardTitle>
 						<p className='text-sm text-muted-foreground'>
-							META - {formatCurrency(vendedor.meta)}
+							Meta: {vendedor.meta && formatCurrency(vendedor.meta)}
 						</p>
-						<p className='text-xs text-muted-foreground'>ABERTAS + FECHADAS</p>
 					</CardHeader>
 					<CardContent>
-						<PieStore />
-
-						<div className='flex flex-col gap-2 mt-0'>
-							<span className='font-bold text-sm'>META PROJETADA</span>
-							<div className='flex gap-4'>
-								<span className='font-bold text-sm'>
+						<PieStore
+							companySummary={{
+								meta: vendedor.meta,
+								realizado: vendedor.totalRevenue,
+							}}
+						/>
+						{/* 
+						<div className='flex flex-col gap-2'>
+							<span className='font-semibold text-sm'>META PROJETADA</span>
+							<div className='flex items-center gap-4'>
+								<span className='font-bold text-xl'>
 									{formatCurrency(vendedor.metaProjetada)}
 								</span>
 
 								{vendedor.metaProjetadaPercentual >= 100 ? (
-									<Badge variant={'success'}>
-										<span className='flex items-center gap-2'>
-											{vendedor.metaProjetadaPercentual}% <ArrowUp size={12} />
-										</span>
+									<Badge
+										variant={'success'}
+										className='flex items-center gap-2'>
+										{vendedor.metaProjetadaPercentual}% <ArrowUp size={12} />
 									</Badge>
 								) : (
 									<Badge variant={'destructive'}>
@@ -79,7 +54,7 @@ export default function SalesmanList() {
 									</Badge>
 								)}
 							</div>
-						</div>
+						</div> */}
 					</CardContent>
 				</Card>
 			))}

@@ -57,10 +57,12 @@ export default async function GoalResultPage(props: {
 						<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
 							{storeData.name}
 						</CardTitle>
-						<p className='text-sm'>Meta: {formatCurrency(storeData.meta)}</p>
+						<p className='text-sm text-muted-foreground'>
+							Meta: {formatCurrency(dataGoal.companySummary.meta)}
+						</p>
 					</CardHeader>
 					<CardContent className='scale-110 2xl:scale-125  translate-y-12'>
-						<PieStore />
+						<PieStore companySummary={dataGoal.companySummary} />
 					</CardContent>
 				</Card>
 				<Card className='w-full col-span-2 h-full'>
@@ -85,7 +87,7 @@ export default async function GoalResultPage(props: {
 				</CardContent>
 			</Card>
 
-			<SalesmanList />
+			<SalesmanList sellerData={dataGoal.overview} />
 			<div className='grid grid-cols-1 gap-6 my-5'>
 				<Card>
 					<CardHeader>

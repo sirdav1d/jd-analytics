@@ -28,23 +28,37 @@ const chartConfig = {
 	},
 } satisfies ChartConfig;
 
-export function PieStore() {
-	const chartData = [{ data: 'Janeiro', Atingido: 80, Restante: 40 }];
-	const totaltraffic = chartData[0].Atingido + chartData[0].Restante;
+interface IPieStore {
+	realizado: number;
+	meta: number;
+}
+
+interface IPieStoreProps {
+	companySummary: IPieStore;
+}
+
+export function PieStore({ companySummary }: IPieStoreProps) {
+	const atingido = companySummary.realizado;
+	const restante = companySummary.meta - atingido;
+	const chartData = [
+		{ Atingido: atingido, Restante: restante < 0 ? 0 : restante },
+	];
 
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square w-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square w-full h-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground  '>
 			<RadialBarChart
+				className='mt-5'
 				accessibilityLayer
 				data={chartData}
 				endAngle={180}
+				margin={{ top: 10 }}
 				innerRadius={110}
 				outerRadius={180}>
 				<ChartTooltip
 					cursor={false}
-					content={<ChartTooltipContent />}
+					content={<ChartTooltipContent hideLabel />}
 				/>
 				<PolarRadiusAxis
 					tick={false}
@@ -61,8 +75,8 @@ export function PieStore() {
 										<tspan
 											x={viewBox.cx}
 											y={(viewBox.cy || 0) - 16}
-											className='fill-foreground text-2xl font-bold'>
-											{totaltraffic.toLocaleString('pt-br', {
+											className='fill-foreground text-xl font-bold'>
+											{companySummary.meta.toLocaleString('pt-br', {
 												style: 'currency',
 												currency: 'BRL',
 											})}
@@ -81,20 +95,6 @@ export function PieStore() {
 				</PolarRadiusAxis>
 
 				<RadialBar
-					dataKey='Atingido'
-					stackId='a'
-					cornerRadius={5}
-					fill='var(--color-Atingido)'
-					className='stroke-transparent stroke-2'>
-					<LabelList
-						position='outside'
-						dataKey='Atingido'
-						className='fill-foreground capitalize mix-blend-luminosity font-semibold'
-						fontSize={12}
-						offset={16}
-					/>
-				</RadialBar>
-				<RadialBar
 					dataKey='Restante'
 					fill='var(--color-Restante)'
 					stackId='a'
@@ -103,9 +103,35 @@ export function PieStore() {
 					<LabelList
 						position='outside'
 						dataKey='Restante'
-						className='fill-foreground capitalize mix-blend-luminosity font-semibold'
-						fontSize={12}
-						offset={16}
+						className='fill-foreground capitalize mix-blend-luminosity font-semibold pt-5'
+						fontSize={11}
+						offset={12}
+						formatter={(val: number) =>
+							val.toLocaleString('pt-BR', {
+								style: 'currency',
+								currency: 'brl',
+							})
+						}
+					/>
+				</RadialBar>
+				<RadialBar
+					dataKey='Atingido'
+					stackId='a'
+					cornerRadius={5}
+					fill='var(--color-Atingido)'
+					className='stroke-transparent stroke-2'>
+					<LabelList
+						position='outside'
+						dataKey='Atingido'
+						className='fill-foreground capitalize mix-blend-luminosity font-semibold pt-5'
+						fontSize={11}
+						offset={12}
+						formatter={(val: number) =>
+							val.toLocaleString('pt-BR', {
+								style: 'currency',
+								currency: 'brl',
+							})
+						}
 					/>
 				</RadialBar>
 			</RadialBarChart>

@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 		const diffDays = (endDate.getTime() - startDate.getTime()) / msInDay;
 		const useDaily = diffDays < 30;
 
-		// 1. Overview: vendas por vendedor
+		//OVERVIEW INICIO
 		const rawOverview = await prisma.pedido.groupBy({
 			by: ['userId'],
 			where: {
@@ -37,7 +37,13 @@ export async function GET(req: NextRequest) {
 			_count: { id: true },
 		});
 
-		// build overview with revenue and avgTicket
+		const startMonthRef = new Date(
+			startDate.getFullYear(),
+			startDate.getMonth(),
+			1,
+		);
+		const endMonthRef = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+
 		const overview = await Promise.all(
 			rawOverview.map(async (item) => {
 				// soma de itens por venda do vendedor no período
@@ -51,6 +57,16 @@ export async function GET(req: NextRequest) {
 					},
 				});
 
+				// 1.b) meta
+				const goalAgg = await prisma.salesGoal.aggregate({
+					_sum: { revenue: true },
+					where: {
+						userId: item.userId,
+						goalDateRef: { gte: startMonthRef, lte: endMonthRef },
+					},
+				});
+
+				const meta = goalAgg._sum.revenue ?? 0;
 				const totalRevenue = revenue._sum.totalValue ?? 0;
 				const orderCount = item._count.id;
 				const avgTicket = orderCount ? totalRevenue / orderCount : 0;
@@ -61,14 +77,15 @@ export async function GET(req: NextRequest) {
 				return {
 					vendedor: seller?.name ?? 'Unknown',
 					totalRevenue,
+					meta,
 					orderCount,
 					avgTicket,
 				};
 			}),
 		);
 
-		// sort descending revenue
 		const overResp = overview.sort((a, b) => b.totalRevenue - a.totalRevenue);
+		//OVERVIEW FIM
 
 		// 2. Série temporal
 		let timeSeries: Array<{ period: string; revenue: number }>;
@@ -119,11 +136,37 @@ export async function GET(req: NextRequest) {
 		const sellers = await prisma.user.findMany({ select: { name: true } });
 		const vendors = sellers.map((s) => s.name);
 
+		// 4. Company Summary: Meta total e Receita total
+		const salesGoalSum = await prisma.salesGoal.aggregate({
+			_sum: { revenue: true },
+			where: {
+				goalDateRef: {
+					gte: startDate,
+					lte: endDate,
+				},
+			},
+		});
+
+		const salesSum = await prisma.saleItem.aggregate({
+			_sum: { totalValue: true },
+			where: {
+				sale: {
+					data_pedido: { gte: startDate, lte: endDate },
+				},
+			},
+		});
+
+		const companySummary = {
+			meta: salesGoalSum._sum.revenue ?? 0,
+			realizado: salesSum._sum.totalValue ?? 0,
+		};
+
 		return NextResponse.json(
 			{
 				overview: overResp,
 				timeSeries,
 				vendors,
+				companySummary,
 				ok: true,
 				error: null,
 			},
@@ -139,6 +182,7 @@ export async function GET(req: NextRequest) {
 				timeSeries: null,
 				overview: null,
 				vendors: null,
+				companySummary: null,
 			},
 			{ status: 500 },
 		);
