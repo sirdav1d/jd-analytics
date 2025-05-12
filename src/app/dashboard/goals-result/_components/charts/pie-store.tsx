@@ -101,11 +101,10 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					cornerRadius={5}
 					className='stroke-transparent stroke-2'>
 					<LabelList
-						position='outside'
+						position='right'
 						dataKey='Restante'
-						className='fill-foreground capitalize mix-blend-luminosity font-semibold pt-5'
+						className='fill-foreground drop-shadow-xl font-semibold capitalize mix-blend-luminosity z-10'
 						fontSize={11}
-						offset={12}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',
@@ -123,7 +122,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Atingido'
-						className='fill-foreground capitalize mix-blend-luminosity font-semibold pt-5'
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity'
 						fontSize={11}
 						offset={12}
 						formatter={(val: number) =>

@@ -90,7 +90,7 @@ export function Revenue({ revanueData }: RevenueProps) {
 						position='top'
 						offset={12}
 						className='fill-foreground'
-						fontSize={10}
+						fontSize={isMobile ? 8 : 10}
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Area>

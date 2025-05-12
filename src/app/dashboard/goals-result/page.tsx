@@ -4,11 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import { PieStore } from './_components/charts/pie-store';
 import { Revenue } from './_components/charts/revenue';
-import SellerComparison from './_components/charts/seller-comparison';
+import SellerComparison from './_components/charts/seller-comparison-desktop';
 import SellerRevenue from './_components/charts/seller-revenue';
 import SalesmanList from './_components/salesman-list';
 import Filter from './_components/filter';
 import { FetchGoalTrackingData } from '@/services/data-services/get-goal-tracking';
+import SellerComparisonMobile from './_components/charts/seller-comparison-mobile';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -49,10 +50,10 @@ export default async function GoalResultPage(props: {
 	}
 
 	return (
-		<div className='w-full  mx-auto space-y-5 pb-5'>
+		<div className='w-full mx-auto space-y-5 pb-5'>
 			<Filter />
-			<div className='grid grid-cols-1 xl:grid-cols-3 w-full my-5 gap-4 md:items-center'>
-				<Card className='w-full col-span-1 h-full'>
+			<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
+				<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
 							{storeData.name}
@@ -61,7 +62,7 @@ export default async function GoalResultPage(props: {
 							Meta: {formatCurrency(dataGoal.companySummary.meta)}
 						</p>
 					</CardHeader>
-					<CardContent className='scale-110 2xl:scale-125  translate-y-12'>
+					<CardContent className='2xl:scale-125 w-full translate-y-12'>
 						<PieStore companySummary={dataGoal.companySummary} />
 					</CardContent>
 				</Card>
@@ -76,18 +77,20 @@ export default async function GoalResultPage(props: {
 					</CardContent>
 				</Card>
 			</div>
-			<Card className='w-full '>
-				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
-						Performance por vendedor
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<SellerComparison sellerData={dataGoal.overview} />
-				</CardContent>
-			</Card>
-
-			<SalesmanList sellerData={dataGoal.overview} />
+			<div className='grid grid-cols-1 gap-5'>
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-base text-balance md:text-2xl'>
+							Performance por vendedor
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<SellerComparison sellerData={dataGoal.overview} />
+						<SellerComparisonMobile sellerData={dataGoal.overview} />
+					</CardContent>
+				</Card>
+				<SalesmanList sellerData={dataGoal.overview} />
+			</div>
 			<div className='grid grid-cols-1 gap-6 my-5'>
 				<Card>
 					<CardHeader>

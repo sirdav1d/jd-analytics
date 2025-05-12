@@ -25,7 +25,7 @@ interface SellerComparisonProps {
 	sellerData: IOverview[];
 }
 
-export default function SellerComparison({
+export default function SellerComparisonMobile({
 	sellerData,
 }: SellerComparisonProps) {
 	const chartConfig = {
@@ -50,27 +50,38 @@ export default function SellerComparison({
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-80 w-full'>
+			className='xl:hidden h-[780px] aspect-auto'>
 			<BarChart
 				accessibilityLayer
+				layout='vertical'
 				margin={{
-					top: 28,
-					right: 24,
+					right: 16,
+					left: -24,
 				}}
 				data={chartData}>
-				<CartesianGrid vertical={false} />
-				<XAxis
+				<CartesianGrid
+					horizontal={false}
+					vertical={false}
+				/>
+
+				<YAxis
 					dataKey='name'
-					tickMargin={12}
+					width={120}
+					type='category'
 					tickLine={false}
+					tickMargin={10}
 					style={{ textTransform: 'lowercase' }}
 					axisLine={false}
-					tickFormatter={(value: string) => value.slice(0, 12) + '...'}
+					tickFormatter={(value) => value.slice(0, 10) + '...'}
 				/>
-				<YAxis
+
+				<XAxis
+					dataKey='ticket'
+					type='number'
 					scale={'sqrt'}
 					hide
 				/>
+
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
@@ -78,23 +89,24 @@ export default function SellerComparison({
 				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
 				<Bar
 					radius={4}
+					layout='vertical'
 					dataKey='sales'
 					fill='var(--color-sales)'>
 					<LabelList
-						position='top'
+						position={'right'}
 						offset={12}
-						className='fill-foreground'
+						className='fill-foreground font-semibold'
 						fontSize={12}
 					/>
 				</Bar>
 				<Bar
 					radius={4}
+					layout='vertical'
 					dataKey='ticket'
 					fill='var(--color-ticket)'>
 					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground'
+						position={'insideRight'}
+						className='fill-foreground translate-x-5 font-semibold'
 						fontSize={12}
 						formatter={(value: number) => formatCurrency(value)}
 					/>
