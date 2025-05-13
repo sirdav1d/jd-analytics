@@ -56,7 +56,7 @@ export function DataTable<TData, TValue>({
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [roleFilter, setRoleFilter] = useState<string>('all');
-	const [customerType, setCustomerType] = useState('new');
+	// const [customerType, setCustomerType] = useState('new');
 
 	const table = useReactTable({
 		data,
@@ -118,7 +118,7 @@ export function DataTable<TData, TValue>({
 						<SelectItem value='SELLER'>Vendedor</SelectItem>
 					</SelectContent>
 				</Select>
-				<Select
+				{/* <Select
 					value={customerType}
 					onValueChange={setCustomerType}>
 					<SelectTrigger className='w-full md:w-60'>
@@ -132,7 +132,7 @@ export function DataTable<TData, TValue>({
 							JD Icaraí
 						</SelectItem>
 					</SelectContent>
-				</Select>
+				</Select> */}
 			</div>
 			<div className='rounded-md border'>
 				<Table>

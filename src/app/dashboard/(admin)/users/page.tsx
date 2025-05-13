@@ -14,7 +14,7 @@ export default async function AdminPage() {
 		return <p>Sem dados encontrados...</p>;
 	}
 	return (
-		<div className='w-full mx-auto pb-5'>
+		<div className='w-full mx-auto pb-10'>
 			<DataTable
 				columns={columns}
 				data={data}

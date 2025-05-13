@@ -74,11 +74,7 @@ export async function GET() {
 				return {
 					sellerId: g.userId,
 					sellerName: g.seller.name,
-					monthRef: new Date(
-						g.goalDateRef.getFullYear(),
-						g.goalDateRef.getMonth() + 1,
-						g.goalDateRef.getDate(),
-					),
+					monthRef: startOfMonth,
 					revenue: g.revenue, // meta
 					realized: soldAgg._sum.totalValue ?? 0, // faturamento realizado
 				};
@@ -94,11 +90,7 @@ export async function GET() {
 		const detailedGoals = await Promise.all(
 			allGoals.map(async (g) => {
 				// define início e fim do mês de referência
-				const monthStart = new Date(
-					g.goalDateRef.getFullYear(),
-					g.goalDateRef.getMonth(),
-					1,
-				);
+				const monthStart = startOfMonth;
 				const monthEnd = addMonths(monthStart, 1);
 
 				// agregação do realizado

@@ -30,6 +30,8 @@ import FilterCompany from './_components/filter-company';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
 import { Coins, DatabaseBackup } from 'lucide-react';
+import { DataTable } from './_components/data-table-current-goal/data-table';
+import { columns } from './_components/data-table-current-goal/columns';
 
 export default async function GoalsPage() {
 	const data = await getAllSellers();
@@ -240,52 +242,11 @@ export default async function GoalsPage() {
 							</div>
 
 							{/* <FilterCompany /> */}
-							<div className='rounded-md border mt-10 max-w-full w-full'>
-								<Table title='Meta do mês atual'>
-									<TableHeader>
-										<TableRow className='bg-secondary'>
-											<TableHead className='text-foreground font-semibold'>
-												Data
-											</TableHead>
-											<TableHead className='text-foreground font-semibold'>
-												Nome
-											</TableHead>
-											<TableHead className='text-foreground font-semibold text-nowrap text-center'>
-												Meta de Faturamento
-											</TableHead>
-											<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-												Faturamento realizado
-											</TableHead>
-										</TableRow>
-									</TableHeader>
-									<TableBody className='border rounded-xl'>
-										{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-										{currentGoals.map((item: any, index: number) => {
-											return (
-												<TableRow key={index}>
-													<TableCell className='text-nowrap'>
-														{item.monthRef.slice(0, 7)}
-													</TableCell>
-													<TableCell className='text-nowrap'>
-														{item.sellerName}
-													</TableCell>
-													<TableCell className='text-nowrap text-center'>
-														{item.revenue.toLocaleString('pt-br', {
-															style: 'currency',
-															currency: 'brl',
-														})}
-													</TableCell>
-													<TableCell className='text-nowrap text-center'>
-														{item.realized.toLocaleString('pt-br', {
-															style: 'currency',
-															currency: 'brl',
-														})}
-													</TableCell>
-												</TableRow>
-											);
-										})}
-									</TableBody>
-								</Table>
+							<div className='rounded-md mt-10 max-w-full w-full'>
+								<DataTable
+									columns={columns}
+									data={currentGoals}
+								/>
 							</div>
 							<Separator className='w-full my-10' />
 							<div className='flex flex-col gap-5'>
@@ -342,7 +303,7 @@ export default async function GoalsPage() {
 																					currency: 'brl',
 																				})}
 																			</TableCell>
-																			<TableCell className='text-nowrap'>
+																			<TableCell className='text-nowrap text-center'>
 																				{item.realized.toLocaleString('pt-br', {
 																					style: 'currency',
 																					currency: 'brl',
