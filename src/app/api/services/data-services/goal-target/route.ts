@@ -106,7 +106,7 @@ export async function GET() {
 				return {
 					monthRef: new Date(
 						g.goalDateRef.getFullYear(),
-						g.goalDateRef.getMonth() + 1,
+						g.goalDateRef.getMonth(),
 						1,
 					),
 					sellerId: g.userId,
