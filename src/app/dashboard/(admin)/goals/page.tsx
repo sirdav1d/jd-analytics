@@ -29,7 +29,7 @@ import { FetchGoalTargetData } from '@/services/data-services/get-goal-target';
 import FilterCompany from './_components/filter-company';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
-import { DatabaseBackup } from 'lucide-react';
+import { Coins, DatabaseBackup } from 'lucide-react';
 
 export default async function GoalsPage() {
 	const data = await getAllSellers();
@@ -65,8 +65,6 @@ export default async function GoalsPage() {
 		{ id: 11, month: 'Novembro' },
 		{ id: 12, month: 'Dezembro' },
 	];
-
-	console.log(history);
 
 	return (
 		<div className='w-full  mx-auto pb-4 space-y-4 min-h-screen'>
@@ -174,34 +172,39 @@ export default async function GoalsPage() {
 					</Card>
 				</TabsContent>
 				<TabsContent value='Comercial'>
-					<Card className='mx-auto bg-background border-none '>
-						<CardHeader>
-							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-3xl'>
-								<span>
-									JD Info Centro <br />
-									<span className='text-muted-foreground font-normal text-xl'>
-										{formattedToday}
-									</span>
-								</span>
+					<div className=' bg-background w-full  max-w-full'>
+						<div className='my-5'>
+							<h2 className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-3xl font-semibold'>
+								JD Info Centro
 								{data.data && <ModalFormComercialGoal sellers={data.data} />}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
+							</h2>
+							<p className='text-muted-foreground font-normal text-xl text-center md:text-start'>
+								{formattedToday}
+							</p>
+						</div>
+						<div>
 							<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5'>
 								<Card>
 									<CardHeader>
-										<CardTitle>
-											{newData.companyGoal.toLocaleString('pt-BR', {
+										<CardTitle className='flex justify-between items-center'>
+											{newData.companyGoal.meta.toLocaleString('pt-BR', {
 												style: 'currency',
 												currency: 'brl',
 											})}
+											<Coins size={20} />
 										</CardTitle>
 										<CardDescription>Meta de faturamento atual</CardDescription>
 									</CardHeader>
 								</Card>
 								<Card>
 									<CardHeader>
-										<CardTitle>100</CardTitle>
+										<CardTitle className='flex justify-between items-center'>
+											{newData.companyGoal.realized.toLocaleString('pt-BR', {
+												style: 'currency',
+												currency: 'brl',
+											})}
+											<Coins size={20} />
+										</CardTitle>
 										<CardDescription>
 											Faturamento realizado atual
 										</CardDescription>
@@ -209,7 +212,13 @@ export default async function GoalsPage() {
 								</Card>
 								<Card>
 									<CardHeader>
-										<CardTitle>R$ 1.000,00</CardTitle>
+										<CardTitle className='flex justify-between items-center'>
+											{newData.companyGoal.remaining.toLocaleString('pt-BR', {
+												style: 'currency',
+												currency: 'brl',
+											})}
+											<Coins size={20} />
+										</CardTitle>
 										<CardDescription>
 											Faturamento restante para atingir a meta
 										</CardDescription>
@@ -217,7 +226,14 @@ export default async function GoalsPage() {
 								</Card>
 								<Card>
 									<CardHeader>
-										<CardTitle>R$ 1.000,00</CardTitle>
+										<CardTitle
+											className={`flex justify-between items-center ${newData.companyGoal.predicted < newData.companyGoal.meta ? 'text-destructive' : 'text-foreground'}`}>
+											{newData.companyGoal.predicted.toLocaleString('pt-BR', {
+												style: 'currency',
+												currency: 'brl',
+											})}
+											<Coins size={20} />
+										</CardTitle>
 										<CardDescription>Faturamento previsto</CardDescription>
 									</CardHeader>
 								</Card>
@@ -312,7 +328,6 @@ export default async function GoalsPage() {
 															<TableBody className='border rounded-xl'>
 																{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 																{item.goals.map((item: any, index: number) => {
-																	console.log(item);
 																	return (
 																		<TableRow key={index}>
 																			<TableCell className='text-nowrap'>
@@ -345,8 +360,8 @@ export default async function GoalsPage() {
 									})}
 								</Accordion>
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</div>
 				</TabsContent>
 			</Tabs>
 		</div>

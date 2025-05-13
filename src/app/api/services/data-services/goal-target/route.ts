@@ -16,9 +16,38 @@ export async function GET() {
 				goalDateRef: { gte: startOfMonth, lt: startOfNextMonth },
 			},
 		});
-		const companyGoal = companyAgg._sum.revenue ?? 0;
+		const salesSum = await prisma.saleItem.aggregate({
+			_sum: { totalValue: true },
+			where: {
+				sale: {
+					data_pedido: { gte: startOfMonth, lt: startOfNextMonth },
+				},
+			},
+		});
 
-		// 3. Busca metas individuais do mês atual
+		const meta = companyAgg._sum.revenue ?? 0;
+		const realized = salesSum._sum.totalValue ?? 0;
+
+		// 2. Cálculo do remaining
+		const remaining = Math.max(meta - realized, 0);
+
+		const elapsedDays = now.getDate(); // dia do mês, ex: 15 para 15/05
+		const totalDaysInMonth = new Date(
+			now.getFullYear(),
+			now.getMonth() + 1,
+			0,
+		).getDate();
+		const predicted = elapsedDays
+			? (realized / elapsedDays) * totalDaysInMonth
+			: 0;
+
+		const companyGoal = {
+			meta,
+			realized,
+			remaining,
+			predicted,
+		};
+
 		const goals = await prisma.salesGoal.findMany({
 			where: {
 				goalDateRef: { gte: startOfMonth, lt: startOfNextMonth },
