@@ -48,6 +48,7 @@ export default async function GoalResultPage(props: {
 		console.log(dataGoal.error);
 		return <div>Nenhum dado foi encontrado</div>;
 	}
+	console.log(dataGoal.companySummary.meta);
 
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5'>
@@ -59,7 +60,9 @@ export default async function GoalResultPage(props: {
 							{storeData.name}
 						</CardTitle>
 						<p className='text-sm text-muted-foreground'>
-							Meta: {formatCurrency(dataGoal.companySummary.meta)}
+							Meta:{' '}
+							{dataGoal.companySummary.meta &&
+								formatCurrency(dataGoal.companySummary.meta)}
 						</p>
 					</CardHeader>
 					<CardContent className='2xl:scale-110 w-full translate-y-12'>

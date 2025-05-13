@@ -41,9 +41,7 @@ import {
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { DataTablePagination } from './data-table-pagination';
-
 import { Button } from '@/components/ui/button';
-
 import FormCreate from '../users/_components/form-create';
 
 interface DataTableProps<TData, TValue> {

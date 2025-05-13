@@ -17,18 +17,19 @@ import {
 } from '@/components/ui/table';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-// import {
-// 	Accordion,
-// 	AccordionContent,
-// 	AccordionItem,
-// 	AccordionTrigger,
-// } from '@/components/ui/accordion';
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@/components/ui/accordion';
 import getAllSellers from '@/actions/user/get-all';
 import { Separator } from '@/components/ui/separator';
 import { FetchGoalTargetData } from '@/services/data-services/get-goal-target';
 import FilterCompany from './_components/filter-company';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
+import { DatabaseBackup } from 'lucide-react';
 
 export default async function GoalsPage() {
 	const data = await getAllSellers();
@@ -50,12 +51,27 @@ export default async function GoalsPage() {
 	const currentGoals = newData.currentGoals;
 	const history = newData.history;
 
+	const months = [
+		{ id: 1, month: 'Janeiro' },
+		{ id: 2, month: 'Fevereiro' },
+		{ id: 3, month: 'Março' },
+		{ id: 4, month: 'Abril' },
+		{ id: 5, month: 'Maio' },
+		{ id: 6, month: 'Junho' },
+		{ id: 7, month: 'Julho' },
+		{ id: 8, month: 'Agosto' },
+		{ id: 9, month: 'Setembro' },
+		{ id: 10, month: 'Outubro' },
+		{ id: 11, month: 'Novembro' },
+		{ id: 12, month: 'Dezembro' },
+	];
+
+	console.log(history);
+
 	return (
-		<div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
-			<Tabs
-				defaultValue='Marketing'
-				className='w-full'>
-				<TabsList className='grid w-full grid-cols-2'>
+		<div className='w-full  mx-auto pb-4 space-y-4 min-h-screen'>
+			<Tabs defaultValue='Marketing'>
+				<TabsList className='grid grid-cols-2'>
 					<TabsTrigger value='Marketing'>Marketing</TabsTrigger>
 					<TabsTrigger value='Comercial'>Comercial</TabsTrigger>
 				</TabsList>
@@ -158,7 +174,7 @@ export default async function GoalsPage() {
 					</Card>
 				</TabsContent>
 				<TabsContent value='Comercial'>
-					<Card className='w-full md:max-w-full mx-auto bg-background border-none '>
+					<Card className='mx-auto bg-background border-none '>
 						<CardHeader>
 							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-3xl'>
 								<span>
@@ -171,7 +187,7 @@ export default async function GoalsPage() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<div className='grid grid-cols-1 md:grid-cols-3 gap-10'>
+							<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5'>
 								<Card>
 									<CardHeader>
 										<CardTitle>
@@ -187,7 +203,7 @@ export default async function GoalsPage() {
 									<CardHeader>
 										<CardTitle>100</CardTitle>
 										<CardDescription>
-											Média móvel de vendas atual
+											Faturamento realizado atual
 										</CardDescription>
 									</CardHeader>
 								</Card>
@@ -195,14 +211,20 @@ export default async function GoalsPage() {
 									<CardHeader>
 										<CardTitle>R$ 1.000,00</CardTitle>
 										<CardDescription>
-											Ticket médio previsto atual
+											Faturamento restante para atingir a meta
 										</CardDescription>
+									</CardHeader>
+								</Card>
+								<Card>
+									<CardHeader>
+										<CardTitle>R$ 1.000,00</CardTitle>
+										<CardDescription>Faturamento previsto</CardDescription>
 									</CardHeader>
 								</Card>
 							</div>
 
 							{/* <FilterCompany /> */}
-							<div className='rounded-md border mt-10'>
+							<div className='rounded-md border mt-10 max-w-full w-full'>
 								<Table title='Meta do mês atual'>
 									<TableHeader>
 										<TableRow className='bg-secondary'>
@@ -212,14 +234,11 @@ export default async function GoalsPage() {
 											<TableHead className='text-foreground font-semibold'>
 												Nome
 											</TableHead>
-											<TableHead className='text-foreground font-semibold'>
+											<TableHead className='text-foreground font-semibold text-nowrap text-center'>
 												Meta de Faturamento
 											</TableHead>
 											<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-												Média Móvel de Vendas
-											</TableHead>
-											<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-												Ticket Médio Previsto
+												Faturamento realizado
 											</TableHead>
 										</TableRow>
 									</TableHeader>
@@ -234,8 +253,14 @@ export default async function GoalsPage() {
 													<TableCell className='text-nowrap'>
 														{item.sellerName}
 													</TableCell>
-													<TableCell className='text-nowrap'>
+													<TableCell className='text-nowrap text-center'>
 														{item.revenue.toLocaleString('pt-br', {
+															style: 'currency',
+															currency: 'brl',
+														})}
+													</TableCell>
+													<TableCell className='text-nowrap text-center'>
+														{item.realized.toLocaleString('pt-br', {
 															style: 'currency',
 															currency: 'brl',
 														})}
@@ -246,58 +271,79 @@ export default async function GoalsPage() {
 									</TableBody>
 								</Table>
 							</div>
-							<div className='flex flex-col gap-10 mt-20'>
-								{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-								{history.map((item: any, index: number) => {
-									return (
-										index < 4 && (
-											<Table
-												key={index}
-												title={`Meta do mês ${item.month}`}>
-												<TableHeader>
-													<TableRow className='bg-secondary'>
-														<TableHead className='text-foreground font-semibold'>
-															Data
-														</TableHead>
-														<TableHead className='text-foreground font-semibold'>
-															Nome
-														</TableHead>
-														<TableHead className='text-foreground font-semibold'>
-															Meta de Faturamento
-														</TableHead>
-														<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-															Média Móvel de Vendas
-														</TableHead>
-														<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-															Ticket Médio Previsto
-														</TableHead>
-													</TableRow>
-												</TableHeader>
-												<TableBody className='border rounded-xl'>
-													{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-													{item.goals.map((item: any, index: number) => {
-														return (
-															<TableRow key={index}>
-																<TableCell className='text-nowrap'>
-																	{item.month}
-																</TableCell>
-																<TableCell className='text-nowrap'>
-																	{item.sellerName}
-																</TableCell>
-																<TableCell className='text-nowrap'>
-																	{item.revenue.toLocaleString('pt-br', {
-																		style: 'currency',
-																		currency: 'brl',
-																	})}
-																</TableCell>
-															</TableRow>
-														);
-													})}
-												</TableBody>
-											</Table>
-										)
-									);
-								})}
+							<Separator className='w-full my-10' />
+							<div className='flex flex-col gap-5'>
+								<h2 className='font-bold text-xl flex items-center gap-2'>
+									<DatabaseBackup size={20} />
+									Histórico de metas
+								</h2>
+								<Accordion
+									type='single'
+									collapsible
+									className='w-full'>
+									{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+									{history.map((item: any, index: number) => {
+										return (
+											index < history.length - 1 && (
+												<AccordionItem
+													key={index}
+													value={`item-${index}`}>
+													<AccordionTrigger>
+														{months[index].month}
+													</AccordionTrigger>
+													<AccordionContent>
+														<Table title={`Meta do mês ${item.month}`}>
+															<TableHeader>
+																<TableRow className='bg-secondary'>
+																	<TableHead className='text-foreground font-semibold'>
+																		Data
+																	</TableHead>
+																	<TableHead className='text-foreground font-semibold text-nowrap'>
+																		Nome
+																	</TableHead>
+																	<TableHead className='text-foreground font-semibold text-nowrap'>
+																		Meta de Faturamento
+																	</TableHead>
+																	<TableHead className='text-nowrap text-center text-foreground font-semibold'>
+																		Faturamento realizado
+																	</TableHead>
+																</TableRow>
+															</TableHeader>
+															<TableBody className='border rounded-xl'>
+																{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+																{item.goals.map((item: any, index: number) => {
+																	console.log(item);
+																	return (
+																		<TableRow key={index}>
+																			<TableCell className='text-nowrap'>
+																				{item.month}
+																			</TableCell>
+																			<TableCell className='text-nowrap'>
+																				{item.sellerName}
+																			</TableCell>
+																			<TableCell className='text-nowrap'>
+																				{item.revenue.toLocaleString('pt-br', {
+																					style: 'currency',
+																					currency: 'brl',
+																				})}
+																			</TableCell>
+																			<TableCell className='text-nowrap'>
+																				{item.realized.toLocaleString('pt-br', {
+																					style: 'currency',
+																					currency: 'brl',
+																				})}
+																			</TableCell>
+																		</TableRow>
+																	);
+																})}
+															</TableBody>
+														</Table>
+													</AccordionContent>
+												</AccordionItem>
+											)
+										);
+									})}
+								</Accordion>
 							</div>
 						</CardContent>
 					</Card>

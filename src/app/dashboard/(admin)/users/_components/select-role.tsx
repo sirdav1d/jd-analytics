@@ -27,7 +27,7 @@ export default function SelectRole({ user }: { user: Partial<User> }) {
 			if (!response.ok) {
 				toast.error('Algo deu errado', { description: String(response.error) });
 			} else {
-				toast.success('Usuário cadastrado com sucesso');
+				toast.success('Usuário atualizado com sucesso');
 			}
 		});
 	}
