@@ -56,8 +56,9 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 		if (!response.ok) {
 			toast.error('Algo deu errado', { description: String(response.error) });
 		} else {
+			const btn = document.getElementById('closeUpUser');
+			btn?.click();
 			toast.success('Usuário atualizado com sucesso');
-			form.reset();
 		}
 	}
 	return (
@@ -138,7 +139,9 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 					)}
 				/>
 				<div className='mt-5 flex gap-4 items-center justify-end'>
-					<DialogClose asChild>
+					<DialogClose
+						id='closeUpUser'
+						asChild>
 						<Button
 							type='button'
 							variant={'outline'}>

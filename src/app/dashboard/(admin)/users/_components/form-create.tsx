@@ -63,8 +63,9 @@ export default function FormCreate() {
 		if (!response.ok) {
 			toast.error('Algo deu errado', { description: String(response.error) });
 		} else {
+			const btn = document.getElementById('closeCreateUser');
+			btn?.click();
 			toast.success('Usuário cadastrado com sucesso');
-			form.reset();
 		}
 	}
 	return (
@@ -172,7 +173,9 @@ export default function FormCreate() {
 					)}
 				/>
 				<div className='mt-5 flex gap-4 items-center justify-end'>
-					<DialogClose asChild>
+					<DialogClose
+						id='closeCreateUser'
+						asChild>
 						<Button
 							type='button'
 							variant={'outline'}>

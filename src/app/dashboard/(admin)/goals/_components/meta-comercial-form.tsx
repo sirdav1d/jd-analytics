@@ -28,6 +28,7 @@ import {
 import { CreateSalesGoalAction } from '@/actions/goals/create';
 import { useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
+import { DialogClose } from '@/components/ui/dialog';
 
 interface IMetaComercialForm {
 	sellers: { name: string; id: string }[];
@@ -80,10 +81,11 @@ export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
 				console.log(resp.error);
 				toast.error('Algo deu errado, tente novamente');
 			} else {
+				const btn = document.getElementById('closeComercialCreate');
+				btn?.click();
 				toast.success(
 					`Meta atualizada com sucesso: ${resp.goal?.revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'brl' })}`,
 				);
-				form.reset();
 			}
 		});
 	}
@@ -199,13 +201,20 @@ export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
 						)}
 					/>
 				</div>
-				<Button
-					disabled={isPending}
-					type='submit'
-					className='w-full mt-5'>
-					Definir Meta Comercial{' '}
-					{isPending && <Loader2 className='animate-spin' />}
-				</Button>
+				<div className='flex items-center justify-end gap-5 mt-5'>
+					<DialogClose
+						id='closeComercialCreate'
+						asChild>
+						<Button variant={'outline'}>Voltar</Button>
+					</DialogClose>
+					<Button
+						disabled={isPending}
+						type='submit'
+						className=''>
+						Definir Meta Comercial{' '}
+						{isPending && <Loader2 className='animate-spin' />}
+					</Button>
+				</div>
 			</form>
 		</Form>
 	);
