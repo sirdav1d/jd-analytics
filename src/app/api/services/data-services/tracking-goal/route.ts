@@ -1,7 +1,6 @@
 /** @format */
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
-import { addMonths } from 'date-fns';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -38,13 +37,6 @@ export async function GET(req: NextRequest) {
 			_count: { id: true },
 		});
 
-		const startMonthRef = new Date(
-			startDate.getFullYear(),
-			startDate.getMonth(),
-			1,
-		);
-		const endMonthRef = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-
 		const overview = await Promise.all(
 			rawOverview.map(async (item) => {
 				const seller = await prisma.user.findUnique({
@@ -69,7 +61,7 @@ export async function GET(req: NextRequest) {
 					_sum: { revenue: true },
 					where: {
 						userId: item.userId,
-						goalDateRef: { gte: startMonthRef, lte: endMonthRef },
+						goalDateRef: { gte: startDate, lte: endDate },
 					},
 				});
 				const meta = goalAgg._sum.revenue ?? 0;
@@ -137,19 +129,12 @@ export async function GET(req: NextRequest) {
 			);
 		}
 
-		const startMonthRefCompany = new Date(
-			startDate.getFullYear(),
-			startDate.getMonth(),
-			1,
-		);
-		const nextMonthRef = addMonths(startMonthRefCompany, 1);
-
 		const salesGoalSum = await prisma.salesGoal.aggregate({
 			_sum: { revenue: true },
 			where: {
 				goalDateRef: {
-					gte: startMonthRef, // >= 1º dia do mês selecionado
-					lt: nextMonthRef, // < 1º dia do mês seguinte
+					gte: startDate, // >= 1º dia do mês selecionado
+					lt: endDate, // < 1º dia do mês seguinte
 				},
 			},
 		});
