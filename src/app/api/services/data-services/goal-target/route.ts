@@ -7,7 +7,14 @@ import { NextResponse } from 'next/server';
 export async function GET() {
 	try {
 		const now = new Date();
-		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+		const startOfMonth = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			1,
+			0,
+			0,
+			0,
+		);
 		const startOfNextMonth = addMonths(startOfMonth, 1);
 
 		const companyAgg = await prisma.salesGoal.aggregate({
@@ -89,10 +96,16 @@ export async function GET() {
 
 		const detailedGoals = await Promise.all(
 			allGoals.map(async (g) => {
-				// define início e fim do mês de referência
-				const monthStart = startOfMonth;
+				const monthStart = new Date(
+					g.goalDateRef.getFullYear(),
+					g.goalDateRef.getMonth() + 1,
+					1,
+					0,
+					0,
+					0,
+				);
+				// 2) Próximo mês
 				const monthEnd = addMonths(monthStart, 1);
-
 				// agregação do realizado
 				const soldAgg = await prisma.saleItem.aggregate({
 					_sum: { totalValue: true },
@@ -104,11 +117,7 @@ export async function GET() {
 					},
 				});
 				return {
-					monthRef: new Date(
-						g.goalDateRef.getFullYear(),
-						g.goalDateRef.getMonth(),
-						1,
-					),
+					monthRef: monthStart,
 					sellerId: g.userId,
 					sellerName: g.seller.name,
 					revenue: g.revenue, // meta

@@ -42,7 +42,7 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 			name: user.name ?? '',
 			email: user.email ?? '',
 			role: user.role ?? 'MANAGER',
-			password: user.password ?? '',
+			password: '',
 		},
 	});
 
