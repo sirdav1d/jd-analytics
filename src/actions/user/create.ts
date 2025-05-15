@@ -7,7 +7,6 @@ import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutur
 import { $Enums } from '@prisma/client';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
 import bcrypt from 'bcrypt';
-import { randomUUID } from 'crypto';
 import { revalidateTag } from 'next/cache';
 
 export async function createUserAction(
@@ -15,6 +14,7 @@ export async function createUserAction(
 	email: string,
 	role: $Enums.Role,
 	organizationName: string,
+	password: string,
 ) {
 	try {
 		const org = await prisma.organization.findFirst({
@@ -23,7 +23,7 @@ export async function createUserAction(
 		if (!org) {
 			return { error: 'Organização não encontrada', ok: false, user: null };
 		}
-		const password = randomUUID();
+
 		const hashPassword = await bcrypt.hash(password, 10);
 		const user = await prisma.user.create({
 			data: {

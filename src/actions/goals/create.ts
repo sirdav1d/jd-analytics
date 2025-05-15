@@ -3,6 +3,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { revalidateTag } from 'next/cache';
 
 interface ICreateSalesGoalAction {
 	userId: string;
@@ -31,6 +32,9 @@ export async function CreateSalesGoalAction({
 				goal: null,
 			};
 		}
+
+		revalidateTag('tracking-goal');
+		revalidateTag('goal');
 
 		return {
 			error: null,

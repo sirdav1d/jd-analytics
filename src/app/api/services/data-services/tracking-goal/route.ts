@@ -47,7 +47,14 @@ export async function GET(req: NextRequest) {
 
 		const overview = await Promise.all(
 			rawOverview.map(async (item) => {
-				// soma de itens por venda do vendedor no período
+				const seller = await prisma.user.findUnique({
+					where: { id: item.userId },
+					select: { name: true, role: true },
+				});
+
+				// Filtra apenas vendedores
+				if (!seller || seller.role !== 'SELLER') return null;
+
 				const revenue = await prisma.saleItem.aggregate({
 					_sum: { totalValue: true },
 					where: {
@@ -58,7 +65,6 @@ export async function GET(req: NextRequest) {
 					},
 				});
 
-				// 1.b) meta
 				const goalAgg = await prisma.salesGoal.aggregate({
 					_sum: { revenue: true },
 					where: {
@@ -66,15 +72,11 @@ export async function GET(req: NextRequest) {
 						goalDateRef: { gte: startMonthRef, lte: endMonthRef },
 					},
 				});
-
 				const meta = goalAgg._sum.revenue ?? 0;
 				const totalRevenue = revenue._sum.totalValue ?? 0;
 				const orderCount = item._count.id;
 				const avgTicket = orderCount ? totalRevenue / orderCount : 0;
-				const seller = await prisma.user.findUnique({
-					where: { id: item.userId },
-					select: { name: true },
-				});
+
 				return {
 					vendedor: seller?.name ?? 'Unknown',
 					totalRevenue,
@@ -85,7 +87,9 @@ export async function GET(req: NextRequest) {
 			}),
 		);
 
-		const overResp = overview.sort((a, b) => b.totalRevenue - a.totalRevenue);
+		const overResp = overview
+			.filter(Boolean)
+			.sort((a, b) => b!.totalRevenue - a!.totalRevenue);
 		//OVERVIEW FIM
 
 		// 2. Série temporal
@@ -133,12 +137,6 @@ export async function GET(req: NextRequest) {
 			);
 		}
 
-		// 3. Lista de vendedores
-		const sellers = await prisma.user.findMany({ select: { name: true } });
-		const vendors = sellers.map((s) => s.name);
-
-		// 4. Company Summary: Meta total e Receita total
-
 		const startMonthRefCompany = new Date(
 			startDate.getFullYear(),
 			startDate.getMonth(),
@@ -174,7 +172,6 @@ export async function GET(req: NextRequest) {
 			{
 				overview: overResp,
 				timeSeries,
-				vendors,
 				companySummary,
 				ok: true,
 				error: null,

@@ -32,6 +32,8 @@ import ModalFormGoal from './_components/modal-form-goal';
 import { Coins, DatabaseBackup } from 'lucide-react';
 import { DataTable } from './_components/data-table-current-goal/data-table';
 import { columns } from './_components/data-table-current-goal/columns';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function GoalsPage() {
 	const data = await getAllSellers();
@@ -185,69 +187,86 @@ export default async function GoalsPage() {
 							</p>
 						</div>
 						<div>
-							<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5'>
-								<Card>
-									<CardHeader>
-										<CardTitle className='flex justify-between items-center'>
-											{newData.companyGoal.meta.toLocaleString('pt-BR', {
-												style: 'currency',
-												currency: 'brl',
-											})}
-											<Coins size={20} />
-										</CardTitle>
-										<CardDescription>Meta de faturamento atual</CardDescription>
-									</CardHeader>
-								</Card>
-								<Card>
-									<CardHeader>
-										<CardTitle className='flex justify-between items-center'>
-											{newData.companyGoal.realized.toLocaleString('pt-BR', {
-												style: 'currency',
-												currency: 'brl',
-											})}
-											<Coins size={20} />
-										</CardTitle>
-										<CardDescription>
-											Faturamento realizado atual
-										</CardDescription>
-									</CardHeader>
-								</Card>
-								<Card>
-									<CardHeader>
-										<CardTitle className='flex justify-between items-center'>
-											{newData.companyGoal.remaining.toLocaleString('pt-BR', {
-												style: 'currency',
-												currency: 'brl',
-											})}
-											<Coins size={20} />
-										</CardTitle>
-										<CardDescription>
-											Faturamento restante para atingir a meta
-										</CardDescription>
-									</CardHeader>
-								</Card>
-								<Card>
-									<CardHeader>
-										<CardTitle
-											className={`flex justify-between items-center ${newData.companyGoal.predicted < newData.companyGoal.meta ? 'text-destructive' : 'text-foreground'}`}>
-											{newData.companyGoal.predicted.toLocaleString('pt-BR', {
-												style: 'currency',
-												currency: 'brl',
-											})}
-											<Coins size={20} />
-										</CardTitle>
-										<CardDescription>Faturamento previsto</CardDescription>
-									</CardHeader>
-								</Card>
-							</div>
-
-							{/* <FilterCompany /> */}
-							<div className='rounded-md mt-10 max-w-full w-full'>
-								<DataTable
-									columns={columns}
-									data={currentGoals}
-								/>
-							</div>
+							<Suspense
+								fallback={
+									<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5'>
+										<Skeleton className='w-full h-24' />
+										<Skeleton className='w-full h-24' />
+										<Skeleton className='w-full h-24' />
+										<Skeleton className='w-full h-24' />
+									</div>
+								}>
+								<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5'>
+									<Card>
+										<CardHeader>
+											<CardTitle className='flex justify-between items-center'>
+												{newData.companyGoal.meta.toLocaleString('pt-BR', {
+													style: 'currency',
+													currency: 'brl',
+												})}
+												<Coins size={20} />
+											</CardTitle>
+											<CardDescription>
+												Meta de faturamento atual
+											</CardDescription>
+										</CardHeader>
+									</Card>
+									<Card>
+										<CardHeader>
+											<CardTitle className='flex justify-between items-center'>
+												{newData.companyGoal.realized.toLocaleString('pt-BR', {
+													style: 'currency',
+													currency: 'brl',
+												})}
+												<Coins size={20} />
+											</CardTitle>
+											<CardDescription>
+												Faturamento realizado atual
+											</CardDescription>
+										</CardHeader>
+									</Card>
+									<Card>
+										<CardHeader>
+											<CardTitle className='flex justify-between items-center'>
+												{newData.companyGoal.remaining.toLocaleString('pt-BR', {
+													style: 'currency',
+													currency: 'brl',
+												})}
+												<Coins size={20} />
+											</CardTitle>
+											<CardDescription>
+												Faturamento restante para atingir a meta
+											</CardDescription>
+										</CardHeader>
+									</Card>
+									<Card>
+										<CardHeader>
+											<CardTitle
+												className={`flex justify-between items-center ${newData.companyGoal.predicted < newData.companyGoal.meta ? 'text-destructive' : 'text-foreground'}`}>
+												{newData.companyGoal.predicted.toLocaleString('pt-BR', {
+													style: 'currency',
+													currency: 'brl',
+												})}
+												<Coins size={20} />
+											</CardTitle>
+											<CardDescription>Faturamento previsto</CardDescription>
+										</CardHeader>
+									</Card>
+								</div>
+							</Suspense>
+							<Suspense
+								fallback={
+									<div className='rounded-md mt-10 max-w-full w-full'>
+										<Skeleton className='w-full h-60' />
+									</div>
+								}>
+								<div className='rounded-md mt-10 max-w-full w-full'>
+									<DataTable
+										columns={columns}
+										data={currentGoals}
+									/>
+								</div>
+							</Suspense>
 							<Separator className='w-full my-10' />
 							<div className='flex flex-col gap-5'>
 								<h2 className='font-bold text-xl flex items-center gap-2'>

@@ -1,13 +1,12 @@
 /** @format */
 
 import { Toaster } from '@/components/ui/sonner';
+import { ReactQueryProvider } from '@/providers/react-query-provider';
 import AuthSessionProvider from '@/providers/session-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
-import { ReactQueryProvider } from '@/providers/react-query-provider';
-import { unstable_ViewTransition as ViewTransition } from 'react';
 
 const montserrat = Montserrat({
 	weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -27,23 +26,21 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<ViewTransition>
-			<html
-				lang='pt-BR'
-				suppressHydrationWarning>
-				<body className={`${montserrat.className} antialiased`}>
-					<ReactQueryProvider>
-						<ThemeProvider
-							attribute={'class'}
-							defaultTheme='dark'
-							enableSystem
-							disableTransitionOnChange>
-							<AuthSessionProvider>{children}</AuthSessionProvider>
-							<Toaster />
-						</ThemeProvider>
-					</ReactQueryProvider>
-				</body>
-			</html>
-		</ViewTransition>
+		<html
+			lang='pt-BR'
+			suppressHydrationWarning>
+			<body className={`${montserrat.className} antialiased`}>
+				<ReactQueryProvider>
+					<ThemeProvider
+						attribute={'class'}
+						defaultTheme='dark'
+						enableSystem
+						disableTransitionOnChange>
+						<AuthSessionProvider>{children}</AuthSessionProvider>
+						<Toaster />
+					</ThemeProvider>
+				</ReactQueryProvider>
+			</body>
+		</html>
 	);
 }

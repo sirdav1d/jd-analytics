@@ -6,7 +6,7 @@ export async function FetchGoalTargetData() {
 		`${baseURL}/api/services/data-services/goal-target`,
 		{
 			method: 'GET',
-			next: { revalidate: 30 },
+			next: { revalidate: 30, tags:['goal'] },
 		},
 	);
 

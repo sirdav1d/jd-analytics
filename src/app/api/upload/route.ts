@@ -4,6 +4,7 @@ import { parseFormData, validateCSV } from '@/utils/csv/process';
 import fs from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
 import { parse as parseCSV } from 'papaparse';
+import bcrypt from 'bcryptjs';
 
 // Desabilita o bodyParser padrão do Next.js
 export const config = {
@@ -80,6 +81,49 @@ export async function POST(req: NextRequest) {
 
 		const rows: ParsedRow[] = parsed.data.map(normalizeRow);
 
+		async function upsertSeller(fullName: string) {
+			const domain = 'infojd.com.br';
+			const plainPassword = 'Senha@123';
+			const saltRounds = 10;
+			const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+			const parts = fullName.trim().split(/\s+/);
+			const first = parts[0];
+
+			const normalize = (s: string) =>
+				s
+					.normalize('NFD')
+					.replace(/[\u0300-\u036f]/g, '')
+					.toLowerCase();
+
+			const base = normalize(first);
+			let emailCandidate = `${base}@${domain}`;
+			let idx = 1;
+			while (
+				await prisma.user.findUnique({ where: { email: emailCandidate } })
+			) {
+				if (idx < parts.length) {
+					const nextPart = normalize(parts[idx]);
+					emailCandidate = `${base}${nextPart}@${domain}`;
+				} else {
+					emailCandidate = `${base}${idx}@${domain}`;
+				}
+				idx++;
+			}
+
+			const seller = await prisma.user.upsert({
+				where: { email: emailCandidate }, // Replace with a valid unique field
+				update: {},
+				create: {
+					name: fullName,
+					email: emailCandidate,
+					role: 'SELLER',
+					password: hashedPassword, // Replace with a secure default password or logic
+					organization: { connect: { id: process.env.JD_CENTRO_ID } }, // Replace with valid organization logic
+				},
+			});
+			return seller;
+		}
+
 		for (const row of rows) {
 			// Extração de campos
 			console.log('row[0]', row['Data do Lançamento']);
@@ -90,7 +134,6 @@ export async function POST(req: NextRequest) {
 			const origin = row['Origem'];
 			const cancelled = row['Cancelada'].toLowerCase() === 'sim';
 
-			console.log('launchDate', launchDate);
 			// Cliente
 			const clienteCode = parseInt(row['Código Cliente'], 10);
 			const clienteName = row['Nome Cliente'];
@@ -104,19 +147,10 @@ export async function POST(req: NextRequest) {
 
 			// Seller
 			const sellerParts = row['Vendedor'].split(' - ');
-			const sellerName =
-				sellerParts.length > 1 ? sellerParts[1].trim() : row['Vendedor'];
-			const seller = await prisma.user.upsert({
-				where: { email: `${sellerName}@infojd.com` }, // Replace with a valid unique field
-				update: {},
-				create: {
-					name: sellerName,
-					email: `${sellerName}@infojd.com`,
-					role: 'SELLER',
-					password: 'Senha@123', // Replace with a secure default password or logic
-					organization: { connect: { id: process.env.JD_CENTRO_ID } }, // Replace with valid organization logic
-				},
-			});
+			const fullName =
+				sellerParts.length > 1 ? sellerParts[1].trim() : row['Vendedor'].trim();
+
+			const seller = await upsertSeller(fullName);
 
 			// Product
 			const prodCode = parseInt(row['Código Produto'], 10);

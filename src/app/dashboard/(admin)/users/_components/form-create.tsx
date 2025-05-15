@@ -32,6 +32,9 @@ const formSchema = z.object({
 	email: z.string().email(),
 	role: z.enum(['ADMIN', 'MANAGER', 'SELLER']),
 	organizationName: z.enum(['JD Centro', 'JD Icaraí', 'JSEG']),
+	password: z
+		.string()
+		.min(6, { message: 'A senha deve ter no mínimo 6 dígitos' }),
 });
 
 export default function FormCreate() {
@@ -42,18 +45,20 @@ export default function FormCreate() {
 			email: '',
 			role: 'MANAGER',
 			organizationName: 'JD Centro',
+			password: '',
 		},
 	});
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
-		const { name, email, role, organizationName } = values;
+		const { name, email, role, organizationName, password } = values;
 		const response = await createUserAction(
 			name,
 			email,
 			role,
 			organizationName,
+			password,
 		);
 		if (!response.ok) {
 			toast.error('Algo deu errado', { description: String(response.error) });
@@ -146,6 +151,22 @@ export default function FormCreate() {
 									<SelectItem value='SELLER'>Vendedor</SelectItem>
 								</SelectContent>
 							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='password'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Senha</FormLabel>
+							<FormControl>
+								<Input
+									placeholder='senha do usuário'
+									{...field}
+								/>
+							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}

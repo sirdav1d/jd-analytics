@@ -68,7 +68,7 @@ export default async function MarketingPage(props: {
 			<Separator className='w-full mt-10' />
 			<Suspense
 				fallback={
-					<div>
+					<div className='flex flex-col gap-5 mt-10 mb-5'>
 						<div className='flex flex-col lg:flex-row gap-5'>
 							<Skeleton className='h-12 w-[240px]'></Skeleton>
 							<Skeleton className='h-12 w-[240px]'></Skeleton>
@@ -85,7 +85,6 @@ export default async function MarketingPage(props: {
 							<Skeleton className='h-28 w-full'></Skeleton>
 						</div>
 						<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
-							<Skeleton className='h-28 w-full'></Skeleton>
 							<Skeleton className='h-28 w-full'></Skeleton>
 							<Skeleton className='h-28 w-full'></Skeleton>
 							<Skeleton className='h-28 w-full'></Skeleton>

@@ -32,6 +32,7 @@ const formSchema = z.object({
 	name: z.string().min(2).max(50).optional(),
 	email: z.string().email().optional(),
 	role: z.enum(['ADMIN', 'MANAGER', 'SELLER']).optional(),
+	password: z.string().optional(),
 });
 
 export default function FormUpdate({ user }: { user: Partial<User> }) {
@@ -41,20 +42,22 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 			name: user.name ?? '',
 			email: user.email ?? '',
 			role: user.role ?? 'MANAGER',
+			password: user.password ?? '',
 		},
 	});
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
-		const { name, email, role } = values;
-		const response = await updateUserAction({ userUp: { name, email, role } });
+		const { name, email, role, password } = values;
+		const response = await updateUserAction({
+			userUp: { name, email, role, password },
+		});
 		if (!response.ok) {
 			toast.error('Algo deu errado', { description: String(response.error) });
 		} else {
 			toast.success('Usuário atualizado com sucesso');
 			form.reset();
-			window.location.reload();
 		}
 	}
 	return (
@@ -114,6 +117,22 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 									<SelectItem value='SELLER'>Vendedor</SelectItem>
 								</SelectContent>
 							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='password'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Senha</FormLabel>
+							<FormControl>
+								<Input
+									placeholder='Senha do usuário'
+									{...field}
+								/>
+							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}

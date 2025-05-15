@@ -10,6 +10,8 @@ import SalesmanList from './_components/salesman-list';
 import Filter from './_components/filter';
 import { FetchGoalTrackingData } from '@/services/data-services/get-goal-tracking';
 import SellerComparisonMobile from './_components/charts/seller-comparison-mobile';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -48,64 +50,92 @@ export default async function GoalResultPage(props: {
 		console.log(dataGoal.error);
 		return <div>Nenhum dado foi encontrado</div>;
 	}
-	console.log(dataGoal.companySummary.meta);
+
+	console.log(dataGoal);
 
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5'>
 			<Filter />
-			<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
-				<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
-							{storeData.name}
-						</CardTitle>
-						<p className='text-sm text-muted-foreground'>
-							Meta:{' '}
-							{dataGoal.companySummary.meta &&
-								formatCurrency(dataGoal.companySummary.meta)}
-						</p>
-					</CardHeader>
-					<CardContent className='2xl:scale-110 w-full translate-y-12'>
-						<PieStore companySummary={dataGoal.companySummary} />
-					</CardContent>
-				</Card>
-				<Card className='w-full col-span-2 h-full'>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento por vendedor
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SellerRevenue sellerData={dataGoal.overview} />
-					</CardContent>
-				</Card>
-			</div>
-			<div className='grid grid-cols-1 gap-5'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Performance por vendedor
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SellerComparison sellerData={dataGoal.overview} />
-						<SellerComparisonMobile sellerData={dataGoal.overview} />
-					</CardContent>
-				</Card>
-				<SalesmanList sellerData={dataGoal.overview} />
-			</div>
-			<div className='grid grid-cols-1 gap-6 my-5'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento ao Longo do Tempo
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Revenue revanueData={dataGoal.timeSeries} />
-					</CardContent>
-				</Card>
-			</div>
+			<Suspense
+				fallback={
+					<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
+						<Skeleton className='col-span-full aspect-auto xl:col-span-1 h-80' />
+						<Skeleton className='w-full col-span-2 h-80' />
+					</div>
+				}>
+				<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
+					<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
+								{storeData.name}
+							</CardTitle>
+							<p className='text-sm text-muted-foreground'>
+								Meta:{' '}
+								{dataGoal.companySummary.meta &&
+									formatCurrency(dataGoal.companySummary.meta)}
+							</p>
+						</CardHeader>
+						<CardContent className='2xl:scale-110 w-full translate-y-12'>
+							<PieStore companySummary={dataGoal.companySummary} />
+						</CardContent>
+					</Card>
+					<Card className='w-full col-span-2 h-full'>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Faturamento por vendedor
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<SellerRevenue sellerData={dataGoal.overview} />
+						</CardContent>
+					</Card>
+				</div>
+			</Suspense>
+			<Suspense
+				fallback={
+					<div className='grid grid-cols-1 gap-5'>
+						<Skeleton className='w-full h-80' />
+						<div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3  gap-5'>
+							<Skeleton className='w-full h-80' />
+							<Skeleton className='w-full h-80' />
+							<Skeleton className='w-full h-80' />
+						</div>
+					</div>
+				}>
+				<div className='grid grid-cols-1 gap-5'>
+					<Card>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Performance por vendedor
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<SellerComparison sellerData={dataGoal.overview} />
+							<SellerComparisonMobile sellerData={dataGoal.overview} />
+						</CardContent>
+					</Card>
+					<SalesmanList sellerData={dataGoal.overview} />
+				</div>
+			</Suspense>
+			<Suspense
+				fallback={
+					<div className='grid grid-cols-1 gap-6 my-5'>
+						<Skeleton className='w-full h-80' />
+					</div>
+				}>
+				<div className='grid grid-cols-1 gap-6 my-5'>
+					<Card>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Faturamento ao Longo do Tempo
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<Revenue revanueData={dataGoal.timeSeries} />
+						</CardContent>
+					</Card>
+				</div>
+			</Suspense>
 		</div>
 	);
 }

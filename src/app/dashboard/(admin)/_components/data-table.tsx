@@ -14,6 +14,7 @@ import {
 	useReactTable,
 } from '@tanstack/react-table';
 
+import { Button } from '@/components/ui/button';
 import {
 	Dialog,
 	DialogContent,
@@ -40,9 +41,8 @@ import {
 } from '@/components/ui/table';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { DataTablePagination } from './data-table-pagination';
-import { Button } from '@/components/ui/button';
 import FormCreate from '../users/_components/form-create';
+import { DataTablePagination } from './data-table-pagination';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
