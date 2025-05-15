@@ -41,7 +41,7 @@ export async function GET() {
 		const elapsedDays = now.getDate(); // dia do mês, ex: 15 para 15/05
 		const totalDaysInMonth = new Date(
 			now.getFullYear(),
-			now.getMonth() + 1,
+			now.getMonth(),
 			0,
 		).getDate();
 		const predicted = elapsedDays
@@ -98,7 +98,7 @@ export async function GET() {
 			allGoals.map(async (g) => {
 				const monthStart = new Date(
 					g.goalDateRef.getFullYear(),
-					g.goalDateRef.getMonth() + 1,
+					g.goalDateRef.getMonth(),
 					1,
 					0,
 					0,
