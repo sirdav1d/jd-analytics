@@ -51,8 +51,6 @@ export default async function GoalResultPage(props: {
 		return <div>Nenhum dado foi encontrado</div>;
 	}
 
-	console.log(dataGoal);
-
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5'>
 			<Filter />
