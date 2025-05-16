@@ -1,4 +1,5 @@
 /** @format */
+
 import { prisma } from '@/lib/prisma';
 import { parseFormData, validateCSV } from '@/utils/csv/process';
 import fs from 'fs/promises';
@@ -71,6 +72,7 @@ export async function POST(req: NextRequest) {
 			quoteChar: '"',
 		});
 
+		console.log(parsed.errors)
 		if (parsed.errors.length) {
 			console.error('Erros no parsing do CSV:', parsed.errors);
 			return NextResponse.json(
@@ -81,7 +83,7 @@ export async function POST(req: NextRequest) {
 
 		const rows: ParsedRow[] = parsed.data.map(normalizeRow);
 
-		async function upsertSeller(fullName: string) {
+		async function upsertSeller(fullName: string, sellerCode: string) {
 			const domain = 'infojd.com.br';
 			const plainPassword = 'Senha@123';
 			const saltRounds = 10;
@@ -96,26 +98,15 @@ export async function POST(req: NextRequest) {
 					.toLowerCase();
 
 			const base = normalize(first);
-			let emailCandidate = `${base}@${domain}`;
-			let idx = 1;
-			while (
-				await prisma.user.findUnique({ where: { email: emailCandidate } })
-			) {
-				if (idx < parts.length) {
-					const nextPart = normalize(parts[idx]);
-					emailCandidate = `${base}${nextPart}@${domain}`;
-				} else {
-					emailCandidate = `${base}${idx}@${domain}`;
-				}
-				idx++;
-			}
+			const emailCandidate = `${base}${sellerCode}@${domain}`;
 
 			const seller = await prisma.user.upsert({
-				where: { email: emailCandidate }, // Replace with a valid unique field
-				update: {},
+				where: { externalId: sellerCode }, // Replace with a valid unique field
+				update: { name: fullName, email: emailCandidate },
 				create: {
 					name: fullName,
 					email: emailCandidate,
+					externalId: sellerCode,
 					role: 'SELLER',
 					password: hashedPassword, // Replace with a secure default password or logic
 					organization: { connect: { id: process.env.JD_CENTRO_ID } }, // Replace with valid organization logic
@@ -146,11 +137,14 @@ export async function POST(req: NextRequest) {
 			});
 
 			// Seller
-			const sellerParts = row['Vendedor'].split(' - ');
+			const vendedorRaw = row['Vendedor']?.toString().trim();
+			const sellerParts = vendedorRaw.split(' - ');
+			const sellerCode =
+				sellerParts.length > 1 ? sellerParts[0].trim() : 'não encontrado';
 			const fullName =
-				sellerParts.length > 1 ? sellerParts[1].trim() : row['Vendedor'].trim();
+				sellerParts.length > 1 ? sellerParts[1].trim() : vendedorRaw;
 
-			const seller = await upsertSeller(fullName);
+			const seller = await upsertSeller(fullName, sellerCode);
 
 			// Product
 			const prodCode = parseInt(row['Código Produto'], 10);

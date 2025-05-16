@@ -1,5 +1,7 @@
 /** @format */
 
+import 'server-only';
+
 import formidable, { File } from 'formidable';
 import { NextRequest } from 'next/server';
 import { Readable } from 'stream';
@@ -26,17 +28,11 @@ const expectedHeaders = [
 	'Código Produto',
 ];
 
-export async function convertRequestToStream(
-	req: NextRequest,
-): Promise<Readable> {
-	// Converte o corpo para um ArrayBuffer e depois para Buffer
+export async function parseFormData(req: NextRequest): Promise<File> {
 	const buffer = Buffer.from(await req.arrayBuffer());
 	// Cria uma stream a partir do Buffer
-	return Readable.from(buffer);
-}
+	const nodeReq = Readable.from(buffer);
 
-export async function parseFormData(req: NextRequest): Promise<File> {
-	const nodeReq = await convertRequestToStream(req);
 	// Cria um "fake" objeto de requisição que inclua os headers esperados
 	const headers = Object.fromEntries(req.headers.entries());
 
@@ -76,11 +72,11 @@ export async function validateCSV(file: File): Promise<boolean> {
 	try {
 		// Lê apenas as primeiras linhas para verificar cabeçalhos
 		const content = await fs.readFile(file.filepath, 'utf-8');
-		const firstLine = content.split(/\r?\n/)[0];
+		const firstLine = content.split(/\r?\n/)[0].replace(/^\uFEFF/, '');
 		const headers = firstLine
 			.split(',')
 			.map((h) => h.trim().replace(/^"+|"+$/g, ''));
-
+		console.log(firstLine);
 		const missing = expectedHeaders.filter((h) => !headers.includes(h));
 		if (missing.length) {
 			console.log('Cabeçalhos faltando no CSV:', missing);
