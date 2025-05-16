@@ -53,12 +53,16 @@ export default function FormCreate() {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		const { name, email, role, organizationName, password } = values;
+		const timestamp = Date.now();
+		const random = Math.floor(Math.random() * 100000);
+		const externalID = `${timestamp}${random}`;
 		const response = await createUserAction(
 			name,
 			email,
 			role,
 			organizationName,
 			password,
+			externalID,
 		);
 		if (!response.ok) {
 			toast.error('Algo deu errado', { description: String(response.error) });
