@@ -15,6 +15,7 @@ export async function createUserAction(
 	role: $Enums.Role,
 	organizationName: string,
 	password: string,
+	externalId: string,
 ) {
 	try {
 		const org = await prisma.organization.findFirst({
@@ -29,6 +30,7 @@ export async function createUserAction(
 			data: {
 				name,
 				email,
+				externalId,
 				password: hashPassword, // Certifique-se de criptografar a senha antes de salvar!
 				role,
 				organizationId: org.id, // Associação com a organização
