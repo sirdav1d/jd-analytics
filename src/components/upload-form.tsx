@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 export default function UploadForm() {
 	const [loading, setLoading] = useState(false);
-	const [message, setMessage] = useState('');
+
 	const [file, setFile] = useState<File | null>(null);
 
 	const router = useRouter();
@@ -27,12 +27,11 @@ export default function UploadForm() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!file) {
-			setMessage('Selecione um arquivo antes de enviar.');
+			console.log('Selecione um arquivo antes de enviar.');
 			return;
 		}
 
 		setLoading(true);
-		setMessage('');
 
 		const formData = new FormData();
 		formData.append('csv', file);
@@ -49,9 +48,9 @@ export default function UploadForm() {
 			setFile(null);
 			router.push('/dashboard/goals-result');
 		} else {
-			setMessage(`Erro: ${json.error}`);
+			toast.error('Algo deu errado, tente novamente.');
+			console.log(`Erro: ${json.error}`);
 		}
-
 		setLoading(false);
 	};
 
@@ -65,9 +64,6 @@ export default function UploadForm() {
 				disabled={loading}>
 				{loading ? 'Enviando...' : 'Enviar CSV'}
 			</Button>
-			{message && (
-				<p className='text-sm -translate-y-20 text-destructive'>{message}</p>
-			)}
 		</form>
 	);
 }
