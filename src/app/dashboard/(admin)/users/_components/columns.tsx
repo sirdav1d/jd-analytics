@@ -32,11 +32,11 @@ export const columns: ColumnDef<User>[] = [
 	},
 	{
 		id: 'actions',
-		header: 'Ações',
+		header: () => <p className='text-center'>Ações</p>,
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<div className='flex gap-2'>
+				<div className='flex gap-2 justify-center items-center'>
 					<Dialog>
 						<DialogTrigger asChild>
 							<Button
