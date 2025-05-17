@@ -27,6 +27,14 @@ export async function GET(req: NextRequest) {
 		const msInDay = 1000 * 60 * 60 * 24;
 		const diffDays = (endDate.getTime() - startDate.getTime()) / msInDay;
 		const useDaily = diffDays < 30;
+		const startOfMonth = new Date(
+			startDate.getFullYear(),
+			startDate.getMonth(),
+			1,
+			0,
+			0,
+			0,
+		);
 
 		//OVERVIEW INICIO
 		const rawOverview = await prisma.pedido.groupBy({
@@ -61,7 +69,7 @@ export async function GET(req: NextRequest) {
 					_sum: { revenue: true },
 					where: {
 						userId: item.userId,
-						goalDateRef: { gte: startDate, lte: endDate },
+						goalDateRef: { gte: startOfMonth, lte: endDate },
 					},
 				});
 				const meta = goalAgg._sum.revenue ?? 0;
@@ -133,7 +141,7 @@ export async function GET(req: NextRequest) {
 			_sum: { revenue: true },
 			where: {
 				goalDateRef: {
-					gte: startDate, // >= 1º dia do mês selecionado
+					gte: startOfMonth, // >= 1º dia do mês selecionado
 					lt: endDate, // < 1º dia do mês seguinte
 				},
 			},
