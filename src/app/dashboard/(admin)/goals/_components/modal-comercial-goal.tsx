@@ -10,7 +10,7 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog';
 import { Plus } from 'lucide-react';
-import MetaComercialForm from './meta-comercial-form';
+import MetaComercialForm from './forms/meta-comercial-form';
 
 interface IModalFormComercialGoal {
 	sellers: {

@@ -6,19 +6,21 @@ import {
 	DialogClose,
 	DialogContent,
 	DialogDescription,
-	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
 import { ColumnDef } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
+import UpdateComercialForm from '../forms/comercial-update-form';
 
 export interface CurentGoal {
 	monthRef: string | Date;
 	sellerName: string;
 	revenue: number | string;
 	realized: number | string;
+	sellerId: string;
+	goalId: string;
 }
 
 export const columns: ColumnDef<CurentGoal>[] = [
@@ -73,12 +75,12 @@ export const columns: ColumnDef<CurentGoal>[] = [
 
 	{
 		id: 'actions',
-		header: 'Ações',
+		header: () => <p className='text-center'>Ações</p>,
 		cell: ({ row }) => {
 			const goal = row.original;
-			console.log(goal);
+
 			return (
-				<div className='flex gap-2'>
+				<div className='flex gap-2 justify-center items-center'>
 					<Dialog>
 						<DialogTrigger asChild>
 							<Button
@@ -89,14 +91,16 @@ export const columns: ColumnDef<CurentGoal>[] = [
 						</DialogTrigger>
 						<DialogContent className='sm:max-w-[425px]'>
 							<DialogHeader>
-								<DialogTitle className='leading-8'>
-									Editar Meta de {goal.sellerName}
-								</DialogTitle>
+								<DialogTitle className='leading-8'>Editar Meta</DialogTitle>
 								<DialogDescription>
-									Faça alterações no usuário aqui
+									Alterar meta de {goal.sellerName}
 								</DialogDescription>
 							</DialogHeader>
-							formulario de update aqui
+							<UpdateComercialForm
+								goal={goal}
+								seller={goal.sellerName}
+								goalId={goal.goalId}
+							/>
 						</DialogContent>
 					</Dialog>
 					<Dialog>
@@ -110,7 +114,7 @@ export const columns: ColumnDef<CurentGoal>[] = [
 						<DialogContent className='sm:max-w-[425px]'>
 							<DialogHeader>
 								<DialogTitle className='leading-8 capitalize'>
-									Excluir Meta de {goal.sellerName}
+									Excluir Meta
 								</DialogTitle>
 								<DialogDescription>
 									Essa ação não é reversível
@@ -118,19 +122,18 @@ export const columns: ColumnDef<CurentGoal>[] = [
 							</DialogHeader>
 							<p className='text-balance'>
 								Tem certeza que deseja excluir a meta definida para{' '}
-								{goal.sellerName} no valor de{' '}
+								<strong>{goal.sellerName}</strong> no valor de{' '}
 								{goal.revenue.toLocaleString('pt-br', {
 									style: 'currency',
 									currency: 'brl',
 								})}
 								?
 							</p>
-							<DialogFooter>
-								<DialogClose asChild>
-									<Button variant={'outline'}>Voltar</Button>
-								</DialogClose>
-								<Button>Excluir</Button>
-							</DialogFooter>
+
+							<DialogClose
+								id='closeDeleteGoalComercial'
+								className='hidden'></DialogClose>
+							<Button className='w-full mt-2'>Excluir</Button>
 						</DialogContent>
 					</Dialog>
 				</div>

@@ -5,29 +5,26 @@
 import { prisma } from '@/lib/prisma';
 import { revalidateTag } from 'next/cache';
 
-interface ICreateSalesGoalAction {
-	userId: string;
-	goalDateRef: Date;
+interface IUpdateSalesGoalAction {
 	revenue: number;
+	goalId: string;
 }
 
-export async function CreateSalesGoalAction({
-	goalDateRef,
+export async function UpdateSalesGoalAction({
 	revenue,
-	userId,
-}: ICreateSalesGoalAction) {
+	goalId,
+}: IUpdateSalesGoalAction) {
 	try {
-		const goal = await prisma.salesGoal.create({
+		const goal = await prisma.salesGoal.update({
+			where: { id: goalId },
 			data: {
-				goalDateRef,
 				revenue,
-				userId,
 			},
 		});
 
 		if (!goal) {
 			return {
-				error: 'Algo deu errado, meta não criada',
+				error: 'Algo deu errado, meta não atualizada',
 				ok: false,
 				goal: null,
 			};

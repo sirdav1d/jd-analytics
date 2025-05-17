@@ -79,6 +79,7 @@ export async function GET() {
 				});
 
 				return {
+					goalId: g.id,
 					sellerId: g.userId,
 					sellerName: g.seller.name,
 					monthRef: startOfMonth,
