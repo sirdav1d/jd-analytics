@@ -49,7 +49,7 @@ export default function SalesmanList({ sellerData }: SalesmanListProps) {
 							<h3 className='text-sm  text-foreground'>
 								Meta Projetada para: {formattedDate}
 							</h3>
-							{vendedor.forecast > 0 && (
+							{vendedor.forecast > 0 ? (
 								<div className='flex items-center justify-start w-full gap-5'>
 									<p className='text-xl font-semibold text-foreground'>
 										{vendedor.forecast && formatCurrency(vendedor.forecast)}
@@ -63,6 +63,8 @@ export default function SalesmanList({ sellerData }: SalesmanListProps) {
 										%
 									</Badge>
 								</div>
+							) : (
+								<p>Sem meta definida</p>
 							)}
 						</div>
 					</CardFooter>
