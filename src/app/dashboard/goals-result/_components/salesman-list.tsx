@@ -1,19 +1,31 @@
 /** @format */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import { PieStore } from './charts/pie-store';
 // import { Badge } from '@/components/ui/badge';
 // import { ArrowDown, ArrowUp } from 'lucide-react';
 import { IOverview } from '@/services/data-services/types';
+import { Badge } from '@/components/ui/badge';
 
 interface SalesmanListProps {
 	sellerData: IOverview[];
 }
 
 export default function SalesmanList({ sellerData }: SalesmanListProps) {
+	const today = new Date();
+	const formattedDate = today.toLocaleDateString('pt-BR', {
+		month: '2-digit',
+		year: '2-digit',
+	});
 	return (
-		<div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3  gap-5'>
+		<div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3  gap-5'>
 			{sellerData.map((vendedor, index) => (
 				<Card key={index}>
 					<CardHeader>
@@ -31,31 +43,29 @@ export default function SalesmanList({ sellerData }: SalesmanListProps) {
 								realizado: vendedor.totalRevenue,
 							}}
 						/>
-						{/* 
-						<div className='flex flex-col gap-2'>
-							<span className='font-semibold text-sm'>META PROJETADA</span>
-							<div className='flex items-center gap-4'>
-								<span className='font-bold text-xl'>
-									{formatCurrency(vendedor.metaProjetada)}
-								</span>
-
-								{vendedor.metaProjetadaPercentual >= 100 ? (
-									<Badge
-										variant={'success'}
-										className='flex items-center gap-2'>
-										{vendedor.metaProjetadaPercentual}% <ArrowUp size={12} />
-									</Badge>
-								) : (
-									<Badge variant={'destructive'}>
-										<span className='flex items-center gap-2'>
-											{vendedor.metaProjetadaPercentual}%{' '}
-											<ArrowDown size={12} />
-										</span>
-									</Badge>
-								)}
-							</div>
-						</div> */}
 					</CardContent>
+					<CardFooter>
+						<div className='flex items-start flex-col gap-2'>
+							<h3 className='text-sm  text-foreground'>
+								Meta Projetada para: {formattedDate}
+							</h3>
+							{vendedor.forecast > 0 && (
+								<div className='flex items-center justify-start w-full gap-5'>
+									<p className='text-xl font-semibold text-foreground'>
+										{vendedor.forecast && formatCurrency(vendedor.forecast)}
+									</p>
+									<Badge
+										variant={
+											vendedor.percentualDif >= 100 ? 'success' : 'destructive'
+										}>
+										{vendedor.percentualDif &&
+											vendedor.percentualDif.toFixed(2)}
+										%
+									</Badge>
+								</div>
+							)}
+						</div>
+					</CardFooter>
 				</Card>
 			))}
 		</div>

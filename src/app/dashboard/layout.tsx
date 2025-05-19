@@ -21,7 +21,7 @@ export default async function DashLayout({
 	return (
 		<SidebarProvider defaultOpen={defaultOpen}>
 			<AppSidebar />
-			<div className='w-full px-4  flex flex-col xl:mx-5 '>
+			<div className='w-full px-4  flex flex-col xl:mx-2 '>
 				<SidebarTrigger className='mt-2 z-50' />
 				<HeaderDashboard />
 				{children}

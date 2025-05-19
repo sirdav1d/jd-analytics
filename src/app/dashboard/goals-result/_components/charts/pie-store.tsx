@@ -47,15 +47,15 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square w-full h-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground  '>
+			className='mx-auto aspect-square w-full h-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<RadialBarChart
-				className='mt-5'
+				className='translate-y-10'
 				accessibilityLayer
 				data={chartData}
 				endAngle={180}
 				margin={{ top: 10 }}
-				innerRadius={110}
-				outerRadius={180}>
+				innerRadius={128}
+				outerRadius={200}>
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent hideLabel />}
@@ -71,6 +71,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 									<text
 										x={viewBox.cx}
 										y={viewBox.cy}
+										className='-translate-y-6'
 										textAnchor='middle'>
 										<tspan
 											x={viewBox.cx}
@@ -84,7 +85,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 										<tspan
 											x={viewBox.cx}
 											y={(viewBox.cy || 0) + 4}
-											className='fill-muted-foreground text-xs text-center'>
+											className='fill-muted-foreground text-xs text-center '>
 											Meta de Faturamento
 										</tspan>
 									</text>
@@ -101,9 +102,9 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					cornerRadius={5}
 					className='stroke-transparent stroke-2'>
 					<LabelList
-						position='right'
+						position='outside'
 						dataKey='Restante'
-						className='fill-foreground drop-shadow-xl font-semibold capitalize mix-blend-luminosity z-10'
+						className='fill-foreground drop-shadow-xl font-semibold capitalize mix-blend-luminosity z-50 p-40 translate-y-4 translate-x-4'
 						fontSize={11}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
@@ -122,9 +123,8 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Atingido'
-						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity'
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-12 xl:translate-x-16 translate-y-3 xl:translate-y-2 2xl:translate-x-8'
 						fontSize={11}
-						offset={12}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',

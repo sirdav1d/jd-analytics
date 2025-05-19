@@ -1,6 +1,12 @@
 /** @format */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import { PieStore } from './_components/charts/pie-store';
 import { Revenue } from './_components/charts/revenue';
@@ -12,6 +18,7 @@ import { FetchGoalTrackingData } from '@/services/data-services/get-goal-trackin
 import SellerComparisonMobile from './_components/charts/seller-comparison-mobile';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -41,6 +48,12 @@ export default async function GoalResultPage(props: {
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
 
+	const today = new Date();
+	const formattedDate = today.toLocaleDateString('pt-BR', {
+		month: '2-digit',
+		year: '2-digit',
+	});
+
 	const dataGoal = await FetchGoalTrackingData(
 		String(startDate),
 		String(endDate),
@@ -51,6 +64,7 @@ export default async function GoalResultPage(props: {
 		return <div>Nenhum dado foi encontrado</div>;
 	}
 
+	
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5'>
 			<Filter />
@@ -76,6 +90,31 @@ export default async function GoalResultPage(props: {
 						<CardContent className='2xl:scale-110 w-full translate-y-12'>
 							<PieStore companySummary={dataGoal.companySummary} />
 						</CardContent>
+						<CardFooter>
+							<div className='flex items-start flex-col gap-2'>
+								<h3 className='text-sm  text-foreground'>
+									Meta Projetada para: {formattedDate}
+								</h3>
+								{dataGoal.companySummary.forecast > 0 && (
+									<div className='flex items-center justify-start w-full gap-5'>
+										<p className='text-xl font-semibold text-foreground'>
+											{dataGoal.companySummary.forecast &&
+												formatCurrency(dataGoal.companySummary.forecast)}
+										</p>
+										<Badge
+											variant={
+												dataGoal.companySummary.diffPercent >= 100
+													? 'success'
+													: 'destructive'
+											}>
+											{dataGoal.companySummary.diffPercent &&
+												dataGoal.companySummary.diffPercent.toFixed(2)}
+											%
+										</Badge>
+									</div>
+								)}
+							</div>
+						</CardFooter>
 					</Card>
 					<Card className='w-full col-span-2 h-full'>
 						<CardHeader>

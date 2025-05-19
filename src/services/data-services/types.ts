@@ -6,6 +6,8 @@ export interface IOverview {
 	orderCount: number;
 	avgTicket: number;
 	meta: number;
+	percentualDif: number;
+	forecast: number;
 }
 
 export interface ITimeSeries {

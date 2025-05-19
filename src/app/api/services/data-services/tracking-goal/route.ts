@@ -2,6 +2,12 @@
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import {
+	differenceInCalendarDays,
+	endOfMonth,
+	startOfMonth as dfStartOfMonth,
+	getDaysInMonth,
+} from 'date-fns';
 
 export async function GET(req: NextRequest) {
 	try {
@@ -72,10 +78,58 @@ export async function GET(req: NextRequest) {
 						goalDateRef: { gte: startOfMonth, lte: endDate },
 					},
 				});
+
 				const meta = goalAgg._sum.revenue ?? 0;
 				const totalRevenue = revenue._sum.totalValue ?? 0;
 				const orderCount = item._count.id;
 				const avgTicket = orderCount ? totalRevenue / orderCount : 0;
+
+				// 3) Cálculo de forecast
+				const now = new Date();
+
+				// 1) Defina o mês corrente (sempre será “maio de 2025” enquanto estivermos em maio):
+				const currentMonthStart = dfStartOfMonth(now); // ex: 2025‑05‑01T00:00:00
+				const currentMonthEnd = endOfMonth(currentMonthStart);
+
+				const salesCurrentMonthAgg = await prisma.saleItem.aggregate({
+					_sum: { totalValue: true },
+					where: {
+						sale: {
+							data_pedido: {
+								gte: currentMonthStart, // 2025‑05‑01
+								lte: now, // “semana atual” ou data exata
+							},
+							userId: item.userId,
+						},
+					},
+				});
+				const totalRevenueCurrentMonth =
+					salesCurrentMonthAgg._sum.totalValue ?? 0;
+				const daysElapsedThisMonth =
+					differenceInCalendarDays(now, currentMonthStart) + 1;
+				const totalDaysInThisMonth = getDaysInMonth(currentMonthStart);
+				const avgDailyThisMonth =
+					daysElapsedThisMonth > 0
+						? totalRevenueCurrentMonth / daysElapsedThisMonth
+						: 0;
+
+				const forecast = avgDailyThisMonth * totalDaysInThisMonth;
+
+				const goalCurrentMonthAgg = await prisma.salesGoal.aggregate({
+					_sum: { revenue: true },
+					where: {
+						goalDateRef: {
+							gte: currentMonthStart,
+							lt: currentMonthEnd,
+						},
+						userId: item.userId,
+					},
+				});
+				const metaCurrentMonth = goalCurrentMonthAgg._sum.revenue ?? 0;
+
+				// 5) Cálculo do percentual de diferença:
+				const percentualDif =
+					metaCurrentMonth > 0 ? (forecast / metaCurrentMonth) * 100 : 100;
 
 				return {
 					vendedor: seller?.name ?? 'Unknown',
@@ -83,6 +137,8 @@ export async function GET(req: NextRequest) {
 					meta,
 					orderCount,
 					avgTicket,
+					forecast, // previsão de faturamento até fim do mês
+					percentualDif, // forecast / meta * 100
 				};
 			}),
 		);
@@ -156,9 +212,46 @@ export async function GET(req: NextRequest) {
 			},
 		});
 
+		const now = new Date();
+		const currentMonthStart = dfStartOfMonth(now);
+		const currentMonthEnd = endOfMonth(currentMonthStart);
+
+		const salesCurrentMonthAgg = await prisma.saleItem.aggregate({
+			_sum: { totalValue: true },
+			where: {
+				sale: {
+					data_pedido: {
+						gte: currentMonthStart,
+						lt: now < currentMonthEnd ? now : currentMonthEnd,
+					},
+				},
+			},
+		});
+		const realizadoCurrentMonth = salesCurrentMonthAgg._sum.totalValue ?? 0;
+
+		const diasPassadosNoMes =
+			differenceInCalendarDays(
+				now < currentMonthEnd ? now : currentMonthEnd,
+				currentMonthStart,
+			) + 1;
+
+		const totalDiasNoMes = getDaysInMonth(currentMonthStart); // ex: 31 para maio
+
+		const mediaDiariaNoMes =
+			diasPassadosNoMes > 0 ? realizadoCurrentMonth / diasPassadosNoMes : 0;
+
+		const forecastCurrentMonth = mediaDiariaNoMes * totalDiasNoMes;
+
+		const percentualDif =
+			salesGoalSum._sum.revenue != null && salesGoalSum._sum.revenue > 0
+				? (forecastCurrentMonth / salesGoalSum._sum.revenue) * 100
+				: 0;
+
 		const companySummary = {
 			meta: salesGoalSum._sum.revenue ?? 0,
 			realizado: salesSum._sum.totalValue ?? 0,
+			forecast: forecastCurrentMonth,
+			diffPercent: percentualDif,
 		};
 
 		return NextResponse.json(
