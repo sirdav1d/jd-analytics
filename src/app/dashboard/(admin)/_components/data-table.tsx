@@ -40,26 +40,28 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import FormCreate from '../users/_components/form-create';
 import { DataTablePagination } from './data-table-pagination';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
+	data: Promise<{ data: TData[] }>;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
+	const allData = use(data);
+
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [roleFilter, setRoleFilter] = useState<string>('all');
 	// const [customerType, setCustomerType] = useState('new');
 
 	const table = useReactTable({
-		data,
+		data: allData.data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
@@ -72,6 +74,10 @@ export function DataTable<TData, TValue>({
 			columnFilters,
 		},
 	});
+
+	if (!allData) {
+		return <p>Dados não encontrados</p>;
+	}
 
 	return (
 		<div>

@@ -12,26 +12,29 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
-import { ArrowRight, Loader2, Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
+import { Loader2, Trash2 } from 'lucide-react';
+import React, { useTransition } from 'react';
 import { toast } from 'sonner';
 
 export default function DialogDeleteUser({ userId }: { userId: string }) {
-	const [isLoading, setIsLoading] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	async function handleClick(
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 	) {
-		setIsLoading(true);
 		e.preventDefault();
 		e.stopPropagation();
-		const response = await deleteUserAction(userId);
-		if (!response.ok) {
-			toast.error('Algo deu errado', { description: String(response.error) });
-		} else {
-			toast.success('Usuário deletado com sucesso');
-		}
-		console.log(response);
-		setIsLoading(false);
+
+		startTransition(async () => {
+			const response = await deleteUserAction(userId);
+			if (!response.ok) {
+				console.log(response.error);
+				toast.error('Algo deu errado');
+			} else {
+				const btn = document.getElementById('closeDeleteUser');
+				btn?.click();
+				toast.success('Usuário deletado com sucesso');
+			}
+		});
 	}
 	return (
 		<Dialog>
@@ -53,22 +56,15 @@ export default function DialogDeleteUser({ userId }: { userId: string }) {
 					do usuário e removerá seus dados dos nossos servidores.
 				</p>
 				<DialogFooter>
-					<DialogClose asChild>
-						<Button variant='outline'>Cancelar</Button>
-					</DialogClose>
+					<DialogClose
+						className='hidden'
+						id='closeDeleteUser'></DialogClose>
 					<Button
-						disabled={isLoading}
-						className='disabled:opacity-70'
+						disabled={isPending}
+						className='disabled:opacity-70 w-full mt-5'
 						onClick={(e) => handleClick(e)}>
-						{isLoading ? (
-							<>
-								Deletar usuário <Loader2 className='animate-spin' />
-							</>
-						) : (
-							<>
-								Deletar usuário <ArrowRight />
-							</>
-						)}
+						Deletar usuário
+						{isPending && <Loader2 className='animate-spin' />}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

@@ -23,19 +23,25 @@ import {
 } from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { User } from '@prisma/client';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 const formSchema = z.object({
-	name: z.string().min(2).max(50).optional(),
-	email: z.string().email().optional(),
+	name: z
+		.string()
+		.min(3, { message: 'Este campo deve conter mais de 3 caracteres' })
+		.max(50)
+		.optional(),
+	email: z.string().email({ message: 'Email inválido' }).optional(),
 	role: z.enum(['ADMIN', 'MANAGER', 'SELLER']).optional(),
 	password: z.string().optional(),
 });
 
 export default function FormUpdate({ user }: { user: Partial<User> }) {
+	const [isPending, startTransition] = useTransition();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -50,16 +56,20 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		const { name, email, role, password } = values;
-		const response = await updateUserAction({
-			userUp: { name, email, role, password },
+
+		startTransition(async () => {
+			const response = await updateUserAction({
+				userUp: { name, email, role, password },
+			});
+			if (!response.ok) {
+				console.log(response.error);
+				toast.error('Algo deu errado');
+			} else {
+				const btn = document.getElementById('closeUpUser');
+				btn?.click();
+				toast.success('Usuário atualizado com sucesso');
+			}
 		});
-		if (!response.ok) {
-			toast.error('Algo deu errado', { description: String(response.error) });
-		} else {
-			const btn = document.getElementById('closeUpUser');
-			btn?.click();
-			toast.success('Usuário atualizado com sucesso');
-		}
 	}
 	return (
 		<Form {...form}>
@@ -138,32 +148,17 @@ export default function FormUpdate({ user }: { user: Partial<User> }) {
 						</FormItem>
 					)}
 				/>
-				<div className='mt-5 flex gap-4 items-center justify-end'>
-					<DialogClose
-						id='closeUpUser'
-						asChild>
-						<Button
-							type='button'
-							variant={'outline'}>
-							Voltar
-						</Button>
-					</DialogClose>
 
-					<Button
-						className='disabled:opacity-70'
-						disabled={form.formState.isLoading || form.formState.isSubmitting}>
-						{form.formState.isLoading || form.formState.isSubmitting ? (
-							<>
-								Atualizar Usuário
-								<Loader2 className='animate-spin' />
-							</>
-						) : (
-							<>
-								Atualizar Usuário <ArrowRight />
-							</>
-						)}
-					</Button>
-				</div>
+				<DialogClose
+					id='closeUpUser'
+					className='hidden'></DialogClose>
+
+				<Button
+					className='disabled:opacity-70 mt-5 w-full'
+					disabled={isPending}>
+					Atualizar Usuário
+					{isPending && <Loader2 className='animate-spin' />}
+				</Button>
 			</form>
 		</Form>
 	);

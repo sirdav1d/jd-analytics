@@ -22,14 +22,18 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 const formSchema = z.object({
-	name: z.string().min(2).max(50),
-	email: z.string().email(),
+	name: z
+		.string()
+		.min(3, { message: 'Este campo deve conter mais de 3 caracteres' })
+		.max(50),
+	email: z.string().email({ message: 'Email inválido' }),
 	role: z.enum(['ADMIN', 'MANAGER', 'SELLER']),
 	organizationName: z.enum(['JD Centro', 'JD Icaraí', 'JSEG']),
 	password: z
@@ -38,6 +42,7 @@ const formSchema = z.object({
 });
 
 export default function FormCreate() {
+	const [isPending, startTransition] = useTransition();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -56,21 +61,25 @@ export default function FormCreate() {
 		const timestamp = Date.now();
 		const random = Math.floor(Math.random() * 100000);
 		const externalID = `${timestamp}${random}`;
-		const response = await createUserAction(
-			name,
-			email,
-			role,
-			organizationName,
-			password,
-			externalID,
-		);
-		if (!response.ok) {
-			toast.error('Algo deu errado', { description: String(response.error) });
-		} else {
-			const btn = document.getElementById('closeCreateUser');
-			btn?.click();
-			toast.success('Usuário cadastrado com sucesso');
-		}
+
+		startTransition(async () => {
+			const response = await createUserAction(
+				name,
+				email,
+				role,
+				organizationName,
+				password,
+				externalID,
+			);
+			if (!response.ok) {
+				console.log(response.error);
+				toast.error('Algo deu errado');
+			} else {
+				const btn = document.getElementById('closeCreateUser');
+				btn?.click();
+				toast.success('Usuário cadastrado com sucesso');
+			}
+		});
 	}
 	return (
 		<Form {...form}>
@@ -176,32 +185,15 @@ export default function FormCreate() {
 						</FormItem>
 					)}
 				/>
-				<div className='mt-5 flex gap-4 items-center justify-end'>
-					<DialogClose
-						id='closeCreateUser'
-						asChild>
-						<Button
-							type='button'
-							variant={'outline'}>
-							Voltar
-						</Button>
-					</DialogClose>
-
-					<Button
-						className='disabled:opacity-70'
-						disabled={form.formState.isLoading || form.formState.isSubmitting}>
-						{form.formState.isLoading || form.formState.isSubmitting ? (
-							<>
-								Adicionar Usuário
-								<Loader2 className='animate-spin' />
-							</>
-						) : (
-							<>
-								Adicionar Usuário <ArrowRight />
-							</>
-						)}
-					</Button>
-				</div>
+				<DialogClose
+					id='closeCreateUser'
+					className='hidden'></DialogClose>
+				<Button
+					className='disabled:opacity-70 w-full mt-5'
+					disabled={isPending}>
+					Adicionar Usuário
+					{isPending && <Loader2 className='animate-spin' />}
+				</Button>
 			</form>
 		</Form>
 	);

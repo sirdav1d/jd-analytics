@@ -25,7 +25,8 @@ export default function SelectRole({ user }: { user: Partial<User> }) {
 			});
 			console.log(user, role, response);
 			if (!response.ok) {
-				toast.error('Algo deu errado', { description: String(response.error) });
+				console.log(response.error);
+				toast.error('Algo deu errado');
 			} else {
 				toast.success('Usuário atualizado com sucesso');
 			}
