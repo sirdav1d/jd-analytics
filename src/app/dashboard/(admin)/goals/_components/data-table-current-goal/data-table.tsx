@@ -22,22 +22,23 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { useState } from 'react';
+import { use, useState } from 'react';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
+	data: Promise<{ currentGoals: TData[] }>;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
+	const allData = use(data);
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
 	const table = useReactTable({
-		data,
+		data: allData.currentGoals,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
@@ -60,7 +61,7 @@ export function DataTable<TData, TValue>({
 							{headerGroup.headers.map((header) => {
 								return (
 									<TableHead
-										className='text-foreground font-semibold'
+										className='text-foreground font-semibold text-nowrap'
 										key={header.id}>
 										{header.isPlaceholder
 											? null

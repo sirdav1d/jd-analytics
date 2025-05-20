@@ -37,10 +37,10 @@ export default async function MarketingPage(props: {
 				fallback={
 					<div className='flex w-full flex-col gap-5'>
 						<div className='flex flex-col lg:flex-row gap-5'>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
 						</div>
 						<div className='h-full w-full flex flex-col lg:flex-row gap-5'>
 							<Skeleton className='h-80 w-full' />
@@ -70,10 +70,10 @@ export default async function MarketingPage(props: {
 				fallback={
 					<div className='flex flex-col gap-5 mt-10 mb-5'>
 						<div className='flex flex-col lg:flex-row gap-5'>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
-							<Skeleton className='h-12 w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
+							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
 						</div>
 						<Skeleton className='h-80 w-full'></Skeleton>
 						<div className='h-full w-full flex flex-col lg:flex-row gap-5'>

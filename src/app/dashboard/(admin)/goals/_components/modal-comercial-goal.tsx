@@ -1,4 +1,5 @@
 /** @format */
+'use client';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,17 +12,26 @@ import {
 } from '@/components/ui/dialog';
 import { Plus } from 'lucide-react';
 import MetaComercialForm from './forms/meta-comercial-form';
+import { use } from 'react';
 
 interface IModalFormComercialGoal {
-	sellers: {
-		name: string;
-		id: string;
-	}[];
+	ok: boolean;
+	data: { name: string; id: string }[] | null;
+	error: string | null;
 }
 
-export default function ModalFormComercialGoal({
-	sellers,
-}: IModalFormComercialGoal) {
+interface ISelllers {
+	sellers: Promise<IModalFormComercialGoal>;
+}
+
+export default function ModalFormComercialGoal({ sellers }: ISelllers) {
+	const data = use(sellers);
+
+	if (!data.ok || data.data === null) {
+		console.log(data.error);
+		return <div>Erro ao carregar vendedores</div>;
+	}
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -36,7 +46,7 @@ export default function ModalFormComercialGoal({
 						Preencha os dados abaixo para registrar nova meta
 					</DialogDescription>
 				</DialogHeader>
-				<MetaComercialForm sellers={sellers} />
+				<MetaComercialForm sellers={data.data} />
 			</DialogContent>
 		</Dialog>
 	);

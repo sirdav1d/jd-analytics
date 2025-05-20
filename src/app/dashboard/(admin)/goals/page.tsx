@@ -16,34 +16,24 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from '@/components/ui/accordion';
 import getAllSellers from '@/actions/user/get-all';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FetchGoalTargetData } from '@/services/data-services/get-goal-target';
+import { Suspense } from 'react';
+import BigNumbers from './_components/big-numbers';
+import { columns } from './_components/data-table-current-goal/columns';
+import { DataTable } from './_components/data-table-current-goal/data-table';
 import FilterCompany from './_components/filter-company';
+import HistoryGoal from './_components/history-goals';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
-import { Coins, DatabaseBackup } from 'lucide-react';
-import { DataTable } from './_components/data-table-current-goal/data-table';
-import { columns } from './_components/data-table-current-goal/columns';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function GoalsPage() {
-	const data = await getAllSellers();
+export default function GoalsPage() {
+	const data = getAllSellers();
 
-	const newData = await FetchGoalTargetData();
-
-	if (!newData.ok) {
-		console.log(data.error);
-		return <div>Dados não encontrados</div>;
-	}
+	const newData = FetchGoalTargetData();
 
 	const today = new Date();
 
@@ -51,24 +41,6 @@ export default async function GoalsPage() {
 		month: '2-digit',
 		year: 'numeric',
 	});
-
-	const currentGoals = newData.currentGoals;
-	const history = newData.history;
-
-	const months = [
-		{ id: 1, month: 'Janeiro' },
-		{ id: 2, month: 'Fevereiro' },
-		{ id: 3, month: 'Março' },
-		{ id: 4, month: 'Abril' },
-		{ id: 5, month: 'Maio' },
-		{ id: 6, month: 'Junho' },
-		{ id: 7, month: 'Julho' },
-		{ id: 8, month: 'Agosto' },
-		{ id: 9, month: 'Setembro' },
-		{ id: 10, month: 'Outubro' },
-		{ id: 11, month: 'Novembro' },
-		{ id: 12, month: 'Dezembro' },
-	];
 
 	return (
 		<div className='w-full  mx-auto pb-4 space-y-4 min-h-screen'>
@@ -177,14 +149,16 @@ export default async function GoalsPage() {
 				</TabsContent>
 				<TabsContent value='Comercial'>
 					<div className=' bg-background w-full  max-w-full'>
-						<div className='my-5'>
-							<h2 className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between text-3xl font-semibold'>
-								JD Info Centro
-								{data.data && <ModalFormComercialGoal sellers={data.data} />}
-							</h2>
-							<p className='text-muted-foreground font-normal text-xl text-center md:text-start'>
-								{formattedToday}
-							</p>
+						<div className='my-5 flex flex-col md:flex-row gap-2 items-center justify-between'>
+							<div>
+								<h2 className=' text-3xl font-semibold'>JD Info Centro</h2>
+								<p className='text-muted-foreground font-normal text-xl text-center md:text-start'>
+									{formattedToday}
+								</p>
+							</div>
+							<div className='w-full md:w-fit mt-5'>
+								{<ModalFormComercialGoal sellers={data} />}
+							</div>
 						</div>
 						<div>
 							<Suspense
@@ -196,63 +170,7 @@ export default async function GoalsPage() {
 										<Skeleton className='w-full h-24' />
 									</div>
 								}>
-								<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5'>
-									<Card>
-										<CardHeader>
-											<CardTitle className='flex justify-between items-center'>
-												{newData.companyGoal.meta.toLocaleString('pt-BR', {
-													style: 'currency',
-													currency: 'brl',
-												})}
-												<Coins size={20} />
-											</CardTitle>
-											<CardDescription>
-												Meta de faturamento atual
-											</CardDescription>
-										</CardHeader>
-									</Card>
-									<Card>
-										<CardHeader>
-											<CardTitle className='flex justify-between items-center'>
-												{newData.companyGoal.realized.toLocaleString('pt-BR', {
-													style: 'currency',
-													currency: 'brl',
-												})}
-												<Coins size={20} />
-											</CardTitle>
-											<CardDescription>
-												Faturamento realizado atual
-											</CardDescription>
-										</CardHeader>
-									</Card>
-									<Card>
-										<CardHeader>
-											<CardTitle className='flex justify-between items-center'>
-												{newData.companyGoal.remaining.toLocaleString('pt-BR', {
-													style: 'currency',
-													currency: 'brl',
-												})}
-												<Coins size={20} />
-											</CardTitle>
-											<CardDescription>
-												Faturamento restante para atingir a meta
-											</CardDescription>
-										</CardHeader>
-									</Card>
-									<Card>
-										<CardHeader>
-											<CardTitle
-												className={`flex justify-between items-center ${newData.companyGoal.predicted < newData.companyGoal.meta ? 'text-destructive' : 'text-foreground'}`}>
-												{newData.companyGoal.predicted.toLocaleString('pt-BR', {
-													style: 'currency',
-													currency: 'brl',
-												})}
-												<Coins size={20} />
-											</CardTitle>
-											<CardDescription>Faturamento previsto</CardDescription>
-										</CardHeader>
-									</Card>
-								</div>
+								<BigNumbers newData={newData} />
 							</Suspense>
 							<Suspense
 								fallback={
@@ -263,83 +181,22 @@ export default async function GoalsPage() {
 								<div className='rounded-md mt-10 max-w-full w-full'>
 									<DataTable
 										columns={columns}
-										data={currentGoals}
+										data={newData}
 									/>
 								</div>
 							</Suspense>
 							<Separator className='w-full my-10' />
-							<div className='flex flex-col gap-5'>
-								<h2 className='font-bold text-xl flex items-center gap-2'>
-									<DatabaseBackup size={20} />
-									Histórico de metas
-								</h2>
-								<Accordion
-									type='single'
-									collapsible
-									className='w-full'>
-									{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-									{history.map((item: any, index: number) => {
-										return (
-											index < history.length - 1 && (
-												<AccordionItem
-													key={index}
-													value={`item-${index}`}>
-													<AccordionTrigger>
-														{months[index].month}
-													</AccordionTrigger>
-													<AccordionContent>
-														<Table title={`Meta do mês ${item.month}`}>
-															<TableHeader>
-																<TableRow className='bg-secondary'>
-																	<TableHead className='text-foreground font-semibold'>
-																		Data
-																	</TableHead>
-																	<TableHead className='text-foreground font-semibold text-nowrap'>
-																		Nome
-																	</TableHead>
-																	<TableHead className='text-foreground font-semibold text-nowrap'>
-																		Meta de Faturamento
-																	</TableHead>
-																	<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-																		Faturamento realizado
-																	</TableHead>
-																</TableRow>
-															</TableHeader>
-															<TableBody className='border rounded-xl'>
-																{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-																{item.goals.map((item: any, index: number) => {
-																	return (
-																		<TableRow key={index}>
-																			<TableCell className='text-nowrap'>
-																				{item.month}
-																			</TableCell>
-																			<TableCell className='text-nowrap'>
-																				{item.sellerName}
-																			</TableCell>
-																			<TableCell className='text-nowrap'>
-																				{item.revenue.toLocaleString('pt-br', {
-																					style: 'currency',
-																					currency: 'brl',
-																				})}
-																			</TableCell>
-																			<TableCell className='text-nowrap text-center'>
-																				{item.realized.toLocaleString('pt-br', {
-																					style: 'currency',
-																					currency: 'brl',
-																				})}
-																			</TableCell>
-																		</TableRow>
-																	);
-																})}
-															</TableBody>
-														</Table>
-													</AccordionContent>
-												</AccordionItem>
-											)
-										);
-									})}
-								</Accordion>
-							</div>
+							<Suspense
+								fallback={
+									<div className='rounded-md flex flex-col gap-2 max-w-full w-full'>
+										<Skeleton className='w-full h-16' />
+										<Skeleton className='w-full h-16' />
+										<Skeleton className='w-full h-16' />
+										<Skeleton className='w-full h-16' />
+									</div>
+								}>
+								<HistoryGoal data={newData} />
+							</Suspense>
 						</div>
 					</div>
 				</TabsContent>
