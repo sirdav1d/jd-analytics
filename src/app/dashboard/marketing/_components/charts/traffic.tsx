@@ -5,21 +5,18 @@
 import {
 	ChartConfig,
 	ChartContainer,
-	ChartLegend,
-	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import React from 'react';
-import { Cell, Label, Pie, PieChart } from 'recharts';
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
 
 const chartConfig = {
 	Organico: {
-		label: 'Tráfego Orgânico',
+		label: 'Busca Orgânico',
 		color: 'hsl(var(--chart-1))',
 	},
 	Pago: {
-		label: 'Tráfego Pago',
+		label: 'Busca Paga',
 		color: 'hsl(var(--chart-2))',
 	},
 	Social: {
@@ -30,9 +27,26 @@ const chartConfig = {
 		label: 'Busca Direta',
 		color: 'hsl(var(--chart-3))',
 	},
-	Outros: {
-		label: 'Outros',
+
+	Discover: {
+		label: 'Discover',
 		color: 'hsl(var(--chart-5))',
+	},
+	Youtube: {
+		label: 'Youtube',
+		color: 'hsl(var(--chart-6))',
+	},
+	Link: {
+		label: 'Link de Referência',
+		color: 'hsl(var(--chart-7))',
+	},
+	Shopping: {
+		label: 'Shopping',
+		color: 'hsl(var(--chart-8))',
+	},
+	Deconhecido: {
+		label: 'Deconhecido',
+		color: 'hsl(var(--chart-9))',
 	},
 } satisfies ChartConfig;
 
@@ -41,7 +55,11 @@ interface TrafficComponentProps {
 	Pago: number;
 	Social: number;
 	Direto: number;
-	Outros: number;
+	nAtribuido: number;
+	crossNetwork: number;
+	shopping: number;
+	video: number;
+	referral: number;
 }
 
 export function TrafficComponent({
@@ -49,85 +67,59 @@ export function TrafficComponent({
 	Organico,
 	Pago,
 	Social,
-	Outros,
+	crossNetwork,
+	nAtribuido,
+	referral,
+	shopping,
+	video,
 }: TrafficComponentProps) {
 	const chartData = [
-		{ name: 'Organico', value: Organico },
-		{ name: 'Pago', value: Pago },
-		{ name: 'Direta', value: Direto },
-		{ name: 'Social', value: Social },
-		{ name: 'Outros', value: Outros },
+		{ name: 'Discover', usuarios: crossNetwork, fill: 'var(--color-Discover)' },
+		{ name: 'Pago', usuarios: Pago, fill: 'var(--color-Pago)' },
+		{ name: 'Organico', usuarios: Organico, fill: 'var(--color-Organico)' },
+		{ name: 'Link', usuarios: referral, fill: 'var(--color-Link)' },
+		{ name: 'Direta', usuarios: Direto, fill: 'var(--color-Direta)' },
+		{ name: 'Social', usuarios: Social, fill: 'var(--color-Social)' },
+		{ name: 'Shopping', usuarios: shopping, fill: 'var(--color-Shopping)' },
+		{ name: 'Youtube', usuarios: video, fill: 'var(--color-Youtube)' },
+		{
+			name: 'Deconhecido',
+			usuarios: nAtribuido,
+			fill: 'var(--color-Deconhecido)',
+		},
 	];
-	const totaltraffic = chartData.reduce((acc, curr) => acc + curr.value, 0);
 
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square w-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
-			<PieChart>
+			className='h-80 md:h-72 w-full'>
+			<BarChart
+				margin={{
+					top: 28,
+				}}
+				data={chartData}>
+				<CartesianGrid vertical={false} />
+				<XAxis
+					dataKey='name'
+					tickMargin={12}
+					tickLine={false}
+					axisLine={false}
+				/>
 				<ChartTooltip
 					cursor={false}
-					content={<ChartTooltipContent />}
+					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<Pie
-					data={chartData}
-					dataKey='value'
-					nameKey='name'
-					innerRadius={60}
-					label={({ percent, ...props }) => {
-						return (
-							<text
-								className='text-foreground'
-								cx={props.cx}
-								cy={props.cy}
-								x={props.x - 14}
-								y={props.y}
-								textAnchor={props.textAnchor + 1}
-								dominantBaseline={props.dominantBaseline}
-								fill='hsla(var(--foreground))'>{` ${(percent * 100).toFixed(
-								0,
-							)}%`}</text>
-						);
-					}}
-					labelLine={false}>
-					{chartData.map((entry, index) => (
-						<Cell
-							key={`cell-${index}`}
-							fill={`var(--color-${entry.name})`}
-						/>
-					))}
-					<Label
-						content={({ viewBox }) => {
-							if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-								return (
-									<text
-										x={viewBox.cx}
-										y={viewBox.cy}
-										textAnchor='middle'
-										dominantBaseline='middle'>
-										<tspan
-											x={viewBox.cx}
-											y={viewBox.cy}
-											className='fill-foreground text-3xl font-bold'>
-											{totaltraffic.toLocaleString()}
-										</tspan>
-										<tspan
-											x={viewBox.cx}
-											y={(viewBox.cy || 0) + 24}
-											className='fill-muted-foreground text-wrap'>
-											Usuários
-										</tspan>
-									</text>
-								);
-							}
-						}}
+				<Bar
+					radius={4}
+					dataKey='usuarios'>
+					<LabelList
+						position='top'
+						offset={12}
+						className='fill-foreground'
+						fontSize={12}
 					/>
-				</Pie>
-				<ChartLegend
-					content={<ChartLegendContent nameKey='name' />}
-					className='text-xs pt-2 2xl:text-nowrap flex-wrap 2xl:flex-nowrap'
-				/>
-			</PieChart>
+				</Bar>
+			</BarChart>
 		</ChartContainer>
 	);
 }

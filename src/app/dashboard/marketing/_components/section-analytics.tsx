@@ -51,6 +51,11 @@ export default async function SectionAnalytics({
 	const staticData = responseAnalytics.data[0];
 	const trafficData = responseAnalytics.data[1];
 	const channelData = responseAnalytics.data[2];
+	const totalUsers = (Object.values(trafficData) as number[]).reduce(
+		(acc: number, value: number) => acc + value,
+		0,
+	);
+	console.log(trafficData);
 
 	return (
 		<div className='grid gap-5'>
@@ -67,21 +72,25 @@ export default async function SectionAnalytics({
 				</div>
 			</div>
 
-			<div className='grid grid-cols-1 lg:grid-cols-2 gap-5'>
+			<div className='grid grid-cols-1 gap-5'>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
-							Distribuição de Tráfego
+							Distribuição de Tráfego - {totalUsers} Usuários
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{trafficData ? (
 							<TrafficComponent
-								Organico={Number(trafficData['Organic Search'])}
-								Pago={Number(trafficData['Paid Search'])}
-								Social={Number(trafficData['Organic Social'])}
-								Direto={Number(trafficData.Direct)}
-								Outros={Number(trafficData.Other)}
+								Organico={trafficData['Organic Search']}
+								referral={trafficData.Referral}
+								Pago={trafficData['Paid Search']}
+								Social={trafficData['Organic Social']}
+								Direto={trafficData.Direct}
+								nAtribuido={trafficData.Unassigned}
+								crossNetwork={trafficData['Cross-network']}
+								shopping={trafficData['Organic Shopping']}
+								video={trafficData['Organic Video']}
 							/>
 						) : (
 							<div className='flex items-center italic text-muted-foreground'>
@@ -99,11 +108,15 @@ export default async function SectionAnalytics({
 					<CardContent>
 						{channelData ? (
 							<ConversionsComponent
-								Organic={channelData['Organic Search']}
-								Direct={channelData.Direct}
-								Other={channelData.Other}
-								Paid={channelData['Paid Search']}
+								Organico={channelData['Organic Search']}
+								referral={channelData.Referral}
+								Pago={channelData['Paid Search']}
 								Social={channelData['Organic Social']}
+								Direto={channelData.Direct}
+								nAtribuido={channelData.Unassigned}
+								crossNetwork={channelData['Cross-network']}
+								shopping={channelData['Organic Shopping']}
+								video={channelData['Organic Video']}
 							/>
 						) : (
 							<div className='flex items-center italic text-muted-foreground'>

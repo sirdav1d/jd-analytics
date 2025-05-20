@@ -30,35 +30,42 @@ interface ConversionsComponentProps {
 }
 
 interface DataConversionsComponentProps {
-	Organic: ConversionsComponentProps;
-	Paid: ConversionsComponentProps;
-	Direct: ConversionsComponentProps;
+	Organico: ConversionsComponentProps;
+	Pago: ConversionsComponentProps;
 	Social: ConversionsComponentProps;
-	Other: ConversionsComponentProps;
+	Direto: ConversionsComponentProps;
+	nAtribuido: ConversionsComponentProps;
+	crossNetwork: ConversionsComponentProps;
+	shopping: ConversionsComponentProps;
+	video: ConversionsComponentProps;
+	referral: ConversionsComponentProps;
 }
 
 export function ConversionsComponent({
-	Organic,
-	Direct,
-	Other,
-	Paid,
+	Organico,
+	Direto,
+	Pago,
+	referral,
+	crossNetwork,
+	shopping,
+	video,
 	Social,
 }: DataConversionsComponentProps) {
 	const chartData = [
 		{
 			name: 'Orgânico',
-			conversions: Organic.conversions,
-			sessions: Organic.sessions,
+			conversions: Organico.conversions,
+			sessions: Organico.sessions,
 		},
 		{
 			name: 'Pago',
-			conversions: Paid.conversions,
-			sessions: Paid.sessions,
+			conversions: Pago.conversions,
+			sessions: Pago.sessions,
 		},
 		{
 			name: 'Busca Direta',
-			conversions: Direct.conversions,
-			sessions: Direct.sessions,
+			conversions: Direto.conversions,
+			sessions: Direto.sessions,
 		},
 		{
 			name: 'Social',
@@ -66,9 +73,24 @@ export function ConversionsComponent({
 			sessions: Social.sessions,
 		},
 		{
-			name: 'Outros',
-			conversions: Other.conversions,
-			sessions: Other.sessions,
+			name: 'Link de Referência',
+			conversions: referral.conversions,
+			sessions: referral.sessions,
+		},
+		{
+			name: 'Rede Cruzada',
+			conversions: crossNetwork.conversions,
+			sessions: crossNetwork.sessions,
+		},
+		{
+			name: 'Shopping',
+			conversions: shopping.conversions,
+			sessions: shopping.sessions,
+		},
+		{
+			name: 'Youtube',
+			conversions: video.conversions,
+			sessions: video.sessions,
 		},
 	];
 
