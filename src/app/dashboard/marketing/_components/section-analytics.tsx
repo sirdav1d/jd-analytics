@@ -55,7 +55,6 @@ export default async function SectionAnalytics({
 		(acc: number, value: number) => acc + value,
 		0,
 	);
-	console.log(trafficData);
 
 	return (
 		<div className='grid gap-5'>
