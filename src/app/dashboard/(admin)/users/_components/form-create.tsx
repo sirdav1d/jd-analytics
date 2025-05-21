@@ -35,7 +35,7 @@ const formSchema = z.object({
 		.max(50),
 	email: z.string().email({ message: 'Email inválido' }),
 	role: z.enum(['ADMIN', 'MANAGER', 'SELLER']),
-	organizationName: z.enum(['JD Centro', 'JD Icaraí', 'JSEG']),
+	
 	password: z
 		.string()
 		.min(6, { message: 'A senha deve ter no mínimo 6 dígitos' }),
@@ -49,7 +49,7 @@ export default function FormCreate() {
 			name: '',
 			email: '',
 			role: 'MANAGER',
-			organizationName: 'JD Centro',
+		
 			password: '',
 		},
 	});
@@ -57,7 +57,7 @@ export default function FormCreate() {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
-		const { name, email, role, organizationName, password } = values;
+		const { name, email, role, password } = values;
 		const timestamp = Date.now();
 		const random = Math.floor(Math.random() * 100000);
 		const externalID = `${timestamp}${random}`;
@@ -67,7 +67,6 @@ export default function FormCreate() {
 				name,
 				email,
 				role,
-				organizationName,
 				password,
 				externalID,
 			);
@@ -118,33 +117,7 @@ export default function FormCreate() {
 						</FormItem>
 					)}
 				/>
-				<FormField
-					control={form.control}
-					name='organizationName'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Unidade</FormLabel>
-							<Select
-								onValueChange={field.onChange}
-								defaultValue={field.value}>
-								<FormControl>
-									<SelectTrigger className='w-full col-span-3'>
-										<SelectValue placeholder='Selecione a Unidade' />
-									</SelectTrigger>
-								</FormControl>
-								<SelectContent>
-									<SelectItem value='JD Centro'>JD Centro</SelectItem>
-									<SelectItem
-										disabled
-										value='JD Icaraí'>
-										JD Icaraí
-									</SelectItem>
-								</SelectContent>
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				
 				<FormField
 					control={form.control}
 					name='role'

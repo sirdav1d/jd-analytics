@@ -9,6 +9,8 @@ import fs from 'fs/promises';
 // Defina aqui os cabeçalhos obrigatórios do CSV
 const expectedHeaders = [
 	'Data do Lançamento',
+	'Código Empresa',
+	'Nome Empresa',
 	'Documento',
 	'Natureza de Operação',
 	'Operação',

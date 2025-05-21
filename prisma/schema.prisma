@@ -17,102 +17,100 @@ model Organization {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   googleExpiresAt    BigInt?
+  external_code      Int                 @unique @default(autoincrement()) @db.SmallInt
   dashboardComercial DashboardComercial?
   dashboardMarketing DashboardMarketing?
-  users              User[]
+  Pedido             Pedido[]
 }
 
 model User {
-  id             String       @id @default(uuid())
-  externalId     String       @unique
-  name           String
-  email          String       @unique
-  password       String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  organizationId String
-  role           Role
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  Pedidos        Pedido[]
-  SalesGoal      SalesGoal[]
+  id         String      @id @default(uuid())
+  name       String
+  email      String      @unique
+  password   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  role       Role
+  externalId String      @unique
+  Pedidos    Pedido[]
+  SalesGoal  SalesGoal[]
 }
 
 model Customer {
   id           String     @id @default(uuid())
   name         String
-  personType   PersonType // Física ou Jurídica
-  externalCode Int?       @unique // Código Cliente, se disponível
+  personType   PersonType
+  externalCode Int?       @unique
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   sales        Pedido[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model SalesGoal {
   id          String   @id @default(uuid())
-  seller      User     @relation(fields: [userId], references: [id])
   userId      String
-  goalDateRef DateTime @db.Date // sempre o primeiro dia do mês
-  revenue     Float // meta de faturamento
+  goalDateRef DateTime @db.Date
+  revenue     Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  seller      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, goalDateRef])
 }
 
 model PaymentMethod {
-  id     String   @id @default(uuid())
-  method String   @unique
-  sales  Pedido[]
-
+  id        String   @id @default(uuid())
+  method    String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  sales     Pedido[]
 }
 
 model SaleItem {
-  id         String  @id @default(uuid())
-  sale       Pedido  @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  saleId     String  @map("sale_id")
-  product    Product @relation(fields: [productId], references: [id])
-  productId  String  @map("product_id")
-  quantity   Float // Qtde Item
-  unitValue  Float   @map("unit_value") // Valor Unitário Item
-  totalValue Float   @map("total_value") // Valor Total Item
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  quantity   Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  productId  String   @map("product_id")
+  saleId     String   @map("sale_id")
+  totalValue Float    @map("total_value")
+  unitValue  Float    @map("unit_value")
+  product    Product  @relation(fields: [productId], references: [id])
+  sale       Pedido   @relation(fields: [saleId], references: [id], onDelete: Cascade)
 }
 
 model Product {
   id           String     @id @default(uuid())
   description  String
-  brand        String // marca como atributo simples
-  sector       String // setor do produto
-  externalCode Int?       @unique // Código Produto, se disponível
+  brand        String
+  sector       String
+  externalCode Int?       @unique
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   items        SaleItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Pedido {
-  id              String   @id @default(uuid())
-  data_pedido     DateTime
-  natureOperation String // Natureza de Operação (ex: [S] VENDA DE PRODUTOS)
-  operationType   String // Operação (ex: S - Venda)
-  documentNumber  String   @unique // Documento 
-  origin          String // Origem da venda
-  cancelled       Boolean  @default(false) // Cancelada (true/false)
-
-  user            User           @relation(fields: [userId], references: [id])
+  id              String         @id @default(uuid())
+  data_pedido     DateTime       @db.Date
+  natureOperation String
+  operationType   String
+  documentNumber  String        
+  origin          String
+  cancelled       Boolean        @default(false)
   userId          String
-  customer        Customer?      @relation(fields: [customerId], references: [id])
   customerId      String?
-  items           SaleItem[]
-  paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
   paymentMethodId String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  organizationId  String
+  customer        Customer?      @relation(fields: [customerId], references: [id])
+  organization    Organization   @relation(fields: [organizationId], references: [id])
+  paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
+  items           SaleItem[]
+
+  @@unique([documentNumber, organizationId])
 }
 
 model DashboardMarketing {
@@ -185,8 +183,8 @@ model PalavraChave {
 }
 
 model DashboardComercial {
-  id                      String   @id @default(uuid())
-  organizationId          String   @unique
+  id                      String       @id @default(uuid())
+  organizationId          String       @unique
   receitaTotal            Decimal
   ticketMedio             Decimal
   crescimentoReceita      Float
@@ -196,10 +194,9 @@ model DashboardComercial {
   volumeReparos           Int
   taxaReincidenciaReparos Float
   receitaReparosVsVendas  Float
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-
-  organization Organization @relation(fields: [organizationId], references: [id])
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+  organization            Organization @relation(fields: [organizationId], references: [id])
 }
 
 enum Role {

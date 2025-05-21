@@ -48,6 +48,47 @@ function parseDecimal(valor: string): number {
 	return parseFloat(valor.replace(/\./g, '').replace(/,/g, '.'));
 }
 
+async function getOrganizationFromRow(row: ParsedRow) {
+	const externalOrgCode = row['Código Empresa']?.trim();
+	if (!externalOrgCode) {
+		throw new Error('Código da empresa ausente na linha do CSV');
+	}
+	// If 'external_code' is not a unique field, you should use 'findFirst' instead of 'findUnique'
+	return prisma.organization.findFirst({
+		where: { external_code: +externalOrgCode },
+	});
+}
+
+async function upsertSeller(fullName: string, sellerCode: string) {
+	const domain = 'infojd.com.br';
+	const plainPassword = 'Senha@123';
+	const saltRounds = 10;
+	const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+	const parts = fullName.trim().split(/\s+/);
+	const first = parts[0];
+
+	const normalize = (s: string) =>
+		s
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase();
+
+	const base = normalize(first);
+	const emailCandidate = `${base}${sellerCode}@${domain}`;
+
+	return prisma.user.upsert({
+		where: { externalId: sellerCode }, // Replace with a valid unique field
+		update: { name: fullName, email: emailCandidate },
+		create: {
+			name: fullName,
+			email: emailCandidate,
+			externalId: sellerCode,
+			role: 'SELLER',
+			password: hashedPassword, // Replace with a secure default password or logic
+		},
+	});
+}
+
 // Função principal
 export async function POST(req: NextRequest) {
 	try {
@@ -72,7 +113,7 @@ export async function POST(req: NextRequest) {
 			quoteChar: '"',
 		});
 
-		console.log(parsed.errors)
+		console.log(parsed.errors);
 		if (parsed.errors.length) {
 			console.error('Erros no parsing do CSV:', parsed.errors);
 			return NextResponse.json(
@@ -83,41 +124,25 @@ export async function POST(req: NextRequest) {
 
 		const rows: ParsedRow[] = parsed.data.map(normalizeRow);
 
-		async function upsertSeller(fullName: string, sellerCode: string) {
-			const domain = 'infojd.com.br';
-			const plainPassword = 'Senha@123';
-			const saltRounds = 10;
-			const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
-			const parts = fullName.trim().split(/\s+/);
-			const first = parts[0];
-
-			const normalize = (s: string) =>
-				s
-					.normalize('NFD')
-					.replace(/[\u0300-\u036f]/g, '')
-					.toLowerCase();
-
-			const base = normalize(first);
-			const emailCandidate = `${base}${sellerCode}@${domain}`;
-
-			const seller = await prisma.user.upsert({
-				where: { externalId: sellerCode }, // Replace with a valid unique field
-				update: { name: fullName, email: emailCandidate },
-				create: {
-					name: fullName,
-					email: emailCandidate,
-					externalId: sellerCode,
-					role: 'SELLER',
-					password: hashedPassword, // Replace with a secure default password or logic
-					organization: { connect: { id: process.env.JD_CENTRO_ID } }, // Replace with valid organization logic
-				},
-			});
-			return seller;
-		}
-
 		for (const row of rows) {
 			// Extração de campos
-			console.log('row[0]', row['Data do Lançamento']);
+			const organization = await getOrganizationFromRow(row);
+
+			console.log('Organização:', organization);
+			if (!organization) {
+				console.error(
+					'Organização não encontrada para o código:',
+					row['Código Empresa'],
+				);
+				return NextResponse.json(
+					{
+						ok: false,
+						error: `Organização com código ${row['Código Empresa']} não encontrada`,
+					},
+					{ status: 404 },
+				);
+			}
+
 			const launchDate = parseDateBR(row['Data do Lançamento']);
 			const documentNumber = row['Documento'];
 			const natureOperation = row['Natureza de Operação'];
@@ -172,7 +197,12 @@ export async function POST(req: NextRequest) {
 
 			// Sale
 			const sale = await prisma.pedido.upsert({
-				where: { documentNumber: documentNumber },
+				where: {
+					documentNumber_organizationId: {
+						documentNumber: documentNumber,
+						organizationId: organization.id,
+					},
+				},
 				update: {},
 				create: {
 					documentNumber,
@@ -184,10 +214,12 @@ export async function POST(req: NextRequest) {
 					customer: { connect: { id: customer.id } },
 					user: { connect: { id: seller.id } },
 					paymentMethod: { connect: { id: paymentMethod.id } },
+					organization: { connect: { id: organization.id } },
 				},
 			});
 
 			// SaleItem
+
 			const quantity = parseDecimal(row['Qtde Item']);
 			const unitValue = parseDecimal(row['Valor Unitário Item']);
 			const totalValue = parseDecimal(row['Valor Total Item']);
@@ -199,6 +231,17 @@ export async function POST(req: NextRequest) {
 					unitValue,
 					totalValue,
 				},
+			});
+			
+			console.log('>>> Dados para SaleItem:', {
+				saleId: sale.id,
+				productId: product.id,
+				rawQuantity: row['Qtde Item'],
+				quantity,
+				rawUnitValue: row['Valor Unitário Item'],
+				unitValue,
+				rawTotalValue: row['Valor Total Item'],
+				totalValue,
 			});
 		}
 
