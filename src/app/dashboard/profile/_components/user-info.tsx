@@ -2,14 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { $Enums } from '@prisma/client';
-import { Briefcase, Building2, Mail, UserIcon } from 'lucide-react';
+import { Briefcase, Mail, UserIcon } from 'lucide-react';
 import UserForm from './user-form';
 
 type UserInfoProps = {
-	organization: {
-		name: string;
-	};
-} & {
 	name: string;
 	id: string;
 	createdAt: Date;
@@ -17,7 +13,6 @@ type UserInfoProps = {
 	email: string;
 	password: string;
 	role: $Enums.Role;
-	organizationId: string;
 };
 
 export default function UserInfo({ user }: { user: UserInfoProps }) {
@@ -53,15 +48,6 @@ export default function UserInfo({ user }: { user: UserInfoProps }) {
 						<p className='font-medium text-sm md:text-base'>Cargo na Empresa</p>
 						<p className='text-muted-foreground text-sm'>
 							{user.role == 'ADMIN' ? 'Administrador' : 'Gerente'}
-						</p>
-					</div>
-				</div>
-				<div className='flex items-center space-x-4'>
-					<Building2 className='text-red-600' />
-					<div>
-						<p className='font-medium text-sm md:text-base'>Unidade</p>
-						<p className='text-muted-foreground text-sm'>
-							{user.organization.name}
 						</p>
 					</div>
 				</div>

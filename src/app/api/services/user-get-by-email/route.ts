@@ -4,12 +4,10 @@ import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-
 	const customHeader = req.headers.get('x-my-custom-header');
 	try {
 		const user = await prisma.user.findUnique({
 			where: { email: customHeader! },
-			include: { organization: { select: { name: true } } },
 		});
 		if (!user) {
 			return NextResponse.json({
