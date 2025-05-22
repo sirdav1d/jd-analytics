@@ -33,15 +33,22 @@ export default async function GoalResultPage(props: {
 	};
 
 	function formattedEndDate() {
-		const date = new Date();
-		const endDate = date.toISOString().split('T')[0];
+		const now = new Date();
+		const endDate = now.toISOString().split('T')[0];
 		return endDate;
 	}
 
 	function formattedStartDate() {
-		const date = new Date();
-		date.setDate(date.getDate() - 7);
-		const startDate = date.toISOString().split('T')[0];
+		const now = new Date();
+		const startOfMonth = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			1,
+			0,
+			0,
+			0,
+		);
+		const startDate = startOfMonth.toISOString().split('T')[0];
 		return startDate;
 	}
 	const searchParams = await props.searchParams;
@@ -64,7 +71,6 @@ export default async function GoalResultPage(props: {
 		return <div>Nenhum dado foi encontrado</div>;
 	}
 
-	
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5'>
 			<Filter />

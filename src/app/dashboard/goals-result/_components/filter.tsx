@@ -4,16 +4,18 @@
 
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { addDays, format } from 'date-fns';
+import { format, startOfMonth } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
 export default function Filter() {
+	const now = new Date();
+
 	const searchParams = useSearchParams();
 	const [dateRange, setDateRange] = useState({
 		to: searchParams.get('endDate') || new Date(),
-		from: searchParams.get('startDate') || addDays(new Date(), -7),
+		from: searchParams.get('startDate') || startOfMonth(now),
 	});
 
 	const [isPending, startTransition] = useTransition();
