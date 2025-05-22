@@ -1,53 +1,37 @@
 /** @format */
 
-'use client';
-
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import {
-	TableHeader,
-	TableRow,
-	TableHead,
+	Table,
 	TableBody,
 	TableCell,
-	Table,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from '@/components/ui/table';
-import { addDays } from 'date-fns';
 import {
-	DollarSign,
-	SquarePercent,
-	ShoppingBag,
-	UserRoundPlus,
-	Timer,
 	CirclePercent,
+	DollarSign,
+	ShoppingBag,
+	SquarePercent,
+	Timer,
 	Trophy,
-	Zap,
+	UserRoundPlus,
 } from 'lucide-react';
-import { useState } from 'react';
 import { SalesByCategoryChart } from '../_components/sales-by-category-chart';
 import { CustomerComparisonChartComponent } from './_components/customer-comparison';
+import FilterComercial from './_components/filter-comercial';
 import { GrowthChartComponent } from './_components/growth-chart';
 import { SalesChartComponent } from './_components/sales-chart-commercial';
-import { Button } from '@/components/ui/button';
+import RankingSellers from './_components/tables/ranking-sellers';
+import { getComercialFilterAction } from '@/actions/filters/filter-comercial';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock data (replace with actual data in a real application)
 
 export default function ComercialDashboard() {
-	const [dateRange, setDateRange] = useState({
-		from: new Date(),
-		to: addDays(new Date(), 7),
-	});
-	const [category, setCategory] = useState('all');
-	const [representative, setRepresentative] = useState('all');
-	const [customerType, setCustomerType] = useState('all');
-
+	const dataFilter = getComercialFilterAction();
 	const topProducts = [
 		{ posicao: 1, name: 'Notebook Gamer XYZ', sales: 50, revenue: 150000 },
 		{ posicao: 2, name: 'SSD 1TB', sales: 100, revenue: 50000 },
@@ -64,134 +48,19 @@ export default function ComercialDashboard() {
 		{ posicao: 5, name: 'Empresa C', purchases: 7, revenue: 70000 },
 	];
 
-	const topSalespeople = [
-		{
-			posicao: 1,
-			name: 'Carlos Souza',
-			sales: 50,
-			revenue: 270000,
-			conversion: 80,
-		},
-		{
-			posicao: 2,
-			name: 'Ana Rodrigues',
-			sales: 45,
-			revenue: 235000,
-			conversion: 90,
-		},
-		{
-			posicao: 3,
-			name: 'Pedro Santos',
-			sales: 40,
-			revenue: 202000,
-			conversion: 70,
-		},
-		{
-			posicao: 4,
-			name: 'Juliana Lima',
-			sales: 35,
-			revenue: 180000,
-			conversion: 75,
-		},
-		{
-			posicao: 5,
-			name: 'Bianca Martins',
-			sales: 30,
-			revenue: 160000,
-			conversion: 65,
-		},
-		{
-			posicao: 6,
-			name: 'Gustavo Ferreira',
-			sales: 50,
-			revenue: 270000,
-			conversion: 74,
-		},
-		{
-			posicao: 7,
-			name: 'Fernanda Oliveira',
-			sales: 45,
-			revenue: 235000,
-			conversion: 60,
-		},
-		{
-			posicao: 8,
-			name: 'Leonardo Mendes',
-			sales: 40,
-			revenue: 202000,
-			conversion: 55,
-		},
-		{
-			posicao: 9,
-			name: 'Thiago Barbosa',
-			sales: 35,
-			revenue: 180000,
-			conversion: 58,
-		},
-		{
-			posicao: 10,
-			name: 'Amanda Nogueira',
-			sales: 30,
-			revenue: 160000,
-			conversion: 45,
-		},
-	];
-
 	return (
 		<div className='mx-auto space-y-4 mb-5  w-full'>
-			<div className='flex flex-wrap gap-4 mb-4'>
-				<Button className='disabled:opacity-70 w-full md:w-fit'>
-					Atualizar <Zap />
-				</Button>
-				<DatePickerWithRange
-					date={dateRange}
-					setDate={(e) =>
-						setDateRange({
-							from: e?.from ?? new Date(),
-							to: e?.to ?? new Date(),
-						})
-					}
-				/>
-				<Select
-					value={category}
-					onValueChange={setCategory}>
-					<SelectTrigger className='w-full md:w-48'>
-						<SelectValue placeholder='Categoria' />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value='all'>Todas as Categorias</SelectItem>
-						<SelectItem value='computers'>Computadores Montados</SelectItem>
-						<SelectItem value='services'>Serviços Técnicos</SelectItem>
-						<SelectItem value='peripherals'>Periféricos</SelectItem>
-						<SelectItem value='upgrades'>Upgrades</SelectItem>
-					</SelectContent>
-				</Select>
-				<Select
-					value={representative}
-					onValueChange={setRepresentative}>
-					<SelectTrigger className='w-full md:w-48'>
-						<SelectValue placeholder='Representante' />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value='all'>Todos os Vendedores</SelectItem>
-						<SelectItem value='rep1'>Representante 1</SelectItem>
-						<SelectItem value='rep2'>Representante 2</SelectItem>
-						<SelectItem value='rep3'>Representante 3</SelectItem>
-					</SelectContent>
-				</Select>
-				<Select
-					value={customerType}
-					onValueChange={setCustomerType}>
-					<SelectTrigger className='w-full md:w-48'>
-						<SelectValue placeholder='Tipo de Cliente' />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value='all'>Todos os Clientes</SelectItem>
-						<SelectItem value='new'>Novos Clientes</SelectItem>
-						<SelectItem value='recurring'>Clientes Recorrentes</SelectItem>
-					</SelectContent>
-				</Select>
-			</div>
+			<Suspense
+				fallback={
+					<div className='md:w-fit flex-wrap flex items-center flex-col md:flex-row  w-full gap-4 h-fit'>
+						<Skeleton className='w-full md:w-48  h-12' />
+						<Skeleton className='w-full md:w-48 h-12' />
+						<Skeleton className='w-full md:w-48 h-12' />
+						<Skeleton className='w-full md:w-48 h-12' />
+					</div>
+				}>
+				<FilterComercial data={dataFilter} />
+			</Suspense>
 
 			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
 				<Card>
@@ -437,85 +306,7 @@ export default function ComercialDashboard() {
 						</CardContent>
 					</Card>
 				</div>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Ranking de Vendedores
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Posição</TableHead>
-									<TableHead>Vendedor</TableHead>
-									<TableHead className='text-center text-nowrap'>
-										Vendas
-									</TableHead>
-									<TableHead className='text-center text-nowrap'>
-										Receita
-									</TableHead>
-									<TableHead className='text-center text-nowrap'>
-										Ticket Médio
-									</TableHead>
-									<TableHead className='text-center text-nowrap'>
-										Taxa de Conversão
-									</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{topSalespeople.map((salesperson) => {
-									const ticketSalesMan =
-										salesperson.revenue / salesperson.sales;
-									return (
-										<TableRow key={salesperson.name}>
-											<TableCell className='flex items-center gap-3'>
-												{salesperson.posicao}
-												{salesperson.posicao == 1 ? (
-													<Trophy
-														size={20}
-														className='text-amber-500'
-													/>
-												) : salesperson.posicao == 2 ? (
-													<Trophy
-														size={20}
-														className='text-zinc-400'
-													/>
-												) : salesperson.posicao == 3 ? (
-													<Trophy
-														size={20}
-														className='text-rose-700'
-													/>
-												) : null}
-											</TableCell>
-											<TableCell className='text-sm text-nowrap'>
-												{salesperson.name}
-											</TableCell>
-											<TableCell className='text-center'>
-												{salesperson.sales}
-											</TableCell>
-											<TableCell className='text-center'>
-												{salesperson.revenue.toLocaleString('pt-br', {
-													currency: 'brl',
-													style: 'currency',
-												})}
-											</TableCell>
-											<TableCell className='text-center'>
-												{ticketSalesMan.toLocaleString('pt-br', {
-													currency: 'brl',
-													style: 'currency',
-												})}
-											</TableCell>
-											<TableCell className='text-center'>
-												{salesperson.conversion}%
-											</TableCell>
-										</TableRow>
-									);
-								})}
-							</TableBody>
-						</Table>
-					</CardContent>
-				</Card>
+				<RankingSellers />
 			</div>
 		</div>
 	);
