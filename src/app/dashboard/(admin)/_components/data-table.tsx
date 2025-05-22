@@ -104,7 +104,7 @@ export function DataTable<TData, TValue>({
 					onChange={(event) =>
 						table.getColumn('name')?.setFilterValue(event.target.value)
 					}
-					className='max-w-sm'
+					className='w-full xl:w-[220px]'
 				/>
 				<Select
 					value={roleFilter}
@@ -114,7 +114,7 @@ export function DataTable<TData, TValue>({
 							.getColumn('role')
 							?.setFilterValue(value === 'all' ? '' : value);
 					}}>
-					<SelectTrigger className='w-full md:w-[220px]'>
+					<SelectTrigger className='w-full xl:w-[220px]'>
 						<SelectValue placeholder='Selecione o Cargo' />
 					</SelectTrigger>
 					<SelectContent>

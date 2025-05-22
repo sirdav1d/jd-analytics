@@ -148,7 +148,7 @@ export default function GoalsPage() {
 					</Card>
 				</TabsContent>
 				<TabsContent value='Comercial'>
-					<div className=' bg-background w-full  max-w-full'>
+					<div className=' bg-background w-full grid grid-cols-1 max-w-full'>
 						<div className='my-5 flex flex-col md:flex-row gap-2 items-center justify-between'>
 							<div>
 								<h2 className=' text-3xl font-semibold'>JD Info Centro</h2>

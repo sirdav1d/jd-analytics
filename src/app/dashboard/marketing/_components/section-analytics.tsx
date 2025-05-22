@@ -61,7 +61,7 @@ export default async function SectionAnalytics({
 		<div className='grid gap-5'>
 			<div className='w-full flex flex-col-reverse md:flex-row items-center justify-center md:justify-start flex-wrap gap-5'>
 				<FilterAnalytics />
-				<div className='flex items-center gap-2 scale-110 md:scale-100'>
+				<div className='flex items-center gap-2  xl:mx-0 mx-auto justify-center scale-110 md:scale-100'>
 					<Image
 						src={analytics}
 						alt='Logo Google Analytics'

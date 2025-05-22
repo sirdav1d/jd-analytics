@@ -10,7 +10,7 @@ export default function AdminPage() {
 	const response = FetchGoalTargetData();
 
 	return (
-		<div className='w-full mx-auto pb-10'>
+		<div className='w-full grid grid-cols-1 mx-auto pb-10'>
 			<Suspense
 				fallback={
 					<div>

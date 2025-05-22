@@ -28,8 +28,12 @@ import { Link } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
 import { useSession } from 'next-auth/react';
+import Logo from './logo';
+import { useSidebar } from '@/components/ui/sidebar';
+import { Separator } from './ui/separator';
 
 export default function AppSidebar() {
+	const { open } = useSidebar();
 	const session = useSession();
 	const items = [
 		{
@@ -78,7 +82,11 @@ export default function AppSidebar() {
 	return (
 		<Sidebar collapsible='icon'>
 			<SidebarContent className='bg-white dark:bg-slate-900'>
-				<SidebarGroup>
+				<div className='p-3 flex items-center justify-start'>
+					{open ? <Logo /> : null}
+				</div>
+				{open ? <Separator /> : null}
+				<SidebarGroup className='mt-4'>
 					<SidebarGroupLabel>Administrativo</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu className='space-y-2'>
@@ -104,7 +112,7 @@ export default function AppSidebar() {
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
-
+				<Separator />
 				<SidebarGroup>
 					<SidebarGroupLabel>
 						Relatórios
@@ -137,6 +145,7 @@ export default function AppSidebar() {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
+			<Separator />
 			<SidebarFooter className='bg-white dark:bg-slate-900'>
 				<SidebarMenu>
 					<SidebarMenuItem>
