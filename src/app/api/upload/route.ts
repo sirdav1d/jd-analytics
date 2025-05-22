@@ -198,9 +198,10 @@ export async function POST(req: NextRequest) {
 			// Sale
 			const sale = await prisma.pedido.upsert({
 				where: {
-					documentNumber_organizationId: {
+					documentNumber_organizationId_data_pedido: {
 						documentNumber: documentNumber,
 						organizationId: organization.id,
+						data_pedido: launchDate,
 					},
 				},
 				update: {},
@@ -232,7 +233,7 @@ export async function POST(req: NextRequest) {
 					totalValue,
 				},
 			});
-			
+
 			console.log('>>> Dados para SaleItem:', {
 				saleId: sale.id,
 				productId: product.id,

@@ -95,7 +95,7 @@ model Pedido {
   data_pedido     DateTime       @db.Date
   natureOperation String
   operationType   String
-  documentNumber  String        
+  documentNumber  String
   origin          String
   cancelled       Boolean        @default(false)
   userId          String
@@ -110,7 +110,7 @@ model Pedido {
   user            User           @relation(fields: [userId], references: [id])
   items           SaleItem[]
 
-  @@unique([documentNumber, organizationId])
+  @@unique([documentNumber, organizationId, data_pedido])
 }
 
 model DashboardMarketing {

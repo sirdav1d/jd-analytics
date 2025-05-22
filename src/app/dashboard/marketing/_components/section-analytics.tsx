@@ -19,6 +19,7 @@ import Image from 'next/image';
 import { ConversionsComponent } from './charts/conversion';
 import { TrafficComponent } from './charts/traffic';
 import FilterAnalytics from './filter-analytics';
+import { Badge } from '@/components/ui/badge';
 
 interface SectionAnalyticsProps {
 	startDate: string | string[];
@@ -135,14 +136,25 @@ export default async function SectionAnalytics({
 				<CardContent>
 					<div className='text-2xl font-bold'>
 						{staticData.purchaseRevenue
-							? Number(staticData.purchaseRevenue).toLocaleString('pt-br', {
-									style: 'currency',
-									currency: 'brl',
-								})
+							? Number(staticData.purchaseRevenue.valorAtual).toLocaleString(
+									'pt-br',
+									{
+										style: 'currency',
+										currency: 'brl',
+									},
+								)
 							: 0}
 					</div>
 					<p className='text-xs text-muted-foreground'>
-						+20% em relação ao mês anterior
+						{staticData.purchaseRevenue
+							? Number(staticData.purchaseRevenue.valorAnterior).toLocaleString(
+									'pt-br',
+									{
+										style: 'currency',
+										currency: 'brl',
+									},
+								)
+							: 0}
 					</p>
 				</CardContent>
 			</Card>
@@ -155,16 +167,35 @@ export default async function SectionAnalytics({
 						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
+						<div className='text-2xl font-bold flex items-center gap-3'>
 							{staticData.purchaseRevenue
-								? Number(staticData.purchaseRevenue).toLocaleString('pt-br', {
+								? Number(staticData.purchaseRevenue.valorAtual).toLocaleString(
+										'pt-br',
+										{
+											style: 'currency',
+											currency: 'brl',
+										},
+									)
+								: 0}
+							<Badge
+								variant={
+									staticData.purchaseRevenue.diferenca > 0
+										? 'success'
+										: 'destructive'
+								}>
+								{staticData.purchaseRevenue.percentual}
+							</Badge>
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							Valor no mês anterior{' '}
+							{staticData.purchaseRevenue
+								? Number(
+										staticData.purchaseRevenue.valorAnterior,
+									).toLocaleString('pt-br', {
 										style: 'currency',
 										currency: 'brl',
 									})
 								: 0}
-						</div>
-						<p className='text-xs text-muted-foreground'>
-							+20% em relação ao mês anterior
 						</p>
 					</CardContent>
 				</Card>
@@ -176,16 +207,35 @@ export default async function SectionAnalytics({
 						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
+						<div className='text-2xl font-bold flex items-center gap-3'>
 							{staticData.purchaseRevenue
-								? Number(staticData.purchaseRevenue).toLocaleString('pt-br', {
+								? Number(staticData.purchaseRevenue.valorAtual).toLocaleString(
+										'pt-br',
+										{
+											style: 'currency',
+											currency: 'brl',
+										},
+									)
+								: 0}
+							<Badge
+								variant={
+									staticData.purchaseRevenue.diferenca > 0
+										? 'success'
+										: 'destructive'
+								}>
+								{staticData.purchaseRevenue.percentual}
+							</Badge>
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							Valor no mês anterior{' '}
+							{staticData.purchaseRevenue
+								? Number(
+										staticData.purchaseRevenue.valorAnterior,
+									).toLocaleString('pt-br', {
 										style: 'currency',
 										currency: 'brl',
 									})
 								: 0}
-						</div>
-						<p className='text-xs text-muted-foreground'>
-							+20% em relação ao mês anterior
 						</p>
 					</CardContent>
 				</Card>
@@ -210,25 +260,53 @@ export default async function SectionAnalytics({
 						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
-							{Number(staticData.sessions).toLocaleString('pt-BR')}
+						<div className='text-2xl font-bold flex items-center gap-3'>
+							{Number(staticData.sessions.valorAtual).toLocaleString('pt-BR')}
+							<Badge
+								variant={
+									staticData.sessions.diferenca > 0 ? 'success' : 'destructive'
+								}>
+								{staticData.sessions.percentual}
+							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
-							+15% em relação ao mês anterior
+							Valor no mês anterior{' '}
+							{staticData.sessions
+								? Number(staticData.sessions.valorAnterior).toLocaleString(
+										'pt-BR',
+									)
+								: 0}
 						</p>
 					</CardContent>
 				</Card>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>Usuários</CardTitle>
+						<CardTitle className='text-sm font-medium'>
+							Usuários únicos
+						</CardTitle>
 						<UserRoundCheck className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
-							{Number(staticData.totalUsers).toLocaleString('pt-BR') ?? 0}
+						<div className='text-2xl font-bold flex items-center gap-3'>
+							{Number(staticData.totalUsers.valorAtual).toLocaleString(
+								'pt-BR',
+							) ?? 0}
+							<Badge
+								variant={
+									staticData.totalUsers.diferenca > 0
+										? 'success'
+										: 'destructive'
+								}>
+								{staticData.totalUsers.percentual}
+							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
-							+10% em relação ao mês anterior
+							Valor no mês anterior{' '}
+							{staticData.totalUsers
+								? Number(staticData.totalUsers.valorAnterior).toLocaleString(
+										'pt-BR',
+									)
+								: 0}
 						</p>
 					</CardContent>
 				</Card>
@@ -240,14 +318,30 @@ export default async function SectionAnalytics({
 						<Percent className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
+						<div className='text-2xl font-bold flex items-center gap-3'>
 							{staticData.sessionConversionRate
-								? Number(staticData.sessionConversionRate * 100).toFixed(2)
+								? Number(
+										staticData.sessionConversionRate.valorAtual * 10000,
+									).toFixed(2)
 								: 0}
 							%
+							<Badge
+								variant={
+									staticData.sessionConversionRate.diferenca > 0
+										? 'success'
+										: 'destructive'
+								}>
+								{staticData.sessionConversionRate.percentual}
+							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
-							+0.5% em relação ao mês anterior
+							Valor no mês anterior{' '}
+							{staticData.sessionConversionRate
+								? Number(
+										staticData.sessionConversionRate.valorAnterior * 10000,
+									).toFixed(2)
+								: 0}
+							%
 						</p>
 					</CardContent>
 				</Card>
@@ -259,14 +353,24 @@ export default async function SectionAnalytics({
 						<GitPullRequestClosed className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
+						<div className='text-2xl font-bold flex items-center gap-3'>
 							{staticData.bounceRate
-								? Number(staticData.bounceRate * 100).toFixed(2)
+								? Number(staticData.bounceRate.valorAtual * 100).toFixed(2)
 								: 0}
-							%
+							%{' '}
+							<Badge
+								variant={
+									staticData.bounceRate.diferenca > 0 ? 'success' : 'success'
+								}>
+								{staticData.bounceRate.percentual}
+							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
-							-2% em relação ao mês anterior
+							Valor no mês anterior{' '}
+							{staticData.bounceRate
+								? Number(staticData.bounceRate.valorAnterior * 100).toFixed(2)
+								: 0}
+							%
 						</p>
 					</CardContent>
 				</Card>
@@ -278,13 +382,28 @@ export default async function SectionAnalytics({
 						<Clock className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
+						<div className='text-2xl font-bold flex items-center gap-3'>
 							{staticData.averageSessionDuration
-								? formatDuration(Number(staticData.averageSessionDuration))
-								: 0}
+								? formatDuration(
+										Number(staticData.averageSessionDuration.valorAtual),
+									)
+								: 0}{' '}
+							<Badge
+								variant={
+									staticData.averageSessionDuration.diferenca > 0
+										? 'success'
+										: 'destructive'
+								}>
+								{staticData.averageSessionDuration.percentual}
+							</Badge>
 						</div>
-						<p className='text-xs text-muted-foreground'>
-							+15s em relação ao mês anterior
+						<p className='text-xs text-muted-foreground mt-1'>
+							Valor no mês anterior{' '}
+							{staticData.averageSessionDuration
+								? formatDuration(
+										Number(staticData.averageSessionDuration.valorAnterior),
+									)
+								: 0}
 						</p>
 					</CardContent>
 				</Card>
@@ -296,16 +415,52 @@ export default async function SectionAnalytics({
 						<BookUser className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
+						<div className='text-2xl font-bold flex items-center gap-3'>
 							{staticData.sessions && staticData.screenPageViews
 								? calculatePagesPerSession(
-										Number(staticData.sessions),
-										Number(staticData.screenPageViews),
-									)
+										Number(staticData.sessions.valorAtual),
+										Number(staticData.screenPageViews.valorAtual),
+									).toFixed(2)
 								: 0}
+							<Badge
+								variant={
+									calculatePagesPerSession(
+										Number(staticData.sessions.valorAtual),
+										Number(staticData.screenPageViews.valorAtual),
+									) >
+									calculatePagesPerSession(
+										Number(staticData.sessions.valorAnterior),
+										Number(staticData.screenPageViews.valorAnterior),
+									)
+										? 'success'
+										: 'destructive'
+								}>
+								{(
+									((calculatePagesPerSession(
+										Number(staticData.sessions.valorAtual),
+										Number(staticData.screenPageViews.valorAtual),
+									) -
+										calculatePagesPerSession(
+											Number(staticData.sessions.valorAnterior),
+											Number(staticData.screenPageViews.valorAnterior),
+										)) /
+										calculatePagesPerSession(
+											Number(staticData.sessions.valorAnterior),
+											Number(staticData.screenPageViews.valorAnterior),
+										)) *
+									100
+								).toFixed(2)}
+								%
+							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
-							+0.2 em relação ao mês anterior
+							Valor no mês anterior{' '}
+							{staticData.sessions && staticData.screenPageViews
+								? calculatePagesPerSession(
+										Number(staticData.sessions.valorAnterior),
+										Number(staticData.screenPageViews.valorAnterior),
+									).toFixed(2)
+								: 0}
 						</p>
 					</CardContent>
 				</Card>

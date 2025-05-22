@@ -1,13 +1,12 @@
 /** @format */
 
-import { prisma } from '@/lib/prisma';
+import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { Constraints, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const refreshToken = await prisma.organization.findFirst({
-		select: { googleRefreshToken: true },
-	});
+	const orgId = process.env.JD_CENTRO_ID;
+	const { refreshToken } = await getAuthenticatedClient(orgId!);
 
 	if (!refreshToken) {
 		return NextResponse.json({
@@ -30,7 +29,7 @@ export async function GET(req: NextRequest) {
 		});
 		const customer = googleAdsClient.Customer({
 			customer_id: '2971952651',
-			refresh_token: refreshToken.googleRefreshToken!,
+			refresh_token: refreshToken!,
 			login_customer_id: '8251122454',
 		});
 
@@ -70,10 +69,7 @@ export async function GET(req: NextRequest) {
       LIMIT 5
     `;
 
-		console.time('query-top-ads');
 		const result = await customer.query(query);
-
-		console.timeEnd('query-top-ads');
 
 		// Verifica se há dados antes de retornar
 		if (!result || result.length === 0) {

@@ -50,20 +50,21 @@ export function ConversionsComponent({
 	shopping,
 	video,
 	Social,
+	nAtribuido,
 }: DataConversionsComponentProps) {
 	const chartData = [
 		{
-			name: 'Orgânico',
+			name: 'Pesquisa Orgânica',
 			conversions: Organico.conversions,
 			sessions: Organico.sessions,
 		},
 		{
-			name: 'Pago',
+			name: 'Pesquisa Paga',
 			conversions: Pago.conversions,
 			sessions: Pago.sessions,
 		},
 		{
-			name: 'Busca Direta',
+			name: 'Navegação Direta',
 			conversions: Direto.conversions,
 			sessions: Direto.sessions,
 		},
@@ -73,12 +74,12 @@ export function ConversionsComponent({
 			sessions: Social.sessions,
 		},
 		{
-			name: 'Link de Referência',
+			name: 'Backlink',
 			conversions: referral.conversions,
 			sessions: referral.sessions,
 		},
 		{
-			name: 'Rede Cruzada',
+			name: 'Discover',
 			conversions: crossNetwork.conversions,
 			sessions: crossNetwork.sessions,
 		},
@@ -91,6 +92,11 @@ export function ConversionsComponent({
 			name: 'Youtube',
 			conversions: video.conversions,
 			sessions: video.sessions,
+		},
+		{
+			name: 'Desconhecido',
+			conversions: nAtribuido.conversions,
+			sessions: nAtribuido.sessions,
 		},
 	];
 

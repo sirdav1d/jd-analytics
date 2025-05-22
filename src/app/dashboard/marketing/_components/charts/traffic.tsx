@@ -24,7 +24,7 @@ const chartConfig = {
 		color: 'hsl(var(--chart-4))',
 	},
 	Direta: {
-		label: 'Busca Direta',
+		label: 'Navegação Direta',
 		color: 'hsl(var(--chart-3))',
 	},
 
@@ -75,10 +75,14 @@ export function TrafficComponent({
 }: TrafficComponentProps) {
 	const chartData = [
 		{ name: 'Discover', usuarios: crossNetwork, fill: 'var(--color-Discover)' },
-		{ name: 'Pago', usuarios: Pago, fill: 'var(--color-Pago)' },
-		{ name: 'Organico', usuarios: Organico, fill: 'var(--color-Organico)' },
-		{ name: 'Link', usuarios: referral, fill: 'var(--color-Link)' },
-		{ name: 'Direta', usuarios: Direto, fill: 'var(--color-Direta)' },
+		{ name: 'Perquisa Paga', usuarios: Pago, fill: 'var(--color-Pago)' },
+		{
+			name: 'Perquisa Orgânica',
+			usuarios: Organico,
+			fill: 'var(--color-Organico)',
+		},
+		{ name: 'Backlink', usuarios: referral, fill: 'var(--color-Link)' },
+		{ name: 'Navegação Direta', usuarios: Direto, fill: 'var(--color-Direta)' },
 		{ name: 'Social', usuarios: Social, fill: 'var(--color-Social)' },
 		{ name: 'Shopping', usuarios: shopping, fill: 'var(--color-Shopping)' },
 		{ name: 'Youtube', usuarios: video, fill: 'var(--color-Youtube)' },

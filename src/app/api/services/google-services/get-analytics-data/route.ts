@@ -9,6 +9,7 @@ import { generateBodyStaticAnalytics } from '@/utils/google/body-static-analytic
 import { generateBodyTrafficAnalytics } from '@/utils/google/body-traffic-analytics';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
+import { format, subDays, differenceInCalendarDays } from 'date-fns';
 
 export async function GET(req: NextRequest) {
 	const propertyId = '295260064';
@@ -26,6 +27,20 @@ export async function GET(req: NextRequest) {
 		});
 	}
 
+	const diffInDays = differenceInCalendarDays(
+		new Date(`${endDate}T00:00:00`),
+		new Date(`${startDate}T00:00:00`),
+	);
+
+	const previousStartDate = format(
+		subDays(new Date(`${startDate}T00:00:00`), diffInDays + 1),
+		'yyyy-MM-dd',
+	);
+	const previousEndDate = format(
+		subDays(new Date(`${endDate}T00:00:00`), diffInDays + 1),
+		'yyyy-MM-dd',
+	);
+
 	try {
 		const orgId = process.env.JD_CENTRO_ID;
 
@@ -35,10 +50,15 @@ export async function GET(req: NextRequest) {
 
 		const analytics = google.analyticsdata('v1beta').properties;
 
-		const [staticBody, trafficBody, channelBody] = [
+		const [staticBody, staticBodyPrevious, trafficBody, channelBody] = [
 			generateBodyStaticAnalytics({
 				startDate,
 				endDate,
+				channel: channelFilter,
+			}),
+			generateBodyStaticAnalytics({
+				startDate: previousStartDate,
+				endDate: previousEndDate,
 				channel: channelFilter,
 			}),
 			generateBodyTrafficAnalytics({
@@ -53,32 +73,42 @@ export async function GET(req: NextRequest) {
 			}),
 		];
 
-		const [responseStatic, responseTraffic, responseChannel] =
-			await Promise.all([
-				analytics.runReport({
-					property: `properties/${propertyId}`,
-					requestBody: staticBody,
-					auth: oauth2Client,
-				}),
-				analytics.runReport({
-					property: `properties/${propertyId}`,
-					requestBody: trafficBody,
-					auth: oauth2Client,
-				}),
-				analytics.runReport({
-					property: `properties/${propertyId}`,
-					requestBody: channelBody,
-					auth: oauth2Client,
-				}),
-			]);
+		const [
+			responseStatic,
+			resStaticPrevious,
+			responseTraffic,
+			responseChannel,
+		] = await Promise.all([
+			analytics.runReport({
+				property: `properties/${propertyId}`,
+				requestBody: staticBody,
+				auth: oauth2Client,
+			}),
+			analytics.runReport({
+				property: `properties/${propertyId}`,
+				requestBody: staticBodyPrevious,
+				auth: oauth2Client,
+			}),
+			analytics.runReport({
+				property: `properties/${propertyId}`,
+				requestBody: trafficBody,
+				auth: oauth2Client,
+			}),
+			analytics.runReport({
+				property: `properties/${propertyId}`,
+				requestBody: channelBody,
+				auth: oauth2Client,
+			}),
+		]);
 
-		const [dataStatic, dataTraffic, dataChannel] = [
+		const [dataStatic, dataStaticPrevious, dataTraffic, dataChannel] = [
 			responseStatic.data,
+			resStaticPrevious.data,
 			responseTraffic?.data,
 			responseChannel?.data,
 		];
 
-		if (!dataStatic || !dataTraffic || !dataChannel) {
+		if (!dataStatic || !dataTraffic || !dataChannel || !dataStaticPrevious) {
 			return NextResponse.json({
 				error: 'Erro ao buscar dados do Google Analytics',
 				ok: false,
@@ -86,15 +116,39 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const [staticMetrics, trafficMetrics, channelMetrics] = [
+		const [staticMetrics, staticPrevious, trafficMetrics, channelMetrics] = [
 			formatMetrics(dataStatic),
+			formatMetrics(dataStaticPrevious),
 			formatMetricsTraffic(dataTraffic),
 			formatMetricsChannel(dataChannel),
 		];
 
+		const staticComparison = Object.keys(staticMetrics).reduce(
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(acc: Record<string, any>, key) => {
+				const currentVal = parseFloat(staticMetrics[key] ?? '0') || 0;
+				const previousVal = parseFloat(staticPrevious[key] ?? '0') || 0;
+				const difference = currentVal - previousVal;
+				const percentChange =
+					previousVal !== 0
+						? ((difference / previousVal) * 100).toFixed(2)
+						: null;
+
+				acc[key] = {
+					valorAtual: currentVal,
+					valorAnterior: previousVal,
+					diferenca: difference,
+					percentual: percentChange ? `${percentChange}%` : 'N/A',
+				};
+
+				return acc;
+			},
+			{},
+		);
+
 		return NextResponse.json({
 			ok: true,
-			data: [staticMetrics, trafficMetrics, channelMetrics],
+			data: [staticComparison, trafficMetrics, channelMetrics],
 			error: null,
 		});
 	} catch (error) {
