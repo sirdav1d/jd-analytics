@@ -8,7 +8,15 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	LabelList,
+	XAxis,
+	YAxis,
+} from 'recharts';
 
 const chartConfig = {
 	Organico: {
@@ -93,32 +101,72 @@ export function TrafficComponent({
 		},
 	];
 
+	const isMobile = useIsMobile();
+
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-80 md:h-72 w-full'>
+			className='h-[600px] md:h-72 w-full'>
 			<BarChart
 				margin={{
-					top: 28,
+					top: isMobile ? 0 : 28,
+					left: isMobile ? 36 : 4,
+					right: isMobile ? 36 : 4,
 				}}
+				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
-				<XAxis
-					dataKey='name'
-					tickMargin={12}
-					tickLine={false}
-					axisLine={false}
-				/>
+				{isMobile ? (
+					<YAxis
+						dataKey='name'
+						type='category'
+						tickLine={false}
+						tickMargin={10}
+						axisLine={false}
+						tickFormatter={(value) => value.slice(0, 8)}
+					/>
+				) : (
+					<XAxis
+						dataKey='name'
+						tickMargin={12}
+						tickLine={false}
+						axisLine={false}
+					/>
+				)}
+
+				{isMobile ? (
+					<XAxis
+						dataKey='usuarios'
+						tickLine={false}
+						hide
+						type='number'
+						scale={'sqrt'}
+						tickMargin={10}
+						axisLine={false}
+					/>
+				) : (
+					<YAxis
+						dataKey='usuarios'
+						type='number'
+						scale={'sqrt'}
+						hide
+						tickMargin={12}
+						tickLine={false}
+						axisLine={false}
+					/>
+				)}
+
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
 				<Bar
 					radius={4}
+					layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 					dataKey='usuarios'>
 					<LabelList
-						position='top'
-						offset={12}
+						position={`${isMobile ? 'right' : 'top'}`}
+						offset={8}
 						className='fill-foreground'
 						fontSize={12}
 					/>
