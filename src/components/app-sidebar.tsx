@@ -85,11 +85,11 @@ export default function AppSidebar() {
 		<Sidebar collapsible='icon'>
 			<SidebarContent className='bg-white dark:bg-slate-900'>
 				<div
-					className={`pt-4 md:pl-3 flex items-center ${isMobile ? 'justify-center' : 'justify-start'} `}>
+					className={`pt-4 md:pl-3 flex items-center ${isMobile ? 'hidden' : 'justify-start'} `}>
 					{open ? <Logo /> : null}
 				</div>
 				{open ? <Separator /> : null}
-				<SidebarGroup className={`${open ? 'mt-0' : 'mt-8'}`}>
+				<SidebarGroup className={`${open ? 'mt-0' : 'md:mt-8'}`}>
 					<SidebarGroupLabel>Administrativo</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu className='space-y-2'>
