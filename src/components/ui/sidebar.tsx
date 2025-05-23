@@ -277,7 +277,7 @@ const SidebarTrigger = React.forwardRef<
 		<Button
 			ref={ref}
 			data-sidebar='trigger'
-			variant='ghost'
+			variant='outline'
 			size='icon'
 			className={cn('p-1', className)}
 			onClick={(event) => {
@@ -286,10 +286,12 @@ const SidebarTrigger = React.forwardRef<
 			}}
 			{...props}>
 			{isMobile ? (
-				<Menu
-					size={40}
-					className={'scale-150 text-foreground/90'}
-				/>
+				<div className='p-2 bg-background rounded-md'>
+					<Menu
+						size={40}
+						className={'scale-[150%] text-foreground/90 '}
+					/>
+				</div>
 			) : open ? (
 				<PanelLeftClose
 					size={40}
