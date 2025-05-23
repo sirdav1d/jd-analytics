@@ -10,15 +10,17 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { formatCurrency } from '@/utils/format-currency';
-import { ITimeSeries } from '@/services/data-services/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { IGoalTracking } from '@/services/data-services/types';
+import { formatCurrency } from '@/utils/format-currency';
+import { use } from 'react';
 
-interface RevenueProps {
-	revanueData: ITimeSeries[];
+interface IRevenueProps {
+	data: Promise<IGoalTracking>;
 }
 
-export function Revenue({ revanueData }: RevenueProps) {
+export function Revenue({ data }: IRevenueProps) {
+	const allData = use(data);
 	const chartConfig = {
 		revenue: {
 			label: 'Faturamento',
@@ -27,7 +29,7 @@ export function Revenue({ revanueData }: RevenueProps) {
 	} satisfies ChartConfig;
 
 	const isMobile = useIsMobile();
-	const chartData = revanueData;
+	const chartData = allData.timeSeries;
 	return (
 		<ChartContainer
 			className='h-80 w-full '

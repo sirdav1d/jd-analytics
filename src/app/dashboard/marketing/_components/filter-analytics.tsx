@@ -3,13 +3,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import { addDays, format } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -21,9 +14,6 @@ export default function FilterAnalytics() {
 		to: searchParams.get('endDate') || new Date(),
 		from: searchParams.get('startDate') || addDays(new Date(), -7),
 	});
-	const [trafficSource, setTrafficSource] = useState(
-		searchParams.get('channel') || 'all',
-	);
 
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
@@ -43,9 +33,7 @@ export default function FilterAnalytics() {
 				router.push(
 					`/dashboard/marketing?startDate=${encodeURIComponent(
 						formattedFrom,
-					)}&endDate=${encodeURIComponent(
-						formattedTo,
-					)}&channel=${trafficSource}`,
+					)}&endDate=${encodeURIComponent(formattedTo)}`,
 					{ scroll: false },
 				);
 			});
@@ -77,7 +65,7 @@ export default function FilterAnalytics() {
 				}
 			/>
 
-			<Select
+			{/* <Select
 				value={trafficSource}
 				onValueChange={setTrafficSource}>
 				<SelectTrigger className='w-full md:w-48'>
@@ -90,7 +78,7 @@ export default function FilterAnalytics() {
 					<SelectItem value='Organic Social'>Social</SelectItem>
 					<SelectItem value='Direct'>Direto</SelectItem>
 				</SelectContent>
-			</Select>
+			</Select> */}
 		</div>
 	);
 }

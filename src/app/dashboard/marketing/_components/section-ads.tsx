@@ -1,6 +1,5 @@
 /** @format */
 
-import FilterAds from '@/app/dashboard/marketing/_components/filter-ads';
 import ads from '@/assets/ads.svg';
 import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,7 +42,7 @@ export default async function SectionAds({
 	return (
 		<div className='grid gap-5 pb-5'>
 			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
-				<FilterAds data={campaigns} />
+				{/* <FilterAds data={campaigns} /> */}
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
 						src={ads}

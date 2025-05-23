@@ -1,13 +1,13 @@
 /** @format */
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { FetchGoalTargetData } from '@/services/data-services/get-users-all';
+import { FetchAllUsers } from '@/services/data-services/get-users-all';
 import { Suspense } from 'react';
 import { DataTable } from '../_components/data-table';
 import { columns } from './_components/columns';
 
 export default function AdminPage() {
-	const response = FetchGoalTargetData();
+	const response = FetchAllUsers();
 
 	return (
 		<div className='w-full grid grid-cols-1 mx-auto pb-10'>

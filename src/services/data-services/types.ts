@@ -14,3 +14,18 @@ export interface ITimeSeries {
 	period: string;
 	revenue: number;
 }
+
+export interface ICompanySummary {
+	meta: number;
+	realizado: number;
+	forecast: number;
+	diffPercent: number;
+}
+
+export interface IGoalTracking {
+	overview: IOverview[];
+	timeSeries: ITimeSeries[];
+	companySummary: ICompanySummary;
+	ok: boolean;
+	error?: string | null;
+}

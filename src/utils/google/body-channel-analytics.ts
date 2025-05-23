@@ -9,7 +9,6 @@ interface generateBodyChannelAnalyticsProps {
 }
 
 export function generateBodyChannelAnalytics({
-	channel,
 	endDate,
 	startDate,
 }: generateBodyChannelAnalyticsProps) {
@@ -22,16 +21,5 @@ export function generateBodyChannelAnalytics({
 		],
 	};
 
-	if (channel && channel !== 'all') {
-		body.dimensionFilter = {
-			filter: {
-				fieldName: 'sessionDefaultChannelGrouping',
-				stringFilter: {
-					matchType: 'EXACT',
-					value: channel,
-				},
-			},
-		};
-	}
 	return body;
 }

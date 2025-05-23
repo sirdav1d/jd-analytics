@@ -31,9 +31,11 @@ import { useSession } from 'next-auth/react';
 import Logo from './logo';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Separator } from './ui/separator';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function AppSidebar() {
 	const { open } = useSidebar();
+	const isMobile = useIsMobile();
 	const session = useSession();
 	const items = [
 		{
@@ -82,11 +84,12 @@ export default function AppSidebar() {
 	return (
 		<Sidebar collapsible='icon'>
 			<SidebarContent className='bg-white dark:bg-slate-900'>
-				<div className='p-3 flex items-center justify-start'>
+				<div
+					className={`pt-4 flex items-center ${isMobile ? 'justify-center' : 'justify-start'} `}>
 					{open ? <Logo /> : null}
 				</div>
 				{open ? <Separator /> : null}
-				<SidebarGroup className='mt-4'>
+				<SidebarGroup className='mt-5'>
 					<SidebarGroupLabel>Administrativo</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu className='space-y-2'>

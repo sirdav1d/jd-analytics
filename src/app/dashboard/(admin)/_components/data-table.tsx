@@ -43,6 +43,7 @@ import { Plus } from 'lucide-react';
 import { use, useState } from 'react';
 import FormCreate from '../users/_components/form-create';
 import { DataTablePagination } from './data-table-pagination';
+import { Separator } from '@/components/ui/separator';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -81,7 +82,7 @@ export function DataTable<TData, TValue>({
 
 	return (
 		<div>
-			<div className='flex items-center flex-col gap-5 md:flex-row  py-4'>
+			<div className='flex items-center flex-col gap-5 md:flex-row'>
 				<Dialog>
 					<DialogTrigger asChild>
 						<Button className='bg-red-600 hover:bg-red-700 w-full md:w-fit'>
@@ -140,6 +141,7 @@ export function DataTable<TData, TValue>({
 					</SelectContent>
 				</Select> */}
 			</div>
+			<Separator className='w-full my-5' />
 			<div className='rounded-md border'>
 				<Table>
 					<TableHeader className='bg-secondary'>

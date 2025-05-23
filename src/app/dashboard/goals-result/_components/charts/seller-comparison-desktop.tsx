@@ -17,17 +17,16 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { IOverview } from '@/services/data-services/types';
+import { IGoalTracking } from '@/services/data-services/types';
 import { formatCurrency } from '@/utils/format-currency';
 import { normalizeVendedorLabel } from '@/utils/normalize-name-vendor-label';
+import { use } from 'react';
 
-interface SellerComparisonProps {
-	sellerData: IOverview[];
+interface ISellerComparisonProps {
+	data: Promise<IGoalTracking>;
 }
-
-export default function SellerComparison({
-	sellerData,
-}: SellerComparisonProps) {
+export default function SellerComparison({ data }: ISellerComparisonProps) {
+	const allData = use(data);
 	const chartConfig = {
 		sales: {
 			label: 'Vendas',
@@ -39,7 +38,7 @@ export default function SellerComparison({
 		},
 	} satisfies ChartConfig;
 
-	const chartData = sellerData.map((item) => {
+	const chartData = allData.overview.map((item) => {
 		return {
 			name: normalizeVendedorLabel(item.vendedor),
 			ticket: item.avgTicket,

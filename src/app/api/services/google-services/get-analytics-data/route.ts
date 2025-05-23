@@ -17,9 +17,8 @@ export async function GET(req: NextRequest) {
 	const searchParams = req.nextUrl.searchParams;
 	const startDate = searchParams.get('startDate');
 	const endDate = searchParams.get('endDate');
-	const channelFilter = searchParams.get('channelFilter');
 
-	if (!startDate || !endDate || !channelFilter) {
+	if (!startDate || !endDate) {
 		return NextResponse.json({
 			error: 'Parametros de URL não encontrados',
 			ok: false,
@@ -54,22 +53,18 @@ export async function GET(req: NextRequest) {
 			generateBodyStaticAnalytics({
 				startDate,
 				endDate,
-				channel: channelFilter,
 			}),
 			generateBodyStaticAnalytics({
 				startDate: previousStartDate,
 				endDate: previousEndDate,
-				channel: channelFilter,
 			}),
 			generateBodyTrafficAnalytics({
 				startDate,
 				endDate,
-				channel: channelFilter,
 			}),
 			generateBodyChannelAnalytics({
 				startDate,
 				endDate,
-				channel: channelFilter,
 			}),
 		];
 

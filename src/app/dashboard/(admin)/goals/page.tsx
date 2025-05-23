@@ -44,7 +44,7 @@ export default function GoalsPage() {
 
 	return (
 		<div className='w-full  mx-auto pb-4 space-y-4 min-h-screen'>
-			<Tabs defaultValue='Marketing'>
+			<Tabs defaultValue='Comercial'>
 				<TabsList className='grid grid-cols-2'>
 					<TabsTrigger value='Marketing'>Marketing</TabsTrigger>
 					<TabsTrigger value='Comercial'>Comercial</TabsTrigger>

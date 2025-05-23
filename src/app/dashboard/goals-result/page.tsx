@@ -1,79 +1,51 @@
 /** @format */
 
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
-import { formatCurrency } from '@/utils/format-currency';
-import { PieStore } from './_components/charts/pie-store';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { FetchGoalTrackingData } from '@/services/data-services/get-goal-tracking';
+import { IGoalTracking } from '@/services/data-services/types';
+import { endOfMonth, startOfMonth } from 'date-fns';
+import { Suspense } from 'react';
 import { Revenue } from './_components/charts/revenue';
 import SellerComparison from './_components/charts/seller-comparison-desktop';
-import SellerRevenue from './_components/charts/seller-revenue';
-import SalesmanList from './_components/salesman-list';
-import Filter from './_components/filter';
-import { FetchGoalTrackingData } from '@/services/data-services/get-goal-tracking';
 import SellerComparisonMobile from './_components/charts/seller-comparison-mobile';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import SellerRevenue from './_components/charts/seller-revenue';
+import CompanySummary from './_components/company-summary';
+import Filter from './_components/filter';
+import SalesmanList from './_components/salesman-list';
+import { Separator } from '@/components/ui/separator';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function GoalResultPage(props: {
 	searchParams: SearchParams;
 }) {
-	const storeData = {
-		name: 'JD INFO CENTRO NITEROI',
-		meta: 408000,
-		realizado: 211760.93,
-		percentual: 52,
-	};
-
 	function formattedEndDate() {
 		const now = new Date();
-		const endDate = now.toISOString().split('T')[0];
+		const endDate = endOfMonth(now);
 		return endDate;
 	}
 
 	function formattedStartDate() {
 		const now = new Date();
-		const startOfMonth = new Date(
-			now.getFullYear(),
-			now.getMonth(),
-			1,
-			0,
-			0,
-			0,
-		);
-		const startDate = startOfMonth.toISOString().split('T')[0];
+		const startMonth = startOfMonth(now);
+
+		const startDate = startMonth.toISOString().split('T')[0];
 		return startDate;
 	}
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
 
-	const today = new Date();
-	const formattedDate = today.toLocaleDateString('pt-BR', {
-		month: '2-digit',
-		year: '2-digit',
-	});
-
-	const dataGoal = await FetchGoalTrackingData(
+	const dataGoal: Promise<IGoalTracking> = FetchGoalTrackingData(
 		String(startDate),
 		String(endDate),
 	);
 
-	if (!dataGoal.ok) {
-		console.log(dataGoal.error);
-		return <div>Nenhum dado foi encontrado</div>;
-	}
-
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5'>
 			<Filter />
+			<Separator className='my-5 w-full' />
 			<Suspense
 				fallback={
 					<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
@@ -82,46 +54,7 @@ export default async function GoalResultPage(props: {
 					</div>
 				}>
 				<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
-					<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
-						<CardHeader>
-							<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
-								{storeData.name}
-							</CardTitle>
-							<p className='text-sm text-muted-foreground'>
-								Meta:{' '}
-								{dataGoal.companySummary.meta &&
-									formatCurrency(dataGoal.companySummary.meta)}
-							</p>
-						</CardHeader>
-						<CardContent className='2xl:scale-110 w-full translate-y-12'>
-							<PieStore companySummary={dataGoal.companySummary} />
-						</CardContent>
-						<CardFooter>
-							<div className='flex items-start flex-col gap-2'>
-								<h3 className='text-sm  text-foreground'>
-									Meta Projetada para: {formattedDate}
-								</h3>
-								{dataGoal.companySummary.forecast > 0 && (
-									<div className='flex items-center justify-start w-full gap-5'>
-										<p className='text-xl font-semibold text-foreground'>
-											{dataGoal.companySummary.forecast &&
-												formatCurrency(dataGoal.companySummary.forecast)}
-										</p>
-										<Badge
-											variant={
-												dataGoal.companySummary.diffPercent >= 100
-													? 'success'
-													: 'destructive'
-											}>
-											{dataGoal.companySummary.diffPercent &&
-												dataGoal.companySummary.diffPercent.toFixed(2)}
-											%
-										</Badge>
-									</div>
-								)}
-							</div>
-						</CardFooter>
-					</Card>
+					<CompanySummary data={dataGoal} />
 					<Card className='w-full col-span-2 h-full'>
 						<CardHeader>
 							<CardTitle className='text-base text-balance md:text-2xl'>
@@ -129,7 +62,7 @@ export default async function GoalResultPage(props: {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<SellerRevenue sellerData={dataGoal.overview} />
+							<SellerRevenue data={dataGoal} />
 						</CardContent>
 					</Card>
 				</div>
@@ -153,19 +86,14 @@ export default async function GoalResultPage(props: {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<SellerComparison sellerData={dataGoal.overview} />
-							<SellerComparisonMobile sellerData={dataGoal.overview} />
+							<SellerComparison data={dataGoal} />
+							<SellerComparisonMobile data={dataGoal} />
 						</CardContent>
 					</Card>
-					<SalesmanList sellerData={dataGoal.overview} />
+					<SalesmanList data={dataGoal} />
 				</div>
 			</Suspense>
-			<Suspense
-				fallback={
-					<div className='grid grid-cols-1 gap-6 my-5'>
-						<Skeleton className='w-full h-80' />
-					</div>
-				}>
+			<Suspense fallback={<Skeleton className='w-full h-96' />}>
 				<div className='grid grid-cols-1 gap-6 my-5'>
 					<Card>
 						<CardHeader>
@@ -174,7 +102,7 @@ export default async function GoalResultPage(props: {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<Revenue revanueData={dataGoal.timeSeries} />
+							<Revenue data={dataGoal} />
 						</CardContent>
 					</Card>
 				</div>

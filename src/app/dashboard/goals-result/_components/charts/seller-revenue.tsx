@@ -17,19 +17,21 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { IGoalTracking } from '@/services/data-services/types';
 import { formatCurrency } from '@/utils/format-currency';
-import { IOverview } from '@/services/data-services/types';
 import { normalizeVendedor } from '@/utils/normalize-name-vendor';
 import { normalizeVendedorLabel } from '@/utils/normalize-name-vendor-label';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { use } from 'react';
 
-interface SellerRevenueProps {
-	sellerData: IOverview[];
+interface ISellerRevenueProps {
+	data: Promise<IGoalTracking>;
 }
 
-export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
+export default function SellerRevenue({ data }: ISellerRevenueProps) {
+	const sellerData = use(data);
 	const isMobile = useIsMobile();
-	const config = sellerData.map((item, index) => {
+	const config = sellerData.overview.map((item, index) => {
 		return {
 			[normalizeVendedor(item.vendedor)]: {
 				label: normalizeVendedorLabel(item.vendedor),
@@ -38,7 +40,7 @@ export default function SellerRevenue({ sellerData }: SellerRevenueProps) {
 		};
 	});
 
-	const chartData = sellerData.map((item) => {
+	const chartData = sellerData.overview.map((item) => {
 		return {
 			name: normalizeVendedor(item.vendedor),
 			revenue: item.totalRevenue,

@@ -11,14 +11,15 @@ import { formatCurrency } from '@/utils/format-currency';
 import { PieStore } from './charts/pie-store';
 // import { Badge } from '@/components/ui/badge';
 // import { ArrowDown, ArrowUp } from 'lucide-react';
-import { IOverview } from '@/services/data-services/types';
 import { Badge } from '@/components/ui/badge';
+import { IGoalTracking } from '@/services/data-services/types';
+import { use } from 'react';
 
-interface SalesmanListProps {
-	sellerData: IOverview[];
+interface ISalesmanListProps {
+	data: Promise<IGoalTracking>;
 }
-
-export default function SalesmanList({ sellerData }: SalesmanListProps) {
+export default function SalesmanList({ data }: ISalesmanListProps) {
+	const allData = use(data);
 	const today = new Date();
 	const formattedDate = today.toLocaleDateString('pt-BR', {
 		month: '2-digit',
@@ -26,7 +27,7 @@ export default function SalesmanList({ sellerData }: SalesmanListProps) {
 	});
 	return (
 		<div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3  gap-5'>
-			{sellerData.map((vendedor, index) => (
+			{allData.overview.map((vendedor, index) => (
 				<Card key={index}>
 					<CardHeader>
 						<CardTitle className='text-base lowercase text-balance lg:text-xl'>
