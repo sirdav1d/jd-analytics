@@ -2,7 +2,14 @@
 
 'use client';
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts';
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	LabelList,
+	XAxis,
+	YAxis,
+} from 'recharts';
 
 import {
 	ChartConfig,
@@ -12,6 +19,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartConfig = {
 	conversions: {
@@ -100,22 +108,60 @@ export function ConversionsComponent({
 		},
 	];
 
+	const isMobile = useIsMobile();
+
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-80 md:h-72 w-full'>
+			className='h-[640px] md:h-72 w-full'>
 			<BarChart
+				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 				margin={{
-					top: 28,
+					top: isMobile ? 0 : 28,
+					left: isMobile ? 36 : 4,
+					right: isMobile ? 48 : 4,
 				}}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
-				<XAxis
-					dataKey='name'
-					tickMargin={12}
-					tickLine={false}
-					axisLine={false}
-				/>
+				{isMobile ? (
+					<YAxis
+						dataKey='name'
+						type='category'
+						tickLine={false}
+						tickMargin={10}
+						axisLine={false}
+						tickFormatter={(value) => value.slice(0, 9)}
+					/>
+				) : (
+					<XAxis
+						dataKey='name'
+						tickMargin={12}
+						tickLine={false}
+						axisLine={false}
+					/>
+				)}
+
+				{isMobile ? (
+					<XAxis
+						dataKey='conversions'
+						tickLine={false}
+						hide
+						type='number'
+						scale={'sqrt'}
+						tickMargin={10}
+						axisLine={false}
+					/>
+				) : (
+					<YAxis
+						dataKey='conversions'
+						type='number'
+						scale={'sqrt'}
+						hide
+						tickMargin={12}
+						tickLine={false}
+						axisLine={false}
+					/>
+				)}
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
@@ -123,11 +169,11 @@ export function ConversionsComponent({
 				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
 				<Bar
 					radius={4}
-					yAxisId='right'
+					layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 					dataKey='conversions'
 					fill='var(--color-conversions)'>
 					<LabelList
-						position='top'
+						position={`${isMobile ? 'right' : 'top'}`}
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
@@ -135,11 +181,11 @@ export function ConversionsComponent({
 				</Bar>
 				<Bar
 					radius={4}
-					yAxisId='right'
+					layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 					dataKey='sessions'
 					fill='var(--color-sessions)'>
 					<LabelList
-						position='top'
+						position={`${isMobile ? 'right' : 'top'}`}
 						offset={12}
 						className='fill-foreground'
 						fontSize={12}
