@@ -4,7 +4,7 @@
 
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -285,10 +285,15 @@ const SidebarTrigger = React.forwardRef<
 				toggleSidebar();
 			}}
 			{...props}>
-			{open ? (
+			{isMobile ? (
+				<Menu
+					size={40}
+					className={'scale-150 text-foreground/90'}
+				/>
+			) : open ? (
 				<PanelLeftClose
 					size={40}
-					className={`${isMobile ? 'scale-150' : 'scale-125'} text-foreground/90`}
+					className={'scale-125 text-foreground/90'}
 				/>
 			) : (
 				<PanelLeftOpen

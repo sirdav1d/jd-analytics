@@ -85,7 +85,7 @@ export default function AppSidebar() {
 		<Sidebar collapsible='icon'>
 			<SidebarContent className='bg-white dark:bg-slate-900'>
 				<div
-					className={`pt-4 pl-3 flex items-center ${isMobile ? 'justify-center' : 'justify-start'} `}>
+					className={`pt-4 md:pl-3 flex items-center ${isMobile ? 'justify-center' : 'justify-start'} `}>
 					{open ? <Logo /> : null}
 				</div>
 				{open ? <Separator /> : null}
