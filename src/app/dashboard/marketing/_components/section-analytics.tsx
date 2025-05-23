@@ -137,7 +137,7 @@ export default async function SectionAnalytics({
 					<DollarSign className='h-4 w-4 text-primary' />
 				</CardHeader>
 				<CardContent>
-					<div className='text-2xl font-bold'>
+					<div className='text-2xl font-bold flex items-center gap-3'>
 						{staticData.purchaseRevenue
 							? Number(staticData.purchaseRevenue.valorAtual).toLocaleString(
 									'pt-br',
@@ -146,9 +146,18 @@ export default async function SectionAnalytics({
 										currency: 'brl',
 									},
 								)
-							: 0}
+							: 0}{' '}
+						<Badge
+							variant={
+								staticData.purchaseRevenue.diferenca > 0
+									? 'success'
+									: 'destructive'
+							}>
+							{staticData.purchaseRevenue.percentual}
+						</Badge>
 					</div>
 					<p className='text-xs text-muted-foreground'>
+						Valor no mês anterior{' '}
 						{staticData.purchaseRevenue
 							? Number(staticData.purchaseRevenue.valorAnterior).toLocaleString(
 									'pt-br',
@@ -363,7 +372,9 @@ export default async function SectionAnalytics({
 							%{' '}
 							<Badge
 								variant={
-									staticData.bounceRate.diferenca > 0 ? 'success' : 'success'
+									staticData.bounceRate.diferenca < 0
+										? 'success'
+										: 'destructive'
 								}>
 								{staticData.bounceRate.percentual}
 							</Badge>

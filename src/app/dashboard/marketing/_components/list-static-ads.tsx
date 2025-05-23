@@ -134,7 +134,7 @@ export default function ListStaticADS({
 						<div className='text-2xl font-bold flex items-center gap-3'>
 							{formatCurrency(currentCPC)}
 							<Badge
-								variant={`${currentCPC - previousCPC < 0 ? 'destructive' : 'success'}`}>
+								variant={`${currentCPC - previousCPC >0 ? 'destructive' : 'success'}`}>
 								{(((currentCPC - previousCPC) / previousCPC) * 100).toFixed(2)}%
 							</Badge>
 						</div>
