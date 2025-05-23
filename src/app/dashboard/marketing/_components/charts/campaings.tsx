@@ -89,6 +89,7 @@ export function CampagnComponent({ data }: DataProps) {
 					axisLine={false}
 					hide={isTablet}
 					fontSize={12}
+					tickFormatter={(value: string) => value.slice(0, 18) + '...'}
 				/>
 				<YAxis
 					scale={'sqrt'}

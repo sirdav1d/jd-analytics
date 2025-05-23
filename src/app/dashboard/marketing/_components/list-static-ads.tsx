@@ -1,5 +1,6 @@
 /** @format */
 
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import {
@@ -11,11 +12,18 @@ import {
 	UserRoundPlus,
 } from 'lucide-react';
 
+interface DataItem {
+	current: number;
+	previous: number;
+	diff: number;
+	percentChange: number;
+}
+
 interface ListStaticADSProps {
-	impressions: number;
-	clicks: number;
-	cost_micros: number;
-	ctr: number;
+	impressions: DataItem;
+	clicks: DataItem;
+	cost_micros: DataItem;
+	ctr: DataItem;
 }
 
 export default function ListStaticADS({
@@ -24,7 +32,8 @@ export default function ListStaticADS({
 	cost_micros,
 	ctr,
 }: ListStaticADSProps) {
-	const cpc = cost_micros / 1000000 / clicks;
+	const currentCPC = cost_micros.current / 1000000 / clicks.current;
+	const previousCPC = cost_micros.previous / 1000000 / clicks.previous;
 	return (
 		<>
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -34,11 +43,16 @@ export default function ListStaticADS({
 						<Landmark className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
-							{formatCurrency(cost_micros / 1000000)}
+						<div className='text-2xl font-bold flex items-center gap-3'>
+							{formatCurrency(cost_micros.current / 1000000)}
+							<Badge
+								variant={`${cost_micros.diff < 0 ? 'destructive' : 'success'}`}>
+								{cost_micros.percentChange.toFixed(2)}%
+							</Badge>
 						</div>
-						<p className='text-xs text-muted-foreground'>
-							-R$ 0.05 em relação ao mês anterior
+						<p className='text-xs text-muted-foreground mt-1'>
+							Valor no mês anterior:{' '}
+							{formatCurrency(cost_micros.previous / 1000000)}
 						</p>
 					</CardContent>
 				</Card>
@@ -49,7 +63,7 @@ export default function ListStaticADS({
 					</CardHeader>
 					<CardContent>
 						<div className='text-2xl font-bold'>Entrada Manual</div>
-						<p className='text-xs text-muted-foreground'>Entrada Manual</p>
+						<p className='text-xs text-muted-foreground mt-1'>Entrada Manual</p>
 					</CardContent>
 				</Card>
 			</div>
@@ -60,11 +74,16 @@ export default function ListStaticADS({
 						<MonitorPlay className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
-							{impressions ? impressions.toLocaleString('pt-BR') : 0}
+						<div className='text-2xl font-bold  flex items-center gap-3'>
+							{impressions ? impressions.current.toLocaleString('pt-BR') : 0}
+							<Badge
+								variant={`${impressions.diff < 0 ? 'destructive' : 'success'}`}>
+								{impressions.percentChange.toFixed(2)}%
+							</Badge>
 						</div>
-						<p className='text-xs text-muted-foreground'>
-							-R$ 0.05 em relação ao mês anterior
+						<p className='text-xs text-muted-foreground mt-1'>
+							Valor no mês anterior:{' '}
+							{impressions.previous.toLocaleString('pt-BR')}
 						</p>
 					</CardContent>
 				</Card>
@@ -74,11 +93,14 @@ export default function ListStaticADS({
 						<SquareDashedMousePointer className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>
-							{clicks ? clicks.toLocaleString('pt-BR') : 0}
+						<div className='text-2xl font-bold flex items-center gap-3'>
+							{clicks ? clicks.current.toLocaleString('pt-BR') : 0}
+							<Badge variant={`${clicks.diff < 0 ? 'destructive' : 'success'}`}>
+								{clicks.percentChange.toFixed(2)}%
+							</Badge>
 						</div>
-						<p className='text-xs text-muted-foreground'>
-							-R$ 0.05 em relação ao mês anterior
+						<p className='text-xs text-muted-foreground mt-1'>
+							Valor no mês anterior: {clicks.previous.toLocaleString('pt-BR')}
 						</p>
 					</CardContent>
 				</Card>
@@ -90,9 +112,14 @@ export default function ListStaticADS({
 						<MousePointerClick className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>{(ctr * 100).toFixed(2)}%</div>
-						<p className='text-xs text-muted-foreground'>
-							+0.3% em relação ao mês anterior
+						<div className='text-2xl font-bold flex items-center gap-3'>
+							{(ctr.current * 100).toFixed(2)}%{' '}
+							<Badge variant={`${ctr.diff < 0 ? 'destructive' : 'success'}`}>
+								{ctr.percentChange.toFixed(2)}%
+							</Badge>
+						</div>
+						<p className='text-xs text-muted-foreground mt-1'>
+							Valor no mês anterior: {(ctr.previous * 100).toFixed(2)}%
 						</p>
 					</CardContent>
 				</Card>
@@ -104,9 +131,15 @@ export default function ListStaticADS({
 						<UserRoundPlus className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>{formatCurrency(cpc)}</div>
-						<p className='text-xs text-muted-foreground'>
-							-R$ 0.05 em relação ao mês anterior
+						<div className='text-2xl font-bold flex items-center gap-3'>
+							{formatCurrency(currentCPC)}
+							<Badge
+								variant={`${currentCPC - previousCPC < 0 ? 'destructive' : 'success'}`}>
+								{(((currentCPC - previousCPC) / previousCPC) * 100).toFixed(2)}%
+							</Badge>
+						</div>
+						<p className='text-xs text-muted-foreground mt-1'>
+							Valor no mês anterior: {formatCurrency(previousCPC)}
 						</p>
 					</CardContent>
 				</Card>

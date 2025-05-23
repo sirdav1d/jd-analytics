@@ -36,8 +36,8 @@ export default async function SectionAds({
 		);
 	}
 
-	const campaigns = data.data[0];
-	const AccountMetrics = data.data[1];
+	const campaigns = data.data.topCampaigns;
+	const AccountMetrics = data.data.dataADS;
 
 	return (
 		<div className='grid gap-5 pb-5'>
@@ -74,10 +74,10 @@ export default async function SectionAds({
 						</CardHeader>
 						<CardContent>
 							<PerformanceComponent
-								impressions={AccountMetrics.impressions}
-								clicks={AccountMetrics.clicks}
-								cost_micros={AccountMetrics.cost_micros}
-								conversions={AccountMetrics.conversions}
+								impressions={AccountMetrics.impressions.current}
+								clicks={AccountMetrics.clicks.current}
+								cost_micros={AccountMetrics.cost_micros.current}
+								conversions={AccountMetrics.conversions.current}
 							/>
 						</CardContent>
 					</Card>
@@ -89,10 +89,10 @@ export default async function SectionAds({
 						</CardHeader>
 						<CardContent>
 							<CostsComponent
-								impressions={AccountMetrics.impressions}
-								clicks={AccountMetrics.clicks}
-								cost_micros={AccountMetrics.cost_micros}
-								conversions={AccountMetrics.conversions}
+								impressions={AccountMetrics.impressions.current}
+								clicks={AccountMetrics.clicks.current}
+								cost_micros={AccountMetrics.cost_micros.current}
+								conversions={AccountMetrics.conversions.current}
 							/>
 						</CardContent>
 					</Card>

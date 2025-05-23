@@ -272,6 +272,7 @@ const SidebarTrigger = React.forwardRef<
 >(({ className, onClick, ...props }, ref) => {
 	const { toggleSidebar, open } = useSidebar();
 
+	const isMobile = useIsMobile();
 	return (
 		<Button
 			ref={ref}
@@ -287,7 +288,7 @@ const SidebarTrigger = React.forwardRef<
 			{open ? (
 				<PanelLeftClose
 					size={40}
-					className='scale-125 text-foreground/90'
+					className={`${isMobile ? 'scale-150' : 'scale-125'} text-foreground/90`}
 				/>
 			) : (
 				<PanelLeftOpen

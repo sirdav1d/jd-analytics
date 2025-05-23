@@ -27,6 +27,7 @@ import RankingSellers from './_components/tables/ranking-sellers';
 import { getComercialFilterAction } from '@/actions/filters/filter-comercial';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
 
 // Mock data (replace with actual data in a real application)
 
@@ -61,7 +62,7 @@ export default function ComercialDashboard() {
 				}>
 				<FilterComercial data={dataFilter} />
 			</Suspense>
-
+			<Separator className='my-5 w-full' />
 			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>

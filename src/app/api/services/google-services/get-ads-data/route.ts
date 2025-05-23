@@ -3,6 +3,7 @@
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { Constraints, enums, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
+import { parseISO, subMonths, format } from 'date-fns';
 
 export async function GET(req: NextRequest) {
 	const orgId = process.env.JD_CENTRO_ID;
@@ -34,7 +35,20 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const [topCampaigns, dataADS] = await Promise.all([
+		if (!startDate || !endDate) {
+			return NextResponse.json({
+				error: 'Parâmetros de data inválidos',
+				ok: false,
+				data: null,
+			});
+		}
+		const previousStart = format(
+			subMonths(parseISO(startDate), 1),
+			'yyyy-MM-dd',
+		);
+		const previousEnd = format(subMonths(parseISO(endDate), 1), 'yyyy-MM-dd');
+
+		const [topCampaigns, currentData, previousData] = await Promise.all([
 			customer.report({
 				entity: 'campaign',
 				attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
@@ -65,10 +79,23 @@ export async function GET(req: NextRequest) {
 				from_date: startDate!,
 				to_date: endDate!,
 			}),
+			customer.report({
+				entity: 'customer',
+				metrics: [
+					'metrics.ctr',
+					'metrics.impressions',
+					'metrics.clicks',
+					'metrics.cost_micros',
+					'metrics.conversions',
+				],
+				constraints: [...campaignConstraints],
+				from_date: previousStart,
+				to_date: previousEnd,
+			}),
 		]);
 
 		// Verifica se há dados antes de retornar
-		if (!dataADS || !topCampaigns) {
+		if (!currentData || !topCampaigns) {
 			return NextResponse.json({
 				error: 'Nenhum dado encontrado para as campanhas',
 				ok: false,
@@ -76,11 +103,32 @@ export async function GET(req: NextRequest) {
 			});
 		}
 
-		const metrics = dataADS.length > 0 ? dataADS[0].metrics : null;
+		const currentMetrics =
+			currentData.length > 0 ? currentData[0].metrics : null;
+		const previousMetrics =
+			previousData.length > 0 ? previousData[0].metrics : null;
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const parsedMetrics: { [key: string]: any } = {};
+		for (const key in currentMetrics) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const curr = parseFloat((currentMetrics as any)[key]);
+			const prev = parseFloat(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				previousMetrics ? ((previousMetrics as any)[key] ?? '0') : '0',
+			);
+
+			parsedMetrics[key] = {
+				current: curr,
+				previous: prev,
+				diff: curr - prev,
+				percentChange: prev === 0 ? null : ((curr - prev) / prev) * 100,
+			};
+		}
 
 		return NextResponse.json({
 			ok: true,
-			data: [topCampaigns, metrics],
+			data: { topCampaigns, dataADS: parsedMetrics },
 			error: null,
 		});
 	} catch (error) {
