@@ -110,7 +110,7 @@ export function TrafficComponent({
 			<BarChart
 				margin={{
 					top: isMobile ? 0 : 28,
-					left: isMobile ? 36 : 4,
+					left: isMobile ? -20 : 4,
 					right: isMobile ? 36 : 4,
 				}}
 				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
@@ -118,12 +118,13 @@ export function TrafficComponent({
 				<CartesianGrid vertical={false} />
 				{isMobile ? (
 					<YAxis
+						width={152}
 						dataKey='name'
 						type='category'
 						tickLine={false}
 						tickMargin={10}
 						axisLine={false}
-						tickFormatter={(value) => value.slice(0, 8)}
+						tickFormatter={(value) => value.slice(0, 20)}
 					/>
 				) : (
 					<XAxis
@@ -143,6 +144,7 @@ export function TrafficComponent({
 						scale={'sqrt'}
 						tickMargin={10}
 						axisLine={false}
+						tickFormatter={(value) => value.toLocaleString('pt-BR')}
 					/>
 				) : (
 					<YAxis
@@ -153,6 +155,7 @@ export function TrafficComponent({
 						tickMargin={12}
 						tickLine={false}
 						axisLine={false}
+						tickFormatter={(value) => value.toLocaleString('pt-BR')}
 					/>
 				)}
 

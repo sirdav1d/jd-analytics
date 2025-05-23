@@ -118,19 +118,20 @@ export function ConversionsComponent({
 				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 				margin={{
 					top: isMobile ? 0 : 28,
-					left: isMobile ? 36 : 4,
-					right: isMobile ? 48 : 4,
+					left: isMobile ? -22 : 4,
+					right: isMobile ? 52 : 4,
 				}}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
 				{isMobile ? (
 					<YAxis
+						width={152}
 						dataKey='name'
 						type='category'
 						tickLine={false}
 						tickMargin={10}
 						axisLine={false}
-						tickFormatter={(value) => value.slice(0, 9)}
+						tickFormatter={(value) => value.slice(0, 20)}
 					/>
 				) : (
 					<XAxis

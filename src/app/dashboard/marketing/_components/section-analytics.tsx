@@ -78,7 +78,8 @@ export default async function SectionAnalytics({
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
-							Distribuição de Tráfego - {totalUsers} Usuários
+							Distribuição de Tráfego - {totalUsers.toLocaleString('pt-br')}{' '}
+							Usuários
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
