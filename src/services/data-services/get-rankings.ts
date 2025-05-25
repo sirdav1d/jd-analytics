@@ -9,8 +9,10 @@ export async function FetchRankings(
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
 		`${baseURL}/api/services/data-services/comercial-rankings?startDate=${startDate}&endDate=${endDate}&category=${category}&customerType=${customerType}`,
+
 		{
 			next: { revalidate: 60, tags: ['rankings'] },
+			method: 'GET',
 		},
 	);
 

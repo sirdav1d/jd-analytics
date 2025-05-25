@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { IGoalTracking } from '@/services/data-services/types';
 import { use } from 'react';
 import { PieStore } from './charts/pie-store';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface ICompanySummary {
 	data: Promise<IGoalTracking>;
@@ -63,6 +64,17 @@ export default function CompanySummary({ data }: ICompanySummary) {
 								{allData.companySummary.diffPercent &&
 									allData.companySummary.diffPercent.toFixed(2)}
 								%
+								{allData.companySummary.diffPercent >= 100 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 					)}

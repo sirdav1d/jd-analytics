@@ -1,4 +1,5 @@
 /** @format */
+'use client';
 
 import {
 	Card,
@@ -9,11 +10,10 @@ import {
 } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import { PieStore } from './charts/pie-store';
-// import { Badge } from '@/components/ui/badge';
-// import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { IGoalTracking } from '@/services/data-services/types';
 import { use } from 'react';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 
 interface ISalesmanListProps {
 	data: Promise<IGoalTracking>;
@@ -62,6 +62,17 @@ export default function SalesmanList({ data }: ISalesmanListProps) {
 										{vendedor.percentualDif &&
 											vendedor.percentualDif.toFixed(2)}
 										%
+										{vendedor.percentualDif >= 100 ? (
+											<TrendingUp
+												size={16}
+												className='ml-2'
+											/>
+										) : (
+											<TrendingDown
+												size={16}
+												className='ml-2'
+											/>
+										)}
 									</Badge>
 								</div>
 							) : (

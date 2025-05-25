@@ -192,11 +192,21 @@ export default async function ComercialDashboard(props: {
 				</Card>
 			</div>
 			<div className='grid grid-cols-1 gap-4'>
-				<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-					<TopClients data={dataRankings} />
-					<TopProducts data={dataRankings} />
-				</div>
-				<RankingSellers data={dataRankings} />
+				<Suspense
+					fallback={
+						<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+							<Skeleton className='w-full h-96' />
+							<Skeleton className='w-full h-96' />
+						</div>
+					}>
+					<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+						<TopClients data={dataRankings} />
+						<TopProducts data={dataRankings} />
+					</div>
+				</Suspense>
+				<Suspense fallback={<Skeleton className='w-full h-96' />}>
+					<RankingSellers data={dataRankings} />
+				</Suspense>
 			</div>
 		</div>
 	);

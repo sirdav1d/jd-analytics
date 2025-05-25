@@ -15,6 +15,8 @@ import {
 	GitPullRequestClosed,
 	MonitorPlay,
 	Percent,
+	TrendingDown,
+	TrendingUp,
 	UserRoundCheck,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -144,6 +146,17 @@ export default function SectionAnalytics({
 									: 'destructive'
 							}>
 							{staticData.purchaseRevenue.percentual}
+							{staticData.purchaseRevenue.diferenca > 0 ? (
+								<TrendingUp
+									size={16}
+									className='ml-2'
+								/>
+							) : (
+								<TrendingDown
+									size={16}
+									className='ml-2'
+								/>
+							)}
 						</Badge>
 					</div>
 					<p className='text-xs text-muted-foreground'>
@@ -186,6 +199,17 @@ export default function SectionAnalytics({
 										: 'destructive'
 								}>
 								{staticData.purchaseRevenue.percentual}
+								{staticData.purchaseRevenue.diferenca > 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -226,6 +250,17 @@ export default function SectionAnalytics({
 										: 'destructive'
 								}>
 								{staticData.purchaseRevenue.percentual}
+								{staticData.purchaseRevenue.diferenca > 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -269,6 +304,17 @@ export default function SectionAnalytics({
 									staticData.sessions.diferenca > 0 ? 'success' : 'destructive'
 								}>
 								{staticData.sessions.percentual}
+								{staticData.sessions.diferenca > 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -300,6 +346,17 @@ export default function SectionAnalytics({
 										: 'destructive'
 								}>
 								{staticData.totalUsers.percentual}
+								{staticData.totalUsers.diferenca > 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -334,6 +391,17 @@ export default function SectionAnalytics({
 										: 'destructive'
 								}>
 								{staticData.sessionConversionRate.percentual}
+								{staticData.sessionConversionRate.diferenca > 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -367,6 +435,17 @@ export default function SectionAnalytics({
 										: 'destructive'
 								}>
 								{staticData.bounceRate.percentual}
+								{staticData.bounceRate.diferenca < 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>
@@ -399,6 +478,17 @@ export default function SectionAnalytics({
 										: 'destructive'
 								}>
 								{staticData.averageSessionDuration.percentual}
+								{staticData.averageSessionDuration.diferenca > 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground mt-1'>
@@ -455,6 +545,24 @@ export default function SectionAnalytics({
 									100
 								).toFixed(2)}
 								%
+								{calculatePagesPerSession(
+									Number(staticData.sessions.valorAtual),
+									Number(staticData.screenPageViews.valorAtual),
+								) >
+								calculatePagesPerSession(
+									Number(staticData.sessions.valorAnterior),
+									Number(staticData.screenPageViews.valorAnterior),
+								) ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground'>

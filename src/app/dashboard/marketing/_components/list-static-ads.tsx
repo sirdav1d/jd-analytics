@@ -9,6 +9,8 @@ import {
 	MonitorPlay,
 	MousePointerClick,
 	SquareDashedMousePointer,
+	TrendingDown,
+	TrendingUp,
 	UserRoundPlus,
 } from 'lucide-react';
 
@@ -48,6 +50,17 @@ export default function ListStaticADS({
 							<Badge
 								variant={`${cost_micros.diff < 0 ? 'destructive' : 'success'}`}>
 								{cost_micros.percentChange.toFixed(2)}%
+								{cost_micros.diff < 0 ? (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground mt-1'>
@@ -79,6 +92,17 @@ export default function ListStaticADS({
 							<Badge
 								variant={`${impressions.diff < 0 ? 'destructive' : 'success'}`}>
 								{impressions.percentChange.toFixed(2)}%
+								{impressions.diff < 0 ? (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground mt-1'>
@@ -97,6 +121,17 @@ export default function ListStaticADS({
 							{clicks ? clicks.current.toLocaleString('pt-BR') : 0}
 							<Badge variant={`${clicks.diff < 0 ? 'destructive' : 'success'}`}>
 								{clicks.percentChange.toFixed(2)}%
+								{clicks.diff < 0 ? (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground mt-1'>
@@ -116,6 +151,17 @@ export default function ListStaticADS({
 							{(ctr.current * 100).toFixed(2)}%{' '}
 							<Badge variant={`${ctr.diff < 0 ? 'destructive' : 'success'}`}>
 								{ctr.percentChange.toFixed(2)}%
+								{ctr.diff < 0 ? (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground mt-1'>
@@ -134,8 +180,19 @@ export default function ListStaticADS({
 						<div className='text-2xl font-bold flex items-center gap-3'>
 							{formatCurrency(currentCPC)}
 							<Badge
-								variant={`${currentCPC - previousCPC >0 ? 'destructive' : 'success'}`}>
+								variant={`${currentCPC - previousCPC > 0 ? 'destructive' : 'success'}`}>
 								{(((currentCPC - previousCPC) / previousCPC) * 100).toFixed(2)}%
+								{currentCPC - previousCPC > 0 ? (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								)}
 							</Badge>
 						</div>
 						<p className='text-xs text-muted-foreground mt-1'>
