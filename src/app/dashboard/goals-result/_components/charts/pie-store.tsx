@@ -40,6 +40,7 @@ interface IPieStoreProps {
 export function PieStore({ companySummary }: IPieStoreProps) {
 	const atingido = companySummary.realizado;
 	const restante = companySummary.meta - atingido;
+	const percent = (atingido / companySummary.meta) * 100;
 	const chartData = [
 		{ Atingido: atingido, Restante: restante < 0 ? 0 : restante },
 	];
@@ -76,17 +77,14 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 										<tspan
 											x={viewBox.cx}
 											y={(viewBox.cy || 0) - 16}
-											className='fill-foreground text-xl font-bold'>
-											{companySummary.meta.toLocaleString('pt-br', {
-												style: 'currency',
-												currency: 'BRL',
-											})}
+											className='fill-foreground text-2xl font-bold'>
+											{percent.toFixed(2)}%
 										</tspan>
 										<tspan
 											x={viewBox.cx}
 											y={(viewBox.cy || 0) + 4}
 											className='fill-muted-foreground text-xs text-center '>
-											Meta de Faturamento
+											Faturamento Atingido
 										</tspan>
 									</text>
 								);
@@ -104,8 +102,8 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Restante'
-						className='fill-foreground drop-shadow-xl font-semibold capitalize mix-blend-luminosity z-50 p-40 translate-y-4 translate-x-4'
-						fontSize={11}
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-12 xl:-translate-x-16 translate-y-3 xl:translate-y-2 2xl:-translate-x-8 bg-background z-50'
+						fontSize={12}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',
@@ -124,7 +122,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 						position='outside'
 						dataKey='Atingido'
 						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-12 xl:translate-x-16 translate-y-3 xl:translate-y-2 2xl:translate-x-8'
-						fontSize={11}
+						fontSize={12}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',

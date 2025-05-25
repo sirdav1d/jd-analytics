@@ -1,43 +1,20 @@
 /** @format */
-
+'use client';
 import ads from '@/assets/ads.svg';
-import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FetchADSData } from '@/services/google-services/get-ads-data';
 import Image from 'next/image';
+import { use } from 'react';
 import { CampagnComponent } from './charts/campaings';
 import { CostsComponent } from './charts/cost';
 import { PerformanceComponent } from './charts/performance';
 import ListStaticADS from './list-static-ads';
 
-interface SectionADSProps {
-	startDate: string | string[];
-	endDate: string | string[];
-	campaignId: string | string[];
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function SectionAds({ data }: { data: Promise<any> }) {
+	const allData = use(data);
 
-export default async function SectionAds({
-	endDate,
-	campaignId,
-	startDate,
-}: SectionADSProps) {
-	const data = await FetchADSData(
-		String(startDate),
-		String(endDate),
-		String(campaignId),
-	);
-
-	if (!data.ok) {
-		console.log(data);
-		return (
-			<div className='w-full mx-auto space-y-4 pb-5'>
-				<GoogleLoginButton />
-			</div>
-		);
-	}
-
-	const campaigns = data.data.topCampaigns;
-	const AccountMetrics = data.data.dataADS;
+	const campaigns = allData.data.topCampaigns;
+	const AccountMetrics = allData.data.dataADS;
 
 	return (
 		<div className='grid gap-5 pb-5'>

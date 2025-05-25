@@ -1,9 +1,11 @@
 /** @format */
+'use client';
 
 import analytics from '@/assets/analytics.svg';
 import GoogleLoginButton from '@/components/google-login-button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
+import { Separator } from '@/components/ui/separator';
 import { calculatePagesPerSession } from '@/utils/calculate-pages-per-session';
 import { formatDuration } from '@/utils/normalize-duration-session';
 import {
@@ -16,30 +18,18 @@ import {
 	UserRoundCheck,
 } from 'lucide-react';
 import Image from 'next/image';
+import { use } from 'react';
 import { ConversionsComponent } from './charts/conversion';
 import { TrafficComponent } from './charts/traffic';
 import FilterAnalytics from './filter-analytics';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
-interface SectionAnalyticsProps {
-	startDate: string | string[];
-	endDate: string | string[];
-	channel: string | string[];
-}
-
-export default async function SectionAnalytics({
-	channel,
-	endDate,
-	startDate,
-}: SectionAnalyticsProps) {
-	const channelFilter = channel ?? 'all';
-
-	const responseAnalytics = await FetchAnalyticsData(
-		String(startDate),
-		String(endDate),
-		String(channelFilter),
-	);
+export default function SectionAnalytics({
+	data,
+}: {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: Promise<any>;
+}) {
+	const responseAnalytics = use(data);
 
 	if (!responseAnalytics.ok || !responseAnalytics.data) {
 		console.log(responseAnalytics.error);

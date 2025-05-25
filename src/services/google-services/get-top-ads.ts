@@ -1,13 +1,9 @@
 /** @format */
 
-export async function FetchTopADSData(
-	startDate: string,
-	endDate: string,
-	campaignId: string,
-) {
+export async function FetchTopADSData(startDate: string, endDate: string) {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		`${baseURL}/api/services/google-services/top-ads?startDate=${startDate}&endDate=${endDate}&campaignId=${campaignId}`,
+		`${baseURL}/api/services/google-services/top-ads?startDate=${startDate}&endDate=${endDate}`,
 		{
 			method: 'GET',
 			next: { revalidate: 60 },

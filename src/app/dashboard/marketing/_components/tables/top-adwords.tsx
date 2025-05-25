@@ -1,6 +1,6 @@
 /** @format */
+'use client';
 
-import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	Table,
@@ -10,8 +10,8 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { FetchKeywordADSData } from '@/services/google-services/get-top-keywords';
 import { Trophy } from 'lucide-react';
+import { use } from 'react';
 
 interface MetricsProps {
 	clicks: number;
@@ -29,33 +29,11 @@ interface TopAdwordsProps {
 	ad_group_criterion: ADGroupProps;
 }
 
-interface SectionADSProps {
-	startDate: string | string[];
-	endDate: string | string[];
-	campaignId: string | string[];
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function TopAdwords({ data }: { data: Promise<any> }) {
+	const allData = use(data);
 
-export default async function TopAdwords({
-	endDate,
-	campaignId,
-	startDate,
-}: SectionADSProps) {
-	const data = await FetchKeywordADSData(
-		String(startDate),
-		String(endDate),
-		String(campaignId),
-	);
-
-	if (!data.ok) {
-		console.log(data);
-		return (
-			<div className='w-full mx-auto space-y-4 pb-5'>
-				<GoogleLoginButton />
-			</div>
-		);
-	}
-
-	const topKeywords: TopAdwordsProps[] = data.data;
+	const topKeywords: TopAdwordsProps[] = allData.data;
 
 	return (
 		<Card>

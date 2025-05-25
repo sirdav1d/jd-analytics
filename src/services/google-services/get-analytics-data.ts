@@ -1,13 +1,9 @@
 /** @format */
 
-export async function FetchAnalyticsData(
-	startDate: string,
-	endDate: string,
-	Channel: string,
-) {
+export async function FetchAnalyticsData(startDate: string, endDate: string) {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		`${baseURL}/api/services/google-services/get-analytics-data?startDate=${startDate}&endDate=${endDate}&channelFilter=${Channel}`,
+		`${baseURL}/api/services/google-services/get-analytics-data?startDate=${startDate}&endDate=${endDate}`,
 		{
 			method: 'GET',
 			next: { revalidate: 30 },

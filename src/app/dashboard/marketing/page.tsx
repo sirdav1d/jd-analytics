@@ -7,6 +7,10 @@ import SectionAnalytics from './_components/section-analytics';
 import TopAnuncios from './_components/tables/top-anuncios';
 import { Skeleton } from '@/components/ui/skeleton';
 import TopAdwords from './_components/tables/top-adwords';
+import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
+import { FetchTopADSData } from '@/services/google-services/get-top-ads';
+import { FetchKeywordADSData } from '@/services/google-services/get-top-keywords';
+import { FetchADSData } from '@/services/google-services/get-ads-data';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -28,8 +32,16 @@ export default async function MarketingPage(props: {
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
-	const channelFilter = searchParams.channel || 'all';
-	const campaignId = searchParams.campaignId || 'all';
+
+	const responseAnalytics = FetchAnalyticsData(
+		String(startDate),
+		String(endDate),
+	);
+
+	const dataAds = FetchTopADSData(String(startDate), String(endDate));
+
+	const dataKeyWords = FetchKeywordADSData(String(startDate), String(endDate));
+	const dataMainADS = FetchADSData(String(startDate), String(endDate));
 
 	return (
 		<div className='w-full mx-auto h-full pb-5'>
@@ -59,11 +71,7 @@ export default async function MarketingPage(props: {
 						</div>
 					</div>
 				}>
-				<SectionAnalytics
-					startDate={startDate}
-					endDate={endDate}
-					channel={channelFilter}
-				/>
+				<SectionAnalytics data={responseAnalytics} />
 			</Suspense>
 			<Separator className='w-full mt-10' />
 			<Suspense
@@ -91,26 +99,14 @@ export default async function MarketingPage(props: {
 						</div>
 					</div>
 				}>
-				<SectionAds
-					startDate={startDate}
-					endDate={endDate}
-					campaignId={campaignId}
-				/>
+				<SectionAds data={dataMainADS} />
 			</Suspense>
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
 				<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
-					<TopAnuncios
-						startDate={startDate}
-						endDate={endDate}
-						campaignId={campaignId}
-					/>
+					<TopAnuncios data={dataAds} />
 				</Suspense>
 				<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
-					<TopAdwords
-						startDate={startDate}
-						endDate={endDate}
-						campaignId={campaignId}
-					/>
+					<TopAdwords data={dataKeyWords} />
 				</Suspense>
 			</div>
 		</div>
