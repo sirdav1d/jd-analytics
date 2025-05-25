@@ -1,6 +1,7 @@
 /** @format */
 
 'use client';
+
 import {
 	Card,
 	CardContent,
@@ -16,12 +17,12 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { IRankingSellers } from '@/services/data-services/types';
+import { IProduct } from '@/services/data-services/types';
 import { Trophy } from 'lucide-react';
-import { use } from 'react';
+import React, { use } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function RankingSellers({ data }: { data: Promise<any> }) {
+export default function TopProducts({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 
 	if (!allData || !allData.ok) {
@@ -38,12 +39,11 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 			</Card>
 		);
 	}
-
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-2xl'>
-					Ranking de Vendedores
+					Top 5 Produtos
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
@@ -51,53 +51,46 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 					<TableHeader>
 						<TableRow>
 							<TableHead>Posição</TableHead>
-							<TableHead>Vendedor</TableHead>
+							<TableHead>Código</TableHead>
+							<TableHead>Produto</TableHead>
 							<TableHead className='text-center text-nowrap'>Vendas</TableHead>
-							<TableHead className='text-center text-nowrap'>
-								Faturamento
-							</TableHead>
-							<TableHead className='text-center text-nowrap'>
-								Ticket Médio
-							</TableHead>
+							<TableHead className='text-center'>Faturamento</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{allData.data.sellers.map((salesperson: IRankingSellers) => {
+						{allData.data.products.map((product: IProduct) => {
 							return (
-								<TableRow key={salesperson.name}>
+								<TableRow key={product.name}>
 									<TableCell className='flex items-center gap-3'>
-										{salesperson.posicao}
-										{salesperson.posicao == 1 ? (
+										{product.posicao}
+										{product.posicao == 1 ? (
 											<Trophy
 												size={20}
 												className='text-amber-500'
 											/>
-										) : salesperson.posicao == 2 ? (
+										) : product.posicao == 2 ? (
 											<Trophy
 												size={20}
 												className='text-zinc-400'
 											/>
-										) : salesperson.posicao == 3 ? (
+										) : product.posicao == 3 ? (
 											<Trophy
 												size={20}
 												className='text-rose-700'
 											/>
 										) : null}
 									</TableCell>
-									<TableCell className='text-xs md:text-sm text-nowrap'>
-										{salesperson.name}
+									<TableCell className='text-sm text-nowrap'>
+										{product.code}
 									</TableCell>
-									<TableCell className='text-sm  text-center'>
-										{salesperson.sales.toLocaleString('pt-br')}
+									<TableCell className='text-xs text-nowrap'>
+										{product.name.slice(0, 40)}
 									</TableCell>
-									<TableCell className='text-xs md:text-sm text-center'>
-										{salesperson.revenue.toLocaleString('pt-br', {
-											currency: 'brl',
-											style: 'currency',
-										})}
+									<TableCell className='text-center'>
+										{product.sales.toLocaleString('pt-br')}
 									</TableCell>
-									<TableCell className='text-xs md:text-sm text-center'>
-										{salesperson.avgTicket.toLocaleString('pt-br', {
+									<TableCell className='text-xs text-nowrap text-center'>
+										{product.revenue.toLocaleString('pt-br', {
 											currency: 'brl',
 											style: 'currency',
 										})}

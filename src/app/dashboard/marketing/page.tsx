@@ -22,7 +22,6 @@ export default async function MarketingPage(props: {
 		const endDate = date.toISOString().split('T')[0];
 		return endDate;
 	}
-
 	function formattedStartDate() {
 		const date = new Date();
 		date.setDate(date.getDate() - 7);
@@ -32,14 +31,11 @@ export default async function MarketingPage(props: {
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();
 	const endDate = searchParams.endDate || formattedEndDate();
-
 	const responseAnalytics = FetchAnalyticsData(
 		String(startDate),
 		String(endDate),
 	);
-
 	const dataAds = FetchTopADSData(String(startDate), String(endDate));
-
 	const dataKeyWords = FetchKeywordADSData(String(startDate), String(endDate));
 	const dataMainADS = FetchADSData(String(startDate), String(endDate));
 

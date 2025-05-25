@@ -1,54 +1,57 @@
 /** @format */
 
+import { getComercialFilterAction } from '@/actions/filters/filter-comercial';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
 	CirclePercent,
 	DollarSign,
 	ShoppingBag,
 	SquarePercent,
 	Timer,
-	Trophy,
 	UserRoundPlus,
 } from 'lucide-react';
+import { Suspense } from 'react';
 import { SalesByCategoryChart } from '../_components/sales-by-category-chart';
 import { CustomerComparisonChartComponent } from './_components/customer-comparison';
 import FilterComercial from './_components/filter-comercial';
 import { GrowthChartComponent } from './_components/growth-chart';
 import { SalesChartComponent } from './_components/sales-chart-commercial';
 import RankingSellers from './_components/tables/ranking-sellers';
-import { getComercialFilterAction } from '@/actions/filters/filter-comercial';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
+import TopClients from './_components/tables/top-clients';
+import TopProducts from './_components/tables/top-products';
+import { FetchRankings } from '@/services/data-services/get-rankings';
 
-// Mock data (replace with actual data in a real application)
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export default function ComercialDashboard() {
+export default async function ComercialDashboard(props: {
+	searchParams: SearchParams;
+}) {
+	function formattedEndDate() {
+		const date = new Date();
+		const endDate = date.toISOString().split('T')[0];
+		return endDate;
+	}
+	function formattedStartDate() {
+		const date = new Date();
+		date.setDate(date.getDate() - 7);
+		const startDate = date.toISOString().split('T')[0];
+		return startDate;
+	}
+	const searchParams = await props.searchParams;
+	const startDate = searchParams.startDate || formattedStartDate();
+	const endDate = searchParams.endDate || formattedEndDate();
+	const category = searchParams.category || 'all';
+	const customerType = searchParams.customerType || 'all';
+
 	const dataFilter = getComercialFilterAction();
-	const topProducts = [
-		{ posicao: 1, name: 'Notebook Gamer XYZ', sales: 50, revenue: 150000 },
-		{ posicao: 2, name: 'SSD 1TB', sales: 100, revenue: 50000 },
-		{ posicao: 3, name: 'Placa de Vídeo RTX 3080', sales: 30, revenue: 90000 },
-		{ posicao: 4, name: 'Monitor 4K 27"', sales: 40, revenue: 60000 },
-		{ posicao: 5, name: 'Serviço de Montagem', sales: 80, revenue: 40000 },
-	];
-
-	const topCustomers = [
-		{ posicao: 1, name: 'Empresa A', purchases: 10, revenue: 100000 },
-		{ posicao: 2, name: 'João Silva', purchases: 5, revenue: 50000 },
-		{ posicao: 3, name: 'Empresa B', purchases: 8, revenue: 80000 },
-		{ posicao: 4, name: 'Maria Oliveira', purchases: 6, revenue: 60000 },
-		{ posicao: 5, name: 'Empresa C', purchases: 7, revenue: 70000 },
-	];
-
+	const dataRankings = FetchRankings(
+		String(startDate),
+		String(endDate),
+		String(category),
+		String(customerType),
+	);
 	return (
 		<div className='mx-auto space-y-4 mb-5  w-full'>
 			<Suspense
@@ -190,124 +193,10 @@ export default function ComercialDashboard() {
 			</div>
 			<div className='grid grid-cols-1 gap-4'>
 				<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
-					<Card>
-						<CardHeader>
-							<CardTitle className='text-base text-balance md:text-2xl'>
-								Top 5 Produtos
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>Posição</TableHead>
-										<TableHead>Produto</TableHead>
-										<TableHead className='text-center text-nowrap'>
-											Vendas
-										</TableHead>
-										<TableHead className='text-center'>Receita</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{topProducts.map((product) => {
-										return (
-											<TableRow key={product.name}>
-												<TableCell className='flex items-center gap-3'>
-													{product.posicao}
-													{product.posicao == 1 ? (
-														<Trophy
-															size={20}
-															className='text-amber-500'
-														/>
-													) : product.posicao == 2 ? (
-														<Trophy
-															size={20}
-															className='text-zinc-400'
-														/>
-													) : product.posicao == 3 ? (
-														<Trophy
-															size={20}
-															className='text-rose-700'
-														/>
-													) : null}
-												</TableCell>
-												<TableCell className='text-sm text-nowrap'>
-													{product.name}
-												</TableCell>
-												<TableCell className='text-center'>
-													{product.sales}
-												</TableCell>
-												<TableCell className='text-nowrap text-center'>
-													{product.revenue.toLocaleString('pt-br', {
-														currency: 'brl',
-														style: 'currency',
-													})}
-												</TableCell>
-											</TableRow>
-										);
-									})}
-								</TableBody>
-							</Table>
-						</CardContent>
-					</Card>
-					<Card>
-						<CardHeader>
-							<CardTitle className='text-base text-balance md:text-2xl'>
-								Top 5 Clientes
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>Posição</TableHead>
-										<TableHead>Cliente</TableHead>
-										<TableHead className='text-center'>Compras</TableHead>
-										<TableHead className='text-center'>Receita</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{topCustomers.map((customer) => (
-										<TableRow key={customer.name}>
-											<TableCell className='flex items-center gap-3'>
-												{customer.posicao}
-												{customer.posicao == 1 ? (
-													<Trophy
-														size={20}
-														className='text-amber-500'
-													/>
-												) : customer.posicao == 2 ? (
-													<Trophy
-														size={20}
-														className='text-zinc-400'
-													/>
-												) : customer.posicao == 3 ? (
-													<Trophy
-														size={20}
-														className='text-rose-700'
-													/>
-												) : null}
-											</TableCell>
-											<TableCell className='text-sm text-nowrap'>
-												{customer.name}
-											</TableCell>
-											<TableCell className='text-center'>
-												{customer.purchases}
-											</TableCell>
-											<TableCell className='text-center'>
-												{customer.revenue.toLocaleString('pt-br', {
-													currency: 'brl',
-													style: 'currency',
-												})}
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</CardContent>
-					</Card>
+					<TopClients data={dataRankings} />
+					<TopProducts data={dataRankings} />
 				</div>
-				<RankingSellers />
+				<RankingSellers data={dataRankings} />
 			</div>
 		</div>
 	);

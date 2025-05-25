@@ -39,7 +39,7 @@ model User {
 model Customer {
   id           String     @id @default(uuid())
   name         String
-  personType   PersonType
+  personType   PersonType @map("person_type")
   externalCode Int?       @unique
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt

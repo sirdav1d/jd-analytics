@@ -29,3 +29,27 @@ export interface IGoalTracking {
 	ok: boolean;
 	error?: string | null;
 }
+
+export interface IRankingSellers {
+	posicao: number;
+	name: string;
+	sales: number;
+	revenue: number;
+	avgTicket: number;
+}
+
+export interface IProduct {
+	posicao: number;
+	code: number;
+	name: string;
+	sales: number;
+	revenue: number;
+}
+
+export interface ICustomer {
+	posicao: number;
+	code: number;
+	name: string;
+	purchases: number;
+	revenue: number;
+}
