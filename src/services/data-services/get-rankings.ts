@@ -10,7 +10,7 @@ export async function FetchRankings(
 	const response = await fetch(
 		`${baseURL}/api/services/data-services/comercial-rankings?startDate=${startDate}&endDate=${endDate}&category=${category}&customerType=${customerType}`,
 		{
-			cache: 'no-store',
+			next: { revalidate: 60, tags: ['rankings'] },
 		},
 	);
 
