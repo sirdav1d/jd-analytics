@@ -1,6 +1,6 @@
 /** @format */
 
-export async function FetchRankings(
+export async function FetchBigNumbers(
 	startDate: string,
 	endDate: string,
 	category: string,
@@ -9,10 +9,10 @@ export async function FetchRankings(
 ) {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		`${baseURL}/api/services/data-services/comercial-rankings?startDate=${startDate}&endDate=${endDate}&category=${category}&customerType=${customerType}&org=${org}`,
+		`${baseURL}/api/services/data-services/comercial-big-numbers?startDate=${startDate}&endDate=${endDate}&category=${category}&customerType=${customerType}&org=${org}`,
 
 		{
-			next: { revalidate: 60, tags: ['rankings'] },
+			next: { revalidate: 60, tags: ['big-numbers-comercial'] },
 			method: 'GET',
 		},
 	);

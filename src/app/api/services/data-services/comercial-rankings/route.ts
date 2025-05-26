@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
 	const endDate = searchParams.get('endDate');
 	const category = searchParams.get('category');
 	const customerType = searchParams.get('customerType');
+	const org = searchParams.get('org');
 
 	if (!startDate || !endDate) {
 		return NextResponse.json(
@@ -31,6 +32,10 @@ export async function GET(req: NextRequest) {
 			data_pedido: { gte: start, lte: end },
 		};
 
+		if (org && org !== 'all') {
+			whereClauseForGroupBy.organizationId = org;
+		}
+
 		if (category && category !== 'all') {
 			whereClauseForGroupBy.items = {
 				some: {
@@ -49,19 +54,29 @@ export async function GET(req: NextRequest) {
 		const whereClause: any = {
 			sale: {
 				data_pedido: { gte: start, lte: end },
-				...(customerType && customerType !== 'all'
-					? { customer: { personType: { equals: customerType } } }
-					: {}),
 			},
-			...(category && category !== 'all'
-				? { product: { sector: category } }
-				: {}),
 		};
+
+		if (org && org !== 'all') {
+			whereClause.sale.organizationId = org;
+		}
+
+		if (customerType && customerType !== 'all') {
+			whereClause.sale.customer = { personType: { equals: customerType } };
+		}
+
+		if (category && category !== 'all') {
+			whereClause.product = { sector: category };
+		}
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const whereClauseCustomer: any = {
 			data_pedido: { gte: start, lte: end },
 		};
+
+		if (org && org !== 'all') {
+			whereClauseCustomer.organizationId = org;
+		}
 
 		if (customerType && customerType !== 'all') {
 			whereClauseCustomer.customer = { personType: customerType };
@@ -94,6 +109,7 @@ export async function GET(req: NextRequest) {
 						sale: {
 							userId: userId,
 							data_pedido: { gte: start, lte: end },
+							...(org && org !== 'all' ? { organizationId: org } : {}),
 							...(customerType && customerType !== 'all'
 								? // eslint-disable-next-line @typescript-eslint/no-explicit-any
 									{ customer: { is: { personType: customerType as any } } }
@@ -184,6 +200,11 @@ export async function GET(req: NextRequest) {
       JOIN "Product" pr   ON pr."id" = si."product_id"
       WHERE
         p."data_pedido" BETWEEN ${start} AND ${end}
+				${
+					org && org !== 'all'
+						? Prisma.sql`AND p."organizationId" = ${org}`
+						: Prisma.empty
+				}
         AND (
           ${customerType}::text IS NULL
           OR ${customerType} = 'all'

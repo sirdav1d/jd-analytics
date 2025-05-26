@@ -63,48 +63,48 @@ export function ConversionsComponent({
 	const chartData = [
 		{
 			name: 'Pesquisa Orgânica',
-			conversions: Organico.conversions,
-			sessions: Organico.sessions,
+			conversions: Organico?.conversions ?? 0,
+			sessions: Organico?.sessions ?? 0,
 		},
 		{
 			name: 'Pesquisa Paga',
-			conversions: Pago.conversions,
-			sessions: Pago.sessions,
+			conversions: Pago?.conversions ?? 0,
+			sessions: Pago?.sessions ?? 0,
 		},
 		{
 			name: 'Navegação Direta',
-			conversions: Direto.conversions,
-			sessions: Direto.sessions,
+			conversions: Direto?.conversions ?? 0,
+			sessions: Direto?.sessions ?? 0,
 		},
 		{
 			name: 'Social',
-			conversions: Social.conversions,
-			sessions: Social.sessions,
+			conversions: Social?.conversions ?? 0,
+			sessions: Social?.sessions ?? 0,
 		},
 		{
 			name: 'Backlink',
-			conversions: referral.conversions,
-			sessions: referral.sessions,
+			conversions: referral?.conversions ?? 0,
+			sessions: referral?.sessions ?? 0,
 		},
 		{
 			name: 'Discover',
-			conversions: crossNetwork.conversions,
-			sessions: crossNetwork.sessions,
+			conversions: crossNetwork?.conversions ?? 0,
+			sessions: crossNetwork?.sessions ?? 0,
 		},
 		{
 			name: 'Shopping',
-			conversions: shopping.conversions,
-			sessions: shopping.sessions,
+			conversions: shopping?.conversions ?? 0,
+			sessions: shopping?.sessions ?? 0,
 		},
 		{
 			name: 'Youtube',
-			conversions: video.conversions,
-			sessions: video.sessions,
+			conversions: video?.conversions ?? 0,
+			sessions: video?.sessions ?? 0,
 		},
 		{
 			name: 'Desconhecido',
-			conversions: nAtribuido.conversions,
-			sessions: nAtribuido.sessions,
+			conversions: nAtribuido?.conversions ?? 0,
+			sessions: nAtribuido?.sessions ?? 0,
 		},
 	];
 

@@ -14,6 +14,10 @@ export async function getComercialFilterAction() {
 			by: ['personType'],
 		});
 
+		const orgs = await prisma.organization.findMany({
+			select: { id: true, name: true },
+		});
+
 		if (!catogories || !customerTypes) {
 			return {
 				ok: false,
@@ -29,6 +33,7 @@ export async function getComercialFilterAction() {
 			data: {
 				catogories,
 				customerTypes,
+				orgs,
 			},
 			status: 200,
 		};

@@ -10,41 +10,19 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { Prisma } from '@prisma/client';
 import { format, startOfMonth } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { use, useState, useTransition } from 'react';
 
 interface FilterComercialProps {
-	data: Promise<
-		| {
-				ok: boolean;
-				error: null;
-				data: {
-					catogories: (Prisma.PickEnumerable<
-						Prisma.ProductGroupByOutputType,
-						'sector'[]
-					> & {})[];
-					customerTypes: (Prisma.PickEnumerable<
-						Prisma.CustomerGroupByOutputType,
-						'personType'[]
-					> & {})[];
-				};
-				status: number;
-		  }
-		| {
-				ok: boolean;
-				error: unknown;
-				data: null;
-				status: number;
-		  }
-	>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: Promise<any>;
 }
 
 export default function FilterComercial({ data }: FilterComercialProps) {
 	const allData = use(data);
-	
+
 	const now = new Date();
 	const searchParams = useSearchParams();
 	const [dateRange, setDateRange] = useState({
@@ -53,6 +31,7 @@ export default function FilterComercial({ data }: FilterComercialProps) {
 	});
 	const [category, setCategory] = useState('all');
 	const [customerType, setCustomerType] = useState('all');
+	const [org, setOrg] = useState('all');
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 
@@ -71,7 +50,7 @@ export default function FilterComercial({ data }: FilterComercialProps) {
 				router.push(
 					`/dashboard/comercial?startDate=${encodeURIComponent(
 						formattedFrom,
-					)}&endDate=${encodeURIComponent(formattedTo)}&category=${category}&customerType=${customerType}`,
+					)}&endDate=${encodeURIComponent(formattedTo)}&category=${category}&customerType=${customerType}&org=${org}`,
 					{ scroll: false },
 				);
 			});
@@ -111,7 +90,8 @@ export default function FilterComercial({ data }: FilterComercialProps) {
 				</SelectTrigger>
 				<SelectContent>
 					<SelectItem value='all'>Todas as Categorias</SelectItem>
-					{allData.data?.catogories.map((category, index) => {
+					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+					{allData.data?.catogories.map((category: any, index: number) => {
 						return (
 							<SelectItem
 								key={index}
@@ -131,12 +111,33 @@ export default function FilterComercial({ data }: FilterComercialProps) {
 				</SelectTrigger>
 				<SelectContent>
 					<SelectItem value='all'>Todos os Clientes</SelectItem>
-					{allData.data?.customerTypes.map((category, index) => {
+					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+					{allData.data?.customerTypes.map((category: any, index: number) => {
 						return (
 							<SelectItem
 								key={index}
 								value={category.personType}>
 								Pessoa {category.personType.toLowerCase()}
+							</SelectItem>
+						);
+					})}
+				</SelectContent>
+			</Select>
+			<Select
+				value={org}
+				onValueChange={setOrg}>
+				<SelectTrigger className='w-full md:w-48'>
+					<SelectValue placeholder='Tipo de Cliente' />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem value='all'>Todos as unidades</SelectItem>
+					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+					{allData.data?.orgs.map((org: any, index: number) => {
+						return (
+							<SelectItem
+								key={index}
+								value={org.id}>
+								{org.name}
 							</SelectItem>
 						);
 					})}

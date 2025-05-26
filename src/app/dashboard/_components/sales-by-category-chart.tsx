@@ -15,6 +15,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartData = [
 	{ name: 'Computadores', value: 400, fill: 'var(--color-Computadores)' },
+	{ name: 'Computadore2s', value: 100, fill: 'var(--color-Computadore2s)' },
+	{ name: 'Computadore3s', value: 200, fill: 'var(--color-Computadore3s)' },
 	{ name: 'Upgrades', value: 300, fill: 'var(--color-Upgrades)' },
 	{ name: 'Reparos', value: 300, fill: 'var(--color-Reparos)' },
 ];
@@ -32,6 +34,14 @@ const chartConfig = {
 		label: 'Computadores',
 		color: 'hsl(var(--chart-3))',
 	},
+	Computadore2s: {
+		label: 'Computadores',
+		color: 'hsl(var(--chart-4))',
+	},
+	Computadore3s: {
+		label: 'Computadores',
+		color: 'hsl(var(--chart-5))',
+	},
 } satisfies ChartConfig;
 
 export function SalesByCategoryChart() {
@@ -42,7 +52,7 @@ export function SalesByCategoryChart() {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square w-full max-h-[348px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto aspect-square w-full max-h-[298px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -52,9 +62,10 @@ export function SalesByCategoryChart() {
 					data={chartData}
 					dataKey='value'
 					nameKey='name'
-					label={{ fontSize: '14px' }}
+					
+					label={{ fontSize: '12px' }}
 					labelLine={false}
-					innerRadius={isMobile ? 80 : 80}
+					innerRadius={isMobile ? 80 : 68}
 					strokeWidth={4}>
 					<Label
 						content={({ viewBox }) => {
@@ -87,10 +98,10 @@ export function SalesByCategoryChart() {
 					content={
 						<ChartLegendContent
 							nameKey='name'
-							className='md:text-sm'
+							className='text-xs'
 						/>
 					}
-					className='-translate-y-2  gap-2 [&>*]:basis-1/4 [&>*]:justify-center text-sm'
+					className='flex flex-wrap'
 				/>
 			</PieChart>
 		</ChartContainer>

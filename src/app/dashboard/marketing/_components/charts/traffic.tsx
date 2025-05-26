@@ -82,21 +82,33 @@ export function TrafficComponent({
 	video,
 }: TrafficComponentProps) {
 	const chartData = [
-		{ name: 'Discover', usuarios: crossNetwork, fill: 'var(--color-Discover)' },
-		{ name: 'Perquisa Paga', usuarios: Pago, fill: 'var(--color-Pago)' },
+		{
+			name: 'Discover',
+			usuarios: crossNetwork ?? 0,
+			fill: 'var(--color-Discover)',
+		},
+		{ name: 'Perquisa Paga', usuarios: Pago ?? 0, fill: 'var(--color-Pago)' },
 		{
 			name: 'Perquisa Orgânica',
-			usuarios: Organico,
+			usuarios: Organico ?? 0,
 			fill: 'var(--color-Organico)',
 		},
-		{ name: 'Backlink', usuarios: referral, fill: 'var(--color-Link)' },
-		{ name: 'Navegação Direta', usuarios: Direto, fill: 'var(--color-Direta)' },
-		{ name: 'Social', usuarios: Social, fill: 'var(--color-Social)' },
-		{ name: 'Shopping', usuarios: shopping, fill: 'var(--color-Shopping)' },
-		{ name: 'Youtube', usuarios: video, fill: 'var(--color-Youtube)' },
+		{ name: 'Backlink', usuarios: referral ?? 0, fill: 'var(--color-Link)' },
+		{
+			name: 'Navegação Direta',
+			usuarios: Direto ?? 0,
+			fill: 'var(--color-Direta)',
+		},
+		{ name: 'Social', usuarios: Social ?? 0, fill: 'var(--color-Social)' },
+		{
+			name: 'Shopping',
+			usuarios: shopping ?? 0,
+			fill: 'var(--color-Shopping)',
+		},
+		{ name: 'Youtube', usuarios: video ?? 0, fill: 'var(--color-Youtube)' },
 		{
 			name: 'Deconhecido',
-			usuarios: nAtribuido,
+			usuarios: nAtribuido ?? 0,
 			fill: 'var(--color-Deconhecido)',
 		},
 	];

@@ -81,6 +81,7 @@ export function SalesChartComponent() {
 					}}
 					fill='url(#fillDesktop)'
 					stroke='var(--color-total)'
+					strokeWidth={2}
 					type={'natural'}
 					radius={4}>
 					<LabelList
