@@ -105,7 +105,7 @@ export default async function ComercialDashboard(props: {
 						<Skeleton className='w-full h-96' />
 					</div>
 				}>
-				<div className='grid grid-cols-1  xl:grid-cols-3 gap-4'>
+				<div className='grid grid-cols-1 max-h-full xl:grid-cols-3 gap-4'>
 					<SalesByClient data={dataSalesBy} />
 					<SalesByCategoryChart data={dataSalesBy} />
 					<SalesByPayment />

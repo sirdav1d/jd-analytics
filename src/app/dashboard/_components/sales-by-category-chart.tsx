@@ -69,7 +69,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 	const totalVisitors = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
 
 	return (
-		<Card>
+		<Card className='h-full'>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-2xl'>
 					Faturamento por Categoria
@@ -78,7 +78,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					className='mx-auto aspect-square w-full max-h-[380px] [&_.recharts-pie-label-text]:fill-foreground'>
 					<PieChart>
 						<ChartTooltip
 							cursor={false}
@@ -142,7 +142,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						</Pie>
 						<ChartLegend
 							content={<ChartLegendContent nameKey='category' />}
-							className='grid grid-cols-3 translate-y-3 mx-auto w-fit text-[11px] mt-2'
+							className='grid grid-cols-2 lg:grid-cols-3 text-nowrap translate-y-4 lg:translate-y-1 mx-auto w-fit text-[11px] mt-3 gap-2 lg:gap-4'
 						/>
 					</PieChart>
 				</ChartContainer>
