@@ -43,15 +43,20 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3 '>
-						{allData.data.current.totalRevenue.toLocaleString('pt-BR', {
-							style: 'currency',
-							currency: 'brl',
-						})}
+						{allData.data.current.totalRevenue
+							? allData.data.current.totalRevenue.toLocaleString('pt-BR', {
+									style: 'currency',
+									currency: 'brl',
+								})
+							: 0}
 						<Badge
 							variant={
 								allData.data.diff.totalRevenue > 0 ? 'success' : 'destructive'
 							}>
-							{allData.data.diff.totalRevenuePct.toFixed(2)}%
+							{allData.data.diff.totalRevenuePct
+								? allData.data.diff.totalRevenuePct.toFixed(2)
+								: 0}
+							%
 							{allData.data.diff.totalRevenue > 0 ? (
 								<TrendingUp
 									size={16}
@@ -67,10 +72,12 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 					</div>
 					<p className='text-xs text-muted-foreground mt-1'>
 						Valor no mês anterior{' '}
-						{allData.data.previous.totalRevenue.toLocaleString('pt-BR', {
-							style: 'currency',
-							currency: 'brl',
-						})}
+						{allData.data.previous.totalRevenue
+							? allData.data.previous.totalRevenue.toLocaleString('pt-BR', {
+									style: 'currency',
+									currency: 'brl',
+								})
+							: 0}
 					</p>
 				</CardContent>
 			</Card>
@@ -81,15 +88,20 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3 '>
-						{allData.data.current.averageTicket.toLocaleString('pt-BR', {
-							style: 'currency',
-							currency: 'brl',
-						})}
+						{allData.data.current.averageTicket
+							? allData.data.current.averageTicket.toLocaleString('pt-BR', {
+									style: 'currency',
+									currency: 'brl',
+								})
+							: 0}
 						<Badge
 							variant={
 								allData.data.diff.averageTicket > 0 ? 'success' : 'destructive'
 							}>
-							{allData.data.diff.averageTicketPct.toFixed(2)}%
+							{allData.data.diff.averageTicketPct
+								? allData.data.diff.averageTicketPct.toFixed(2)
+								: 0}
+							%
 							{allData.data.diff.averageTicket > 0 ? (
 								<TrendingUp
 									size={16}
@@ -105,10 +117,12 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 					</div>
 					<p className='text-xs text-muted-foreground mt-1'>
 						Valor no mês anterior{' '}
-						{allData.data.previous.averageTicket.toLocaleString('pt-BR', {
-							style: 'currency',
-							currency: 'brl',
-						})}
+						{allData.data.previous.averageTicket
+							? allData.data.previous.averageTicket.toLocaleString('pt-BR', {
+									style: 'currency',
+									currency: 'brl',
+								})
+							: 0}
 					</p>
 				</CardContent>
 			</Card>
@@ -119,12 +133,17 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3 '>
-						{allData.data.current.totalSales.toLocaleString('pt-BR')}
+						{allData.data.current.totalSales
+							? allData.data.current.totalSales.toLocaleString('pt-BR')
+							: 0}
 						<Badge
 							variant={
 								allData.data.diff.totalSales > 0 ? 'success' : 'destructive'
 							}>
-							{allData.data.diff.totalSalesPct.toFixed(2)}%
+							{allData.data.diff.totalSalesPct
+								? allData.data.diff.totalSalesPct.toFixed(2)
+								: 0}
+							%
 							{allData.data.diff.totalSales > 0 ? (
 								<TrendingUp
 									size={16}
@@ -140,7 +159,9 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 					</div>
 					<p className='text-xs text-muted-foreground mt-1'>
 						Valor no mês anterior{' '}
-						{allData.data.previous.totalSales.toLocaleString('pt-BR')}
+						{allData.data.previous.totalSales
+							? allData.data.previous.totalSales.toLocaleString('pt-BR')
+							: 0}
 					</p>
 				</CardContent>
 			</Card>
@@ -151,12 +172,17 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3 '>
-						{allData.data.current.newCustomers.toLocaleString('pt-BR')}
+						{allData.data.current.newCustomers
+							? allData.data.current.newCustomers.toLocaleString('pt-BR')
+							: 0}
 						<Badge
 							variant={
 								allData.data.diff.newCustomers > 0 ? 'success' : 'destructive'
 							}>
-							{allData.data.diff.newCustomersPct.toFixed(2)}%
+							{allData.data.diff.newCustomersPct
+								? allData.data.diff.newCustomersPct.toFixed(2)
+								: 0}
+							%
 							{allData.data.diff.newCustomers > 0 ? (
 								<TrendingUp
 									size={16}
@@ -172,7 +198,9 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 					</div>
 					<p className='text-xs text-muted-foreground mt-1'>
 						Valor no mês anterior{' '}
-						{allData.data.previous.newCustomers.toLocaleString('pt-BR')}
+						{allData.data.previous.newCustomers
+							? allData.data.previous.newCustomers.toLocaleString('pt-BR')
+							: 0}
 					</p>
 				</CardContent>
 			</Card>
@@ -185,14 +213,19 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3 '>
-						{allData.data.current.recurringCustomers.toLocaleString('pt-BR')}
+						{allData.data.current.recurringCustomers
+							? allData.data.current.recurringCustomers.toLocaleString('pt-BR')
+							: 0}
 						<Badge
 							variant={
 								allData.data.diff.recurringCustomers > 0
 									? 'success'
 									: 'destructive'
 							}>
-							{allData.data.diff.recurringCustomersPct.toFixed(2)}%
+							{allData.data.diff.recurringCustomersPct
+								? allData.data.diff.recurringCustomersPct.toFixed(2)
+								: 0}
+							%
 							{allData.data.diff.recurringCustomers > 0 ? (
 								<TrendingUp
 									size={16}
@@ -208,7 +241,9 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 					</div>
 					<p className='text-xs text-muted-foreground mt-1'>
 						Valor no mês anterior{' '}
-						{allData.data.previous.recurringCustomers.toLocaleString('pt-BR')}
+						{allData.data.previous.recurringCustomers
+							? allData.data.previous.recurringCustomers.toLocaleString('pt-BR')
+							: 0}
 					</p>
 				</CardContent>
 			</Card>
@@ -221,14 +256,19 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3 '>
-						{allData.data.current.revenuePerCustomer.toLocaleString('pt-BR')}
+						{allData.data.current.revenuePerCustomer
+							? allData.data.current.revenuePerCustomer.toLocaleString('pt-BR')
+							: 0}
 						<Badge
 							variant={
 								allData.data.diff.revenuePerCustomer > 0
 									? 'success'
 									: 'destructive'
 							}>
-							{allData.data.diff.revenuePerCustomerPct.toFixed(2)}%
+							{allData.data.diff.revenuePerCustomerPct
+								? allData.data.diff.revenuePerCustomerPct.toFixed(2)
+								: 0}
+							%
 							{allData.data.diff.revenuePerCustomer > 0 ? (
 								<TrendingUp
 									size={16}
@@ -244,7 +284,9 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 					</div>
 					<p className='text-xs text-muted-foreground mt-1'>
 						Valor no mês anterior{' '}
-						{allData.data.previous.revenuePerCustomer.toLocaleString('pt-BR')}
+						{allData.data.previous.revenuePerCustomer
+							? allData.data.previous.revenuePerCustomer.toLocaleString('pt-BR')
+							: 0}
 					</p>
 				</CardContent>
 			</Card>
