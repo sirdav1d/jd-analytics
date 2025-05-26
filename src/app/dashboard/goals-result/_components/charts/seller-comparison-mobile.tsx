@@ -87,7 +87,9 @@ export default function SellerComparisonMobile({
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
+				<ChartLegend
+					content={<ChartLegendContent className='md:text-sm  w-fit mx-auto' />}
+				/>
 				<Bar
 					radius={4}
 					layout='vertical'
@@ -97,7 +99,7 @@ export default function SellerComparisonMobile({
 						position={'right'}
 						offset={12}
 						className='fill-foreground font-semibold'
-						fontSize={12}
+						fontSize={14}
 					/>
 				</Bar>
 				<Bar
@@ -108,7 +110,7 @@ export default function SellerComparisonMobile({
 					<LabelList
 						position={'insideRight'}
 						className='fill-foreground translate-x-5 font-semibold'
-						fontSize={12}
+						fontSize={14}
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>

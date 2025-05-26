@@ -80,15 +80,15 @@ export function CampagnComponent({ data }: DataProps) {
 				accessibilityLayer
 				margin={{
 					top: 28,
-					left: isMobile ? -44 : 0,
-					right: isMobile ? 60 : 0,
+					left: isMobile ? -20 : 0,
+					right: isMobile ? 56 : 0,
 				}}
 				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
 				{isMobile ? (
 					<YAxis
-						width={140}
+						width={120}
 						type='category'
 						orientation='left'
 						dataKey='name'
@@ -124,7 +124,11 @@ export function CampagnComponent({ data }: DataProps) {
 					/>
 				)}
 
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
+				<ChartLegend
+					content={
+						<ChartLegendContent className='md:text-sm translate-x-10  md:translate-x-0 w-fit mx-auto ' />
+					}
+				/>
 				<Bar
 					radius={4}
 					layout={`${isMobile ? 'vertical' : 'horizontal'}`}

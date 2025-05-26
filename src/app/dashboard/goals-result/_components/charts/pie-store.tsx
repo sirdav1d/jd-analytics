@@ -102,12 +102,13 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Restante'
-						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-12 xl:-translate-x-16 translate-y-3 xl:translate-y-2 2xl:-translate-x-8 bg-background z-50'
-						fontSize={12}
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-4 translate-y-3 xl:translate-y-2  bg-background z-50'
+						fontSize={14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',
 								currency: 'brl',
+								notation: 'compact',
 							})
 						}
 					/>
@@ -121,12 +122,13 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Atingido'
-						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-12 xl:translate-x-16 translate-y-3 xl:translate-y-2 2xl:translate-x-8'
-						fontSize={12}
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-10 xl:translate-x-4 translate-y-3 xl:translate-y-2'
+						fontSize={14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',
 								currency: 'brl',
+								notation: 'compact',
 							})
 						}
 					/>

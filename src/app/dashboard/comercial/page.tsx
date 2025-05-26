@@ -5,21 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FetchBigNumbers } from '@/services/data-services/get-comercial-big-numbers';
+import { FetchSalesBy } from '@/services/data-services/get-comercial-sales-by';
 import { FetchRankings } from '@/services/data-services/get-rankings';
+import { startOfMonth } from 'date-fns';
 import { Suspense } from 'react';
 import { SalesByCategoryChart } from '../_components/sales-by-category-chart';
+import { SalesByClient } from '../_components/sales-by-client';
+import { SalesByPayment } from '../_components/sales-by-payment';
 import BigNumbers from './_components/big-numbers';
 import { CustomerComparisonChartComponent } from './_components/customer-comparison';
 import FilterComercial from './_components/filter-comercial';
-import { GrowthChartComponent } from './_components/growth-chart';
 import { SalesChartComponent } from './_components/sales-chart-commercial';
 import RankingSellers from './_components/tables/ranking-sellers';
 import TopClients from './_components/tables/top-clients';
 import TopProducts from './_components/tables/top-products';
-import { startOfMonth } from 'date-fns';
-import { SalesByClient } from '../_components/sales-by-client';
-import { SalesByPayment } from '../_components/sales-by-payment';
-import { FetchSalesBy } from '@/services/data-services/get-comercial-sales-by';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -112,8 +111,8 @@ export default async function ComercialDashboard(props: {
 				</div>
 			</Suspense>
 
-			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-				<Card>
+			<div className='grid grid-cols-1 gap-4'>
+				{/* <Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>
 							Reparos x Vendas
@@ -122,7 +121,7 @@ export default async function ComercialDashboard(props: {
 					<CardContent>
 						<GrowthChartComponent />
 					</CardContent>
-				</Card>
+				</Card> */}
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-base text-balance md:text-2xl'>

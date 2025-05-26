@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/chart';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { IGoalTracking } from '@/services/data-services/types';
-import { formatCurrency } from '@/utils/format-currency';
 import { use } from 'react';
 
 interface IRevenueProps {
@@ -38,9 +37,9 @@ export function Revenue({ data }: IRevenueProps) {
 				accessibilityLayer
 				data={chartData}
 				margin={{
-					left: isMobile ? 12 : 40,
-					right: isMobile ? 12 : 40,
-					top: 20,
+					left: isMobile ? 4 : 40,
+					right: isMobile ? 4 : 40,
+					top: isMobile ? 4 : 20,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -87,14 +86,22 @@ export function Revenue({ data }: IRevenueProps) {
 					fillOpacity={0.4}
 					stroke='var(--color-revenue)'
 					stackId='a'>
-					<LabelList
-						dataKey='revenue'
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={isMobile ? 8 : 10}
-						formatter={(value: number) => formatCurrency(value)}
-					/>
+					{isMobile ? null : (
+						<LabelList
+							dataKey='revenue'
+							position='top'
+							offset={12}
+							className='fill-foreground'
+							fontSize={isMobile ? 8 : 10}
+							formatter={(value: number) =>
+								value.toLocaleString('pt-br', {
+									style: 'currency',
+									currency: 'brl',
+									notation: 'compact',
+								})
+							}
+						/>
+					)}
 				</Area>
 			</AreaChart>
 		</ChartContainer>

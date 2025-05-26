@@ -48,12 +48,12 @@ export default async function GoalResultPage(props: {
 			<Separator className='my-5 w-full' />
 			<Suspense
 				fallback={
-					<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
+					<div className='grid grid-cols-1   xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
 						<Skeleton className='col-span-full aspect-auto xl:col-span-1 h-80' />
 						<Skeleton className='w-full col-span-2 h-80' />
 					</div>
 				}>
-				<div className='grid grid-cols-1  xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
+				<div className='grid grid-cols-1  2xl:grid-cols-3 w-full my-5 gap-y-5 xl:gap-5 md:items-center'>
 					<CompanySummary data={dataGoal} />
 					<Card className='w-full col-span-2 h-full'>
 						<CardHeader>

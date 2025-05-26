@@ -125,7 +125,11 @@ export function PerformanceComponent({
 						formatter={(value: number) => value.toLocaleString('pt-BR')}
 					/>
 				</Bar>
-				<ChartLegend content={<ChartLegendContent />} />
+				<ChartLegend
+					content={
+						<ChartLegendContent className='translate-x-10 md:translate-x-0  w-fit mx-auto' />
+					}
+				/>
 			</BarChart>
 		</ChartContainer>
 	);

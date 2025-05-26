@@ -86,8 +86,8 @@ export default function SellerComparison({ data }: ISellerComparisonProps) {
 					<LabelList
 						position={'top'}
 						offset={12}
-						className='fill-foreground'
-						fontSize={12}
+						className='fill-foreground font-semibold'
+						fontSize={14}
 					/>
 				</Bar>
 				<Bar
@@ -97,8 +97,8 @@ export default function SellerComparison({ data }: ISellerComparisonProps) {
 					<LabelList
 						offset={12}
 						position={'top'}
-						className='fill-foreground'
-						fontSize={12}
+						className='fill-foreground font-semibold'
+						fontSize={14}
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>

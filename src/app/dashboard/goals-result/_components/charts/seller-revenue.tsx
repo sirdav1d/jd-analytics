@@ -65,8 +65,8 @@ export default function SellerRevenue({ data }: ISellerRevenueProps) {
 				accessibilityLayer
 				layout='vertical'
 				margin={{
-					right: isMobile ? 80 : 92,
-					left: -18,
+					right: isMobile ? 20 : 92,
+					left: isMobile ? -32 : -10,
 				}}
 				data={chartData}>
 				<CartesianGrid
@@ -111,10 +111,10 @@ export default function SellerRevenue({ data }: ISellerRevenueProps) {
 					layout='vertical'>
 					<LabelList
 						dataKey={'revenue'}
-						position='right'
+						position={`${isMobile ? 'insideRight' : 'right'}`}
 						offset={8}
-						className='fill-foreground'
-						fontSize={isMobile ? 10 : 12}
+						className='fill-foreground font-semibold translate-x-5 md:translate-x-0'
+						fontSize={isMobile ? 14 : 12}
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>

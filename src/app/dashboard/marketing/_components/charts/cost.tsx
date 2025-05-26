@@ -131,7 +131,11 @@ export function CostsComponent({
 						formatter={(value: number) => formatCurrency(value)}
 					/>
 				</Bar>
-				<ChartLegend content={<ChartLegendContent />} />
+				<ChartLegend
+					content={
+						<ChartLegendContent className='translate-x-10  md:translate-x-0 w-fit mx-auto' />
+					}
+				/>
 			</BarChart>
 		</ChartContainer>
 	);
