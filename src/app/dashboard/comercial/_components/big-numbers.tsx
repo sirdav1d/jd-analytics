@@ -226,7 +226,7 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 								? allData.data.diff.recurringCustomersPct.toFixed(2)
 								: 0}
 							%
-							{allData.data.diff.recurringCustomers > 0 ? (
+							{(allData.data.diff.recurringCustomers ?? 0 > 0) ? (
 								<TrendingUp
 									size={16}
 									className='ml-2'

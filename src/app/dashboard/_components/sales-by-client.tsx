@@ -83,23 +83,25 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 							label={({ payload, ...props }) => {
 								return (
 									<text
+										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}
 										x={props.x}
-										y={props.y}
+										y={props.y + 8}
 										textAnchor={props.textAnchor}
 										dominantBaseline={props.dominantBaseline}
 										fill='hsla(var(--foreground))'>
 										{payload.revenue.toLocaleString('pt-br', {
 											style: 'currency',
 											currency: 'brl',
+											notation: 'compact',
 										})}
 									</text>
 								);
 							}}
 							labelLine={false}
-							innerRadius={88}
-							outerRadius={118}
+							innerRadius={72}
+							outerRadius={94}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
@@ -117,6 +119,7 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 													{totalVisitors.toLocaleString('pt-br', {
 														style: 'currency',
 														currency: 'brl',
+														notation: 'compact',
 													})}
 												</tspan>
 												<tspan
@@ -133,7 +136,7 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 						</Pie>
 						<ChartLegend
 							content={<ChartLegendContent nameKey='name' />}
-							className='flex flex-wrap text-sm'
+							className='flex flex-wrap text-sm translate-y-3'
 						/>
 					</PieChart>
 				</ChartContainer>

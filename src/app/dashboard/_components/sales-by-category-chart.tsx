@@ -10,6 +10,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { use } from 'react';
 import { Label, Pie, PieChart } from 'recharts';
 
@@ -40,7 +41,7 @@ const chartConfig = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 	const allData = use(data);
-
+	const isMobile = useIsMobile();
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const chartData: any[] | undefined = [];
 
@@ -87,28 +88,32 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						<Pie
 							data={chartData}
 							dataKey='revenue'
+							offset={2}
+							textAnchor='top'
 							nameKey='category'
 							label={({ payload, ...props }) => {
 								return (
 									<text
-										fontSize={11}
+										fontSize={isMobile ? 10 : 11}
+										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}
 										x={props.x}
-										y={props.y + 12}
+										y={props.y + 8}
 										textAnchor={props.textAnchor}
 										dominantBaseline={props.dominantBaseline}
 										fill='hsla(var(--foreground))'>
 										{payload.revenue.toLocaleString('pt-br', {
 											style: 'currency',
 											currency: 'brl',
+											notation: 'compact',
 										})}
 									</text>
 								);
 							}}
 							labelLine={false}
-							innerRadius={84}
-							outerRadius={112}
+							innerRadius={72}
+							outerRadius={94}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
@@ -126,6 +131,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 													{totalVisitors.toLocaleString('pt-br', {
 														style: 'currency',
 														currency: 'brl',
+														notation: 'compact',
 													})}
 												</tspan>
 												<tspan
