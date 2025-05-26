@@ -59,7 +59,7 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 					</TableHeader>
 					<TableBody>
 						{allData.data.topCustomers.map((customer: ICustomer) => (
-							<TableRow key={customer.name}>
+							<TableRow key={customer.code}>
 								<TableCell className='flex items-center gap-3'>
 									{customer.posicao}
 									{customer.posicao == 1 ? (

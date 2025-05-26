@@ -18,7 +18,20 @@ import React, { use } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function BigNumbers({ data }: { data: Promise<any> }) {
 	const allData = use(data);
-	console.log('------------ALL DATA--------------', allData);
+
+	if (!allData.ok || !allData.data) {
+		console.log(allData.error);
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
+
 	return (
 		<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
 			<Card>

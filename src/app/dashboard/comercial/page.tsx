@@ -17,6 +17,9 @@ import RankingSellers from './_components/tables/ranking-sellers';
 import TopClients from './_components/tables/top-clients';
 import TopProducts from './_components/tables/top-products';
 import { startOfMonth } from 'date-fns';
+import { SalesByClient } from '../_components/sales-by-client';
+import { SalesByPayment } from '../_components/sales-by-payment';
+import { FetchSalesBy } from '@/services/data-services/get-comercial-sales-by';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -58,6 +61,14 @@ export default async function ComercialDashboard(props: {
 		String(org),
 	);
 
+	const dataSalesBy = FetchSalesBy(
+		String(startDate),
+		String(endDate),
+		String(category),
+		String(customerType),
+		String(org),
+	);
+
 	return (
 		<div className='mx-auto space-y-4 mb-5  w-full'>
 			<Suspense
@@ -86,38 +97,21 @@ export default async function ComercialDashboard(props: {
 				<BigNumbers data={dataBigNumbers} />
 			</Suspense>
 
-			<div className='grid grid-cols-1  xl:grid-cols-3 gap-4'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento por categoria
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SalesByCategoryChart />
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento por Pagamento
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SalesByCategoryChart />
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento por cliente
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SalesByCategoryChart />
-					</CardContent>
-				</Card>
-			</div>
+			<Suspense
+				fallback={
+					<div className='grid grid-cols-1  xl:grid-cols-3 gap-4'>
+						<Skeleton className='w-full h-96' />
+						<Skeleton className='w-full h-96' />
+						<Skeleton className='w-full h-96' />
+					</div>
+				}>
+				<div className='grid grid-cols-1  xl:grid-cols-3 gap-4'>
+					<SalesByClient data={dataSalesBy} />
+					<SalesByCategoryChart data={dataSalesBy} />
+					<SalesByPayment />
+				</div>
+			</Suspense>
+
 			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
 				<Card>
 					<CardHeader>

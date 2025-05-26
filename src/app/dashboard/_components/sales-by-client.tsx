@@ -13,36 +13,9 @@ import {
 import { use } from 'react';
 import { Label, Pie, PieChart } from 'recharts';
 
-const chartConfig = {
-	revenue: { label: 'Faturamento' },
-	ACESSORIOSOFFICE: {
-		label: 'ACESSORIOS OFFICE',
-		color: 'hsl(var(--chart-3))',
-	},
-	HARDWAREOFFICE: {
-		label: 'HARDWARE OFFICE',
-		color: 'hsl(var(--chart-2))',
-	},
-	ACESSORIOSGAMER: {
-		label: 'ACESSORIOS GAMER',
-		color: 'hsl(var(--chart-4))',
-	},
-	HARDWAREGAMER: {
-		label: 'HARDWARE GAMER',
-		color: 'hsl(var(--chart-1))',
-	},
-	GERAL: {
-		label: 'GERAL',
-		color: 'hsl(var(--chart-5))',
-	},
-} satisfies ChartConfig;
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
+export function SalesByClient({ data }: { data: Promise<any> }) {
 	const allData = use(data);
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const chartData: any[] | undefined = [];
 
 	if (!allData.ok) {
 		console.log(allData.error);
@@ -57,22 +30,41 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 		);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	allData.data.salesByCategory?.map((item: any) => {
-		return chartData.push({
-			category: item.category.replace(' ', ''),
-			revenue: Number(item.revenue) ?? 0,
-			fill: `var(--color-${item.category.replace(' ', '')})`,
-		});
-	});
+	const fisica = allData.data.salesByClient[0];
 
+	const juridica = allData.data.salesByClient[1];
+
+	const chartData = [
+		{
+			name: fisica.type,
+			revenue: fisica?.revenue ?? 0,
+			fill: `var(--color-${fisica.type})`,
+		},
+		{
+			name: juridica.type,
+			revenue: juridica?.revenue ?? 0,
+			fill: `var(--color-${juridica.type})`,
+		},
+	];
 	const totalVisitors = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
+
+	const chartConfig = {
+		revenue: { label: 'Faturamento' },
+		FISICA: {
+			label: 'Pessoa Física',
+			color: 'hsl(var(--chart-1))',
+		},
+		JURIDICA: {
+			label: 'Pessoa Jurídica',
+			color: 'hsl(var(--chart-2))',
+		},
+	} satisfies ChartConfig;
 
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-2xl'>
-					Faturamento por Categoria
+					Faturamento por Cliente
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
@@ -87,15 +79,14 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						<Pie
 							data={chartData}
 							dataKey='revenue'
-							nameKey='category'
+							nameKey='name'
 							label={({ payload, ...props }) => {
 								return (
 									<text
-										fontSize={11}
 										cx={props.cx}
 										cy={props.cy}
 										x={props.x}
-										y={props.y + 12}
+										y={props.y}
 										textAnchor={props.textAnchor}
 										dominantBaseline={props.dominantBaseline}
 										fill='hsla(var(--foreground))'>
@@ -107,8 +98,8 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 								);
 							}}
 							labelLine={false}
-							innerRadius={84}
-							outerRadius={112}
+							innerRadius={88}
+							outerRadius={118}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
@@ -141,8 +132,8 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 							/>
 						</Pie>
 						<ChartLegend
-							content={<ChartLegendContent nameKey='category' />}
-							className='grid grid-cols-3 translate-y-3 mx-auto w-fit text-[11px] mt-2'
+							content={<ChartLegendContent nameKey='name' />}
+							className='flex flex-wrap text-sm'
 						/>
 					</PieChart>
 				</ChartContainer>
