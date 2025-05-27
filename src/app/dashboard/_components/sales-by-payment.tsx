@@ -8,12 +8,14 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { use } from 'react';
 import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesByPayment({ data }: { data: Promise<any> }) {
 	const allData = use(data);
+	const isMobile = useIsMobile();
 
 	if (!allData.ok) {
 		console.log(allData.error);
@@ -87,7 +89,7 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						layout='vertical'
 						margin={{
 							right: 60,
-							left: -28,
+							left: isMobile ? -8 : 10,
 						}}>
 						<XAxis
 							type='number'
@@ -95,13 +97,14 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 							hide
 						/>
 						<YAxis
-							width={104}
+							style={{ lineHeight: '40px' }}
+							width={118}
+							fontSize={isMobile ? 10 : 12}
 							dataKey='name'
 							type='category'
 							tickLine={false}
 							tickMargin={10}
 							axisLine={false}
-							tickFormatter={(value) => value.slice(0, 20)}
 						/>
 						<ChartTooltip
 							cursor={false}
