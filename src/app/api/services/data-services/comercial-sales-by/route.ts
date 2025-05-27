@@ -109,9 +109,44 @@ export async function GET(req: NextRequest) {
 			revenue: Number(row.revenue),
 		}));
 
+		const rowsPayment = await prisma.$queryRaw<
+			Array<{ method: string; revenue: string }>
+		>(Prisma.sql`
+			SELECT
+				pm."method"                         AS method,
+				SUM(si."total_value")::DOUBLE PRECISION AS revenue
+			FROM "SaleItem" si
+			JOIN "Pedido" p     ON si."sale_id" = p."id"
+			JOIN "Customer" c   ON p."customerId" = c."id"
+			JOIN "Product" pr   ON si."product_id" = pr."id"
+			JOIN "PaymentMethod" pm ON p."paymentMethodId" = pm."id"
+			WHERE
+				p."data_pedido" BETWEEN ${start} AND ${end}
+				${sqlOrgFilter}
+				${sqlCategoryFilter}
+				${sqlCustomerTypeFilter}
+			GROUP BY pm."method";
+		`);
+
+		const revenueByMethod: Record<string, number> = {};
+
+		for (const row of rowsPayment) {
+			const raw = row.method.trim();
+			const key = raw.includes(',') ? 'Múltiplos' : raw;
+
+			revenueByMethod[key] = (revenueByMethod[key] || 0) + Number(row.revenue);
+		}
+
+		const SalesByPayment = Object.entries(revenueByMethod)
+			.map(([method, revenue]) => ({
+				method,
+				revenue,
+			}))
+			.sort((a, b) => b.revenue - a.revenue);
+
 		return NextResponse.json({
 			ok: true,
-			data: { salesByClient, salesByCategory },
+			data: { salesByClient, salesByCategory, SalesByPayment },
 			error: null,
 		});
 	} catch (error) {

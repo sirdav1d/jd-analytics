@@ -19,7 +19,6 @@ model Organization {
   googleExpiresAt    BigInt?
   external_code      Int                 @unique @default(autoincrement()) @db.SmallInt
   dashboardComercial DashboardComercial?
-  dashboardMarketing DashboardMarketing?
   Pedido             Pedido[]
 }
 
@@ -111,75 +110,6 @@ model Pedido {
   items           SaleItem[]
 
   @@unique([documentNumber, organizationId, data_pedido])
-}
-
-model DashboardMarketing {
-  id                   String             @id @default(uuid())
-  organizationId       String             @unique
-  sessoes              Int
-  usuarios             Int
-  taxaRejeicao         Float
-  taxaConversaoSite    Float
-  taxaAbandonoCarrinho Float
-  impressoes           Int
-  cliques              Int
-  ctr                  Float
-  cpc                  Decimal
-  conversoes           Int
-  custoPorConversao    Decimal
-  roas                 Float
-  custoPorLead         Decimal
-  faturamentoTotal     Decimal
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  anunciosCTR          AnuncioCTR[]
-  anunciosConv         AnuncioConversao[]
-  canais               CanalTrafego[]
-  organization         Organization       @relation(fields: [organizationId], references: [id])
-  palavrasChave        PalavraChave[]
-  trafego              Trafego[]
-}
-
-model Trafego {
-  id          String             @id @default(uuid())
-  dashboardId String
-  origem      String
-  valor       Int
-  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
-}
-
-model CanalTrafego {
-  id            String             @id @default(uuid())
-  dashboardId   String
-  canal         String
-  taxaConversao Float
-  cpa           Decimal
-  roi           Float
-  dashboard     DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
-}
-
-model AnuncioCTR {
-  id          String             @id @default(uuid())
-  dashboardId String
-  nome        String
-  ctr         Float
-  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
-}
-
-model AnuncioConversao {
-  id          String             @id @default(uuid())
-  dashboardId String
-  nome        String
-  conversoes  Int
-  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
-}
-
-model PalavraChave {
-  id          String             @id @default(uuid())
-  dashboardId String
-  palavra     String
-  ctr         Float
-  dashboard   DashboardMarketing @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
 }
 
 model DashboardComercial {

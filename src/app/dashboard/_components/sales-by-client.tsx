@@ -10,6 +10,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsTablet } from '@/hooks/use-mobile';
 import { use } from 'react';
 import { Label, Pie, PieChart } from 'recharts';
 
@@ -17,12 +18,14 @@ import { Label, Pie, PieChart } from 'recharts';
 export function SalesByClient({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 
+	const isTablet = useIsTablet();
+
 	if (!allData.ok) {
 		console.log(allData.error);
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
+					<CardTitle className='text-base text-balance xl:text-xl'>
 						Sem dados encontrados
 					</CardTitle>
 				</CardHeader>
@@ -100,8 +103,8 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 								);
 							}}
 							labelLine={false}
-							innerRadius={72}
-							outerRadius={94}
+							innerRadius={isTablet ? 70 : 80}
+							outerRadius={isTablet ? 90 : 104}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {

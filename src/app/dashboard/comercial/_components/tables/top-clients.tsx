@@ -83,7 +83,7 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 									{customer.code}
 								</TableCell>
 								<TableCell className='text-xs text-nowrap'>
-									{customer.name.slice(0, 40)}
+									{customer.name.slice(0, 20) + '...'}
 								</TableCell>
 								<TableCell className='text-center'>
 									{customer.purchases.toLocaleString('pt-br')}

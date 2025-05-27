@@ -11,22 +11,22 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
-	{ name: 'Jan', total: 15000 },
-	{ name: 'Feb', total: 20000 },
-	{ name: 'Mar', total: 18000 },
-	{ name: 'Apr', total: 22000 },
-	{ name: 'May', total: 25000 },
-	{ name: 'Jun', total: 30000 },
-];
-const chartConfig = {
-	total: {
-		label: 'Faturamento',
-		color: 'hsl(var(--chart-1))',
-	},
-} satisfies ChartConfig;
-
 export function SalesChartComponent() {
+	const chartData = [
+		{ name: 'Jan', total: 15000 },
+		{ name: 'Feb', total: 20000 },
+		{ name: 'Mar', total: 18000 },
+		{ name: 'Apr', total: 22000 },
+		{ name: 'May', total: 25000 },
+		{ name: 'Jun', total: 30000 },
+	];
+	const chartConfig = {
+		total: {
+			label: 'Faturamento',
+			color: 'hsl(var(--chart-1))',
+		},
+	} satisfies ChartConfig;
+
 	return (
 		<ChartContainer
 			className='h-72 w-full'

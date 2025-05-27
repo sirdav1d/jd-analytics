@@ -98,41 +98,30 @@ export default async function ComercialDashboard(props: {
 
 			<Suspense
 				fallback={
-					<div className='grid grid-cols-1  xl:grid-cols-3 gap-4'>
+					<div className='grid grid-cols-1  xl:grid-cols-2 gap-4'>
+						<Skeleton className='w-full h-96' />
 						<Skeleton className='w-full h-96' />
 						<Skeleton className='w-full h-96' />
 						<Skeleton className='w-full h-96' />
 					</div>
 				}>
-				<div className='grid grid-cols-1 max-h-full xl:grid-cols-3 gap-4'>
+				<div className='grid grid-cols-1 max-h-full xl:grid-cols-2 gap-4'>
 					<SalesByClient data={dataSalesBy} />
 					<SalesByCategoryChart data={dataSalesBy} />
-					<SalesByPayment />
+					<SalesByPayment data={dataSalesBy} />
+					<Card>
+						<CardHeader>
+							<CardTitle className='text-base text-balance md:text-2xl'>
+								Novos Clientes vs. Recorrentes
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<CustomerComparisonChartComponent />
+						</CardContent>
+					</Card>
 				</div>
 			</Suspense>
 
-			<div className='grid grid-cols-1 gap-4'>
-				{/* <Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Reparos x Vendas
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<GrowthChartComponent />
-					</CardContent>
-				</Card> */}
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Novos Clientes vs. Recorrentes
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<CustomerComparisonChartComponent />
-					</CardContent>
-				</Card>
-			</div>
 			<div className='grid grid-cols-1 gap-4'>
 				<Card>
 					<CardHeader>

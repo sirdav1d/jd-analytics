@@ -65,7 +65,7 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 						{allData.data.sellers.map((salesperson: IRankingSellers) => {
 							return (
 								<TableRow key={salesperson.name}>
-									<TableCell className='flex items-center gap-3'>
+									<TableCell className='flex items-center gap-3 '>
 										{salesperson.posicao}
 										{salesperson.posicao == 1 ? (
 											<Trophy
@@ -84,19 +84,19 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 											/>
 										) : null}
 									</TableCell>
-									<TableCell className='text-xs md:text-sm text-nowrap'>
-										{salesperson.name}
+									<TableCell className='text-xs text-nowrap'>
+										{salesperson.name.slice(0, 20)+'...'}
 									</TableCell>
 									<TableCell className='text-sm  text-center'>
 										{salesperson.sales.toLocaleString('pt-br')}
 									</TableCell>
-									<TableCell className='text-xs md:text-sm text-center'>
+									<TableCell className='text-xs  text-center'>
 										{salesperson.revenue.toLocaleString('pt-br', {
 											currency: 'brl',
 											style: 'currency',
 										})}
 									</TableCell>
-									<TableCell className='text-xs md:text-sm text-center'>
+									<TableCell className='text-xs text-center'>
 										{salesperson.avgTicket.toLocaleString('pt-br', {
 											currency: 'brl',
 											style: 'currency',

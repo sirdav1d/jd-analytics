@@ -1,116 +1,133 @@
 /** @format */
 
 'use client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
-	ChartLegend,
-	ChartLegendContent,
 } from '@/components/ui/chart';
-import * as React from 'react';
-import { Label, Pie, PieChart } from 'recharts';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { use } from 'react';
+import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 
-const chartData = [
-	{ name: 'Computadores', value: 400, fill: 'var(--color-Computadores)' },
-	{ name: 'Computadore2s', value: 100, fill: 'var(--color-Computadore2s)' },
-	{ name: 'Computadore3s', value: 200, fill: 'var(--color-Computadore3s)' },
-	{ name: 'Upgrades', value: 300, fill: 'var(--color-Upgrades)' },
-	{ name: 'Reparos', value: 300, fill: 'var(--color-Reparos)' },
-];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function SalesByPayment({ data }: { data: Promise<any> }) {
+	const allData = use(data);
 
-const chartConfig = {
-	Upgrades: {
-		label: 'Upgrades',
-		color: 'hsl(var(--chart-1))',
-	},
-	Reparos: {
-		label: 'Serviços',
-		color: 'hsl(var(--chart-2))',
-	},
-	Computadores: {
-		label: 'Computadores',
-		color: 'hsl(var(--chart-3))',
-	},
-	Computadore2s: {
-		label: 'Computadores',
-		color: 'hsl(var(--chart-4))',
-	},
-	Computadore3s: {
-		label: 'Computadores',
-		color: 'hsl(var(--chart-5))',
-	},
-} satisfies ChartConfig;
+	if (!allData.ok) {
+		console.log(allData.error);
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance xl:text-xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
 
-export function SalesByPayment() {
-	const isMobile = useIsMobile();
-	const totalVisitors = React.useMemo(() => {
-		return chartData.reduce((acc, curr) => acc + curr.value, 0);
-	}, []);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const chartData: any[] | undefined = [];
+
+	const chartConfig = {
+		value: {
+			label: 'Faturamento',
+		},
+		Dinheiro: {
+			label: 'Dinheiro',
+			color: 'hsl(var(--chart-1))',
+		},
+		Cartão: {
+			label: 'Cartão',
+			color: 'hsl(var(--chart-2))',
+		},
+		PIX: {
+			label: 'PIX',
+			color: 'hsl(var(--chart-3))',
+		},
+		Crediário: {
+			label: 'Computadores',
+			color: 'hsl(var(--chart-4))',
+		},
+		Múltiplos: {
+			label: 'Múltiplos Meios',
+			color: 'hsl(var(--chart-5))',
+		},
+		DepósitoBancário: {
+			label: 'Depósito Bancário',
+			color: 'hsl(var(--chart-6))',
+		},
+	} satisfies ChartConfig;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	allData.data.SalesByPayment?.map((item: any) => {
+		return chartData.push({
+			name: item.method,
+			value: Number(item.revenue) ?? 0,
+			fill: `var(--color-${item.method.replace(' ', '')})`,
+		});
+	});
+
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle className='text-base text-balance md:text-2xl'>
+				<CardTitle className='text-base text-balance xl:text-xl'>
 					Faturamento por Pagamento
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto aspect-square w-full max-h-[328px] [&_.recharts-pie-label-text]:fill-foreground'>
-					<PieChart>
+					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					<BarChart
+						accessibilityLayer
+						data={chartData}
+						layout='vertical'
+						margin={{
+							right: 60,
+							left: -28,
+						}}>
+						<XAxis
+							type='number'
+							dataKey='value'
+							hide
+						/>
+						<YAxis
+							width={104}
+							dataKey='name'
+							type='category'
+							tickLine={false}
+							tickMargin={10}
+							axisLine={false}
+							tickFormatter={(value) => value.slice(0, 20)}
+						/>
 						<ChartTooltip
 							cursor={false}
 							content={<ChartTooltipContent />}
 						/>
-						<Pie
-							data={chartData}
-							dataKey='value'
-							nameKey='name'
-							label={{ fontSize: '12px' }}
-							labelLine={false}
-							innerRadius={isMobile ? 80 : 68}
-							strokeWidth={4}>
-							<Label
-								content={({ viewBox }) => {
-									if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-										return (
-											<text
-												x={viewBox.cx}
-												y={viewBox.cy}
-												textAnchor='middle'
-												dominantBaseline='middle'>
-												<tspan
-													x={viewBox.cx}
-													y={viewBox.cy}
-													className='fill-foreground text-3xl font-bold'>
-													{totalVisitors.toLocaleString()}
-												</tspan>
-												<tspan
-													x={viewBox.cx}
-													y={(viewBox.cy || 0) + 24}
-													className='fill-muted-foreground'>
-													Vendas
-												</tspan>
-											</text>
-										);
-									}
-								}}
+						<Bar
+							fill='var(--color-desktop)'
+							radius={5}
+							dataKey='value'>
+							<LabelList
+								dataKey='value'
+								position='right'
+								fontWeight={600}
+								offset={8}
+								className='fill-foreground'
+								formatter={(value: number) =>
+									`${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' })}`
+								}
+								fontSize={11}
 							/>
-						</Pie>
-						<ChartLegend
-							content={
-								<ChartLegendContent
-									nameKey='name'
-									className='text-xs'
-								/>
-							}
-							className='flex flex-wrap'
+						</Bar>
+						<ChartTooltip
+							cursor={false}
+							content={<ChartTooltipContent hideLabel />}
 						/>
-					</PieChart>
+					</BarChart>
 				</ChartContainer>
 			</CardContent>
 		</Card>

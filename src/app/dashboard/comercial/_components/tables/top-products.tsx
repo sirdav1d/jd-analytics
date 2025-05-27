@@ -84,7 +84,7 @@ export default function TopProducts({ data }: { data: Promise<any> }) {
 										{product.code}
 									</TableCell>
 									<TableCell className='text-xs text-nowrap'>
-										{product.name.slice(0, 40)}
+										{product.name.slice(0, 20) + '...'}
 									</TableCell>
 									<TableCell className='text-center'>
 										{product.sales.toLocaleString('pt-br')}

@@ -22,7 +22,7 @@ export function useIsMobile() {
 	return !!isMobile;
 }
 
-const TABLET_BREAKPOINT = 1025;
+const TABLET_BREAKPOINT = 1024;
 
 export function useIsTablet() {
 	const [isTablet, setIsTablet] = React.useState<boolean | undefined>(

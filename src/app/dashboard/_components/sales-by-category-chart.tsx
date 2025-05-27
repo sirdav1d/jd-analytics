@@ -10,7 +10,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile, useIsTablet } from '@/hooks/use-mobile';
 import { use } from 'react';
 import { Label, Pie, PieChart } from 'recharts';
 
@@ -42,6 +42,7 @@ const chartConfig = {
 export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
+	const isTablet = useIsTablet();
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const chartData: any[] | undefined = [];
 
@@ -72,14 +73,14 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 	return (
 		<Card className='h-full'>
 			<CardHeader>
-				<CardTitle className='text-base text-balance md:text-2xl'>
+				<CardTitle className='text-base text-balance xl:text-xl'>
 					Faturamento por Categoria
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto aspect-square w-full max-h-[380px] [&_.recharts-pie-label-text]:fill-foreground'>
+					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
 					<PieChart>
 						<ChartTooltip
 							cursor={false}
@@ -88,8 +89,6 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						<Pie
 							data={chartData}
 							dataKey='revenue'
-							offset={2}
-							textAnchor='top'
 							nameKey='category'
 							label={({ payload, ...props }) => {
 								return (
@@ -112,8 +111,8 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 								);
 							}}
 							labelLine={false}
-							innerRadius={72}
-							outerRadius={94}
+							innerRadius={isTablet ? 70 : 80}
+							outerRadius={isTablet ? 90 : 104}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
@@ -127,7 +126,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 												<tspan
 													x={viewBox.cx}
 													y={viewBox.cy}
-													className='fill-foreground text-xl font-bold'>
+													className='fill-foreground text-lg md:text-xl font-bold'>
 													{totalVisitors.toLocaleString('pt-br', {
 														style: 'currency',
 														currency: 'brl',
@@ -148,7 +147,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						</Pie>
 						<ChartLegend
 							content={<ChartLegendContent nameKey='category' />}
-							className='grid grid-cols-2 lg:grid-cols-3 text-nowrap translate-y-4 lg:translate-y-1 mx-auto w-fit text-[11px] mt-3 gap-2 lg:gap-4'
+							className='grid grid-cols-2 lg:grid-cols-3 text-nowrap translate-y-4 lg:translate-y-2 mx-auto w-fit text-[10px] lg:text-xs gap-y-2 gap-x-5  '
 						/>
 					</PieChart>
 				</ChartContainer>
