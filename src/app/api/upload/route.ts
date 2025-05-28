@@ -177,13 +177,13 @@ export async function POST(req: NextRequest) {
 			const brand = row['Marca Produto'];
 			const sector = row['Setor Produto'];
 			const product = await prisma.product.upsert({
-				where: { externalCode: prodCode },
+				where: { external_code: prodCode },
 				update: {},
 				create: {
 					description: prodDesc,
 					brand,
 					sector,
-					externalCode: prodCode,
+					external_code: prodCode,
 				},
 			});
 
