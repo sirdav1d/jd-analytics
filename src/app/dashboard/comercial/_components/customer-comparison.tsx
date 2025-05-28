@@ -2,8 +2,9 @@
 
 'use client';
 
-import { CartesianGrid, LabelList, Bar, BarChart, XAxis } from 'recharts';
+import { Label, Pie, PieChart } from 'recharts';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	ChartConfig,
 	ChartContainer,
@@ -12,79 +13,134 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsTablet } from '@/hooks/use-mobile';
+import { use } from 'react';
 
-const chartData = [
-	{ month: 'Jan', novos: 30, recorrentes: 70 },
-	{ month: 'Fev', novos: 40, recorrentes: 80 },
-	{ month: 'Mar', novos: 35, recorrentes: 90 },
-	{ month: 'Abr', novos: 50, recorrentes: 85 },
-	{ month: 'Mai', novos: 45, recorrentes: 95 },
-	{ month: 'Jun', novos: 60, recorrentes: 100 },
-];
-const chartConfig = {
-	novos: {
-		label: 'Novos',
-		color: 'hsl(var(--chart-1))',
-	},
-	recorrentes: {
-		label: 'Recorrentes',
-		color: 'hsl(var(--chart-2))',
-	},
-} satisfies ChartConfig;
+export function CustomerComparisonChartComponent({
+	data,
+}: {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: Promise<any>;
+}) {
+	const isTablet = useIsTablet();
+	const allData = use(data);
 
-export function CustomerComparisonChartComponent() {
+	if (!allData.ok) {
+		console.log(allData.error);
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance xl:text-xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
+
+	console.log(allData.data.salesByClientType);
+	const chartData = [
+		{
+			name: 'Novos',
+			revenue: 163000,
+			fill: `var(--color-Novos)`,
+		},
+		{
+			name: 'Recorrentes',
+			revenue: 103000,
+			fill: `var(--color-Recorrentes)`,
+		},
+	];
+
+	const chartConfig = {
+		Novos: {
+			label: 'Novos',
+			color: 'hsl(var(--chart-1))',
+		},
+		Recorrentes: {
+			label: 'Recorrentes',
+			color: 'hsl(var(--chart-2))',
+		},
+	} satisfies ChartConfig;
+	const totalVisitors = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
 	return (
-		<ChartContainer
-			className='h-72 w-full'
-			config={chartConfig}>
-			<BarChart
-				accessibilityLayer
-				data={chartData}
-				margin={{
-					top: 28,
-				}}>
-				<CartesianGrid vertical={false} />
-				<XAxis
-					dataKey='month'
-					tickLine={false}
-					axisLine={false}
-					tickMargin={12}
-					tickFormatter={(value) => value.slice(0, 3)}
-				/>
-				<ChartTooltip
-					cursor={false}
-					content={<ChartTooltipContent indicator='dot' />}
-				/>
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
-				<Bar
-					dataKey='novos'
-					type='natural'
-					fill='var(--color-novos)'
-					stroke='var(--color-novos)'
-					radius={4}
-					strokeWidth={2}>
-					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={12}
-					/>
-				</Bar>
-				<Bar
-					dataKey='recorrentes'
-					type='natural'
-					fill='var(--color-recorrentes)'
-					radius={4}
-					stroke='var(--color-recorrentes)'
-					strokeWidth={2}>
-					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={12}
-					/>
-				</Bar>
-			</BarChart>
-		</ChartContainer>
+		<Card>
+			<CardHeader>
+				<CardTitle className='text-base text-balance md:text-xl'>
+					Novos Clientes vs. Recorrentes
+				</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<ChartContainer
+					config={chartConfig}
+					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					<PieChart>
+						<ChartTooltip
+							cursor={false}
+							content={<ChartTooltipContent />}
+						/>
+						<Pie
+							data={chartData}
+							dataKey='revenue'
+							nameKey='name'
+							label={({ payload, ...props }) => {
+								return (
+									<text
+										fontWeight={600}
+										cx={props.cx}
+										cy={props.cy}
+										x={props.x}
+										y={props.y + 8}
+										textAnchor={props.textAnchor}
+										dominantBaseline={props.dominantBaseline}
+										fill='hsla(var(--foreground))'>
+										{payload.revenue.toLocaleString('pt-br', {
+											style: 'currency',
+											currency: 'brl',
+											notation: 'compact',
+										})}
+									</text>
+								);
+							}}
+							labelLine={false}
+							innerRadius={isTablet ? 70 : 80}
+							outerRadius={isTablet ? 90 : 104}
+							strokeWidth={4}>
+							<Label
+								content={({ viewBox }) => {
+									if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+										return (
+											<text
+												x={viewBox.cx}
+												y={viewBox.cy}
+												textAnchor='middle'
+												dominantBaseline='middle'>
+												<tspan
+													x={viewBox.cx}
+													y={viewBox.cy}
+													className='fill-foreground text-xl font-bold'>
+													{totalVisitors.toLocaleString('pt-br', {
+														style: 'currency',
+														currency: 'brl',
+														notation: 'compact',
+													})}
+												</tspan>
+												<tspan
+													x={viewBox.cx}
+													y={(viewBox.cy || 0) + 24}
+													className='fill-muted-foreground'>
+													Faturamento Total
+												</tspan>
+											</text>
+										);
+									}
+								}}
+							/>
+						</Pie>
+						<ChartLegend content={<ChartLegendContent nameKey='name' />} />
+					</PieChart>
+				</ChartContainer>
+			</CardContent>
+		</Card>
 	);
 }

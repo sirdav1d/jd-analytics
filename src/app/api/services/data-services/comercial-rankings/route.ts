@@ -162,10 +162,10 @@ export async function GET(req: NextRequest) {
 				// Busca a descrição do produto
 				const product = await prisma.product.findUnique({
 					where: { id: productId },
-					select: { description: true, externalCode: true },
+					select: { description: true, external_code: true },
 				});
 				const name = product?.description ?? 'Unknown';
-				const code = product?.externalCode ?? '00';
+				const code = product?.external_code ?? '00';
 
 				// Ticket médio do produto (avgPrice)
 

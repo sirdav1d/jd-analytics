@@ -79,14 +79,14 @@ model SaleItem {
 }
 
 model Product {
-  id           String     @id @default(uuid())
-  description  String
-  brand        String
-  sector       String
-  externalCode Int?       @unique
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  items        SaleItem[]
+  id            String     @id @default(uuid())
+  description   String
+  brand         String
+  sector        String
+  external_code Int?       @unique(map: "Product_externalCode_key")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  items         SaleItem[]
 }
 
 model Pedido {

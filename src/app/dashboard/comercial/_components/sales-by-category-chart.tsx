@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	ChartConfig,
 	ChartContainer,
+	ChartLegend,
+	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
@@ -12,17 +14,44 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { use } from 'react';
 import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 
+const chartConfig = {
+	revenue: { label: 'Faturamento' },
+	ACESSORIOSOFFICE: {
+		label: 'ACESSORIOS OFFICE',
+		color: 'hsl(var(--chart-3))',
+	},
+	HARDWAREOFFICE: {
+		label: 'HARDWARE OFFICE',
+		color: 'hsl(var(--chart-2))',
+	},
+	ACESSORIOSGAMER: {
+		label: 'ACESSORIOS GAMER',
+		color: 'hsl(var(--chart-4))',
+	},
+	HARDWAREGAMER: {
+		label: 'HARDWARE GAMER',
+		color: 'hsl(var(--chart-1))',
+	},
+	GERAL: {
+		label: 'GERAL',
+		color: 'hsl(var(--chart-5))',
+	},
+} satisfies ChartConfig;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function SalesByPayment({ data }: { data: Promise<any> }) {
+export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
+	// const isTablet = useIsTablet();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const chartData: any[] | undefined = [];
 
 	if (!allData.ok) {
 		console.log(allData.error);
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle className='text-base text-balance xl:text-xl'>
+					<CardTitle className='text-base text-balance md:text-2xl'>
 						Sem dados encontrados
 					</CardTitle>
 				</CardHeader>
@@ -31,52 +60,21 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const chartData: any[] | undefined = [];
-
-	const chartConfig = {
-		value: {
-			label: 'Faturamento',
-		},
-		Dinheiro: {
-			label: 'Dinheiro',
-			color: 'hsl(var(--chart-1))',
-		},
-		Cartão: {
-			label: 'Cartão',
-			color: 'hsl(var(--chart-2))',
-		},
-		PIX: {
-			label: 'PIX',
-			color: 'hsl(var(--chart-3))',
-		},
-		Crediário: {
-			label: 'Computadores',
-			color: 'hsl(var(--chart-4))',
-		},
-		Múltiplos: {
-			label: 'Múltiplos Meios',
-			color: 'hsl(var(--chart-5))',
-		},
-		DepósitoBancário: {
-			label: 'Depósito Bancário',
-			color: 'hsl(var(--chart-6))',
-		},
-	} satisfies ChartConfig;
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	allData.data.SalesByPayment?.map((item: any) => {
+	allData.data.salesByCategory?.map((item: any) => {
 		return chartData.push({
-			name: item.method,
-			value: Number(item.revenue) ?? 0,
-			fill: `var(--color-${item.method.replace(' ', '')})`,
+			category: item.category,
+			revenue: Number(item.revenue) ?? 0,
+			fill: `var(--color-${item.category.replace(' ', '')})`,
 		});
 	});
 
+	// const totalVisitors = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
+
 	return (
-		<Card>
+		<Card className='h-full '>
 			<CardHeader>
 				<CardTitle className='text-base text-balance xl:text-xl'>
-					Faturamento por Pagamento
+					Faturamento por Categoria
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
@@ -88,19 +86,19 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: 60,
-							left: isMobile ? -8 : 10,
+							right: isMobile ? 60:40,
+							left: isMobile ? -6 : 20,
 						}}>
 						<XAxis
 							type='number'
-							dataKey='value'
+							dataKey='revenue'
 							hide
 						/>
 						<YAxis
 							style={{ lineHeight: '40px' }}
-							width={118}
+							width={130}
 							fontSize={isMobile ? 10 : 12}
-							dataKey='name'
+							dataKey='category'
 							type='category'
 							tickLine={false}
 							tickMargin={10}
@@ -113,9 +111,9 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						<Bar
 							fill='var(--color-desktop)'
 							radius={5}
-							dataKey='value'>
+							dataKey='revenue'>
 							<LabelList
-								dataKey='value'
+								dataKey='revenue'
 								position='right'
 								fontWeight={600}
 								offset={8}
@@ -129,6 +127,10 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						<ChartTooltip
 							cursor={false}
 							content={<ChartTooltipContent hideLabel />}
+						/>
+						<ChartLegend
+							content={<ChartLegendContent nameKey='category' />}
+							className='grid grid-cols-2 lg:grid-cols-3 text-nowrap translate-y-4 lg:translate-y-2 mx-auto w-fit text-[10px] lg:text-xs gap-y-2 gap-x-5  '
 						/>
 					</BarChart>
 				</ChartContainer>

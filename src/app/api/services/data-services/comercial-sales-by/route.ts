@@ -144,9 +144,67 @@ export async function GET(req: NextRequest) {
 			}))
 			.sort((a, b) => b.revenue - a.revenue);
 
+		const rowsItemType = await prisma.$queryRaw<
+			Array<{ tipo: string; revenue: string }>
+		>(Prisma.sql`
+  SELECT
+    CASE
+      WHEN pr."external_code" = '1459' THEN 'Serviço'
+      ELSE 'Produto'
+    END AS tipo,
+    SUM(si."total_value")::DOUBLE PRECISION AS revenue
+  FROM "SaleItem" si
+  JOIN "Pedido" p     ON si."sale_id"     = p."id"
+  JOIN "Customer" c   ON p."customerId"   = c."id"
+  JOIN "Product" pr   ON si."product_id"  = pr."id"
+  WHERE
+    p."data_pedido" BETWEEN ${start} AND ${end}
+    ${sqlOrgFilter}
+    ${sqlCategoryFilter}
+    ${sqlCustomerTypeFilter}
+  GROUP BY tipo;
+`);
+
+		const salesByItemType = rowsItemType.map((row) => ({
+			type: row.tipo, // "Serviço" ou "Produto"
+			revenue: Number(row.revenue),
+		}));
+
+		const rowsClientType = await prisma.$queryRaw<
+			Array<{ tipo: string; revenue: string }>
+		>(Prisma.sql`
+  SELECT
+    CASE
+			WHEN c."createdAt" BETWEEN ${start} AND ${end} THEN 'Novo'
+			WHEN c."createdAt" < ${start} THEN 'Recorrente'
+    END AS tipo,
+    SUM(si."total_value")::DOUBLE PRECISION AS revenue
+  FROM "SaleItem" si
+  JOIN "Pedido" p     ON si."sale_id"     = p."id"
+  JOIN "Customer" c   ON p."customerId"   = c."id"
+  JOIN "Product" pr   ON si."product_id"  = pr."id"
+  WHERE
+    p."data_pedido" BETWEEN ${start} AND ${end}
+    ${sqlOrgFilter}
+    ${sqlCategoryFilter}
+    ${sqlCustomerTypeFilter}
+  GROUP BY tipo;
+`);
+
+		const salesByClientType = rowsClientType.map((row) => ({
+			type: row.tipo,
+			revenue: Number(row.revenue),
+		}));
+
 		return NextResponse.json({
 			ok: true,
-			data: { salesByClient, salesByCategory, SalesByPayment },
+			data: {
+				salesByClient,
+				salesByCategory,
+				SalesByPayment,
+				salesByItemType,
+				salesByClientType,
+			},
 			error: null,
 		});
 	} catch (error) {

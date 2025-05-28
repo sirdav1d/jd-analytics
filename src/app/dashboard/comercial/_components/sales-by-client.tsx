@@ -66,8 +66,8 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle className='text-base text-balance md:text-2xl'>
-					Faturamento por Cliente
+				<CardTitle className='text-base text-balance xl:text-xl'>
+					Pessoa Física vs. Jurídica
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
@@ -137,10 +137,7 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 								}}
 							/>
 						</Pie>
-						<ChartLegend
-							content={<ChartLegendContent nameKey='name' />}
-							className='flex flex-wrap text-sm translate-y-3'
-						/>
+						<ChartLegend content={<ChartLegendContent nameKey='name' />} />
 					</PieChart>
 				</ChartContainer>
 			</CardContent>

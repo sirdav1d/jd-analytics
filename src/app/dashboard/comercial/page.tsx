@@ -1,7 +1,6 @@
 /** @format */
 
 import { getComercialFilterAction } from '@/actions/filters/filter-comercial';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FetchBigNumbers } from '@/services/data-services/get-comercial-big-numbers';
@@ -9,13 +8,14 @@ import { FetchSalesBy } from '@/services/data-services/get-comercial-sales-by';
 import { FetchRankings } from '@/services/data-services/get-rankings';
 import { startOfMonth } from 'date-fns';
 import { Suspense } from 'react';
-import { SalesByCategoryChart } from '../_components/sales-by-category-chart';
-import { SalesByClient } from '../_components/sales-by-client';
-import { SalesByPayment } from '../_components/sales-by-payment';
 import BigNumbers from './_components/big-numbers';
 import { CustomerComparisonChartComponent } from './_components/customer-comparison';
 import FilterComercial from './_components/filter-comercial';
+import { SalesByCategoryChart } from './_components/sales-by-category-chart';
+import { SalesByClient } from './_components/sales-by-client';
+import { SalesByPayment } from './_components/sales-by-payment';
 import { SalesChartComponent } from './_components/sales-chart-commercial';
+import { ServicesVsSales } from './_components/services-vs-sales';
 import RankingSellers from './_components/tables/ranking-sellers';
 import TopClients from './_components/tables/top-clients';
 import TopProducts from './_components/tables/top-products';
@@ -105,34 +105,20 @@ export default async function ComercialDashboard(props: {
 						<Skeleton className='w-full h-96' />
 					</div>
 				}>
-				<div className='grid grid-cols-1 max-h-full xl:grid-cols-2 gap-4'>
+				<div className='grid grid-cols-1 max-h-full xl:grid-cols-3 gap-4'>
 					<SalesByClient data={dataSalesBy} />
+					<ServicesVsSales data={dataSalesBy} />
+					<CustomerComparisonChartComponent data={dataSalesBy} />
+				</div>
+				<div className='grid grid-cols-1 max-h-full xl:grid-cols-2 gap-4'>
 					<SalesByCategoryChart data={dataSalesBy} />
 					<SalesByPayment data={dataSalesBy} />
-					<Card>
-						<CardHeader>
-							<CardTitle className='text-base text-balance md:text-2xl'>
-								Novos Clientes vs. Recorrentes
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<CustomerComparisonChartComponent />
-						</CardContent>
-					</Card>
 				</div>
 			</Suspense>
 
 			<div className='grid grid-cols-1 gap-4'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-base text-balance md:text-2xl'>
-							Faturamento por Período
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SalesChartComponent />
-					</CardContent>
-				</Card>{' '}
+				<SalesChartComponent />
+
 				<Suspense
 					fallback={
 						<div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
