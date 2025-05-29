@@ -16,7 +16,7 @@ import { use } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesChartComponent({ data }: { data: Promise<any> }) {
 	const allData = use(data);
-	console.log(allData.data.revenueOverTime);
+
 	const chartData = allData.data.revenueOverTime;
 	const chartConfig = {
 		total: {
