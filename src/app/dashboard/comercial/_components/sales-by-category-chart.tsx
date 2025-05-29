@@ -86,7 +86,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: isMobile ? 60:40,
+							right: isMobile ? 60 : 40,
 							left: isMobile ? -6 : 20,
 						}}>
 						<XAxis
@@ -114,10 +114,10 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 							dataKey='revenue'>
 							<LabelList
 								dataKey='revenue'
-								position='right'
+								position='insideRight'
 								fontWeight={600}
 								offset={8}
-								className='fill-foreground'
+								className='fill-foreground translate-x-16'
 								formatter={(value: number) =>
 									`${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' })}`
 								}

@@ -116,10 +116,10 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 							dataKey='value'>
 							<LabelList
 								dataKey='value'
-								position='inside'
+								position='insideRight'
 								fontWeight={600}
 								offset={8}
-								className='fill-foreground translate-x-20'
+								className='fill-foreground translate-x-16'
 								formatter={(value: number) =>
 									`${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' })}`
 								}
