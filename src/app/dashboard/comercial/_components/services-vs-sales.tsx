@@ -34,16 +34,17 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 		);
 	}
 
+	console.log(allData.data.salesByItemType[1]?.type);
 	const chartData = [
 		{
-			name: allData.data.salesByItemType[0].type,
-			revenue: allData.data.salesByItemType[0].revenue,
-			fill: `var(--color-${allData.data.salesByItemType[0].type})`,
+			name: allData.data.salesByItemType[0]?.type ?? '',
+			revenue: allData.data.salesByItemType[0]?.revenue ?? 0,
+			fill: `var(--color-${allData.data.salesByItemType[0]?.type})`,
 		},
 		{
-			name: allData.data.salesByItemType[1].type,
-			revenue: allData.data.salesByItemType[1].revenue,
-			fill: `var(--color-${allData.data.salesByItemType[1].type})`,
+			name: allData.data.salesByItemType[1]?.type ?? '',
+			revenue: allData.data.salesByItemType[1]?.revenue ?? 0,
+			fill: `var(--color-${allData.data.salesByItemType[1]?.type})`,
 		},
 	];
 
@@ -84,6 +85,7 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 							label={({ payload, ...props }) => {
 								return (
 									<text
+										fontSize={isTablet ? 10 : 12}
 										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}
@@ -101,8 +103,8 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 								);
 							}}
 							labelLine={false}
-							innerRadius={isTablet ? 70 : 80}
-							outerRadius={isTablet ? 90 : 104}
+							innerRadius={isTablet ? 68 : 80}
+							outerRadius={isTablet ? 84 : 104}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
