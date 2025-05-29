@@ -4,19 +4,10 @@ import { getOAuth2Client } from '@/lib/google-client';
 import { prisma } from '@/lib/prisma';
 import type { OAuth2Client } from 'google-auth-library';
 
-const oauth2ClientCache: Map<string, OAuth2Client> = new Map();
-const refreshTokenCache: Map<string, string> = new Map();
-
 export async function getAuthenticatedClient(
 	orgId: string,
 ): Promise<{ oauth2Client: OAuth2Client; refreshToken: string }> {
 	// 1) Se já tivermos um cliente em memória, retorne imediatamente
-	if (oauth2ClientCache.has(orgId) && refreshTokenCache.has(orgId)) {
-		return {
-			oauth2Client: oauth2ClientCache.get(orgId)!,
-			refreshToken: refreshTokenCache.get(orgId)!,
-		};
-	}
 
 	// 2) Caso contrário, busque as credenciais no banco
 	const org = await prisma.organization.findUnique({ where: { id: orgId } });
@@ -62,8 +53,6 @@ export async function getAuthenticatedClient(
 	});
 
 	// 5) Armazena em cache para chamadas futuras
-	oauth2ClientCache.set(orgId, oauth2Client);
-	refreshTokenCache.set(orgId, org.googleRefreshToken);
 
 	return {
 		oauth2Client,
