@@ -25,6 +25,10 @@ export async function GET(req: NextRequest) {
 
 	const start = new Date(`${startDate}T00:00:00`);
 	const end = new Date(`${endDate}T23:59:59`);
+	const msInDay = 1000 * 60 * 60 * 24;
+	const dateDiffInDays = Math.ceil((end.getTime() - start.getTime()) / msInDay);
+	const isGroupedByMonth = dateDiffInDays > 30;
+	const groupFormat = isGroupedByMonth ? 'YYYY-MM' : 'YYYY-MM-DD';
 
 	try {
 		const sqlOrgFilter =
@@ -170,29 +174,89 @@ export async function GET(req: NextRequest) {
 			revenue: Number(row.revenue),
 		}));
 
-		const rowsClientType = await prisma.$queryRaw<
-			Array<{ tipo: string; revenue: string }>
+		const rowsNewClients = await prisma.$queryRaw<
+			Array<{ revenue: string; clients: number }>
 		>(Prisma.sql`
-  SELECT
-    CASE
-			WHEN c."createdAt" BETWEEN ${start} AND ${end} THEN 'Novo'
-			WHEN c."createdAt" < ${start} THEN 'Recorrente'
-    END AS tipo,
-    SUM(si."total_value")::DOUBLE PRECISION AS revenue
-  FROM "SaleItem" si
-  JOIN "Pedido" p     ON si."sale_id"     = p."id"
-  JOIN "Customer" c   ON p."customerId"   = c."id"
-  JOIN "Product" pr   ON si."product_id"  = pr."id"
-  WHERE
-    p."data_pedido" BETWEEN ${start} AND ${end}
-    ${sqlOrgFilter}
-    ${sqlCategoryFilter}
-    ${sqlCustomerTypeFilter}
-  GROUP BY tipo;
+		SELECT
+			SUM(si."total_value")::DOUBLE PRECISION AS revenue,
+			COUNT(DISTINCT c."id") AS clients
+		FROM "SaleItem" si
+		JOIN "Pedido" p        ON si."sale_id" = p."id"
+		JOIN "Customer" c      ON p."customerId" = c."id"
+		JOIN "Product" pr      ON si."product_id" = pr."id"
+		WHERE
+			p."data_pedido" BETWEEN ${start} AND ${end}
+			AND NOT EXISTS (
+				SELECT 1
+				FROM "Pedido" p2
+				WHERE p2."customerId" = c."id"
+					AND p2."data_pedido" < ${start}
+			)
+			${sqlOrgFilter}
+			${sqlCategoryFilter}
+			${sqlCustomerTypeFilter}
+	`);
+		const rowsReturningClients = await prisma.$queryRaw<
+			Array<{ revenue: string; clients: number }>
+		>(Prisma.sql`
+SELECT
+	SUM(si."total_value")::DOUBLE PRECISION AS revenue,
+	COUNT(DISTINCT c."id") AS clients
+FROM "SaleItem" si
+JOIN "Pedido" p        ON si."sale_id" = p."id"
+JOIN "Customer" c      ON p."customerId" = c."id"
+JOIN "Product" pr      ON si."product_id" = pr."id"
+WHERE
+	p."data_pedido" BETWEEN ${start} AND ${end}
+	AND EXISTS (
+		SELECT 1
+		FROM "Pedido" p2
+		WHERE p2."customerId" = c."id"
+			AND p2."data_pedido" < ${start}
+	)
+	${sqlOrgFilter}
+	${sqlCategoryFilter}
+	${sqlCustomerTypeFilter}
 `);
 
-		const salesByClientType = rowsClientType.map((row) => ({
-			type: row.tipo,
+		const salesByClientType = [
+			{
+				type: 'Novo',
+				clients: Number(rowsNewClients[0]?.clients || 0),
+				revenue: rowsNewClients[0]?.revenue
+					? Number(rowsNewClients[0].revenue)
+					: 0,
+			},
+			{
+				type: 'Recorrente',
+				clients: Number(rowsReturningClients[0]?.clients || 0),
+				revenue: rowsReturningClients[0]?.revenue
+					? Number(rowsReturningClients[0].revenue)
+					: 0,
+			},
+		];
+
+		const rowsRevenueOverTime = await prisma.$queryRaw<
+			Array<{ label: string; revenue: string }>
+		>(Prisma.sql`
+			SELECT
+				TO_CHAR(p."data_pedido", ${groupFormat}) AS label,
+				SUM(si."total_value")::DOUBLE PRECISION  AS revenue
+			FROM "SaleItem" si
+			JOIN "Pedido" p        ON si."sale_id" = p."id"
+			JOIN "Customer" c      ON p."customerId" = c."id"
+			JOIN "Product" pr      ON si."product_id" = pr."id"
+			WHERE
+				p."data_pedido" BETWEEN ${start} AND ${end}
+				${sqlOrgFilter}
+				${sqlCategoryFilter}
+				${sqlCustomerTypeFilter}
+			GROUP BY label
+			ORDER BY label;
+		`);
+
+		const revenueOverTime = rowsRevenueOverTime.map((row) => ({
+			label: row.label,
 			revenue: Number(row.revenue),
 		}));
 
@@ -204,6 +268,7 @@ export async function GET(req: NextRequest) {
 				SalesByPayment,
 				salesByItemType,
 				salesByClientType,
+				revenueOverTime,
 			},
 			error: null,
 		});

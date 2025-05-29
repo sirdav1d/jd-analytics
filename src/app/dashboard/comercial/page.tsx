@@ -117,7 +117,7 @@ export default async function ComercialDashboard(props: {
 			</Suspense>
 
 			<div className='grid grid-cols-1 gap-4'>
-				<SalesChartComponent />
+				<SalesChartComponent data={dataSalesBy} />
 
 				<Suspense
 					fallback={

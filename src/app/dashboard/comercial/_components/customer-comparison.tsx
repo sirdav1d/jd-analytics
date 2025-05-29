@@ -38,16 +38,15 @@ export function CustomerComparisonChartComponent({
 		);
 	}
 
-	console.log(allData.data.salesByClientType);
 	const chartData = [
 		{
 			name: 'Novos',
-			revenue: 163000,
+			revenue: allData.data.salesByClientType[0].revenue,
 			fill: `var(--color-Novos)`,
 		},
 		{
 			name: 'Recorrentes',
-			revenue: 103000,
+			revenue: allData.data.salesByClientType[1].revenue,
 			fill: `var(--color-Recorrentes)`,
 		},
 	];

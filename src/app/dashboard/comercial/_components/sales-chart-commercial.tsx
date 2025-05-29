@@ -11,16 +11,13 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { use } from 'react';
 
-export function SalesChartComponent() {
-	const chartData = [
-		{ name: 'Jan', total: 15000 },
-		{ name: 'Feb', total: 20000 },
-		{ name: 'Mar', total: 18000 },
-		{ name: 'Apr', total: 22000 },
-		{ name: 'May', total: 25000 },
-		{ name: 'Jun', total: 30000 },
-	];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function SalesChartComponent({ data }: { data: Promise<any> }) {
+	const allData = use(data);
+	console.log(allData.data.revenueOverTime);
+	const chartData = allData.data.revenueOverTime;
 	const chartConfig = {
 		total: {
 			label: 'Faturamento',
@@ -49,11 +46,11 @@ export function SalesChartComponent() {
 						}}>
 						<CartesianGrid vertical={false} />
 						<XAxis
-							dataKey='name'
+							dataKey='label'
 							tickLine={false}
 							tickMargin={10}
 							axisLine={false}
-							tickFormatter={(value) => value.slice(0, 3)}
+							fontSize={10}
 						/>
 						<ChartTooltip
 							cursor={false}
@@ -79,7 +76,7 @@ export function SalesChartComponent() {
 							</linearGradient>
 						</defs>
 						<Area
-							dataKey='total'
+							dataKey='revenue'
 							fillOpacity={0.4}
 							dot={{
 								fill: 'var(--color-total)',
@@ -101,6 +98,7 @@ export function SalesChartComponent() {
 									val.toLocaleString('pt-BR', {
 										style: 'currency',
 										currency: 'brl',
+										notation: 'compact',
 									})
 								}
 							/>
