@@ -13,6 +13,19 @@ import ListStaticADS from './list-static-ads';
 export default function SectionAds({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 
+	if (!allData.ok) {
+		console.log(allData.error);
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Dados não encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
+
 	const campaigns = allData.data.topCampaigns;
 	const AccountMetrics = allData.data.dataADS;
 

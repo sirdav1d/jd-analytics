@@ -33,6 +33,18 @@ interface TopAdwordsProps {
 export default function TopAdwords({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 
+	if (!allData.ok) {
+		console.log(allData.error);
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Dados não encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
 	const topKeywords: TopAdwordsProps[] = allData.data;
 
 	return (

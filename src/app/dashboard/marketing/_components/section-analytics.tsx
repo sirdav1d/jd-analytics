@@ -34,7 +34,7 @@ export default function SectionAnalytics({
 	const responseAnalytics = use(data);
 
 	if (!responseAnalytics.ok || !responseAnalytics.data) {
-		console.log(responseAnalytics.error);
+		console.log('ANALYTICS', responseAnalytics.error);
 		return (
 			<div className='w-full mx-auto space-y-4 pb-5'>
 				<GoogleLoginButton />

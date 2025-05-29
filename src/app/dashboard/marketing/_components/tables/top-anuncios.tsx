@@ -1,7 +1,6 @@
 /** @format */
 'use client';
 
-import GoogleLoginButton from '@/components/google-login-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	Table,
@@ -58,11 +57,16 @@ export default function TopAnuncios({
 
 	const topADS = allData.data as AllProps[];
 
-	if (!topADS) {
+	if (!allData.ok) {
+		console.log(allData.error);
 		return (
-			<div className='w-full mx-auto space-y-4 pb-5'>
-				<GoogleLoginButton />
-			</div>
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-2xl'>
+						Dados não encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
 		);
 	}
 
