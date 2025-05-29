@@ -48,6 +48,7 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 	];
 
 	const chartConfig = {
+		revenue: { label: 'Faturamento' },
 		Serviço: {
 			label: 'Serviços',
 			color: 'hsl(var(--chart-1))',

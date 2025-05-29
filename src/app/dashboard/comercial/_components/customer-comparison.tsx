@@ -52,6 +52,7 @@ export function CustomerComparisonChartComponent({
 	];
 
 	const chartConfig = {
+		revenue: { label: 'Faturamento' },
 		Novos: {
 			label: 'Novos',
 			color: 'hsl(var(--chart-1))',
