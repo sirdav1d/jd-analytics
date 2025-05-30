@@ -86,8 +86,8 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: isMobile ? 60 : 40,
-							left: isMobile ? -6 : 20,
+							right: isMobile ? 60 : 48,
+							left: isMobile ? -6 : 16,
 						}}>
 						<XAxis
 							type='number'

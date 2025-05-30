@@ -33,7 +33,7 @@ export default function Greeting() {
 			return 'Acompanhamento de Meta';
 		}
 		if (pathname == '/dashboard/upload') {
-			return 'Upload de CSV para base de dados';
+			return 'Importar Base de Dados';
 		}
 	}
 

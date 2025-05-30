@@ -86,6 +86,7 @@ export function CustomerComparisonChartComponent({
 							label={({ payload, ...props }) => {
 								return (
 									<text
+										fontSize={isTablet ? 10 : 12}
 										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}

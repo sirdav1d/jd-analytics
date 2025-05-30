@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/chart';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { use } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesChartComponent({ data }: { data: Promise<any> }) {
@@ -19,12 +20,13 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 
 	const chartData = allData.data.revenueOverTime;
 	const chartConfig = {
-		total: {
+		revenue: {
 			label: 'Faturamento',
 			color: 'hsl(var(--chart-1))',
 		},
 	} satisfies ChartConfig;
 
+	const isMobile = useIsMobile();
 	return (
 		<Card>
 			<CardHeader>
@@ -34,15 +36,15 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 			</CardHeader>
 			<CardContent>
 				<ChartContainer
-					className='h-72 w-full'
+					className='h-80 lg:h-72 w-full'
 					config={chartConfig}>
 					<AreaChart
 						accessibilityLayer
 						data={chartData}
 						margin={{
 							top: 28,
-							left: 36,
-							right: 36,
+							left: isMobile ? 4 : 36,
+							right: isMobile ? 10 : 36,
 						}}>
 						<CartesianGrid vertical={false} />
 						<XAxis
@@ -50,7 +52,7 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 							tickLine={false}
 							tickMargin={10}
 							axisLine={false}
-							fontSize={10}
+							fontSize={isMobile ? 0 : 8}
 						/>
 						<ChartTooltip
 							cursor={false}
@@ -65,12 +67,12 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 								y2='1'>
 								<stop
 									offset='5%'
-									stopColor='var(--color-total)'
+									stopColor='var(--color-revenue)'
 									stopOpacity={0.8}
 								/>
 								<stop
 									offset='95%'
-									stopColor='var(--color-total)'
+									stopColor='var(--color-revenue)'
 									stopOpacity={0.1}
 								/>
 							</linearGradient>
@@ -79,29 +81,31 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 							dataKey='revenue'
 							fillOpacity={0.4}
 							dot={{
-								fill: 'var(--color-total)',
+								fill: 'var(--color-revenue)',
 							}}
 							activeDot={{
 								r: 6,
 							}}
 							fill='url(#fillDesktop)'
-							stroke='var(--color-total)'
+							stroke='var(--color-revenue)'
 							strokeWidth={2}
-							type={'natural'}
+							type={isMobile ? 'monotone' : 'natural'}
 							radius={4}>
-							<LabelList
-								position='top'
-								offset={12}
-								className='fill-foreground'
-								fontSize={10}
-								formatter={(val: number) =>
-									val.toLocaleString('pt-BR', {
-										style: 'currency',
-										currency: 'brl',
-										notation: 'compact',
-									})
-								}
-							/>
+							{isMobile ? null : (
+								<LabelList
+									position='top'
+									offset={12}
+									className='fill-foreground'
+									fontSize={10}
+									formatter={(val: number) =>
+										val.toLocaleString('pt-BR', {
+											style: 'currency',
+											currency: 'brl',
+											notation: 'compact',
+										})
+									}
+								/>
+							)}
 						</Area>
 					</AreaChart>
 				</ChartContainer>

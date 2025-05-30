@@ -8,6 +8,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
 	Label,
 	LabelList,
@@ -44,6 +45,8 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 	const chartData = [
 		{ Atingido: atingido, Restante: restante < 0 ? 0 : restante },
 	];
+
+	const isMobile = useIsMobile();
 
 	return (
 		<ChartContainer
@@ -103,7 +106,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 						position='outside'
 						dataKey='Restante'
 						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-4 translate-y-3 xl:translate-y-2  bg-background z-50'
-						fontSize={14}
+						fontSize={isMobile ? 12 : 14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',
@@ -123,7 +126,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 						position='outside'
 						dataKey='Atingido'
 						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-10 xl:translate-x-4 translate-y-3 xl:translate-y-2'
-						fontSize={14}
+						fontSize={isMobile ? 12 : 14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
 								style: 'currency',

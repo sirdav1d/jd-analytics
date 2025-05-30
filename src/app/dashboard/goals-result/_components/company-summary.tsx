@@ -41,7 +41,7 @@ export default function CompanySummary({ data }: ICompanySummary) {
 						formatCurrency(allData.companySummary.meta)}
 				</p>
 			</CardHeader>
-			<CardContent className='2xl:scale-110 w-full translate-y-12'>
+			<CardContent className='scale-100 2xl:scale-110 w-full translate-y-12'>
 				<PieStore companySummary={allData.companySummary} />
 			</CardContent>
 			<CardFooter>

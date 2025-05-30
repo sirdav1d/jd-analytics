@@ -8,7 +8,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile, useIsTablet } from '@/hooks/use-mobile';
 import { use } from 'react';
 import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 
@@ -16,6 +16,7 @@ import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 export function SalesByPayment({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
+	const isTablet = useIsTablet();
 
 	if (!allData.ok) {
 		console.log(allData.error);
@@ -88,8 +89,8 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: isMobile ? 40 : 30,
-							left: isMobile ? -8 : 10,
+							right: isMobile ? 60 : 20,
+							left: isMobile ? -10 : 12,
 						}}>
 						<XAxis
 							type='number'
@@ -123,7 +124,7 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 								formatter={(value: number) =>
 									`${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' })}`
 								}
-								fontSize={11}
+								fontSize={isTablet ? 10 : 11}
 							/>
 						</Bar>
 						<ChartTooltip

@@ -40,10 +40,10 @@ export default async function MarketingPage(props: {
 	const dataMainADS = FetchADSData(String(startDate), String(endDate));
 
 	return (
-		<div className='w-full mx-auto h-full pb-5'>
+		<div className='w-full grid mx-auto h-full pb-5'>
 			<Suspense
 				fallback={
-					<div className='flex w-full flex-col gap-5'>
+					<div className=' w-full grid gap-5'>
 						<div className='flex flex-col lg:flex-row gap-5'>
 							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
 							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
@@ -72,7 +72,7 @@ export default async function MarketingPage(props: {
 			<Separator className='w-full mt-10' />
 			<Suspense
 				fallback={
-					<div className='flex flex-col gap-5 mt-10 mb-5'>
+					<div className='grid gap-5 mt-10 mb-5'>
 						<div className='flex flex-col lg:flex-row gap-5'>
 							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
 							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>

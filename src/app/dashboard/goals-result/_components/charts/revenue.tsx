@@ -39,7 +39,7 @@ export function Revenue({ data }: IRevenueProps) {
 				margin={{
 					left: isMobile ? 4 : 40,
 					right: isMobile ? 4 : 40,
-					top: isMobile ? 4 : 20,
+					top: isMobile ? 12 : 20,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -86,22 +86,20 @@ export function Revenue({ data }: IRevenueProps) {
 					fillOpacity={0.4}
 					stroke='var(--color-revenue)'
 					stackId='a'>
-					{isMobile ? null : (
-						<LabelList
-							dataKey='revenue'
-							position='top'
-							offset={12}
-							className='fill-foreground'
-							fontSize={isMobile ? 8 : 10}
-							formatter={(value: number) =>
-								value.toLocaleString('pt-br', {
-									style: 'currency',
-									currency: 'brl',
-									notation: 'compact',
-								})
-							}
-						/>
-					)}
+					<LabelList
+						dataKey='revenue'
+						position='top'
+						offset={12}
+						className='fill-foreground'
+						fontSize={isMobile ? 9 : 10}
+						formatter={(value: number) =>
+							value.toLocaleString('pt-br', {
+								style: 'currency',
+								currency: 'brl',
+								notation: 'compact',
+							})
+						}
+					/>
 				</Area>
 			</AreaChart>
 		</ChartContainer>

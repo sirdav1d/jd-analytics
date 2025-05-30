@@ -86,6 +86,8 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 							label={({ payload, ...props }) => {
 								return (
 									<text
+									className='translate-x-1'
+										fontSize={isTablet ? 10 : 12}
 										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}
