@@ -82,7 +82,9 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 								<TableCell className='text-sm text-nowrap'>
 									{customer.code}
 								</TableCell>
-								<TableCell className='text-xs text-nowrap'>
+								<TableCell
+									title={customer.name}
+									className='text-xs text-nowrap'>
 									{customer.name.slice(0, 20) + '...'}
 								</TableCell>
 								<TableCell className='text-center'>

@@ -83,7 +83,9 @@ export default function TopProducts({ data }: { data: Promise<any> }) {
 									<TableCell className='text-sm text-nowrap'>
 										{product.code}
 									</TableCell>
-									<TableCell className='text-xs text-nowrap'>
+									<TableCell
+										title={product.name}
+										className='text-xs text-nowrap'>
 										{product.name.slice(0, 20) + '...'}
 									</TableCell>
 									<TableCell className='text-center'>

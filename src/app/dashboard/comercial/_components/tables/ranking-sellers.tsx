@@ -84,8 +84,10 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 											/>
 										) : null}
 									</TableCell>
-									<TableCell className='text-xs text-nowrap'>
-										{salesperson.name.slice(0, 20)+'...'}
+									<TableCell
+										title={salesperson.name}
+										className='text-xs text-nowrap'>
+										{salesperson.name}
 									</TableCell>
 									<TableCell className='text-sm  text-center'>
 										{salesperson.sales.toLocaleString('pt-br')}
