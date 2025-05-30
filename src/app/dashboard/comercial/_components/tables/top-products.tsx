@@ -42,7 +42,7 @@ export default function TopProducts({ data }: { data: Promise<any> }) {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle className='text-base text-balance md:text-2xl'>
+				<CardTitle className='text-base text-balance md:text-xl'>
 					Top 5 Produtos
 				</CardTitle>
 			</CardHeader>
