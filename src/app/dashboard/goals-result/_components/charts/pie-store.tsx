@@ -105,7 +105,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Restante'
-						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-4 translate-y-3 xl:translate-y-2  bg-background z-50'
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-14 translate-y-3 xl:translate-y-2  bg-background z-50'
 						fontSize={isMobile ? 12 : 14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
@@ -125,7 +125,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Atingido'
-						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-10 xl:translate-x-4 translate-y-3 xl:translate-y-2'
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-12 xl:translate-x-4 translate-y-3 xl:translate-y-2'
 						fontSize={isMobile ? 12 : 14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {

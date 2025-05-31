@@ -6,6 +6,7 @@ import fs from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
 import { parse as parseCSV } from 'papaparse';
 import bcrypt from 'bcryptjs';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 // Desabilita o bodyParser padrão do Next.js
 export const config = {
@@ -246,6 +247,13 @@ export async function POST(req: NextRequest) {
 			});
 		}
 
+		revalidatePath('/dashboard');
+		revalidateTag('users');
+		revalidateTag('rankings');
+		revalidateTag('tracking-goal');
+		revalidateTag('goal');
+		revalidateTag('sales-by');
+		revalidateTag('big-numbers-comercial');
 		return NextResponse.json(
 			{
 				ok: true,

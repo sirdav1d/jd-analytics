@@ -30,8 +30,12 @@ export async function UpdateSalesGoalAction({
 			};
 		}
 
+		revalidateTag('users');
+		revalidateTag('rankings');
 		revalidateTag('tracking-goal');
 		revalidateTag('goal');
+		revalidateTag('sales-by');
+		revalidateTag('big-numbers-comercial');
 
 		return {
 			error: null,

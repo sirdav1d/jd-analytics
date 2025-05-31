@@ -12,6 +12,7 @@ import {
 	ChartLegend,
 	ChartLegendContent,
 } from '@/components/ui/chart';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 const chartData = [
 	{ name: 'Jan', sales: 4000, growth: 2400 },
 	{ name: 'Feb', sales: 3000, growth: 1398 },
@@ -34,65 +35,90 @@ const chartConfig = {
 
 export default function SalesChart() {
 	return (
-		<ChartContainer config={chartConfig} className='w-full h-72'>
-			<LineChart
-				accessibilityLayer
-				data={chartData}
-				margin={{
-					top: 20,
-					left: 16,
-					right: 16,
-				}}>
-				<CartesianGrid vertical={false} />
-				<XAxis
-					dataKey='name'
-					tickLine={false}
-					axisLine={false}
-					tickMargin={8}
-					tickFormatter={(value) => value.slice(0, 3)}
-				/>
-				<ChartTooltip
-					cursor={false}
-					content={<ChartTooltipContent indicator='dot' />}
-				/>
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
-				<Line
-					dataKey='sales'
-					type='natural'
-					stroke='var(--color-sales)'
-					strokeWidth={2}
-					dot={{
-						fill: 'var(--color-sales)',
-					}}
-					activeDot={{
-						r: 6,
-					}}>
-					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground text-nowrap text-start'
-						fontSize={10}
-					/>
-				</Line>
-				<Line
-					dataKey='growth'
-					type='natural'
-					stroke='var(--color-growth)'
-					strokeWidth={2}
-					dot={{
-						fill: 'var(--color-growth)',
-					}}
-					activeDot={{
-						r: 6,
-					}}>
-					<LabelList
-						position='top'
-						offset={12}
-						className='fill-foreground'
-						fontSize={10}
-					/>
-				</Line>
-			</LineChart>
-		</ChartContainer>
+		<Card>
+			<CardHeader>
+				<CardTitle className='text-base text-balance md:text-xl'>
+					Faturamento por Unidade
+				</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<ChartContainer
+					config={chartConfig}
+					className='w-full h-72'>
+					<LineChart
+						accessibilityLayer
+						data={chartData}
+						margin={{
+							top: 20,
+							left: 16,
+							right: 16,
+						}}>
+						<CartesianGrid vertical={false} />
+						<XAxis
+							dataKey='name'
+							tickLine={false}
+							axisLine={false}
+							tickMargin={8}
+							tickFormatter={(value) => value.slice(0, 3)}
+						/>
+						<ChartTooltip
+							cursor={false}
+							content={<ChartTooltipContent indicator='dot' />}
+						/>
+						<ChartLegend content={<ChartLegendContent className='text-xs' />} />
+						<Line
+							dataKey='sales'
+							type='natural'
+							stroke='var(--color-sales)'
+							strokeWidth={2}
+							dot={{
+								fill: 'var(--color-sales)',
+							}}
+							activeDot={{
+								r: 6,
+							}}>
+							<LabelList
+								position='top'
+								offset={12}
+								className='fill-foreground text-nowrap text-start'
+								fontSize={10}
+								formatter={(value: number) =>
+									value.toLocaleString('pt-br', {
+										style: 'currency',
+										currency: 'brl',
+										notation: 'compact',
+									})
+								}
+							/>
+						</Line>
+						<Line
+							dataKey='growth'
+							type='natural'
+							stroke='var(--color-growth)'
+							strokeWidth={2}
+							dot={{
+								fill: 'var(--color-growth)',
+							}}
+							activeDot={{
+								r: 6,
+							}}>
+							<LabelList
+								position='top'
+								offset={12}
+								className='fill-foreground'
+								fontSize={10}
+								formatter={(value: number) =>
+									value.toLocaleString('pt-br', {
+										style: 'currency',
+										currency: 'brl',
+										notation: 'compact',
+									})
+								}
+							/>
+						</Line>
+					</LineChart>
+				</ChartContainer>
+			</CardContent>
+		</Card>
 	);
 }
