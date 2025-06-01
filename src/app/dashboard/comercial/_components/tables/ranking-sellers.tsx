@@ -62,51 +62,55 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{allData.data.sellers.map((salesperson: IRankingSellers) => {
-							return (
-								<TableRow key={salesperson.name}>
-									<TableCell className='flex items-center gap-3 '>
-										{salesperson.posicao}
-										{salesperson.posicao == 1 ? (
-											<Trophy
-												size={20}
-												className='text-amber-500'
-											/>
-										) : salesperson.posicao == 2 ? (
-											<Trophy
-												size={20}
-												className='text-zinc-400'
-											/>
-										) : salesperson.posicao == 3 ? (
-											<Trophy
-												size={20}
-												className='text-rose-700'
-											/>
-										) : null}
-									</TableCell>
-									<TableCell
-										title={salesperson.name}
-										className='text-xs text-nowrap'>
-										{salesperson.name}
-									</TableCell>
-									<TableCell className='text-sm  text-center'>
-										{salesperson.sales.toLocaleString('pt-br')}
-									</TableCell>
-									<TableCell className='text-xs  text-center'>
-										{salesperson.revenue.toLocaleString('pt-br', {
-											currency: 'brl',
-											style: 'currency',
-										})}
-									</TableCell>
-									<TableCell className='text-xs text-center'>
-										{salesperson.avgTicket.toLocaleString('pt-br', {
-											currency: 'brl',
-											style: 'currency',
-										})}
-									</TableCell>
-								</TableRow>
-							);
-						})}
+						{allData.data.sellers.map(
+							(salesperson: IRankingSellers, index: number) => {
+								if (index < 5) {
+									return (
+										<TableRow key={salesperson.name}>
+											<TableCell className='flex items-center gap-3 '>
+												{salesperson.posicao}
+												{salesperson.posicao == 1 ? (
+													<Trophy
+														size={20}
+														className='text-amber-500'
+													/>
+												) : salesperson.posicao == 2 ? (
+													<Trophy
+														size={20}
+														className='text-zinc-400'
+													/>
+												) : salesperson.posicao == 3 ? (
+													<Trophy
+														size={20}
+														className='text-rose-700'
+													/>
+												) : null}
+											</TableCell>
+											<TableCell
+												title={salesperson.name}
+												className='text-xs text-nowrap'>
+												{salesperson.name}
+											</TableCell>
+											<TableCell className='text-sm  text-center'>
+												{salesperson.sales.toLocaleString('pt-br')}
+											</TableCell>
+											<TableCell className='text-xs  text-center'>
+												{salesperson.revenue.toLocaleString('pt-br', {
+													currency: 'brl',
+													style: 'currency',
+												})}
+											</TableCell>
+											<TableCell className='text-xs text-center'>
+												{salesperson.avgTicket.toLocaleString('pt-br', {
+													currency: 'brl',
+													style: 'currency',
+												})}
+											</TableCell>
+										</TableRow>
+									);
+								}
+							},
+						)}
 					</TableBody>
 				</Table>
 			</CardContent>

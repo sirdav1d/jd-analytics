@@ -13,32 +13,31 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { use } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-const salesData = [
-	{ name: 'Jan', centro: 1800, icarai: 1200 },
-	{ name: 'Feb', centro: 2000, icarai: 1000 },
-	{ name: 'Mar', centro: 1400, icarai: 2950 },
-	{ name: 'Apr', centro: 2200, icarai: 1580 },
-	{ name: 'May', centro: 2500, icarai: 1900 },
-	{ name: 'Jun', centro: 3000, icarai: 1780 },
-];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
+	const allData = use(data);
 
-const chartConfig = {
-	centro: {
-		label: 'JD Centro',
-		color: 'hsl(var(--chart-1))',
-	},
-	icarai: {
-		label: 'JD Icaraí',
-		color: 'hsl(var(--chart-2))',
-	},
-} satisfies ChartConfig;
+	const salesData = allData.data.salesByOrg;
 
-export function SalesVsRepairRevenue() {
+	const isMobile = useIsMobile();
+	const chartConfig = {
+		jd_centro: {
+			label: 'JD Centro',
+			color: 'hsl(var(--chart-1))',
+		},
+		jd_icaraí: {
+			label: 'JD Icaraí',
+			color: 'hsl(var(--chart-2))',
+		},
+	} satisfies ChartConfig;
+
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle className='text-base text-balance md:text-2xl'>
+				<CardTitle className='text-base text-balance md:text-xl'>
 					Vendas por unidade
 				</CardTitle>
 			</CardHeader>
@@ -48,32 +47,36 @@ export function SalesVsRepairRevenue() {
 					config={chartConfig}>
 					<LineChart
 						accessibilityLayer
-						margin={{ top: 28, right: 40, left: 40 }}
+						margin={{ top: 20, right: 28, left: 28 }}
 						data={salesData}>
 						<CartesianGrid vertical={false} />
-						<XAxis
-							dataKey='name'
-							tickLine={false}
-							tickMargin={10}
-							axisLine={false}
-							tickFormatter={(value) => value.slice(0, 3)}
-						/>
+						{isMobile ? null : (
+							<XAxis
+								dataKey='period'
+								tickLine={false}
+								tickMargin={10}
+								axisLine={false}
+								fontSize={8}
+							/>
+						)}
 						<ChartTooltip
 							cursor={false}
 							content={<ChartTooltipContent indicator='dot' />}
 						/>
-						<ChartLegend content={<ChartLegendContent className='text-xs' />} />
+						<ChartLegend
+							content={<ChartLegendContent className='text-xs mt-5' />}
+						/>
 						<Line
-							dataKey='centro'
+							dataKey='jd_centro'
 							dot={{
-								fill: 'var(--color-centro)',
+								fill: 'var(--color-jd_centro)',
 							}}
 							activeDot={{
 								r: 6,
 							}}
 							type='natural'
 							strokeWidth={2}
-							stroke='var(--color-centro)'
+							stroke='var(--color-jd_centro)'
 							radius={4}>
 							<LabelList
 								position='top'
@@ -84,16 +87,16 @@ export function SalesVsRepairRevenue() {
 							/>
 						</Line>
 						<Line
-							dataKey='icarai'
+							dataKey='jd_icaraí'
 							type='natural'
 							dot={{
-								fill: 'var(--color-icarai)',
+								fill: 'var(--color-jd_icaraí)',
 							}}
 							activeDot={{
 								r: 6,
 							}}
 							strokeWidth={2}
-							stroke='var(--color-icarai)'
+							stroke='var(--color-jd_icaraí)'
 							radius={4}>
 							<LabelList
 								position='top'

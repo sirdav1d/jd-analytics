@@ -9,16 +9,15 @@ datasource db {
 }
 
 model Organization {
-  id                 String              @id @default(uuid())
+  id                 String   @id @default(uuid())
   name               String
   googleAccessToken  String?
   googleRefreshToken String?
   googleScopes       String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   googleExpiresAt    BigInt?
-  external_code      Int                 @unique @default(autoincrement()) @db.SmallInt
-  dashboardComercial DashboardComercial?
+  external_code      Int      @unique @default(autoincrement()) @db.SmallInt
   Pedido             Pedido[]
 }
 
@@ -110,23 +109,6 @@ model Pedido {
   items           SaleItem[]
 
   @@unique([documentNumber, organizationId, data_pedido])
-}
-
-model DashboardComercial {
-  id                      String       @id @default(uuid())
-  organizationId          String       @unique
-  receitaTotal            Decimal
-  ticketMedio             Decimal
-  crescimentoReceita      Float
-  novosClientes           Int
-  taxaRetencaoClientes    Float
-  clv                     Decimal
-  volumeReparos           Int
-  taxaReincidenciaReparos Float
-  receitaReparosVsVendas  Float
-  createdAt               DateTime     @default(now())
-  updatedAt               DateTime     @updatedAt
-  organization            Organization @relation(fields: [organizationId], references: [id])
 }
 
 enum Role {

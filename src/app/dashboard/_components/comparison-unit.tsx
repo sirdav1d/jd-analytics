@@ -10,35 +10,65 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import React from 'react';
+import React, { use } from 'react';
 import { PieChart, Pie, Cell, Label } from 'recharts';
 
 interface ComparisonProps {
 	title: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: Promise<any>;
+	type: string;
 }
-export default function ComparisonUnit({ title }: ComparisonProps) {
-	const customerData = React.useMemo(
-		() => [
-			{ name: 'centro', value: 390000 },
-			{ name: 'icarai', value: 130000 },
-		],
-		[],
-	);
+export default function ComparisonUnit({ title, data, type }: ComparisonProps) {
+	const allData = use(data);
+
+	if (!allData.ok) {
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-xl'>
+						Dados não encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
+	const customerData = allData.data.result;
 
 	const chartConfig = {
-		centro: {
+		revenue: {
+			label: 'Faturamento',
+		},
+		salesCount: {
+			label: 'Nº de Vendas',
+		},
+		newCustomers: {
+			label: 'Total de Novos Clientes',
+		},
+		'JD Centro': {
 			label: 'JD Centro',
 			color: 'hsl(var(--chart-1))',
 		},
-		icarai: {
+		'JD Icaraí': {
 			label: 'JD Icaraí',
 			color: 'hsl(var(--chart-2))',
 		},
 	} satisfies ChartConfig;
 
-	const totalSales = React.useMemo(() => {
-		return customerData.reduce((acc, curr) => acc + curr.value, 0);
-	}, [customerData]);
+	const totalRevenue = customerData.reduce(
+		(acc: number, curr: { revenue: number }) => acc + curr.revenue,
+		0,
+	);
+
+	const totalSales = customerData.reduce(
+		(acc: number, curr: { salesCount: number }) => acc + curr.salesCount,
+		0,
+	);
+
+	const totalClients = customerData.reduce(
+		(acc: number, curr: { newCustomers: number }) => acc + curr.newCustomers,
+		0,
+	);
 
 	return (
 		<Card className='w-full'>
@@ -58,15 +88,17 @@ export default function ComparisonUnit({ title }: ComparisonProps) {
 						/>
 						<Pie
 							data={customerData}
-							dataKey='value'
-							nameKey='name'
-							innerRadius={88}
+							dataKey={type}
+							nameKey='organization'
+							fontSize={12}
+							innerRadius={84}
 							label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
 							labelLine={false}>
-							{customerData.map((entry, index) => (
+							{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+							{customerData.map((_: any, index: number) => (
 								<Cell
-									key={`cell-${index}`}
-									fill={`var(--color-${entry.name})`}
+									key={`cell-${index}-${type}`}
+									fill={`hsl(var(--chart-${index + 1}))`}
 								/>
 							))}
 							<Label
@@ -81,18 +113,26 @@ export default function ComparisonUnit({ title }: ComparisonProps) {
 												<tspan
 													x={viewBox.cx}
 													y={viewBox.cy}
-													className='fill-foreground text-xl font-bold'>
-													{totalSales.toLocaleString('pt-br', {
-														style: 'currency',
-														currency: 'brl',
-														notation: 'compact',
-													})}
+													className='fill-foreground text-2xl font-bold'>
+													{type == 'revenue'
+														? totalRevenue.toLocaleString('pt-br', {
+																style: 'currency',
+																currency: 'brl',
+																notation: 'compact',
+															})
+														: type == 'salesCount'
+															? totalSales.toLocaleString('pt-br')
+															: totalClients.toLocaleString('pt-br')}
 												</tspan>
 												<tspan
 													x={viewBox.cx}
 													y={(viewBox.cy || 0) + 24}
 													className='fill-muted-foreground'>
-													Faturamento
+													{type == 'revenue'
+														? 'Faturamento'
+														: type == 'salesCount'
+															? 'Total de Vendas'
+															: 'Novos Clientes'}
 												</tspan>
 											</text>
 										);

@@ -32,7 +32,7 @@ export default function Filter() {
 			// Atualiza a URL sem recarregar a página (opção shallow para evitar recarregamento total)
 			startTransition(async () => {
 				router.push(
-					`/dashboard/comercial?startDate=${encodeURIComponent(
+					`/dashboard?startDate=${encodeURIComponent(
 						formattedFrom,
 					)}&endDate=${encodeURIComponent(formattedTo)}`,
 					{ scroll: false },

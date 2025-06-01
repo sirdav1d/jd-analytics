@@ -4,16 +4,16 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-	DollarSign,
-	SquarePercent,
-	ShoppingBag,
-	UserRoundPlus,
-	Timer,
 	CirclePercent,
+	DollarSign,
+	ShoppingBag,
+	SquarePercent,
 	TrendingDown,
 	TrendingUp,
+	UserRoundPlus,
+	UsersRound,
 } from 'lucide-react';
-import React, { use } from 'react';
+import { use } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function BigNumbers({ data }: { data: Promise<any> }) {
@@ -209,7 +209,7 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 					<CardTitle className='text-sm font-medium'>
 						Clientes Recorrentes
 					</CardTitle>
-					<Timer className='h-4 w-4 text-primary' />
+					<UsersRound className='h-4 w-4 text-primary' />
 				</CardHeader>
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3 '>

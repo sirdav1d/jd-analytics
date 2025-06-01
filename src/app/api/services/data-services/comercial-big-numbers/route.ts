@@ -151,7 +151,11 @@ export async function GET(req: NextRequest) {
                   )`
 									: Prisma.empty
 							}
-          );
+          ) AND (
+            SELECT COUNT(*)
+            FROM "Pedido" p3
+            WHERE p3."customerId" = p."customerId"
+          ) = 1;
       `,
 			);
 			novosClientesAtual = Number(result?.cnt ?? 0);
@@ -212,7 +216,11 @@ export async function GET(req: NextRequest) {
                   )`
 									: Prisma.empty
 							}
-          );
+          ) AND (
+            SELECT COUNT(*)
+            FROM "Pedido" p3
+            WHERE p3."customerId" = p."customerId"
+          ) = 1;
       `,
 			);
 			novosClientesAtual = Number(result?.cnt ?? 0);
