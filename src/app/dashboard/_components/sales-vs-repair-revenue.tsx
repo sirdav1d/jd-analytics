@@ -43,7 +43,7 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 			</CardHeader>
 			<CardContent>
 				<ChartContainer
-					className='h-72 w-full'
+					className='h-96 md:h-72 w-full'
 					config={chartConfig}>
 					<LineChart
 						accessibilityLayer

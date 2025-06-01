@@ -86,14 +86,13 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 							label={({ payload, ...props }) => {
 								return (
 									<text
-										className='translate-x-1'
-										fontSize={isTablet ? 10 : 12}
+										fontSize={12}
 										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}
 										x={props.x}
 										y={props.y + 8}
-										textAnchor={props.textAnchor}
+										textAnchor={'middle'}
 										dominantBaseline={props.dominantBaseline}
 										fill='hsla(var(--foreground))'>
 										{payload.revenue.toLocaleString('pt-br', {
@@ -105,8 +104,8 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 								);
 							}}
 							labelLine={false}
-							innerRadius={isTablet ? 70 : 80}
-							outerRadius={isTablet ? 90 : 104}
+							innerRadius={isTablet ? 68 : 80}
+							outerRadius={isTablet ? 88 : 104}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
@@ -130,7 +129,7 @@ export function SalesByClient({ data }: { data: Promise<any> }) {
 												<tspan
 													x={viewBox.cx}
 													y={(viewBox.cy || 0) + 24}
-													className='fill-muted-foreground'>
+													className='fill-muted-foreground text-xs'>
 													Faturamento Total
 												</tspan>
 											</text>

@@ -44,7 +44,7 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='w-full h-80'>
+					className='w-full h-96 md:72'>
 					<LineChart
 						accessibilityLayer
 						data={chartData}

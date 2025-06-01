@@ -84,14 +84,13 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 							label={({ payload, ...props }) => {
 								return (
 									<text
-										className='translate-x-1'
-										fontSize={isTablet ? 10 : 12}
+										fontSize={12}
 										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}
 										x={props.x}
 										y={props.y + 8}
-										textAnchor={props.textAnchor}
+										textAnchor={'middle'}
 										dominantBaseline={props.dominantBaseline}
 										fill='hsla(var(--foreground))'>
 										{payload.value.toLocaleString('pt-br', {
@@ -102,9 +101,10 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 									</text>
 								);
 							}}
+							bias={-40}
 							labelLine={false}
 							innerRadius={isTablet ? 68 : 80}
-							outerRadius={isTablet ? 84 : 104}
+							outerRadius={isTablet ? 88 : 104}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {

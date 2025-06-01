@@ -91,7 +91,8 @@ export default function ComparisonUnit({ title, data, type }: ComparisonProps) {
 							dataKey={type}
 							nameKey='organization'
 							fontSize={12}
-							innerRadius={84}
+							innerRadius={72}
+							outerRadius={94}
 							label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
 							labelLine={false}>
 							{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}

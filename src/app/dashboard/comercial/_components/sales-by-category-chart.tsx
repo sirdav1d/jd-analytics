@@ -114,10 +114,10 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 							dataKey='revenue'>
 							<LabelList
 								dataKey='revenue'
-								position='insideRight'
+								position='right'
 								fontWeight={600}
 								offset={8}
-								className='fill-foreground translate-x-20'
+								className='fill-foreground'
 								formatter={(value: number) =>
 									`${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' })}`
 								}

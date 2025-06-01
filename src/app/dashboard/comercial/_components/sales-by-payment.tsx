@@ -89,8 +89,8 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: isMobile ? 60 : 48,
-							left: isMobile ? -44 : 12,
+							right: isMobile ? 60 : 52,
+							left: isMobile ? -44 : -20,
 						}}>
 						<XAxis
 							type='number'
@@ -117,10 +117,10 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 							dataKey='value'>
 							<LabelList
 								dataKey='value'
-								position='insideRight'
+								position='right'
 								fontWeight={600}
 								offset={8}
-								className='fill-foreground translate-x-16'
+								className='fill-foreground'
 								formatter={(value: number) =>
 									`${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' })}`
 								}

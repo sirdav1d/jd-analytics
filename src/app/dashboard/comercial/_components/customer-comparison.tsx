@@ -86,13 +86,13 @@ export function CustomerComparisonChartComponent({
 							label={({ payload, ...props }) => {
 								return (
 									<text
-										fontSize={isTablet ? 10 : 12}
+										fontSize={12}
 										fontWeight={600}
 										cx={props.cx}
 										cy={props.cy}
 										x={props.x}
 										y={props.y + 8}
-										textAnchor={props.textAnchor}
+										textAnchor={'middle'}
 										dominantBaseline={props.dominantBaseline}
 										fill='hsla(var(--foreground))'>
 										{payload.revenue.toLocaleString('pt-br', {
@@ -104,8 +104,8 @@ export function CustomerComparisonChartComponent({
 								);
 							}}
 							labelLine={false}
-							innerRadius={isTablet ? 70 : 80}
-							outerRadius={isTablet ? 90 : 104}
+							innerRadius={isTablet ? 68 : 80}
+							outerRadius={isTablet ? 88 : 104}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
