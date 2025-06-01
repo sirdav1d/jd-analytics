@@ -10,7 +10,7 @@ export default function Greeting() {
 
 	function normalizePathname(pathname: string) {
 		if (pathname == '/dashboard') {
-			return 'Visão Geral';
+			return 'Visão Geral Centro Vs. Icaraí';
 		}
 
 		if (pathname == '/dashboard/users') {

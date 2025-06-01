@@ -43,8 +43,8 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 						data={chartData}
 						margin={{
 							top: 28,
-							left: isMobile ? 4 : 36,
-							right: isMobile ? 10 : 36,
+							left:  36,
+							right: 36,
 						}}>
 						<CartesianGrid vertical={false} />
 						<XAxis
@@ -91,21 +91,19 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 							strokeWidth={2}
 							type={isMobile ? 'monotone' : 'natural'}
 							radius={4}>
-							{isMobile ? null : (
-								<LabelList
-									position='top'
-									offset={12}
-									className='fill-foreground'
-									fontSize={10}
-									formatter={(val: number) =>
-										val.toLocaleString('pt-BR', {
-											style: 'currency',
-											currency: 'brl',
-											notation: 'compact',
-										})
-									}
-								/>
-							)}
+							<LabelList
+								position='top'
+								offset={12}
+								className='fill-foreground'
+								fontSize={10}
+								formatter={(val: number) =>
+									val.toLocaleString('pt-BR', {
+										style: 'currency',
+										currency: 'brl',
+										notation: 'compact',
+									})
+								}
+							/>
 						</Area>
 					</AreaChart>
 				</ChartContainer>

@@ -86,8 +86,8 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: isMobile ? 60 : 48,
-							left: isMobile ? -6 : 16,
+							right: isMobile ? 60 : 40,
+							left: isMobile ? -32 : 0,
 						}}>
 						<XAxis
 							type='number'
@@ -96,7 +96,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						/>
 						<YAxis
 							style={{ lineHeight: '40px' }}
-							width={130}
+							width={120}
 							fontSize={isMobile ? 10 : 12}
 							dataKey='category'
 							type='category'
@@ -117,7 +117,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 								position='insideRight'
 								fontWeight={600}
 								offset={8}
-								className='fill-foreground translate-x-16'
+								className='fill-foreground translate-x-20'
 								formatter={(value: number) =>
 									`${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' })}`
 								}

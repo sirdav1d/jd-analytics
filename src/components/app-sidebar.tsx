@@ -43,16 +43,15 @@ export default function AppSidebar() {
 			url: '/dashboard',
 			icon: Home,
 		},
-
-		{
-			title: 'Marketing',
-			url: '/dashboard/marketing',
-			icon: Megaphone,
-		},
 		{
 			title: 'Comercial',
 			url: '/dashboard/comercial',
 			icon: ShoppingCart,
+		},
+		{
+			title: 'Marketing',
+			url: '/dashboard/marketing',
+			icon: Megaphone,
 		},
 		{
 			title: 'Acompanhamento',

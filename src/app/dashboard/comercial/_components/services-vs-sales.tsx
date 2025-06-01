@@ -34,22 +34,21 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 		);
 	}
 
-	console.log(allData.data.salesByItemType[1]?.type);
 	const chartData = [
 		{
 			name: allData.data.salesByItemType[0]?.type ?? '',
-			revenue: allData.data.salesByItemType[0]?.revenue ?? 0,
+			value: allData.data.salesByItemType[0]?.revenue ?? 0,
 			fill: `var(--color-${allData.data.salesByItemType[0]?.type})`,
 		},
 		{
 			name: allData.data.salesByItemType[1]?.type ?? '',
-			revenue: allData.data.salesByItemType[1]?.revenue ?? 0,
+			value: allData.data.salesByItemType[1]?.revenue ?? 0,
 			fill: `var(--color-${allData.data.salesByItemType[1]?.type})`,
 		},
 	];
 
 	const chartConfig = {
-		revenue: { label: 'Faturamento' },
+		value: { label: 'Faturamento' },
 		Serviço: {
 			label: 'Serviços',
 			color: 'hsl(var(--chart-1))',
@@ -60,7 +59,7 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 		},
 	} satisfies ChartConfig;
 
-	const totalVisitors = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
+	const totalVisitors = chartData.reduce((acc, curr) => acc + curr.value, 0);
 
 	return (
 		<Card>
@@ -80,7 +79,7 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 						/>
 						<Pie
 							data={chartData}
-							dataKey='revenue'
+							dataKey='value'
 							nameKey='name'
 							label={({ payload, ...props }) => {
 								return (
@@ -95,7 +94,7 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 										textAnchor={props.textAnchor}
 										dominantBaseline={props.dominantBaseline}
 										fill='hsla(var(--foreground))'>
-										{payload.revenue.toLocaleString('pt-br', {
+										{payload.value.toLocaleString('pt-br', {
 											style: 'currency',
 											currency: 'brl',
 											notation: 'compact',
