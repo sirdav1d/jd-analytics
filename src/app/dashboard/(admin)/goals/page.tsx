@@ -1,13 +1,6 @@
 /** @format */
 
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
-import {
 	Table,
 	TableBody,
 	TableCell,
@@ -25,10 +18,16 @@ import { Suspense } from 'react';
 import BigNumbers from './_components/big-numbers';
 import { columns } from './_components/data-table-current-goal/columns';
 import { DataTable } from './_components/data-table-current-goal/data-table';
-import FilterCompany from './_components/filter-company';
 import HistoryGoal from './_components/history-goals';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import { Goal } from 'lucide-react';
 
 export default function GoalsPage() {
 	const data = getAllSellers();
@@ -50,102 +49,117 @@ export default function GoalsPage() {
 					<TabsTrigger value='Comercial'>Comercial</TabsTrigger>
 				</TabsList>
 				<TabsContent value='Marketing'>
-					<Card className='w-full md:max-w-full mx-auto '>
-						<CardHeader>
-							<CardTitle className='flex flex-col-reverse md:flex-row gap-5 items-center justify-between'>
-								Meta Atual de Marketing <ModalFormGoal />
-							</CardTitle>
-							<CardDescription>
-								Meta válida para{' '}
-								{new Date().toLocaleDateString('pt-Br', { dateStyle: 'short' })}
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<div className='flex flex-col md:flex-row md:items-center md:gap-10'>
-								<p className='space-x-2'>
-									<small>Faturamento:</small>
-									<span className='font-semibold text-lg'>R$ 100.000,00</span>
-								</p>
-								<p className='space-x-2'>
-									<small>ROAS:</small>
-									<span className='font-semibold text-lg'>20x</span>
+					<div className='bg-background w-full grid grid-cols-1 max-w-full'>
+						<div className='my-5 flex flex-col md:flex-row gap-2 items-center justify-between'>
+							<div>
+								<h2 className=' text-3xl font-semibold'>JD Info Centro</h2>
+								<p className='text-muted-foreground font-normal text-xl text-center md:text-start'>
+									{formattedToday}
 								</p>
 							</div>
-							<Separator
-								orientation='horizontal'
-								className='my-10'
-							/>
-							<FilterCompany />
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>Data</TableHead>
-										<TableHead>Faturamento</TableHead>
-										<TableHead className='text-nowrap text-center'>
-											Investimento
-										</TableHead>
-										<TableHead className='text-nowrap text-center'>
-											ROAS
-										</TableHead>
+							<div className='w-full md:w-fit mt-5'>
+								<ModalFormGoal />
+							</div>
+						</div>
+						<div className='grid grid-cols-3 gap-5'>
+							<Card>
+								<CardHeader>
+									<CardTitle className='w-full flex items-center justify-between'>
+										20x
+										<Goal />
+									</CardTitle>
+									<CardDescription>Meta de ROAS Atual</CardDescription>
+								</CardHeader>
+							</Card>
+							<Card>
+								<CardHeader>
+									<CardTitle className='w-full flex items-center justify-between'>
+										15x <Goal />
+									</CardTitle>
+									<CardDescription>ROAS Atingido</CardDescription>
+								</CardHeader>
+							</Card>
+							<Card>
+								<CardHeader>
+									<CardTitle className='w-full flex items-center justify-between text-destructive'>
+										17x
+										<Goal />
+									</CardTitle>
+									<CardDescription>Previsão de ROAS</CardDescription>
+								</CardHeader>
+							</Card>
+						</div>
+						<Separator
+							orientation='horizontal'
+							className='my-10'
+						/>
+						<Table>
+							<TableHeader>
+								<TableRow className='bg-secondary text-foreground'>
+									<TableHead className='bg-secondary text-foreground'>
+										Data
+									</TableHead>
+									<TableHead className='text-center text-foreground'>
+										Meta de Roas
+									</TableHead>
+									<TableHead className='text-nowrap text-center text-foreground'>
+										Roas Atingido
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{[
+									{
+										data: '02/2025',
+										nome: 'Ana Silva',
+										faturamento: 20,
+										ticketAvarage: 15,
+										roas: 20,
+									},
+									{
+										data: '03/2025',
+										nome: 'Carlos Santos',
+										faturamento: 20,
+										ticketAvarage: 15,
+										roas: 20,
+									},
+									{
+										data: '04/2025',
+										nome: 'Mariana Oliveira',
+										faturamento: 20,
+										ticketAvarage: 15,
+										roas: 20,
+									},
+									{
+										data: '05/2025',
+										nome: 'Roberto Alves',
+										faturamento: 20,
+										ticketAvarage: 15,
+										roas: 20,
+									},
+									{
+										data: '06/2025',
+										nome: 'Juliana Costa',
+										faturamento: 20,
+										ticketAvarage: 15,
+										roas: 20,
+									},
+								].map((vendedor) => (
+									<TableRow key={vendedor.data}>
+										<TableCell className='flex items-center gap-3'>
+											{vendedor.data}
+										</TableCell>
+										<TableCell className='text-nowrap text-center'>
+											{vendedor.faturamento}
+										</TableCell>
+										<TableCell className='text-nowrap text-center'>
+											{vendedor.ticketAvarage}
+										</TableCell>
 									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{[
-										{
-											data: '02/2025',
-											nome: 'Ana Silva',
-											faturamento: 'R$ 150.000,00',
-											ticketAvarage: 'R$ 7500,00',
-											roas: 20,
-										},
-										{
-											data: '03/2025',
-											nome: 'Carlos Santos',
-											faturamento: 'R$ 145.000,00',
-											ticketAvarage: 'R$ 7250,00',
-											roas: 20,
-										},
-										{
-											data: '04/2025',
-											nome: 'Mariana Oliveira',
-											faturamento: 'R$ 140.000,00',
-											ticketAvarage: 'R$ 7000,00',
-											roas: 20,
-										},
-										{
-											data: '05/2025',
-											nome: 'Roberto Alves',
-											faturamento: 'R$ 135.000,00',
-											ticketAvarage: 'R$ 6750,00',
-											roas: 20,
-										},
-										{
-											data: '06/2025',
-											nome: 'Juliana Costa',
-											faturamento: 'R$ 130.000,00',
-											ticketAvarage: 'R$ 6500,00',
-											roas: 20,
-										},
-									].map((vendedor) => (
-										<TableRow key={vendedor.data}>
-											<TableCell className='flex items-center gap-3'>
-												{vendedor.data}
-											</TableCell>
-											<TableCell className='text-nowrap'>
-												{vendedor.faturamento}
-											</TableCell>
-											<TableCell className='text-nowrap text-center'>
-												{vendedor.ticketAvarage}
-											</TableCell>
-											<TableCell className='text-nowrap text-center'>
-												{vendedor.roas}x
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</CardContent>
-					</Card>
+								))}
+							</TableBody>
+						</Table>
+					</div>
 				</TabsContent>
 				<TabsContent value='Comercial'>
 					<div className=' bg-background w-full grid grid-cols-1 max-w-full'>
