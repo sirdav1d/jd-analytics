@@ -6,6 +6,8 @@ import { getServerSession } from 'next-auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+export const experimental_ppr = true;
+
 export default async function DashLayout({
 	children,
 }: Readonly<{
