@@ -69,60 +69,58 @@ export default function HistoryGoal({ data }: IHistoryData) {
 				{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 				{history.map((item: any, index: number) => {
 					return (
-						index < history.length - 1 && (
-							<AccordionItem
-								key={index}
-								value={`item-${index}`}>
-								<AccordionTrigger>{months[index].month}</AccordionTrigger>
-								<AccordionContent>
-									<Table title={`Meta do mês ${item.month}`}>
-										<TableHeader>
-											<TableRow className='bg-secondary'>
-												<TableHead className='text-foreground font-semibold'>
-													Data
-												</TableHead>
-												<TableHead className='text-foreground font-semibold text-nowrap'>
-													Nome
-												</TableHead>
-												<TableHead className='text-foreground font-semibold text-nowrap'>
-													Meta de Faturamento
-												</TableHead>
-												<TableHead className='text-nowrap text-center text-foreground font-semibold'>
-													Faturamento realizado
-												</TableHead>
-											</TableRow>
-										</TableHeader>
-										<TableBody className='border rounded-xl'>
-											{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-											{item.goals.map((item: any, index: number) => {
-												return (
-													<TableRow key={index}>
-														<TableCell className='text-nowrap'>
-															{item.month}
-														</TableCell>
-														<TableCell className='text-nowrap'>
-															{item.sellerName}
-														</TableCell>
-														<TableCell className='text-nowrap'>
-															{item.revenue.toLocaleString('pt-br', {
-																style: 'currency',
-																currency: 'brl',
-															})}
-														</TableCell>
-														<TableCell className='text-nowrap text-center'>
-															{item.realized.toLocaleString('pt-br', {
-																style: 'currency',
-																currency: 'brl',
-															})}
-														</TableCell>
-													</TableRow>
-												);
-											})}
-										</TableBody>
-									</Table>
-								</AccordionContent>
-							</AccordionItem>
-						)
+						<AccordionItem
+							key={index}
+							value={`item-${index}`}>
+							<AccordionTrigger>{months[index].month}</AccordionTrigger>
+							<AccordionContent>
+								<Table title={`Meta do mês ${item.month}`}>
+									<TableHeader>
+										<TableRow className='bg-secondary'>
+											<TableHead className='text-foreground font-semibold'>
+												Data
+											</TableHead>
+											<TableHead className='text-foreground font-semibold text-nowrap'>
+												Nome
+											</TableHead>
+											<TableHead className='text-foreground font-semibold text-nowrap'>
+												Meta de Faturamento
+											</TableHead>
+											<TableHead className='text-nowrap text-center text-foreground font-semibold'>
+												Faturamento realizado
+											</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody className='border rounded-xl'>
+										{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+										{item.goals.map((item: any, index: number) => {
+											return (
+												<TableRow key={index}>
+													<TableCell className='text-nowrap'>
+														{item.month}
+													</TableCell>
+													<TableCell className='text-nowrap'>
+														{item.sellerName}
+													</TableCell>
+													<TableCell className='text-nowrap'>
+														{item.revenue.toLocaleString('pt-br', {
+															style: 'currency',
+															currency: 'brl',
+														})}
+													</TableCell>
+													<TableCell className='text-nowrap text-center'>
+														{item.realized.toLocaleString('pt-br', {
+															style: 'currency',
+															currency: 'brl',
+														})}
+													</TableCell>
+												</TableRow>
+											);
+										})}
+									</TableBody>
+								</Table>
+							</AccordionContent>
+						</AccordionItem>
 					);
 				})}
 			</Accordion>
