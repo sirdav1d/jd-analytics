@@ -24,7 +24,7 @@ import {
 	User2,
 	UserCog,
 } from 'lucide-react';
-import { Link } from 'next-view-transitions';
+
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
 import { useSession } from 'next-auth/react';
@@ -32,6 +32,7 @@ import Logo from './logo';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Separator } from './ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Link from 'next/link';
 
 export default function AppSidebar() {
 	const { open } = useSidebar();
@@ -103,7 +104,8 @@ export default function AppSidebar() {
 										}`}>
 										<Link
 											key={item.title}
-											href={item.url}>
+											href={item.url}
+											scroll={false}>
 											<item.icon />
 
 											<span>{item.title}</span>
