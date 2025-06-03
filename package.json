@@ -73,5 +73,8 @@
 	},
 	"overrides": {
 		"google-auth-library": "^9.0.0"
+	},
+	"resolutions": {
+		"next": "15.4.0-canary.62"
 	}
 }
