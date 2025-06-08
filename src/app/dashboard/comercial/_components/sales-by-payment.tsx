@@ -90,7 +90,7 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						layout='vertical'
 						margin={{
 							right: isMobile ? 60 : 52,
-							left: isMobile ? -44 : -20,
+							left: isMobile ? -44 : -0,
 						}}>
 						<XAxis
 							type='number'
@@ -99,8 +99,8 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						/>
 						<YAxis
 							style={{ lineHeight: '40px' }}
-							width={120}
-							fontSize={isMobile ? 10 : 12}
+							width={148}
+							fontSize={10}
 							dataKey='name'
 							type='category'
 							tickLine={false}

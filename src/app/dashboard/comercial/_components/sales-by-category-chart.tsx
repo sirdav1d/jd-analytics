@@ -86,8 +86,8 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: isMobile ? 60 : 40,
-							left: isMobile ? -32 : 0,
+							right: isMobile ? 60 : 48,
+							left: isMobile ? -32 : -20,
 						}}>
 						<XAxis
 							type='number'
@@ -96,8 +96,8 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						/>
 						<YAxis
 							style={{ lineHeight: '40px' }}
-							width={120}
-							fontSize={isMobile ? 10 : 12}
+							width={180}
+							fontSize={10}
 							dataKey='category'
 							type='category'
 							tickLine={false}
