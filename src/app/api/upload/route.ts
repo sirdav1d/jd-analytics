@@ -129,7 +129,6 @@ export async function POST(req: NextRequest) {
 			// Extração de campos
 			const organization = await getOrganizationFromRow(row);
 
-			console.log('Organização:', organization);
 			if (!organization) {
 				console.error(
 					'Organização não encontrada para o código:',
@@ -233,17 +232,6 @@ export async function POST(req: NextRequest) {
 					unitValue,
 					totalValue,
 				},
-			});
-
-			console.log('>>> Dados para SaleItem:', {
-				saleId: sale.id,
-				productId: product.id,
-				rawQuantity: row['Qtde Item'],
-				quantity,
-				rawUnitValue: row['Valor Unitário Item'],
-				unitValue,
-				rawTotalValue: row['Valor Total Item'],
-				totalValue,
 			});
 		}
 
