@@ -24,6 +24,7 @@ import { use } from 'react';
 import { ConversionsComponent } from './charts/conversion';
 import { TrafficComponent } from './charts/traffic';
 import FilterAnalytics from './filter-analytics';
+import GoalsHomeProgress from '../../_components/goals-home-progress';
 
 export default function SectionAnalytics({
 	data,
@@ -55,7 +56,15 @@ export default function SectionAnalytics({
 			<div className='w-full flex flex-col items-center justify-center md:items-start flex-wrap gap-5'>
 				<FilterAnalytics />
 				<Separator className='w-full' />
-				<div className='flex items-center gap-2  xl:mx-0 mx-auto justify-center scale-110 md:scale-100'>
+				<GoalsHomeProgress
+					canShowComercial={false}
+					canShowMarketing={true}
+					goalComercial={399000}
+					goalMarketing={20}
+					achievedComercial={82926.3}
+					achievedMarketing={10}
+				/>
+				<div className='flex items-center gap-2 xl:mx-0 mx-auto justify-center scale-110 md:scale-100'>
 					<Image
 						src={analytics}
 						alt='Logo Google Analytics'

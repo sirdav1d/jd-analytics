@@ -24,7 +24,7 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle className='text-base text-balance md:text-2xl'>
+					<CardTitle className='text-base text-balance md:text-2xl mt-5'>
 						Sem dados encontrados
 					</CardTitle>
 				</CardHeader>
@@ -33,7 +33,7 @@ export default function BigNumbers({ data }: { data: Promise<any> }) {
 	}
 
 	return (
-		<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
+		<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 '>
 			<Card>
 				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 					<CardTitle className='text-sm font-medium'>

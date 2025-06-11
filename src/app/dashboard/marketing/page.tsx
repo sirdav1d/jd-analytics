@@ -1,16 +1,16 @@
 /** @format */
 
 import { Separator } from '@/components/ui/separator';
-import { Suspense } from 'react';
-import SectionAds from './_components/section-ads';
-import SectionAnalytics from './_components/section-analytics';
-import TopAnuncios from './_components/tables/top-anuncios';
 import { Skeleton } from '@/components/ui/skeleton';
-import TopAdwords from './_components/tables/top-adwords';
+import { FetchADSData } from '@/services/google-services/get-ads-data';
 import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
 import { FetchTopADSData } from '@/services/google-services/get-top-ads';
 import { FetchKeywordADSData } from '@/services/google-services/get-top-keywords';
-import { FetchADSData } from '@/services/google-services/get-ads-data';
+import { Suspense } from 'react';
+import SectionAds from './_components/section-ads';
+import SectionAnalytics from './_components/section-analytics';
+import TopAdwords from './_components/tables/top-adwords';
+import TopAnuncios from './_components/tables/top-anuncios';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 

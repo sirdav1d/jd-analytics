@@ -37,9 +37,9 @@ export function Revenue({ data }: IRevenueProps) {
 				accessibilityLayer
 				data={chartData}
 				margin={{
-					left: isMobile ? 4 : 40,
-					right: isMobile ? 4 : 40,
-					top: isMobile ? 12 : 20,
+					left: isMobile ? 24 : 40,
+					right: isMobile ? 24 : 40,
+					top: 20,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis

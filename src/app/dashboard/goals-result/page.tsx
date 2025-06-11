@@ -1,6 +1,7 @@
 /** @format */
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FetchGoalTrackingData } from '@/services/data-services/get-goal-tracking';
 import { IGoalTracking } from '@/services/data-services/types';
@@ -13,7 +14,6 @@ import SellerRevenue from './_components/charts/seller-revenue';
 import CompanySummary from './_components/company-summary';
 import Filter from './_components/filter';
 import SalesmanList from './_components/salesman-list';
-import { Separator } from '@/components/ui/separator';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 

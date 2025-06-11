@@ -43,8 +43,8 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 						data={chartData}
 						margin={{
 							top: 28,
-							left:  36,
-							right: 36,
+							left: isMobile ? 20 : 36,
+							right: isMobile ? 25 : 36,
 						}}>
 						<CartesianGrid vertical={false} />
 						<XAxis

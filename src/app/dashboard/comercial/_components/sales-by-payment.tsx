@@ -90,7 +90,7 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						layout='vertical'
 						margin={{
 							right: isMobile ? 60 : 52,
-							left: isMobile ? -44 : -0,
+							left: isMobile ? -40 : -0,
 						}}>
 						<XAxis
 							type='number'
@@ -104,7 +104,7 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 							dataKey='name'
 							type='category'
 							tickLine={false}
-							tickMargin={10}
+							tickMargin={isMobile ? 8 : 12}
 							axisLine={false}
 						/>
 						<ChartTooltip

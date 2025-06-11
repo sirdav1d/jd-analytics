@@ -101,7 +101,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 							dataKey='category'
 							type='category'
 							tickLine={false}
-							tickMargin={10}
+							tickMargin={isMobile ? 8 : 12}
 							axisLine={false}
 						/>
 						<ChartTooltip
