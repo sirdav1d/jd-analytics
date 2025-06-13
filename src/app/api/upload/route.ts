@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
 			const documentNumber = row['Documento'];
 			const natureOperation = row['Natureza de Operação'];
 			const operationType = row['Operação'];
-			const origin = row['Origem'];
+			const origin_linx = row['Origem'];
 			const cancelled = row['Cancelada'].toLowerCase() === 'sim';
 
 			// Cliente
@@ -210,7 +210,7 @@ export async function POST(req: NextRequest) {
 					data_pedido: launchDate,
 					natureOperation,
 					operationType,
-					origin,
+					origin_linx,
 					cancelled,
 					customer: { connect: { id: customer.id } },
 					user: { connect: { id: seller.id } },

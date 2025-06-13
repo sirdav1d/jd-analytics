@@ -30,7 +30,8 @@ export default function RootLayout({
 		<ViewTransition>
 			<html
 				lang='pt-BR'
-				suppressHydrationWarning>
+				suppressHydrationWarning
+				suppressContentEditableWarning>
 				<body className={`${montserrat.className} antialiased`}>
 					<ReactQueryProvider>
 						<ThemeProvider
