@@ -9,7 +9,14 @@ import { generateBodyStaticAnalytics } from '@/utils/google/body-static-analytic
 import { generateBodyTrafficAnalytics } from '@/utils/google/body-traffic-analytics';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
-import { format, subDays, differenceInCalendarDays } from 'date-fns';
+import {
+	format,
+	subDays,
+	differenceInCalendarDays,
+	startOfDay,
+	endOfDay,
+} from 'date-fns';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
 	const propertyId = '295260064';
@@ -141,9 +148,76 @@ export async function GET(req: NextRequest) {
 			{},
 		);
 
+		const [pedidosAtual, pedidosAnterior] = await Promise.all([
+			prisma.pedido.findMany({
+				where: {
+					data_pedido: {
+						gte: startOfDay(new Date(startDate)),
+						lte: endOfDay(new Date(endDate)),
+					},
+					Origin: {
+						name: {
+							contains: 'google',
+							mode: 'insensitive',
+						},
+					},
+				},
+				include: {
+					items: true,
+				},
+			}),
+			prisma.pedido.findMany({
+				where: {
+					data_pedido: {
+						gte: startOfDay(new Date(previousStartDate)),
+						lte: endOfDay(new Date(previousEndDate)),
+					},
+					Origin: {
+						name: {
+							contains: 'google',
+							mode: 'insensitive',
+						},
+					},
+				},
+				include: {
+					items: true,
+				},
+			}),
+		]);
+
+		function calcularTotal(pedidos: typeof pedidosAtual) {
+			return pedidos.reduce((total, pedido) => {
+				const totalPedido = pedido.items.reduce(
+					(sum, item) => sum + item.totalValue,
+					0,
+				);
+				return total + totalPedido;
+			}, 0);
+		}
+
+		const valorAtual = calcularTotal(pedidosAtual);
+		const valorAnterior = calcularTotal(pedidosAnterior);
+		const diferenca = valorAtual - valorAnterior;
+		const percentual =
+			valorAnterior !== 0
+				? `${((diferenca / valorAnterior) * 100).toFixed(2)}%`
+				: 'N/A';
+
+		const faturamentoGoogle = {
+			valorAtual,
+			valorAnterior,
+			diferenca,
+			percentual,
+		};
+
 		return NextResponse.json({
 			ok: true,
-			data: [staticComparison, trafficMetrics, channelMetrics],
+			data: [
+				staticComparison,
+				trafficMetrics,
+				channelMetrics,
+				faturamentoGoogle,
+			],
 			error: null,
 		});
 	} catch (error) {

@@ -11,6 +11,7 @@ import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 import TopAdwords from './_components/tables/top-adwords';
 import TopAnuncios from './_components/tables/top-anuncios';
+import SectionLinx from './_components/section-linx';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -68,6 +69,15 @@ export default async function MarketingPage(props: {
 					</div>
 				}>
 				<SectionAnalytics data={responseAnalytics} />
+			</Suspense>
+			<Separator className='w-full mt-10' />
+			<Suspense
+				fallback={
+					<div>
+						<Skeleton className='h-80 w-full' />
+					</div>
+				}>
+				<SectionLinx data={dataAds} />
 			</Suspense>
 			<Separator className='w-full mt-10' />
 			<Suspense

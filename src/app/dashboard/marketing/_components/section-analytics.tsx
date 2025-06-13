@@ -46,6 +46,9 @@ export default function SectionAnalytics({
 	const staticData = responseAnalytics.data[0];
 	const trafficData = responseAnalytics.data[1];
 	const channelData = responseAnalytics.data[2];
+	const revenueData = responseAnalytics.data[3];
+
+	console.log(revenueData);
 	const totalUsers = (Object.values(trafficData) as number[]).reduce(
 		(acc: number, value: number) => acc + value,
 		0,
@@ -285,7 +288,7 @@ export default function SectionAnalytics({
 						</p>
 					</CardContent>
 				</Card>
-				<Card className='opacity-50'>
+				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
 							Faturamento de Loja Física{' '}
@@ -296,8 +299,38 @@ export default function SectionAnalytics({
 						<DollarSign className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>Entrada Manual</div>
-						<p className='text-xs text-muted-foreground'>Entrada Manual</p>
+						<div className='text-2xl font-bold flex items-center gap-3'>
+							{revenueData
+								? Number(revenueData.valorAtual).toLocaleString('pt-br', {
+										style: 'currency',
+										currency: 'brl',
+									})
+								: 0}
+							<Badge
+								variant={revenueData.diferenca > 0 ? 'success' : 'destructive'}>
+								{revenueData.percentual}
+								{revenueData.diferenca > 0 ? (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								)}
+							</Badge>
+						</div>
+						<p className='text-xs text-muted-foreground'>
+							Valor no mês anterior{' '}
+							{revenueData
+								? Number(revenueData.valorAnterior).toLocaleString('pt-br', {
+										style: 'currency',
+										currency: 'brl',
+									})
+								: 0}
+						</p>
 					</CardContent>
 				</Card>
 				<Card>
