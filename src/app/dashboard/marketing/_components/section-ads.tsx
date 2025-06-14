@@ -89,6 +89,7 @@ export default function SectionAds({ data }: { data: Promise<any> }) {
 				</div>
 			</div>
 			<ListStaticADS
+				roas={allData.data.roas}
 				clicks={AccountMetrics.clicks}
 				cost_micros={AccountMetrics.cost_micros}
 				ctr={AccountMetrics.ctr}

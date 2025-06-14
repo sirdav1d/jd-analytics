@@ -48,7 +48,6 @@ export default function SectionAnalytics({
 	const channelData = responseAnalytics.data[2];
 	const revenueData = responseAnalytics.data[3];
 
-	console.log(revenueData);
 	const totalUsers = (Object.values(trafficData) as number[]).reduce(
 		(acc: number, value: number) => acc + value,
 		0,
@@ -133,111 +132,8 @@ export default function SectionAnalytics({
 					</CardContent>
 				</Card>
 			</div>
-			<Card className='xl:hidden'>
-				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-					<CardTitle className='text-sm font-medium'>
-						Faturamento Total
-					</CardTitle>
-					<DollarSign className='h-4 w-4 text-primary' />
-				</CardHeader>
-				<CardContent>
-					<div className='text-2xl font-bold flex items-center gap-3'>
-						{staticData.purchaseRevenue
-							? Number(staticData.purchaseRevenue.valorAtual).toLocaleString(
-									'pt-br',
-									{
-										style: 'currency',
-										currency: 'brl',
-									},
-								)
-							: 0}{' '}
-						<Badge
-							variant={
-								staticData.purchaseRevenue.diferenca > 0
-									? 'success'
-									: 'destructive'
-							}>
-							{staticData.purchaseRevenue.percentual}
-							{staticData.purchaseRevenue.diferenca > 0 ? (
-								<TrendingUp
-									size={16}
-									className='ml-2'
-								/>
-							) : (
-								<TrendingDown
-									size={16}
-									className='ml-2'
-								/>
-							)}
-						</Badge>
-					</div>
-					<p className='text-xs text-muted-foreground'>
-						Valor no mês anterior{' '}
-						{staticData.purchaseRevenue
-							? Number(staticData.purchaseRevenue.valorAnterior).toLocaleString(
-									'pt-br',
-									{
-										style: 'currency',
-										currency: 'brl',
-									},
-								)
-							: 0}
-					</p>
-				</CardContent>
-			</Card>
-			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
-				<Card className='hidden xl:block'>
-					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-						<CardTitle className='text-sm font-medium'>
-							Faturamento Total
-						</CardTitle>
-						<DollarSign className='h-4 w-4 text-primary' />
-					</CardHeader>
-					<CardContent>
-						<div className='text-2xl font-bold flex items-center gap-3'>
-							{staticData.purchaseRevenue
-								? Number(staticData.purchaseRevenue.valorAtual).toLocaleString(
-										'pt-br',
-										{
-											style: 'currency',
-											currency: 'brl',
-										},
-									)
-								: 0}
-							<Badge
-								variant={
-									staticData.purchaseRevenue.diferenca > 0
-										? 'success'
-										: 'destructive'
-								}>
-								{staticData.purchaseRevenue.percentual}
-								{staticData.purchaseRevenue.diferenca > 0 ? (
-									<TrendingUp
-										size={16}
-										className='ml-2'
-									/>
-								) : (
-									<TrendingDown
-										size={16}
-										className='ml-2'
-									/>
-								)}
-							</Badge>
-						</div>
-						<p className='text-xs text-muted-foreground'>
-							Valor no mês anterior{' '}
-							{staticData.purchaseRevenue
-								? Number(
-										staticData.purchaseRevenue.valorAnterior,
-									).toLocaleString('pt-br', {
-										style: 'currency',
-										currency: 'brl',
-									})
-								: 0}
-						</p>
-					</CardContent>
-				</Card>
-				<Card>
+			<div className='flex flex-col md:flex-row items-center w-full justify-center gap-4'>
+				<Card className='w-full'>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
 							Faturamento de Eccomerce
@@ -288,12 +184,12 @@ export default function SectionAnalytics({
 						</p>
 					</CardContent>
 				</Card>
-				<Card>
+				<Card className='w-full'>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>
-							Faturamento de Loja Física{' '}
+							Faturamento Total{' '}
 							<span className='text-muted-foreground text-xs'>
-								(via tráfego)
+								(origem Google)
 							</span>
 						</CardTitle>
 						<DollarSign className='h-4 w-4 text-primary' />
@@ -333,6 +229,8 @@ export default function SectionAnalytics({
 						</p>
 					</CardContent>
 				</Card>
+			</div>
+			<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>Sessões</CardTitle>

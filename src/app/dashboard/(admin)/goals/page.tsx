@@ -42,15 +42,27 @@ export default function GoalsPage() {
 	});
 
 	return (
-		<div className='w-full  mx-auto pb-4 space-y-4 min-h-screen'>
-			<Tabs defaultValue='Comercial'>
-				<TabsList className='grid grid-cols-2'>
-					<TabsTrigger value='Marketing'>Marketing</TabsTrigger>
-					<TabsTrigger value='Comercial'>Comercial</TabsTrigger>
+		<div className='w-full mx-auto pb-4 space-y-4 min-h-screen'>
+			<Tabs
+				defaultValue='Comercial'
+				className='items-center'>
+				<TabsList className='h-auto rounded-none border-b bg-transparent p-0'>
+					<TabsTrigger
+						value='Marketing'
+						className='data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none'>
+						Marketing
+					</TabsTrigger>
+					<TabsTrigger
+						value='Comercial'
+						className='data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none'>
+						Comercial
+					</TabsTrigger>
 				</TabsList>
-				<TabsContent value='Marketing'>
-					<div className='bg-background w-full grid grid-cols-1 max-w-full'>
-						<div className='my-5 flex flex-col md:flex-row gap-2 items-center justify-between'>
+				<TabsContent
+					value='Marketing'
+					className='w-full'>
+					<div className=' bg-background w-full grid grid-cols-1 max-w-full'>
+						<div className='my-5 w-full flex flex-col md:flex-row gap-2 items-center justify-between'>
 							<div>
 								<h2 className=' text-3xl font-semibold'>JD Info Centro</h2>
 								<p className='text-muted-foreground font-normal text-xl text-center md:text-start'>
@@ -61,7 +73,7 @@ export default function GoalsPage() {
 								<ModalFormGoal />
 							</div>
 						</div>
-						<div className='grid grid-cols-3 gap-5'>
+						<div className='grid grid-cols-3 gap-5 w-full'>
 							<Card>
 								<CardHeader>
 									<CardTitle className='w-full flex items-center justify-between'>
@@ -161,7 +173,7 @@ export default function GoalsPage() {
 						</Table>
 					</div>
 				</TabsContent>
-				<TabsContent value='Comercial'>
+				<TabsContent value='Comercial' className='w-full'>
 					<div className=' bg-background w-full grid grid-cols-1 max-w-full'>
 						<div className='my-5 flex flex-col md:flex-row gap-2 items-center justify-between'>
 							<div>

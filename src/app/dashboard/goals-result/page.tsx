@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FetchGoalTrackingData } from '@/services/data-services/get-goal-tracking';
 import { IGoalTracking } from '@/services/data-services/types';
-import { endOfMonth, startOfMonth } from 'date-fns';
+import { startOfMonth } from 'date-fns';
 import { Suspense } from 'react';
 import { Revenue } from './_components/charts/revenue';
 import SellerComparison from './_components/charts/seller-comparison-desktop';
@@ -22,7 +22,7 @@ export default async function GoalResultPage(props: {
 }) {
 	function formattedEndDate() {
 		const now = new Date();
-		const endDate = endOfMonth(now);
+		const endDate = now;
 		return endDate;
 	}
 

@@ -11,9 +11,10 @@ import {
 
 export async function GET(req: NextRequest) {
 	try {
+		const now = new Date();
 		const { searchParams } = req.nextUrl;
-		const startParam = searchParams.get('startDate');
-		const endParam = searchParams.get('endDate');
+		const startParam = searchParams.get('startDate') ?? dfStartOfMonth(now);
+		const endParam = searchParams.get('endDate') ?? new Date();
 
 		if (!startParam || !endParam) {
 			return NextResponse.json(
@@ -85,7 +86,6 @@ export async function GET(req: NextRequest) {
 				const avgTicket = orderCount ? totalRevenue / orderCount : 0;
 
 				// 3) Cálculo de forecast
-				const now = new Date();
 
 				// 1) Defina o mês corrente (sempre será “maio de 2025” enquanto estivermos em maio):
 				const currentMonthStart = dfStartOfMonth(now); // ex: 2025‑05‑01T00:00:00
@@ -148,6 +148,7 @@ export async function GET(req: NextRequest) {
 			.sort((a, b) => b!.totalRevenue - a!.totalRevenue);
 		//OVERVIEW FIM
 
+		console.log(new Date());
 		// 2. Série temporal
 		let timeSeries: Array<{ period: string; revenue: number }>;
 		if (useDaily) {
@@ -212,7 +213,6 @@ export async function GET(req: NextRequest) {
 			},
 		});
 
-		const now = new Date();
 		const currentMonthStart = dfStartOfMonth(now);
 		const currentMonthEnd = endOfMonth(currentMonthStart);
 

@@ -3,7 +3,8 @@
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { Constraints, enums, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
-import { parseISO, subMonths, format } from 'date-fns';
+import { parseISO, subMonths, format, startOfDay, endOfDay } from 'date-fns';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
 	const orgId = process.env.JD_CENTRO_ID;
@@ -48,7 +49,13 @@ export async function GET(req: NextRequest) {
 		);
 		const previousEnd = format(subMonths(parseISO(endDate), 1), 'yyyy-MM-dd');
 
-		const [topCampaigns, currentData, previousData] = await Promise.all([
+		const [
+			topCampaigns,
+			currentData,
+			previousData,
+			pedidosAtual,
+			pedidosAnterior,
+		] = await Promise.all([
 			customer.report({
 				entity: 'campaign',
 				attributes: ['campaign.id', 'campaign.name', 'campaign.status'],
@@ -92,6 +99,36 @@ export async function GET(req: NextRequest) {
 				from_date: previousStart,
 				to_date: previousEnd,
 			}),
+			prisma.pedido.findMany({
+				where: {
+					data_pedido: {
+						gte: startOfDay(new Date(startDate)),
+						lte: endOfDay(new Date(endDate)),
+					},
+					Origin: {
+						name: {
+							contains: 'google',
+							mode: 'insensitive',
+						},
+					},
+				},
+				include: { items: true },
+			}),
+			prisma.pedido.findMany({
+				where: {
+					data_pedido: {
+						gte: startOfDay(new Date(previousStart)),
+						lte: endOfDay(new Date(previousEnd)),
+					},
+					Origin: {
+						name: {
+							contains: 'google',
+							mode: 'insensitive',
+						},
+					},
+				},
+				include: { items: true },
+			}),
 		]);
 
 		// Verifica se há dados antes de retornar
@@ -126,9 +163,45 @@ export async function GET(req: NextRequest) {
 			};
 		}
 
+		function calcularTotal(pedidos: typeof pedidosAtual) {
+			return pedidos.reduce((total, pedido) => {
+				const totalPedido = pedido.items.reduce(
+					(sum, item) => sum + item.totalValue,
+					0,
+				);
+				return total + totalPedido;
+			}, 0);
+		}
+
+		const receitaAtual = calcularTotal(pedidosAtual);
+		const receitaAnterior = calcularTotal(pedidosAnterior);
+		const custoAtual =
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			parseFloat((currentMetrics?.cost_micros as any) ?? 0) / 1000000;
+		const custoAnterior =
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			parseFloat((previousMetrics?.cost_micros as any) ?? 0) / 1000000;
+
+		const roasAtual = custoAtual === 0 ? 0 : receitaAtual / custoAtual;
+		const roasAnterior =
+			custoAnterior === 0 ? 0 : receitaAnterior / custoAnterior;
+
+		const roas = {
+			current: roasAtual,
+			previous: roasAnterior,
+			diff:
+				roasAtual !== null && roasAnterior !== null
+					? roasAtual - roasAnterior
+					: 0,
+			percentChange:
+				roasAnterior && roasAnterior !== 0 && roasAtual !== null
+					? ((roasAtual - roasAnterior) / roasAnterior) * 100
+					: 0,
+		};
+
 		return NextResponse.json({
 			ok: true,
-			data: { topCampaigns, dataADS: parsedMetrics },
+			data: { topCampaigns, dataADS: parsedMetrics, roas },
 			error: null,
 		});
 	} catch (error) {

@@ -26,6 +26,7 @@ interface ListStaticADSProps {
 	clicks: DataItem;
 	cost_micros: DataItem;
 	ctr: DataItem;
+	roas: DataItem;
 }
 
 export default function ListStaticADS({
@@ -33,9 +34,12 @@ export default function ListStaticADS({
 	clicks,
 	cost_micros,
 	ctr,
+	roas,
 }: ListStaticADSProps) {
 	const currentCPC = cost_micros.current / 1000000 / clicks.current;
 	const previousCPC = cost_micros.previous / 1000000 / clicks.previous;
+
+	console.log(roas);
 	return (
 		<>
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -48,7 +52,7 @@ export default function ListStaticADS({
 						<div className='text-2xl font-bold flex items-center gap-3'>
 							{formatCurrency(cost_micros.current / 1000000)}
 							<Badge
-								variant={`${cost_micros.diff < 0 ? 'destructive' : 'success'}`}>
+								variant={`${cost_micros.diff > 0 ? 'destructive' : 'success'}`}>
 								{cost_micros.percentChange.toFixed(2)}%
 								{cost_micros.diff < 0 ? (
 									<TrendingDown
@@ -69,14 +73,37 @@ export default function ListStaticADS({
 						</p>
 					</CardContent>
 				</Card>
-				<Card className='opacity-50'>
+				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>ROAS</CardTitle>
 						<Coins className='h-4 w-4 text-primary' />
 					</CardHeader>
 					<CardContent>
-						<div className='text-2xl font-bold'>Entrada Manual</div>
-						<p className='text-xs text-muted-foreground mt-1'>Entrada Manual</p>
+						<div className='text-2xl font-bold  flex items-center gap-3'>
+							{roas ? roas.current.toFixed(2) : 0}
+							<Badge variant={`${roas.diff < 0 ? 'destructive' : 'success'}`}>
+								{roas.percentChange !== 0 ? (
+									<p>{roas.percentChange.toFixed(2)}%</p>
+								) : (
+									'N/A'
+								)}
+								{roas.diff < 0 ? (
+									<TrendingDown
+										size={16}
+										className='ml-2'
+									/>
+								) : (
+									<TrendingUp
+										size={16}
+										className='ml-2'
+									/>
+								)}
+							</Badge>
+						</div>
+						<p className='text-xs text-muted-foreground mt-1'>
+							{' '}
+							Valor no mês anterior: {roas.previous.toFixed(2)}
+						</p>
 					</CardContent>
 				</Card>
 			</div>
@@ -182,7 +209,7 @@ export default function ListStaticADS({
 							<Badge
 								variant={`${currentCPC - previousCPC > 0 ? 'destructive' : 'success'}`}>
 								{(((currentCPC - previousCPC) / previousCPC) * 100).toFixed(2)}%
-								{currentCPC - previousCPC > 0 ? (
+								{currentCPC - previousCPC < 0 ? (
 									<TrendingDown
 										size={16}
 										className='ml-2'
