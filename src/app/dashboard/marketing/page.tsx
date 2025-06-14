@@ -73,15 +73,6 @@ export default async function MarketingPage(props: {
 			<Separator className='w-full mt-10' />
 			<Suspense
 				fallback={
-					<div>
-						<Skeleton className='h-80 w-full' />
-					</div>
-				}>
-				<SectionLinx data={dataAds} />
-			</Suspense>
-			<Separator className='w-full mt-10' />
-			<Suspense
-				fallback={
 					<div className='grid gap-5 mt-10 mb-5'>
 						<div className='flex flex-col lg:flex-row gap-5'>
 							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
@@ -115,6 +106,15 @@ export default async function MarketingPage(props: {
 					<TopAdwords data={dataKeyWords} />
 				</Suspense>
 			</div>
+			<Separator className='w-full mt-10' />
+			<Suspense
+				fallback={
+					<div>
+						<Skeleton className='h-80 w-full' />
+					</div>
+				}>
+				<SectionLinx data={dataAds} />
+			</Suspense>
 		</div>
 	);
 }

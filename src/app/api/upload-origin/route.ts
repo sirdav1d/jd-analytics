@@ -67,28 +67,22 @@ export async function POST(req: NextRequest) {
 			// 3) Atualiza o Pedido correto
 			//   — usamos a chave composta que você já criou:
 			//     [documentNumber, organizationId, data_pedido]
-			try {
-				const p = await prisma.pedido.update({
-					where: {
-						documentNumber_organizationId_data_pedido: {
-							documentNumber: docNum,
-							organizationId: org.id,
-							data_pedido: saleDate,
-						},
+
+			const p = await prisma.pedido.update({
+				where: {
+					documentNumber_organizationId_data_pedido: {
+						documentNumber: docNum,
+						organizationId: org.id,
+						data_pedido: saleDate,
 					},
-					data: { originId: origin.id },
-				});
-				console.log(p);
-			} catch (err: unknown) {
-				console.error('Erro na rota de importação de origens:', err);
-				return NextResponse.json(
-					{
-						ok: false,
-						error: err instanceof Error ? err.message : 'Erro interno',
-					},
-					{ status: 500 },
-				);
+				},
+				data: { originId: origin.id },
+			});
+
+			if (!p) {
+				console.error('Número do pedido não encontrado', docNum);
 			}
+			console.log(p);
 		}
 
 		return NextResponse.json(
