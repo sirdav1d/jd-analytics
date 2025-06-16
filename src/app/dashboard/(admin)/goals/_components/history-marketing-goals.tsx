@@ -82,13 +82,7 @@ export default function HistoryMarketingGoals({
 										return (
 											<TableRow key={index}>
 												<TableCell className='text-nowrap '>
-													{new Date(item.goalDateRef).toLocaleDateString(
-														'pt-br',
-														{
-															month: '2-digit',
-															year: 'numeric',
-														},
-													)}
+													{item.goalDateRef.slice(0, 7)}
 												</TableCell>
 												<TableCell className='text-nowrap text-center'>
 													{item.faturamento.toLocaleString('pt-br', {
@@ -103,10 +97,10 @@ export default function HistoryMarketingGoals({
 													})}
 												</TableCell>
 												<TableCell className='text-nowrap text-center'>
-													{item.roasAtingido.toFixed(2)}
+													{item.roasAtingido.toFixed(2)}x
 												</TableCell>
 												<TableCell className='text-nowrap text-center'>
-													{item.roas}
+													{item.roas}x
 												</TableCell>
 											</TableRow>
 										);

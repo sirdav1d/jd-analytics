@@ -61,7 +61,16 @@ export default function GoalsPage() {
 								<ModalFormGoal />
 							</div>
 						</div>
-						<BigNumberRoas data={marketingData} />
+						<Suspense
+							fallback={
+								<div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5'>
+									<Skeleton className='w-full h-24' />
+									<Skeleton className='w-full h-24' />
+									<Skeleton className='w-full h-24' />
+								</div>
+							}>
+							<BigNumberRoas data={marketingData} />
+						</Suspense>
 
 						<Separator className='my-10' />
 						<Suspense
