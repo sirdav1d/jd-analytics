@@ -72,7 +72,7 @@ export default function GoalsPage() {
 							<BigNumberRoas data={marketingData} />
 						</Suspense>
 
-						<Separator className='my-10' />
+						<Separator className='mt-10 mb-5' />
 						<Suspense
 							fallback={
 								<div className='rounded-md mt-10 max-w-full w-full'>
