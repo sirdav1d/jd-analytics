@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
 			.sort((a, b) => b!.totalRevenue - a!.totalRevenue);
 		//OVERVIEW FIM
 
-		console.log(new Date());
+	
 		// 2. Série temporal
 		let timeSeries: Array<{ period: string; revenue: number }>;
 		if (useDaily) {

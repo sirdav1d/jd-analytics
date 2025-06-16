@@ -34,7 +34,7 @@ export async function updateOrganizationTokens(
 				org: null,
 			};
 		}
-		console.log(updatedOrganization);
+		
 		return {
 			error: null,
 			ok: true,

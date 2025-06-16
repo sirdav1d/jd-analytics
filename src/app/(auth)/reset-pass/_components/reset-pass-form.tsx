@@ -55,7 +55,7 @@ export function ResetPassForm({
 				subject: 'Resetar senha',
 				message: `Sua nova senha é ${pass}`,
 			});
-			console.log(resp, updatedUser);
+		
 			if (!resp.ok || !updatedUser.ok) {
 				console.log(resp.error, updatedUser.error);
 				toast.error('Algo deu errado');

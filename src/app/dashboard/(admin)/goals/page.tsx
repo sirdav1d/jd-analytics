@@ -1,38 +1,26 @@
 /** @format */
 
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
-
 import getAllSellers from '@/actions/user/get-all';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FetchGoalTargetData } from '@/services/data-services/get-goal-target';
+import { FetchGoalMarketingData } from '@/services/data-services/get-marketing-goals';
 import { Suspense } from 'react';
+import BigNumberRoas from './_components/big-number-roas';
 import BigNumbers from './_components/big-numbers';
 import { columns } from './_components/data-table-current-goal/columns';
 import { DataTable } from './_components/data-table-current-goal/data-table';
 import HistoryGoal from './_components/history-goals';
+import HistoryMarketingGoals from './_components/history-marketing-goals';
 import ModalFormComercialGoal from './_components/modal-comercial-goal';
 import ModalFormGoal from './_components/modal-form-goal';
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
-import { Goal } from 'lucide-react';
 
 export default function GoalsPage() {
 	const data = getAllSellers();
 
 	const newData = FetchGoalTargetData();
+	const marketingData = FetchGoalMarketingData();
 
 	const today = new Date();
 
@@ -73,107 +61,22 @@ export default function GoalsPage() {
 								<ModalFormGoal />
 							</div>
 						</div>
-						<div className='grid grid-cols-3 gap-5 w-full'>
-							<Card>
-								<CardHeader>
-									<CardTitle className='w-full flex items-center justify-between'>
-										20x
-										<Goal />
-									</CardTitle>
-									<CardDescription>Meta de ROAS Atual</CardDescription>
-								</CardHeader>
-							</Card>
-							<Card>
-								<CardHeader>
-									<CardTitle className='w-full flex items-center justify-between'>
-										15x <Goal />
-									</CardTitle>
-									<CardDescription>ROAS Atingido</CardDescription>
-								</CardHeader>
-							</Card>
-							<Card>
-								<CardHeader>
-									<CardTitle className='w-full flex items-center justify-between text-destructive'>
-										17x
-										<Goal />
-									</CardTitle>
-									<CardDescription>Previsão de ROAS</CardDescription>
-								</CardHeader>
-							</Card>
-						</div>
-						<Separator
-							orientation='horizontal'
-							className='my-10'
-						/>
-						<Table>
-							<TableHeader>
-								<TableRow className='bg-secondary text-foreground'>
-									<TableHead className='bg-secondary text-foreground'>
-										Data
-									</TableHead>
-									<TableHead className='text-center text-foreground'>
-										Meta de Roas
-									</TableHead>
-									<TableHead className='text-nowrap text-center text-foreground'>
-										Roas Atingido
-									</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{[
-									{
-										data: '02/2025',
-										nome: 'Ana Silva',
-										faturamento: 20,
-										ticketAvarage: 15,
-										roas: 20,
-									},
-									{
-										data: '03/2025',
-										nome: 'Carlos Santos',
-										faturamento: 20,
-										ticketAvarage: 15,
-										roas: 20,
-									},
-									{
-										data: '04/2025',
-										nome: 'Mariana Oliveira',
-										faturamento: 20,
-										ticketAvarage: 15,
-										roas: 20,
-									},
-									{
-										data: '05/2025',
-										nome: 'Roberto Alves',
-										faturamento: 20,
-										ticketAvarage: 15,
-										roas: 20,
-									},
-									{
-										data: '06/2025',
-										nome: 'Juliana Costa',
-										faturamento: 20,
-										ticketAvarage: 15,
-										roas: 20,
-									},
-								].map((vendedor) => (
-									<TableRow key={vendedor.data}>
-										<TableCell className='flex items-center gap-3'>
-											{vendedor.data}
-										</TableCell>
-										<TableCell className='text-nowrap text-center'>
-											{vendedor.faturamento}
-										</TableCell>
-										<TableCell className='text-nowrap text-center'>
-											{vendedor.ticketAvarage}
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
+						<BigNumberRoas data={marketingData} />
+
+						<Separator className='my-10' />
+						<Suspense
+							fallback={
+								<div className='rounded-md mt-10 max-w-full w-full'>
+									<Skeleton className='w-full h-60' />
+								</div>
+							}>
+							<HistoryMarketingGoals data={marketingData} />
+						</Suspense>
 					</div>
 				</TabsContent>
-				<TabsContent value='Comercial' className='w-full'>
+				<TabsContent
+					value='Comercial'
+					className='w-full'>
 					<div className=' bg-background w-full grid grid-cols-1 max-w-full'>
 						<div className='my-5 flex flex-col md:flex-row gap-2 items-center justify-between'>
 							<div>

@@ -56,6 +56,14 @@ model SalesGoal {
   @@unique([userId, goalDateRef])
 }
 
+model RoasGoal {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  goalDateRef DateTime @unique @db.Date // garante um ROAS por mês
+  roas        Int
+}
+
 model PaymentMethod {
   id        String   @id @default(uuid())
   method    String   @unique

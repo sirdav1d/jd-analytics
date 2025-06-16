@@ -33,14 +33,14 @@ export default function GoalsHomeProgress({
 				<div className='flex flex-col gap-2'>
 					<div className='flex items-center justify-between gap-4'>
 						<p className='font-medium text-xs text-nowrap'>
-							Faturamento Atingido{' '}
+							Fat. Atual{' '}
 							{achievedComercial.toLocaleString('pt-br', {
 								style: 'currency',
 								currency: 'brl',
 							})}
 						</p>
 						<p className='font-medium text-xs text-nowrap'>
-							Meta de Faturamento{' '}
+							Meta{' '}
 							{goalComercial.toLocaleString('pt-br', {
 								style: 'currency',
 								currency: 'brl',
@@ -61,10 +61,10 @@ export default function GoalsHomeProgress({
 				<div className='flex flex-col gap-2'>
 					<div className='flex items-center gap-4 justify-between'>
 						<p className='font-medium text-xs text-nowrap'>
-							ROAS Atingido {achievedMarketing}x
+							ROAS Atual {achievedMarketing}x
 						</p>
 						<p className='font-medium text-xs text-nowrap'>
-							Meta de ROAS {goalMarketing}x
+							Meta {goalMarketing}x
 						</p>
 					</div>
 					<Tooltip>

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		for (const r of rows) {
-			console.log(r);
+		
 			const orgName = r['Empresa'].trim();
 			const saleDate = parseDateBR(r['Data']);
 			// documento vem no formato "2676/0", pegamos antes da barra
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 				update: {},
 				create: { name: originName },
 			});
-			console.log(origin);
+			
 
 			// 3) Atualiza o Pedido correto
 			//   — usamos a chave composta que você já criou:
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 			if (!p) {
 				console.error('Número do pedido não encontrado', docNum);
 			}
-			console.log(p);
+			
 		}
 
 		return NextResponse.json(

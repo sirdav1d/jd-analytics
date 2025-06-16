@@ -55,7 +55,6 @@ export default function HistoryGoal({ data }: IHistoryData) {
 	const allData = use(data);
 	const history = allData.history;
 
-	console.log(history);
 	return (
 		<div className='flex flex-col gap-5'>
 			<h2 className='font-bold text-xl flex items-center gap-2'>

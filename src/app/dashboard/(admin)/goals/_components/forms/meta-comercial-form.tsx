@@ -201,7 +201,7 @@ export default function MetaComercialForm({ sellers }: IMetaComercialForm) {
 						name='year'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Valor da Meta</FormLabel>
+								<FormLabel>Ano</FormLabel>
 								<FormControl>
 									<Input
 										required
