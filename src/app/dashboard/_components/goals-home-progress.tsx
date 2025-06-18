@@ -1,4 +1,5 @@
 /** @format */
+'use client';
 
 import { Progress } from '@/components/ui/progress';
 import {
@@ -6,7 +7,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface GoalsHomeProgress {
 	canShowComercial: boolean;
@@ -27,6 +28,17 @@ export default function GoalsHomeProgress({
 }: GoalsHomeProgress) {
 	const percentMarketing = (achievedMarketing / goalMarketing) * 100;
 	const percentComercial = (achievedComercial / goalComercial) * 100;
+	const [percentComercialState, setPercentComercial] = useState(10);
+	const [percentMarketingState, setPercentMarketing] = useState(10);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setPercentComercial(percentComercial);
+			setPercentMarketing(percentMarketing);
+		}, 500);
+		return () => clearTimeout(timer);
+	}, []);
+
 	return (
 		<div className='flex flex-col gap-5 w-full mb-5'>
 			{canShowComercial && (
@@ -49,7 +61,7 @@ export default function GoalsHomeProgress({
 					</div>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Progress value={33} />
+							<Progress value={percentComercialState} />
 						</TooltipTrigger>
 						<TooltipContent>
 							<p>Faturamento Atingido {percentComercial.toFixed(0) + '%'}</p>
@@ -71,7 +83,7 @@ export default function GoalsHomeProgress({
 						<TooltipTrigger asChild>
 							<Progress
 								bgIndicator='bg-blue-500'
-								value={45}
+								value={percentMarketingState}
 							/>
 						</TooltipTrigger>
 						<TooltipContent>

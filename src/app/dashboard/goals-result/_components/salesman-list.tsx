@@ -26,7 +26,7 @@ export default function SalesmanList({ data }: ISalesmanListProps) {
 		year: '2-digit',
 	});
 	return (
-		<div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3  gap-5'>
+		<div className='grid grid-cols-1 xl:grid-cols-2   gap-5'>
 			{allData.overview.map((vendedor, index) => (
 				<Card key={index}>
 					<CardHeader>

@@ -78,7 +78,7 @@ export default async function GoalResultPage(props: {
 						</div>
 					</div>
 				}>
-				<div className='grid grid-cols-1 gap-5'>
+				
 					<Card>
 						<CardHeader>
 							<CardTitle className='text-base text-balance md:text-2xl'>
@@ -91,7 +91,7 @@ export default async function GoalResultPage(props: {
 						</CardContent>
 					</Card>
 					<SalesmanList data={dataGoal} />
-				</div>
+				
 			</Suspense>
 			<Suspense fallback={<Skeleton className='w-full h-96' />}>
 				<div className='grid grid-cols-1 gap-6 my-5'>
