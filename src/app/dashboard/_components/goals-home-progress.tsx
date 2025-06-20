@@ -37,7 +37,7 @@ export default function GoalsHomeProgress({
 			setPercentMarketing(percentMarketing);
 		}, 500);
 		return () => clearTimeout(timer);
-	}, []);
+	}, [percentComercial, percentMarketing]);
 
 	return (
 		<div className='flex flex-col gap-5 w-full mb-5'>
