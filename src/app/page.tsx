@@ -13,8 +13,6 @@ import { ModeToggle } from '@/components/ui/mode-toggle';
 import { BarChart3, LineChart, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 
-//teste
-
 export default function Home() {
 	const content = [
 		{
