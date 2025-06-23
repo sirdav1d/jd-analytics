@@ -11,6 +11,8 @@ import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 import TopAdwords from './_components/tables/top-adwords';
 import TopAnuncios from './_components/tables/top-anuncios';
+import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
+import GoalsHomeProgress from '../_components/goals-home-progress';
 // import SectionLinx from './_components/section-linx';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -40,11 +42,20 @@ export default async function MarketingPage(props: {
 	const dataKeyWords = FetchKeywordADSData(String(startDate), String(endDate));
 	const dataMainADS = FetchADSData(String(startDate), String(endDate));
 
+	const goalsCurrent = FetchGoalsCurrentData();
+
 	return (
 		<div className='w-full grid mx-auto h-full pb-5'>
+			<Suspense fallback={<Skeleton className='h-6 w-full' />}>
+				<GoalsHomeProgress
+					canShowComercial={false}
+					canShowMarketing={true}
+					data={goalsCurrent}
+				/>
+			</Suspense>
 			<Suspense
 				fallback={
-					<div className=' w-full grid gap-5'>
+					<div className=' w-full grid gap-5 mt-5'>
 						<div className='flex flex-col lg:flex-row gap-5'>
 							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>
 							<Skeleton className='h-12 w-full md:w-[240px]'></Skeleton>

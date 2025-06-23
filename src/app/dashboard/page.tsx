@@ -15,6 +15,7 @@ import BigNumbers from './comercial/_components/big-numbers';
 import RankingSellers from './comercial/_components/tables/ranking-sellers';
 import TopProducts from './comercial/_components/tables/top-products';
 import GoalsHomeProgress from './_components/goals-home-progress';
+import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function OverviewPage(props: {
@@ -56,8 +57,23 @@ export default async function OverviewPage(props: {
 
 	const revenueByOrg = FetchResultByOrg(String(startDate), String(endDate));
 
+	const goalsCurrent = FetchGoalsCurrentData();
+
 	return (
 		<div className='pb-4 w-full mx-auto flex flex-col gap-4 min-h-screen'>
+			<Suspense
+				fallback={
+					<div className='flex gap-5 flex-col'>
+						<Skeleton className='h-6 w-full' />
+						<Skeleton className='h-6 w-full' />
+					</div>
+				}>
+				<GoalsHomeProgress
+					canShowComercial={true}
+					canShowMarketing={true}
+					data={goalsCurrent}
+				/>
+			</Suspense>
 			<Suspense
 				fallback={
 					<div className='flex gap-5 flex-col md:flex-row'>
@@ -68,14 +84,6 @@ export default async function OverviewPage(props: {
 				<Filter />
 			</Suspense>
 			<Separator className='w-full' />
-			<GoalsHomeProgress
-				canShowComercial={true}
-				canShowMarketing={true}
-				goalComercial={399000}
-				goalMarketing={20}
-				achievedComercial={82926.3}
-				achievedMarketing={10}
-			/>
 			<Suspense
 				fallback={
 					<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>

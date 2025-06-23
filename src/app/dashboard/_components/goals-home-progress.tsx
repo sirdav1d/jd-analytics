@@ -1,43 +1,59 @@
 /** @format */
 'use client';
 
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 
 interface GoalsHomeProgress {
 	canShowComercial: boolean;
 	canShowMarketing: boolean;
-	goalComercial: number;
-	goalMarketing: number;
-	achievedComercial: number;
-	achievedMarketing: number;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: Promise<any>;
 }
 
 export default function GoalsHomeProgress({
 	canShowComercial,
 	canShowMarketing,
-	achievedComercial,
-	achievedMarketing,
-	goalComercial,
-	goalMarketing,
+	data,
 }: GoalsHomeProgress) {
-	const percentMarketing = (achievedMarketing / goalMarketing) * 100;
-	const percentComercial = (achievedComercial / goalComercial) * 100;
+	const allData = use(data);
+
+	console.log(
+		'<<<<<<<<<<<<<<<<<<<<<<<<< DATA AR PROGRESS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
+		allData,
+	);
+
+	const comercial = allData.data.commercial;
+	const marketing = allData.data.roas;
 	const [percentComercialState, setPercentComercial] = useState(10);
 	const [percentMarketingState, setPercentMarketing] = useState(10);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			setPercentComercial(percentComercial);
-			setPercentMarketing(percentMarketing);
+			setPercentComercial(comercial.percentage);
+			setPercentMarketing(marketing.percentage);
 		}, 500);
 		return () => clearTimeout(timer);
-	}, [percentComercial, percentMarketing]);
+	}, [comercial.percentage, marketing.percentage]);
+
+	if (!allData.ok) {
+		console.log(allData.error);
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance xl:text-xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
 
 	return (
 		<div className='flex flex-col gap-5 w-full mb-5'>
@@ -46,14 +62,14 @@ export default function GoalsHomeProgress({
 					<div className='flex items-center justify-between gap-4'>
 						<p className='font-medium text-xs text-nowrap'>
 							Fat. Atual{' '}
-							{achievedComercial.toLocaleString('pt-br', {
+							{comercial.currentRevenue.toLocaleString('pt-br', {
 								style: 'currency',
 								currency: 'brl',
 							})}
 						</p>
 						<p className='font-medium text-xs text-nowrap'>
 							Meta{' '}
-							{goalComercial.toLocaleString('pt-br', {
+							{comercial.revenueGoal.toLocaleString('pt-br', {
 								style: 'currency',
 								currency: 'brl',
 							})}
@@ -64,7 +80,9 @@ export default function GoalsHomeProgress({
 							<Progress value={percentComercialState} />
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>Faturamento Atingido {percentComercial.toFixed(0) + '%'}</p>
+							<p>
+								Faturamento Atingido {percentComercialState.toFixed(0) + '%'}
+							</p>
 						</TooltipContent>
 					</Tooltip>
 				</div>
@@ -73,10 +91,10 @@ export default function GoalsHomeProgress({
 				<div className='flex flex-col gap-2'>
 					<div className='flex items-center gap-4 justify-between'>
 						<p className='font-medium text-xs text-nowrap'>
-							ROAS Atual {achievedMarketing}x
+							ROAS Atual {marketing.currentRoas.toFixed(2)}x
 						</p>
 						<p className='font-medium text-xs text-nowrap'>
-							Meta {goalMarketing}x
+							Meta {marketing.roasTarget.toFixed(0)}x
 						</p>
 					</div>
 					<Tooltip>
@@ -87,7 +105,7 @@ export default function GoalsHomeProgress({
 							/>
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>ROAS Atingido {percentMarketing.toFixed(0) + '%'}</p>
+							<p>ROAS Atingido {percentMarketingState.toFixed(0) + '%'}</p>
 						</TooltipContent>
 					</Tooltip>
 				</div>

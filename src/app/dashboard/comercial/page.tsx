@@ -20,6 +20,7 @@ import RankingSellers from './_components/tables/ranking-sellers';
 import TopClients from './_components/tables/top-clients';
 import TopProducts from './_components/tables/top-products';
 import GoalsHomeProgress from '../_components/goals-home-progress';
+import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -69,8 +70,17 @@ export default async function ComercialDashboard(props: {
 		String(org),
 	);
 
+	const goalsCurrent = FetchGoalsCurrentData();
+
 	return (
 		<div className='mx-auto flex flex-col gap-4 mb-5  w-full'>
+			<Suspense fallback={<Skeleton className='h-6 w-full' />}>
+				<GoalsHomeProgress
+					canShowComercial={true}
+					canShowMarketing={false}
+					data={goalsCurrent}
+				/>
+			</Suspense>
 			<Suspense
 				fallback={
 					<div className='md:w-fit flex-wrap flex items-center flex-col md:flex-row  w-full gap-4 h-fit'>
@@ -83,15 +93,6 @@ export default async function ComercialDashboard(props: {
 				<FilterComercial data={dataFilter} />
 			</Suspense>
 			<Separator className='w-full' />
-
-			<GoalsHomeProgress
-				canShowComercial={true}
-				canShowMarketing={false}
-				goalComercial={399000}
-				goalMarketing={20}
-				achievedComercial={82926.3}
-				achievedMarketing={10}
-			/>
 
 			<Suspense
 				fallback={
