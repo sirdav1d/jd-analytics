@@ -24,11 +24,6 @@ export default function GoalsHomeProgress({
 }: GoalsHomeProgress) {
 	const allData = use(data);
 
-	console.log(
-		'<<<<<<<<<<<<<<<<<<<<<<<<< DATA AR PROGRESS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
-		allData,
-	);
-
 	const comercial = allData.data.commercial;
 	const marketing = allData.data.roas;
 	const [percentComercialState, setPercentComercial] = useState(10);

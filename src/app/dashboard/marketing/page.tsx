@@ -13,6 +13,8 @@ import TopAdwords from './_components/tables/top-adwords';
 import TopAnuncios from './_components/tables/top-anuncios';
 import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 import GoalsHomeProgress from '../_components/goals-home-progress';
+import { FetchBotConversaData } from '@/services/data-services/get-bot-conversa-data';
+import SectionBotConversa from './_components/section-bot-conversa';
 // import SectionLinx from './_components/section-linx';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -43,6 +45,7 @@ export default async function MarketingPage(props: {
 	const dataMainADS = FetchADSData(String(startDate), String(endDate));
 
 	const goalsCurrent = FetchGoalsCurrentData();
+	 const botData = FetchBotConversaData();
 
 	return (
 		<div className='w-full grid mx-auto h-full pb-5'>
@@ -118,6 +121,9 @@ export default async function MarketingPage(props: {
 				</Suspense>
 			</div>
 			<Separator className='w-full mt-10' />
+			<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
+				<SectionBotConversa data={botData} />
+			</Suspense>
 			{/* <Suspense
 				fallback={
 					<div>
