@@ -89,8 +89,8 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: isMobile ? 60 : 52,
-							left: isMobile ? -40 : -0,
+							right: 60,
+							left: -40,
 						}}>
 						<XAxis
 							type='number'
