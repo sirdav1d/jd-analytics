@@ -5,7 +5,9 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
 	try {
-		const users = await prisma.user.findMany();
+		const users = await prisma.user.findMany({
+			where: { isActive: true },
+		});
 		if (!users || users.length == 0) {
 			return NextResponse.json({
 				error: 'nenhum usuário encontrado',

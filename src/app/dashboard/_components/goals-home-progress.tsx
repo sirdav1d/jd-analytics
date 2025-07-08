@@ -72,7 +72,11 @@ export default function GoalsHomeProgress({
 					</div>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Progress value={percentComercialState} />
+							<Progress
+								value={
+									percentComercialState > 100 ? 100 : percentComercialState
+								}
+							/>
 						</TooltipTrigger>
 						<TooltipContent>
 							<p>
@@ -96,7 +100,9 @@ export default function GoalsHomeProgress({
 						<TooltipTrigger asChild>
 							<Progress
 								bgIndicator='bg-blue-500'
-								value={percentMarketingState}
+								value={
+									percentMarketingState > 100 ? 100 : percentMarketingState
+								}
 							/>
 						</TooltipTrigger>
 						<TooltipContent>

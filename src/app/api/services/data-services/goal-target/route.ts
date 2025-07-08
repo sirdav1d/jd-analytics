@@ -21,6 +21,7 @@ export async function GET() {
 			_sum: { revenue: true },
 			where: {
 				goalDateRef: { gte: startOfMonth, lt: startOfNextMonth },
+				seller: { isActive: true },
 			},
 		});
 		const salesSum = await prisma.saleItem.aggregate({
@@ -28,6 +29,7 @@ export async function GET() {
 			where: {
 				sale: {
 					data_pedido: { gte: startOfMonth, lt: startOfNextMonth },
+					user: { isActive: true },
 				},
 			},
 		});
@@ -58,6 +60,7 @@ export async function GET() {
 		const goals = await prisma.salesGoal.findMany({
 			where: {
 				goalDateRef: { gte: startOfMonth, lt: startOfNextMonth },
+				seller: { isActive: true },
 			},
 			include: {
 				seller: { select: { id: true, name: true } },
@@ -74,6 +77,7 @@ export async function GET() {
 						sale: {
 							userId: g.userId,
 							data_pedido: { gte: startOfMonth, lt: startOfNextMonth },
+							user: { isActive: true },
 						},
 					},
 				});
@@ -90,7 +94,10 @@ export async function GET() {
 		);
 
 		const allGoals = await prisma.salesGoal.findMany({
-			where: { goalDateRef: { lt: startOfNextMonth } },
+			where: {
+				goalDateRef: { lt: startOfNextMonth },
+				seller: { isActive: true },
+			},
 			include: { seller: { select: { id: true, name: true } } },
 			orderBy: { goalDateRef: 'asc' },
 		});
@@ -114,6 +121,7 @@ export async function GET() {
 						sale: {
 							userId: g.userId,
 							data_pedido: { gte: monthStart, lt: monthEnd },
+							user: { isActive: true },
 						},
 					},
 				});

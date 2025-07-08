@@ -5,12 +5,15 @@
 
 import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutura
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function deleteUserAction(userId: string) {
 	try {
-		const user = await prisma.user.delete({
+		const user = await prisma.user.update({
 			where: { id: userId },
+			data: {
+				isActive: false,
+			},
 		});
 
 		if (!user) {
@@ -22,6 +25,7 @@ export async function deleteUserAction(userId: string) {
 		}
 		//enviar credenciais para e-mail cadastrado
 		revalidateTag('users');
+		revalidatePath('/dashboard/users');
 		return {
 			error: null,
 			ok: true,

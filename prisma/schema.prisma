@@ -32,6 +32,7 @@ model User {
   externalId String      @unique
   Pedidos    Pedido[]
   SalesGoal  SalesGoal[]
+  isActive   Boolean     @default(true)
 }
 
 model Customer {
