@@ -2,19 +2,17 @@
 
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 import { FetchADSData } from '@/services/google-services/get-ads-data';
 import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
 import { FetchTopADSData } from '@/services/google-services/get-top-ads';
 import { FetchKeywordADSData } from '@/services/google-services/get-top-keywords';
 import { Suspense } from 'react';
+import GoalsHomeProgress from '../_components/goals-home-progress';
 import SectionAds from './_components/section-ads';
 import SectionAnalytics from './_components/section-analytics';
 import TopAdwords from './_components/tables/top-adwords';
 import TopAnuncios from './_components/tables/top-anuncios';
-import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
-import GoalsHomeProgress from '../_components/goals-home-progress';
-import { FetchBotConversaData } from '@/services/data-services/get-bot-conversa-data';
-import SectionBotConversa from './_components/section-bot-conversa';
 // import SectionLinx from './_components/section-linx';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -45,7 +43,7 @@ export default async function MarketingPage(props: {
 	const dataMainADS = FetchADSData(String(startDate), String(endDate));
 
 	const goalsCurrent = FetchGoalsCurrentData();
-	 const botData = FetchBotConversaData();
+	// const botData = FetchBotConversaData();
 
 	return (
 		<div className='w-full grid mx-auto h-full pb-5'>
@@ -120,10 +118,10 @@ export default async function MarketingPage(props: {
 					<TopAdwords data={dataKeyWords} />
 				</Suspense>
 			</div>
-			<Separator className='w-full mt-10' />
+			{/* <Separator className='w-full mt-10' />
 			<Suspense fallback={<Skeleton className='h-80 w-full'></Skeleton>}>
 				<SectionBotConversa data={botData} />
-			</Suspense>
+			</Suspense> */}
 			{/* <Suspense
 				fallback={
 					<div>
