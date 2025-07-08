@@ -183,14 +183,18 @@ export async function GET(req: NextRequest) {
       GROUP BY org.name
     `);
 
-		const result = rows.map((row) => ({
-			organization: row.organization,
-			revenue: Number(row.revenue),
-			salesCount: Number(row.sales_count),
-			newCustomers: novosClientesPorOrganizacao.find(
-				(value) => value.organization == row.organization,
-			)?.newCustomers,
-		}));
+		const result = rows.map((row) => {
+			const newCustomers =
+				novosClientesPorOrganizacao.find(
+					(value) => value.organization == row.organization,
+				)?.newCustomers ?? 0;
+			return {
+				organization: row.organization,
+				revenue: Number(row.revenue),
+				salesCount: Number(row.sales_count),
+				newCustomers: newCustomers,
+			};
+		});
 
 		return NextResponse.json({
 			ok: true,

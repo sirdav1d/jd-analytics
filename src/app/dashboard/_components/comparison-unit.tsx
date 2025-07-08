@@ -70,6 +70,8 @@ export default function ComparisonUnit({ title, data, type }: ComparisonProps) {
 		0,
 	);
 
+	console.log(totalClients);
+
 	return (
 		<Card className='w-full'>
 			<CardHeader>
