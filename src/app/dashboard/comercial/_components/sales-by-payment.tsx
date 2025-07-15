@@ -83,14 +83,14 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					className='mx-auto  w-full h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
 					<BarChart
 						accessibilityLayer
 						data={chartData}
 						layout='vertical'
 						margin={{
-							right: 60,
-							left: -40,
+							right: 64,
+							left: -32,
 						}}>
 						<XAxis
 							type='number'
@@ -99,7 +99,7 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						/>
 						<YAxis
 							style={{ lineHeight: '40px' }}
-							width={148}
+							width={160}
 							fontSize={10}
 							dataKey='name'
 							type='category'
