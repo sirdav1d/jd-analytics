@@ -9,7 +9,7 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog';
 import React from 'react';
-import MetaMarketingForm from './forms/meta-marketing-form';
+import MetaMarketingForm from '../../goals-marketing/_components/meta-marketing-form';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { ColumnDef } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
-import UpdateComercialForm from '../forms/comercial-update-form';
+import UpdateComercialForm from '../../goals-comercial/_components/comercial-update-form';
 
 export interface CurentGoal {
 	monthRef: string | Date;

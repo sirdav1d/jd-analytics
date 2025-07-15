@@ -11,8 +11,9 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog';
 import { Plus } from 'lucide-react';
-import MetaComercialForm from './forms/meta-comercial-form';
+
 import { use } from 'react';
+import MetaComercialForm from './meta-comercial-form';
 
 interface IModalFormComercialGoal {
 	ok: boolean;
