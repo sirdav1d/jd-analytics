@@ -29,10 +29,10 @@ import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { CurentGoal } from '../data-table-current-goal/columns';
+import { CurrentGoal } from '../../_components/data-table-current-goal/columns';
 
 interface IMetaComercialFormUpdate {
-	goal: CurentGoal;
+	goal: CurrentGoal;
 	seller: string;
 	goalId: string;
 }

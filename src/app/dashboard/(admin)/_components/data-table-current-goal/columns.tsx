@@ -14,7 +14,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
 import UpdateComercialForm from '../../goals-comercial/_components/comercial-update-form';
 
-export interface CurentGoal {
+export interface CurrentGoal {
 	monthRef: string | Date;
 	sellerName: string;
 	revenue: number | string;
@@ -23,7 +23,7 @@ export interface CurentGoal {
 	goalId: string;
 }
 
-export const columns: ColumnDef<CurentGoal>[] = [
+export const columns: ColumnDef<CurrentGoal>[] = [
 	{
 		accessorKey: 'monthRef',
 		header: 'Data',
