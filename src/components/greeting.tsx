@@ -26,7 +26,10 @@ export default function Greeting() {
 		if (pathname == '/dashboard/comercial') {
 			return 'Gestão Comercial';
 		}
-		if (pathname == '/dashboard/goals') {
+		if (pathname == '/dashboard/goals-comercial') {
+			return 'Gestão de Meta';
+		}
+		if (pathname == '/dashboard/goals-marketing') {
 			return 'Gestão de Meta';
 		}
 		if (pathname == '/dashboard/goals-result') {
