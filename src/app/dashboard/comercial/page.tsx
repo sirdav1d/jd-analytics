@@ -21,6 +21,8 @@ import TopClients from './_components/tables/top-clients';
 import TopProducts from './_components/tables/top-products';
 import GoalsHomeProgress from '../_components/goals-home-progress';
 import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
+import { RevenueByOrigin } from './_components/revenue-by-origin';
+import { FetchOriginData } from '@/services/data-services/get-data-origin';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -71,6 +73,13 @@ export default async function ComercialDashboard(props: {
 	);
 
 	const goalsCurrent = FetchGoalsCurrentData();
+	const originData = FetchOriginData(
+		String(startDate),
+		String(endDate),
+		String(category),
+		String(customerType),
+		String(org),
+	);
 
 	return (
 		<div className='mx-auto flex flex-col gap-4 mb-5  w-full'>
@@ -129,8 +138,20 @@ export default async function ComercialDashboard(props: {
 				<SalesByCategoryChart data={dataSalesBy} />
 				<SalesByPayment data={dataSalesBy} />
 			</div>
+			<Suspense
+				fallback={
+					<div className='grid grid-cols-1 gap-4'>
+						<Skeleton className='w-full h-96' />
+						<Skeleton className='w-full h-96' />
+					</div>
+				}>
+				<div className='grid grid-cols-1 gap-4'>
+					<RevenueByOrigin data={originData} />
+					{/* <Skeleton className='w-full h-96' /> */}
+				</div>
+			</Suspense>
 
-			<div className='grid grid-cols-1 gap-4'>
+			<div className='grid grid-cols-1 gap-4 '>
 				<SalesChartComponent data={dataSalesBy} />
 
 				<Suspense

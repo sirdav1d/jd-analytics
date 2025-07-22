@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
 		const overview = await Promise.all(
 			rawOverview.map(async (item) => {
 				const seller = await prisma.user.findUnique({
-					where: { id: item.userId },
+					where: { id: item.userId, isActive: true },
 					select: { name: true, role: true },
 				});
 
@@ -148,7 +148,6 @@ export async function GET(req: NextRequest) {
 			.sort((a, b) => b!.totalRevenue - a!.totalRevenue);
 		//OVERVIEW FIM
 
-	
 		// 2. Série temporal
 		let timeSeries: Array<{ period: string; revenue: number }>;
 		if (useDaily) {
