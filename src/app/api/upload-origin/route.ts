@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
 		}
 
 		for (const r of rows) {
-		
 			const orgName = r['Empresa'].trim();
 			const saleDate = parseDateBR(r['Data']);
 			// documento vem no formato "2676/0", pegamos antes da barra
@@ -62,12 +61,11 @@ export async function POST(req: NextRequest) {
 				update: {},
 				create: { name: originName },
 			});
-			
 
 			// 3) Atualiza o Pedido correto
 			//   — usamos a chave composta que você já criou:
 			//     [documentNumber, organizationId, data_pedido]
-
+			console.log(saleDate);
 			const p = await prisma.pedido.update({
 				where: {
 					documentNumber_organizationId_data_pedido: {
@@ -82,7 +80,6 @@ export async function POST(req: NextRequest) {
 			if (!p) {
 				console.error('Número do pedido não encontrado', docNum);
 			}
-			
 		}
 
 		return NextResponse.json(
