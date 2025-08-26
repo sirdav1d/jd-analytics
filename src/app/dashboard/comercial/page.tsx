@@ -22,6 +22,8 @@ import TopProducts from './_components/tables/top-products';
 import GoalsHomeProgress from '../_components/goals-home-progress';
 import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 import { RevenueByOrigin } from './_components/revenue-by-origin';
+import { SalesCountByOrigin } from './_components/sales-count-by-origin';
+import { AvgTicketByOrigin } from './_components/avg-ticket-by-origin';
 import { FetchOriginData } from '@/services/data-services/get-data-origin';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -145,9 +147,10 @@ export default async function ComercialDashboard(props: {
 						<Skeleton className='w-full h-96' />
 					</div>
 				}>
-				<div className='grid grid-cols-1 gap-4'>
+				<div className='grid gap-4'>
 					<RevenueByOrigin data={originData} />
-					{/* <Skeleton className='w-full h-96' /> */}
+					<SalesCountByOrigin data={originData} />
+					<AvgTicketByOrigin data={originData} />
 				</div>
 			</Suspense>
 

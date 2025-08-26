@@ -43,10 +43,14 @@ export async function GET(req: NextRequest) {
 				? Prisma.raw(`AND c."person_type" = '${customerType}'::"PersonType"`)
 				: Prisma.empty;
 
-		// 7) **Receita por ORIGEM** – agrupa nas 6 chaves + Desconhecido
-		// 7) Receita por ORIGEM com alias origin_group
+		// Receita, quantidade de vendas e ticket médio por ORIGEM
 		const rowsOrigin = await prisma.$queryRaw<
-			Array<{ origin_group: string; revenue: string }>
+			Array<{
+				origin_group: string;
+				revenue: string;
+				sales_count: number;
+				avg_ticket: string;
+			}>
 		>(Prisma.sql`
       SELECT
         CASE
@@ -59,7 +63,9 @@ export async function GET(req: NextRequest) {
                OR o."name" ILIKE '%cliente recorrente%' THEN 'Comercial_Ativo'
           ELSE 'Desconhecido'
         END AS origin_group,
-        SUM(si."total_value")::DOUBLE PRECISION AS revenue
+        SUM(si."total_value")::DOUBLE PRECISION AS revenue,
+        COUNT(DISTINCT p."id") AS sales_count,
+        (SUM(si."total_value") / NULLIF(COUNT(DISTINCT p."id"), 0))::DOUBLE PRECISION AS avg_ticket
       FROM "SaleItem" si
       JOIN "Pedido" p     ON si."sale_id"   = p."id"
       JOIN "Origin" o     ON p."origin_id"   = o."id"    -- ajuste se o campo FK tiver nome diferente
@@ -76,11 +82,23 @@ export async function GET(req: NextRequest) {
 			revenue: Number(r.revenue),
 			fill: `var(--color-${r.origin_group})`,
 		}));
+		const salesCountByOrigin = rowsOrigin.map((r) => ({
+			origin: r.origin_group,
+			sales_count: Number(r.sales_count),
+			fill: `var(--color-${r.origin_group})`,
+		}));
+		const avgTicketByOrigin = rowsOrigin.map((r) => ({
+			origin: r.origin_group,
+			avg_ticket: Number(r.avg_ticket),
+			fill: `var(--color-${r.origin_group})`,
+		}));
 
 		return NextResponse.json({
 			ok: true,
 			data: {
-				revenueByOrigin, // novo bloco
+				revenueByOrigin,
+				salesCountByOrigin,
+				avgTicketByOrigin,
 			},
 			error: null,
 		});
