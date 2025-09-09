@@ -32,7 +32,7 @@ export default function RootLayout({
 				lang='pt-BR'
 				suppressHydrationWarning
 				suppressContentEditableWarning>
-				<body className={`${montserrat.className} antialiased`}>
+				<body suppressHydrationWarning className={`${montserrat.className} antialiased`}>
 					<ReactQueryProvider>
 						<ThemeProvider
 							attribute={'class'}
