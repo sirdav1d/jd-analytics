@@ -12,9 +12,12 @@ export const config = {
 
 type CsvRow = Record<string, string>;
 
-function parseDateBR(dateStr: string): Date {
+function parseDateBR(dateStr: string): string {
 	const [day, month, year] = dateStr.split('/');
-	return new Date(+year, +month - 1, +day);
+	const yyyy = year.padStart(4, '0');
+	const mm = month.padStart(2, '0');
+	const dd = day.padStart(2, '0');
+	return `${yyyy}-${mm}-${dd}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -62,16 +65,12 @@ export async function POST(req: NextRequest) {
 				create: { name: originName },
 			});
 
-			// 3) Atualiza o Pedido correto
-			//   — usamos a chave composta que você já criou:
-			//     [documentNumber, organizationId, data_pedido]
-			console.log(saleDate);
 			const p = await prisma.pedido.update({
 				where: {
 					documentNumber_organizationId_data_pedido: {
 						documentNumber: docNum,
 						organizationId: org.id,
-						data_pedido: saleDate,
+						data_pedido: new Date(saleDate),
 					},
 				},
 				data: { originId: origin.id },
@@ -79,6 +78,7 @@ export async function POST(req: NextRequest) {
 
 			if (!p) {
 				console.error('Número do pedido não encontrado', docNum);
+				continue;
 			}
 		}
 
