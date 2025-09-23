@@ -65,6 +65,22 @@ export async function POST(req: NextRequest) {
 				create: { name: originName },
 			});
 
+			const existingPedido = await prisma.pedido.findUnique({
+				where: {
+					documentNumber_organizationId_data_pedido: {
+						documentNumber: docNum,
+						organizationId: org.id,
+						data_pedido: new Date(saleDate),
+					},
+				},
+			});
+
+			if (!existingPedido) {
+				console.log(r, origin, docNum, org.id, saleDate);
+				// Trate o caso do registro não existir antes de tentar atualizar
+				throw new Error('Pedido não encontrado para atualizar');
+			}
+
 			const p = await prisma.pedido.update({
 				where: {
 					documentNumber_organizationId_data_pedido: {
