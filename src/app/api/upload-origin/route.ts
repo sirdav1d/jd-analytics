@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
 					},
 				},
 			});
+			console.log(r);
 
 			if (!existingPedido) {
 				console.log(r, origin, docNum, org.id, saleDate);

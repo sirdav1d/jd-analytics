@@ -1,13 +1,16 @@
 /** @format */
 
+import { resolveGoogleAdsAccount } from '@/lib/google-ads-account';
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { prisma } from '@/lib/prisma';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { GoogleAdsApi } from 'google-ads-api';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
 	try {
+		const scopeParam = req.nextUrl.searchParams.get('scope');
+		const { customerId, managerId } = resolveGoogleAdsAccount(scopeParam);
 		const roasGoals = await prisma.roasGoal.findMany({
 			orderBy: { goalDateRef: 'desc' },
 		});
@@ -28,9 +31,9 @@ export async function GET() {
 		});
 
 		const customer = googleAdsClient.Customer({
-			customer_id: '2971952651',
+			customer_id: customerId,
 			refresh_token: refreshToken,
-			linked_customer_id: '8251122454',
+			linked_customer_id: managerId,
 		});
 
 		const results = await Promise.all(

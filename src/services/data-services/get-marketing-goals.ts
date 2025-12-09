@@ -1,9 +1,11 @@
 /** @format */
 
-export async function FetchGoalMarketingData() {
+import type { GoogleAdsScope } from '@/lib/google-ads-account';
+
+export async function FetchGoalMarketingData(scope: GoogleAdsScope = 'products') {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		`${baseURL}/api/services/data-services/marketing-goal`,
+		`${baseURL}/api/services/data-services/marketing-goal?scope=${scope}`,
 		{
 			method: 'GET',
 			next: { revalidate: 30, tags: ['marketing-goal'] },

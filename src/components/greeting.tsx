@@ -21,7 +21,11 @@ export default function Greeting() {
 			return 'Seu Perfil';
 		}
 		if (pathname == '/dashboard/marketing') {
-			return 'Gestão de Marketing';
+			return 'Gestão de Marketing - Produtos';
+		}if (pathname == '/dashboard/marketing-servs') {
+			return 'Gestão de Marketing - Serviços';
+		}	if (pathname == '/dashboard/ecommerce') {
+			return 'Gestão de Marketing - Ecommerce';
 		}
 		if (pathname == '/dashboard/comercial') {
 			return 'Gestão Comercial';

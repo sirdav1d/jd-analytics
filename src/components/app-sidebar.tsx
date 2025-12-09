@@ -22,6 +22,7 @@ import {
 	Home,
 	Loader2,
 	ShoppingCart,
+	Store,
 	Trophy,
 	UploadCloud,
 	User2,
@@ -92,6 +93,11 @@ export default function AppSidebar() {
 	];
 
 	const marketingItems = [
+		{
+			title: 'Ecommerce',
+			url: '/dashboard/ecommerce',
+			icon: Store ,
+		},
 		{
 			title: 'Produtos',
 			url: '/dashboard/marketing',

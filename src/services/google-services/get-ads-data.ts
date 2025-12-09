@@ -1,9 +1,15 @@
 /** @format */
 
-export async function FetchADSData(startDate: string, endDate: string) {
+import type { GoogleAdsScope } from '@/lib/google-ads-account';
+
+export async function FetchADSData(
+	startDate: string,
+	endDate: string,
+	scope: GoogleAdsScope = 'products',
+) {
 	const baseURL = process.env.NEXT_PUBLIC_API_URL;
 	const response = await fetch(
-		`${baseURL}/api/services/google-services/get-ads-data?startDate=${startDate}&endDate=${endDate}`,
+		`${baseURL}/api/services/google-services/get-ads-data?startDate=${startDate}&endDate=${endDate}&scope=${scope}`,
 		{
 			method: 'GET',
 			next: { revalidate: 60 },

@@ -1,5 +1,6 @@
 /** @format */
 
+import { resolveGoogleAdsAccount } from '@/lib/google-ads-account';
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { Constraints, enums, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
@@ -12,7 +13,9 @@ export async function GET(req: NextRequest) {
 	const startDate = searchParams.get('startDate');
 	const endDate = searchParams.get('endDate');
 	const campaignId = searchParams.get('campaignId') ?? 'all'; // Captura o ID da campanha
+	const scopeParam = searchParams.get('scope');
 	try {
+		const { customerId, managerId } = resolveGoogleAdsAccount(scopeParam);
 		const { refreshToken } = await getAuthenticatedClient(orgId!);
 
 		const googleAdsClient = new GoogleAdsApi({
@@ -21,9 +24,9 @@ export async function GET(req: NextRequest) {
 			developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
 		});
 		const customer = googleAdsClient.Customer({
-			customer_id: '2971952651',
+			customer_id: customerId,
 			refresh_token: refreshToken,
-			linked_customer_id: '8251122454',
+			linked_customer_id: managerId,
 		});
 
 		const campaignConstraints: Constraints = [];
