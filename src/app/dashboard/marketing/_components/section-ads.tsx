@@ -7,7 +7,9 @@ import { use } from 'react';
 import { CampagnComponent } from './charts/campaings';
 import { CostsComponent } from './charts/cost';
 import { PerformanceComponent } from './charts/performance';
+import FilterAds from './filter-ads';
 import ListStaticADS from './list-static-ads';
+import { Separator } from '@/components/ui/separator';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function SectionAds({ data }: { data: Promise<any> }) {
@@ -26,13 +28,14 @@ export default function SectionAds({ data }: { data: Promise<any> }) {
 		);
 	}
 
-	const campaigns = allData.data.topCampaigns;
+	const campaigns = allData.data.topCampaigns ?? [];
 	const AccountMetrics = allData.data.dataADS;
 
 	return (
 		<div className='grid gap-5 pb-5'>
-			<div className='w-full flex items-center justify-center md:justify-start flex-wrap gap-5 mt-10 flex-col-reverse md:flex-row'>
-				{/* <FilterAds data={campaigns} /> */}
+			<div className='w-full flex flex-col  gap-5 mt-5 '>
+				<FilterAds data={campaigns} />
+				<Separator />
 				<div className='flex items-center gap-2 scale-110 md:scale-100'>
 					<Image
 						src={ads}

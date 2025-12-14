@@ -1,3 +1,8 @@
 {
-  "WillLuke.nextjs.hasPrompted": true
+  "WillLuke.nextjs.hasPrompted": true,
+  "prisma.prismaPath": "./node_modules/prisma/build/index.js",
+  "prisma.linter": {
+    "run": "off"
+  }
+
 }

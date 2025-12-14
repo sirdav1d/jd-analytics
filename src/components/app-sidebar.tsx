@@ -17,6 +17,7 @@ import {
 	Blocks,
 	ChevronDown,
 	Crosshair,
+	Facebook,
 	Goal,
 	Handshake,
 	Home,
@@ -68,9 +69,14 @@ export default function AppSidebar() {
 
 	const adminiItems = [
 		{
-			title: 'Gestão de Usuários',
+			title: 'Gestao de Usuarios',
 			url: '/dashboard/users',
 			icon: UserCog,
+		},
+		{
+			title: 'Investimento Meta',
+			url: '/dashboard/meta-investments',
+			icon: Facebook,
 		},
 		{
 			title: 'Upload CSV',
@@ -96,7 +102,7 @@ export default function AppSidebar() {
 		{
 			title: 'Ecommerce',
 			url: '/dashboard/ecommerce',
-			icon: Store ,
+			icon: Store,
 		},
 		{
 			title: 'Produtos',
@@ -120,10 +126,10 @@ export default function AppSidebar() {
 					{open ? <Logo /> : null}
 				</div>
 				{open ? <Separator /> : null}
-				<SidebarGroup className={`${open ? 'mt-0' : 'md:mt-8'}`}>
+				<SidebarGroup className={`${open ? 'mt-0' : 'md:mt-5'}`}>
 					<SidebarGroupLabel>Administrativo</SidebarGroupLabel>
 					<SidebarGroupContent>
-						<SidebarMenu className='space-y-2'>
+						<SidebarMenu>
 							{adminiItems.map((item) => (
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
@@ -159,7 +165,7 @@ export default function AppSidebar() {
 						</SidebarGroupLabel>
 						<CollapsibleContent>
 							<SidebarGroupContent>
-								<SidebarMenu className='space-y-1'>
+								<SidebarMenu>
 									{goalsItems.map((item) => (
 										<SidebarMenuItem key={item.title}>
 											<SidebarMenuButton
@@ -194,7 +200,7 @@ export default function AppSidebar() {
 						)}
 					</SidebarGroupLabel>
 					<SidebarGroupContent>
-						<SidebarMenu className='space-y-2'>
+						<SidebarMenu>
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
@@ -229,7 +235,7 @@ export default function AppSidebar() {
 						</SidebarGroupLabel>
 						<CollapsibleContent>
 							<SidebarGroupContent>
-								<SidebarMenu className='space-y-1'>
+								<SidebarMenu>
 									{marketingItems.map((item) => (
 										<SidebarMenuItem key={item.title}>
 											<SidebarMenuButton

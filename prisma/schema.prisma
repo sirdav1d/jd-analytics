@@ -140,3 +140,15 @@ enum PersonType {
   FISICA
   JURIDICA
 }
+
+model MetaInvestment {
+  id              String   @id @default(uuid())
+  periodStart     DateTime @db.Date
+  periodEnd       DateTime @db.Date
+  totalInvestment Float
+  lastSyncAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([periodStart])
+}

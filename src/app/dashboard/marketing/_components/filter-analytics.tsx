@@ -3,16 +3,26 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { addDays, format } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 import { Loader2, Zap } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
+import { getDefaultDateRange } from '@/utils/date-range';
 
 export default function FilterAnalytics() {
 	const searchParams = useSearchParams();
+	const pathname = usePathname();
+	const { from: defaultFrom, to: defaultTo } = getDefaultDateRange();
+
+	const resolveDate = (value: string | null, fallback: Date) => {
+		if (!value) return fallback;
+		const parsed = parseISO(value);
+		return isValid(parsed) ? parsed : fallback;
+	};
+
 	const [dateRange, setDateRange] = useState({
-		to: searchParams.get('endDate') || new Date(),
-		from: searchParams.get('startDate') || addDays(new Date(), -7),
+		to: resolveDate(searchParams.get('endDate'), defaultTo),
+		from: resolveDate(searchParams.get('startDate'), defaultFrom),
 	});
 
 	const [isPending, startTransition] = useTransition();
@@ -24,26 +34,22 @@ export default function FilterAnalytics() {
 		e.stopPropagation();
 		e.preventDefault();
 
-		if (dateRange.from && dateRange.to) {
-			const formattedFrom = format(dateRange.from, 'yyyy-MM-dd');
-			const formattedTo = format(dateRange.to, 'yyyy-MM-dd');
+		if (!dateRange.from || !dateRange.to) return;
 
-			// Atualiza a URL sem recarregar a página (opção shallow para evitar recarregamento total)
-			startTransition(async () => {
-				router.push(
-					`/dashboard/marketing?startDate=${encodeURIComponent(
-						formattedFrom,
-					)}&endDate=${encodeURIComponent(formattedTo)}`,
-					{ scroll: false },
-				);
-			});
-		}
+		const formattedFrom = format(dateRange.from, 'yyyy-MM-dd');
+		const formattedTo = format(dateRange.to, 'yyyy-MM-dd');
 
-		// Atualiza a URL com os parâmetros de data
+		const params = new URLSearchParams(Array.from(searchParams.entries()));
+		params.set('startDate', formattedFrom);
+		params.set('endDate', formattedTo);
+
+		startTransition(async () => {
+			router.push(`${pathname}?${params.toString()}`, { scroll: false });
+		});
 	};
 
 	return (
-		<div className='md:w-fit flex-wrap flex items-center flex-col md:flex-row  w-full gap-4 h-fit'>
+		<div className='md:w-fit flex-wrap flex items-center flex-col md:flex-row w-full gap-4 h-fit'>
 			<Button
 				onClick={(e) => handleDateChange(e)}
 				className='disabled:opacity-70 w-full md:w-fit'
@@ -61,24 +67,9 @@ export default function FilterAnalytics() {
 			<DatePickerWithRange
 				date={dateRange}
 				setDate={(e) =>
-					setDateRange({ from: e?.from ?? new Date(), to: e?.to ?? new Date() })
+					setDateRange({ from: e?.from ?? defaultFrom, to: e?.to ?? defaultTo })
 				}
 			/>
-
-			{/* <Select
-				value={trafficSource}
-				onValueChange={setTrafficSource}>
-				<SelectTrigger className='w-full md:w-48'>
-					<SelectValue placeholder='Fonte de Tráfego' />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value='all'>Todas as Fontes</SelectItem>
-					<SelectItem value='Organic Search'>Orgânico</SelectItem>
-					<SelectItem value='Paid Search'>Pago</SelectItem>
-					<SelectItem value='Organic Social'>Social</SelectItem>
-					<SelectItem value='Direct'>Direto</SelectItem>
-				</SelectContent>
-			</Select> */}
 		</div>
 	);
 }

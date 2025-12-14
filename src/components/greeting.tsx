@@ -39,6 +39,9 @@ export default function Greeting() {
 		if (pathname == '/dashboard/goals-result') {
 			return 'Acompanhamento de Meta';
 		}
+		if (pathname == '/dashboard/meta-investments') {
+			return 'Investimento Meta';
+		}
 		if (pathname == '/dashboard/upload') {
 			return 'Importar Base de Dados';
 		}

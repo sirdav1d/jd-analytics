@@ -16,6 +16,7 @@ import RankingSellers from './comercial/_components/tables/ranking-sellers';
 import TopProducts from './comercial/_components/tables/top-products';
 import GoalsHomeProgress from './_components/goals-home-progress';
 import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
+import { RoasGeneralCard } from './_components/roas-general-card';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function OverviewPage(props: {
@@ -59,6 +60,14 @@ export default async function OverviewPage(props: {
 
 	const goalsCurrent = FetchGoalsCurrentData();
 
+	const roasData = {
+		meta: 442.99,
+		centroProdutos: 2172.3,
+		icaraiServicos: 364,
+		faturamentoTotal: 15537.96,
+		roasGeral: 5.22,
+	};
+
 	return (
 		<div className='pb-4 w-full mx-auto flex flex-col gap-4 min-h-screen'>
 			<Suspense
@@ -99,11 +108,10 @@ export default async function OverviewPage(props: {
 			</Suspense>
 
 			<div className='grid grid-cols-1 xl:grid-cols-3 gap-5 w-full'>
-				<ComparisonUnit
-					key={'revenue'}
-					type='revenue'
-					data={revenueByOrg}
-					title='Faturamento total por unidade'
+				<RoasGeneralCard
+					startDate={String(startDate)}
+					endDate={String(endDate)}
+					data={roasData}
 				/>
 				<ComparisonUnit
 					key={'salesCount'}
