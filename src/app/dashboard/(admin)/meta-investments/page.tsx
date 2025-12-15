@@ -53,7 +53,7 @@ export default async function MetaInvestmentsPage() {
 
 	return (
 		<div className='w-full mx-auto space-y-5 pb-5'>
-			<div className='flex max-sm:flex-col items-start gap-20'>
+			<div className='flex max-sm:flex-col items-start gap-20 mt-5'>
 				<Card>
 					<CardHeader>
 						<CardTitle className='text-lg'>Registrar investimento</CardTitle>
@@ -74,7 +74,7 @@ export default async function MetaInvestmentsPage() {
 				<Accordion
 					type='single'
 					collapsible
-					className='w-full'>
+					className='w-full '>
 					<AccordionItem
 						value='investments-history'
 						className='border-none'>

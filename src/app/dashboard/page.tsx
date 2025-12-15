@@ -3,20 +3,19 @@
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FetchBigNumbers } from '@/services/data-services/get-comercial-big-numbers';
+import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 import { FetchRankings } from '@/services/data-services/get-rankings';
 import { FetchResultByOrg } from '@/services/data-services/get-result-by-org';
 import { startOfMonth } from 'date-fns';
 import { Suspense } from 'react';
 import ComparisonUnit from './_components/comparison-unit';
 import Filter from './_components/filter';
+import GoalsHomeProgress from './_components/goals-home-progress';
 import RevenueChart from './_components/revenue-chart';
 import { SalesVsRepairRevenue } from './_components/sales-vs-repair-revenue';
 import BigNumbers from './comercial/_components/big-numbers';
 import RankingSellers from './comercial/_components/tables/ranking-sellers';
 import TopProducts from './comercial/_components/tables/top-products';
-import GoalsHomeProgress from './_components/goals-home-progress';
-import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
-import { RoasGeneralCard } from './_components/roas-general-card';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function OverviewPage(props: {
@@ -94,24 +93,32 @@ export default async function OverviewPage(props: {
 			</Suspense>
 			<Separator className='w-full' />
 			<Suspense
-				fallback={
-					<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
-						<Skeleton className='w-full h-28' />
-						<Skeleton className='w-full h-28' />
-						<Skeleton className='w-full h-28' />
-						<Skeleton className='w-full h-28' />
-						<Skeleton className='w-full h-28' />
-						<Skeleton className='w-full h-28' />
-					</div>
-				}>
-				<BigNumbers data={dataBigNumbers} />
+	fallback={
+		<div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
+			<Skeleton className='w-full h-28' />
+			<Skeleton className='w-full h-28' />
+			<Skeleton className='w-full h-28' />
+			<Skeleton className='w-full h-28' />
+			<Skeleton className='w-full h-28' />
+			<Skeleton className='w-full h-28' />
+		</div>
+	}>
+				<BigNumbers
+					data={dataBigNumbers}
+					roasData={{
+						startDate: String(startDate),
+						endDate: String(endDate),
+						data: roasData,
+					}}
+				/>
 			</Suspense>
 
 			<div className='grid grid-cols-1 xl:grid-cols-3 gap-5 w-full'>
-				<RoasGeneralCard
-					startDate={String(startDate)}
-					endDate={String(endDate)}
-					data={roasData}
+				<ComparisonUnit
+					key={'revenue'}
+					type='revenue'
+					data={revenueByOrg}
+					title='Faturamento por unidade'
 				/>
 				<ComparisonUnit
 					key={'salesCount'}
