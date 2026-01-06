@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/table';
 import { DatabaseBackup } from 'lucide-react';
 import React, { use } from 'react';
+import { format, isValid, parseISO } from 'date-fns';
 
 interface IHistory {
 	month: string;
@@ -36,24 +37,23 @@ interface IHistoryData {
 	data: Promise<IHistoryGoal>;
 }
 
-const months = [
-	{ id: 1, month: 'Janeiro' },
-	{ id: 2, month: 'Fevereiro' },
-	{ id: 3, month: 'Março' },
-	{ id: 4, month: 'Abril' },
-	{ id: 5, month: 'Maio' },
-	{ id: 6, month: 'Junho' },
-	{ id: 7, month: 'Julho' },
-	{ id: 8, month: 'Agosto' },
-	{ id: 9, month: 'Setembro' },
-	{ id: 10, month: 'Outubro' },
-	{ id: 11, month: 'Novembro' },
-	{ id: 12, month: 'Dezembro' },
-];
+const formatMonthYear = (value: string | Date | null | undefined) => {
+	if (!value) {
+		return '-';
+	}
+
+	const parsed = typeof value === 'string' ? parseISO(value) : value;
+
+	if (!isValid(parsed)) {
+		return '-';
+	}
+
+	return format(parsed, 'MM/yy');
+};
 
 export default function HistoryGoal({ data }: IHistoryData) {
 	const allData = use(data);
-	const history = allData.history;
+	const history = Array.isArray(allData?.history) ? allData.history : [];
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -67,13 +67,16 @@ export default function HistoryGoal({ data }: IHistoryData) {
 				className='w-full'>
 				{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 				{history.map((item: any, index: number) => {
+					console.log(item);
 					return (
 						<AccordionItem
 							key={index}
 							value={`item-${index}`}>
-							<AccordionTrigger>{months[index].month}</AccordionTrigger>
+							<AccordionTrigger>
+								{formatMonthYear(item?.month)}
+							</AccordionTrigger>
 							<AccordionContent>
-								<Table title={`Meta do mês ${item.month}`}>
+								<Table title={`Meta do mês ${formatMonthYear(item.month)}`}>
 									<TableHeader>
 										<TableRow className='bg-secondary'>
 											<TableHead className='text-foreground font-semibold'>
@@ -96,7 +99,7 @@ export default function HistoryGoal({ data }: IHistoryData) {
 											return (
 												<TableRow key={index}>
 													<TableCell className='text-nowrap'>
-														{item.month}
+														{formatMonthYear(item.month)}
 													</TableCell>
 													<TableCell className='text-nowrap'>
 														{item.sellerName}
