@@ -67,7 +67,6 @@ export default function HistoryGoal({ data }: IHistoryData) {
 				className='w-full'>
 				{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 				{history.map((item: any, index: number) => {
-					console.log(item);
 					return (
 						<AccordionItem
 							key={index}
