@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { ResetPassForm } from './_components/reset-pass-form';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
-import svg from '../../../assets/data-analysis-2.svg';
+import svg from '@/assets/data-analysis-2.svg';
 
 export default function ResetPassPage() {
 	return (

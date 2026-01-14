@@ -10,9 +10,10 @@ const TEXT_HEADERS = {
 
 export async function GET(
 	_req: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-	if (params.id !== 'current') {
+	const { id } = await params;
+	if (id !== 'current') {
 		return new NextResponse('Not found', {
 			status: 404,
 			headers: TEXT_HEADERS,

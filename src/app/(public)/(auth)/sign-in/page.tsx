@@ -4,7 +4,7 @@ import Logo from '@/components/logo';
 import { ModeToggle } from '@/components/ui/mode-toggle';
 import { SignInForm } from './_components/sign-in-form';
 import Image from 'next/image';
-import svg from '../../../assets/data-analysis.svg';
+import svg from '@/assets/data-analysis.svg';
 
 export default function SignIn() {
 	return (
