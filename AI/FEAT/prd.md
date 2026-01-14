@@ -9,9 +9,10 @@ RELATÓRIO MARKETING 01 A 29 DEZ/25
 
 INVESTIMENTOS
 
-META: R$ 1.551,32
-GOOGLE CENTRO/PRODUTOS: R$ 8.373,71
-GOOGLE ICARAÍ/SERVIÇOS: R$ 1.102,85
+  META: R$ 1.551,32
+  GOOGLE CENTRO/PRODUTOS: R$ 8.373,71
+  GOOGLE ICARAÍ/SERVIÇOS: R$ 1.102,85
+  CUSTO TOTAL: R$ 11.027,88
 
 FATURAMENTO TOTAL: R$ 155.144,01
 
@@ -50,22 +51,22 @@ ROAS GERAL: 14,07
 - **Investimento META**: `metaInvestment.totalInvestment` do registro de referência.
 - **Investimento Google Centro/Produtos**: soma dos custos no período a partir das APIs atuais, porém congelando o cálculo na mesma data final do investimento META.
 - **Investimento Google Icaraí/Serviços**: soma dos custos no período a partir das APIs atuais, porém congelando o cálculo na mesma data final do investimento META.
+- **Custo total**: `META + GOOGLE CENTRO/PRODUTOS + GOOGLE ICARAÍ/SERVIÇOS`.
 - **Faturamento total**: soma de todos os faturamentos de marketing (Google + META) no período definido.
 - **ROAS geral**: `Faturamento total / (META + GOOGLE CENTRO/PRODUTOS + GOOGLE ICARAÍ/SERVIÇOS)`.
   - Formatar com 2 casas decimais.
 
 ## UX/UI
 - Card animado com:
-  - Título "Relatório Marketing".
-  - Período consolidado (ex.: "01 a 29 de Dez/25").
-  - Totais de investimentos, faturamento e ROAS.
-  - CTA para "Copiar texto" (no link público).
+  - Título do relatório (ex.: "RELATÓRIO MARKETING 01 A 29 DEZ/25") como único título visível.
+  - Totais de investimentos (incluindo custo total), faturamento e ROAS.
+  - CTAs para "Copiar texto" e "Copiar link" (no link público).
 - Animação leve (fade + slide) e skeleton enquanto carrega.
 
 ## Link público e exportação
 - Endpoint público sugerido: `GET /api/public/marketing-report/:id`.
 - Resposta padrão: `text/plain; charset=utf-8` com o texto do relatório.
-- Opção de download: `?download=1` adiciona `Content-Disposition: attachment`.
+- Opção de download (backlog): `?download=1` retorna um PNG (`Content-Type: image/png`) com `Content-Disposition: attachment; filename="marketing-report.png"`.
 
 ## Dados e fontes (a confirmar)
 - META: tabela `MetaInvestment` (Prisma).

@@ -79,7 +79,9 @@ export async function POST(req: NextRequest) {
 		});
 
 		revalidateTag('meta-investments');
+		revalidateTag('marketing-report');
 		revalidatePath('/dashboard/meta-investments');
+		revalidatePath('/marketing-report/current');
 
 		return NextResponse.json({ ok: true, data: investment, error: null });
 	} catch (error) {

@@ -35,7 +35,9 @@ export async function UpsertMetaInvestmentAction({
 		});
 
 		revalidateTag('meta-investments');
+		revalidateTag('marketing-report');
 		revalidatePath('/dashboard/meta-investments');
+		revalidatePath('/marketing-report/current');
 
 		return { ok: true, investment, error: null };
 	} catch (error) {
