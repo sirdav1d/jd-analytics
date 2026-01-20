@@ -17,6 +17,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesChartComponent({ data }: { data: Promise<any> }) {
 	const allData = use(data);
+	const isMobile = useIsMobile();
 
 	if (!allData?.ok || !allData?.data?.revenueOverTime) {
 		if (allData && !allData.ok) {
@@ -41,7 +42,6 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 		},
 	} satisfies ChartConfig;
 
-	const isMobile = useIsMobile();
 	return (
 		<Card>
 			<CardHeader>

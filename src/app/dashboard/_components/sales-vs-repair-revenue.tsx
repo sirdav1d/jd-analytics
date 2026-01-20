@@ -19,6 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 	const allData = use(data);
+	const isMobile = useIsMobile();
 
 	if (!allData?.ok || !allData?.data?.salesByOrg) {
 		if (allData && !allData.ok) {
@@ -37,7 +38,6 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 
 	const salesData = allData.data.salesByOrg;
 
-	const isMobile = useIsMobile();
 	const chartConfig = {
 		jd_centro: {
 			label: 'JD Centro',
