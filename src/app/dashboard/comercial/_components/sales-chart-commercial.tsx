@@ -18,6 +18,21 @@ import { useIsMobile } from '@/hooks/use-mobile';
 export function SalesChartComponent({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 
+	if (!allData?.ok || !allData?.data?.revenueOverTime) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance xl:text-xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
+
 	const chartData = allData.data.revenueOverTime;
 	const chartConfig = {
 		revenue: {

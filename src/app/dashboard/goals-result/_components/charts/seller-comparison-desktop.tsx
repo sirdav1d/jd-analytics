@@ -27,6 +27,16 @@ interface ISellerComparisonProps {
 }
 export default function SellerComparison({ data }: ISellerComparisonProps) {
 	const allData = use(data);
+	if (!allData?.ok || !Array.isArray(allData?.overview)) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
+		return (
+			<div className='hidden xl:flex h-80 w-full items-center justify-center text-sm text-muted-foreground'>
+				Sem dados encontrados
+			</div>
+		);
+	}
 	const chartConfig = {
 		sales: {
 			label: 'Vendas',

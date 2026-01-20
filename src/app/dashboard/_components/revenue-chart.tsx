@@ -19,10 +19,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RevenueChart({ data }: { data: Promise<any> }) {
 	const allData = use(data);
-	const chartData = allData.data.revenueByOrg;
 	const isMobile = useIsMobile();
 
-	if (!allData.ok) {
+	if (!allData?.ok || !allData?.data?.revenueByOrg) {
 		console.log(allData.error);
 		return (
 			<Card>
@@ -35,6 +34,7 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 		);
 	}
 
+	const chartData = allData.data.revenueByOrg;
 	const chartConfig = {
 		jd_centro: {
 			label: 'JD Centro',

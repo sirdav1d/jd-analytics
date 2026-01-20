@@ -29,6 +29,16 @@ export default function SellerComparisonMobile({
 	data,
 }: ISellerComparisonProps) {
 	const allData = use(data);
+	if (!allData?.ok || !Array.isArray(allData?.overview)) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
+		return (
+			<div className='xl:hidden h-[780px] w-full flex items-center justify-center text-sm text-muted-foreground'>
+				Sem dados encontrados
+			</div>
+		);
+	}
 	const chartConfig = {
 		sales: {
 			label: 'Vendas',

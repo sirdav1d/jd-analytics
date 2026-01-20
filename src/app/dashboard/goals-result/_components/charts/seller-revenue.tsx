@@ -31,6 +31,16 @@ interface ISellerRevenueProps {
 export default function SellerRevenue({ data }: ISellerRevenueProps) {
 	const sellerData = use(data);
 	const isMobile = useIsMobile();
+	if (!sellerData?.ok || !Array.isArray(sellerData?.overview)) {
+		if (sellerData && !sellerData.ok) {
+			console.log(sellerData.error);
+		}
+		return (
+			<div className='h-[480px] md:h-96 w-full flex items-center justify-center text-sm text-muted-foreground'>
+				Sem dados encontrados
+			</div>
+		);
+	}
 	const config = sellerData.overview.map((item, index) => {
 		return {
 			[normalizeVendedor(item.vendedor)]: {

@@ -20,6 +20,20 @@ interface ISalesmanListProps {
 }
 export default function SalesmanList({ data }: ISalesmanListProps) {
 	const allData = use(data);
+	if (!allData?.ok || !Array.isArray(allData?.overview)) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
 	const today = new Date();
 	const formattedDate = today.toLocaleDateString('pt-BR', {
 		month: '2-digit',

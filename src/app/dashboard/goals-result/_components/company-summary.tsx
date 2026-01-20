@@ -29,6 +29,20 @@ const formattedDate = today.toLocaleDateString('pt-BR', {
 
 export default function CompanySummary({ data }: ICompanySummary) {
 	const allData = use(data);
+	if (!allData?.ok || !allData?.companySummary) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
+		return (
+			<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
 	return (
 		<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
 			<CardHeader>

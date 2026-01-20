@@ -20,14 +20,23 @@ interface IRevenueProps {
 
 export function Revenue({ data }: IRevenueProps) {
 	const allData = use(data);
+	const isMobile = useIsMobile();
+	if (!allData?.ok || !Array.isArray(allData?.timeSeries)) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
+		return (
+			<div className='h-80 w-full flex items-center justify-center text-sm text-muted-foreground'>
+				Sem dados encontrados
+			</div>
+		);
+	}
 	const chartConfig = {
 		revenue: {
 			label: 'Faturamento',
 			color: 'hsl(var(--chart-1))',
 		},
 	} satisfies ChartConfig;
-
-	const isMobile = useIsMobile();
 	const chartData = allData.timeSeries;
 	return (
 		<ChartContainer

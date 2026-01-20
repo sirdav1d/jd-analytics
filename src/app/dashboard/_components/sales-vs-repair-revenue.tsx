@@ -20,6 +20,21 @@ import { useIsMobile } from '@/hooks/use-mobile';
 export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 
+	if (!allData?.ok || !allData?.data?.salesByOrg) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className='text-base text-balance md:text-xl'>
+						Sem dados encontrados
+					</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
+
 	const salesData = allData.data.salesByOrg;
 
 	const isMobile = useIsMobile();
