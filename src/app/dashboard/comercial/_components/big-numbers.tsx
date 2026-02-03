@@ -14,7 +14,6 @@ import {
 	UsersRound,
 } from 'lucide-react';
 import { use } from 'react';
-import { RoasGeneralCard } from '../../_components/roas-general-card';
 
 type RoasBreakdown = {
 	meta: number;
@@ -34,7 +33,7 @@ interface Props {
 	};
 }
 
-export default function BigNumbers({ data, roasData }: Props) {
+export default function BigNumbers({ data }: Props) {
 	const allData = use(data);
 
 	if (!allData.ok || !allData.data) {
@@ -52,14 +51,8 @@ export default function BigNumbers({ data, roasData }: Props) {
 
 	return (
 		<div className='grid grid-cols-1 gap-4 '>
-			<div className='grid grid-cols-1 md:grid-cols-2  xl:grid-cols-4 gap-4 '>
-				{roasData && (
-					<RoasGeneralCard
-						startDate={roasData.startDate}
-						endDate={roasData.endDate}
-						data={roasData.data}
-					/>
-				)}
+			<div className='grid grid-cols-1 md:grid-cols-2  xl:grid-cols-3 gap-4 '>
+				
 				<Card>
 					<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
 						<CardTitle className='text-sm font-medium'>

@@ -6,6 +6,9 @@ import { Suspense } from 'react';
 import MarketingReportPublicContent from './_components/marketing-report-public-content';
 import MarketingReportPublicSkeleton from './_components/marketing-report-public-skeleton';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function PublicMarketingReportPage({
 	params,
 }: {

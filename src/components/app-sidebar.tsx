@@ -1,4 +1,4 @@
-/** @format */
+﻿/** @format */
 
 'use client';
 
@@ -18,6 +18,7 @@ import {
 	ChevronDown,
 	Crosshair,
 	Facebook,
+	FileText,
 	Goal,
 	Handshake,
 	Home,
@@ -69,7 +70,7 @@ export default function AppSidebar() {
 
 	const adminiItems = [
 		{
-			title: 'Gestao de Usuarios',
+			title: 'Gestão de Usuários',
 			url: '/dashboard/users',
 			icon: UserCog,
 		},
@@ -279,6 +280,22 @@ export default function AppSidebar() {
 								<span className='text-ellipsis'>
 									{session?.data?.user?.name}
 								</span>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							asChild
+							className={`transition-all ease-linear duration-200 border border-transparent ${
+								pathname == '/marketing-report/current'
+									? 'bg-primary hover:bg-primary/90 hover:text-slate-50 text-slate-50 active:bg-primary/90 active:shadow-md active:text-slate-50'
+									: 'bg-secondary border-2 border-border  hover:border-primary/40'
+							}`}>
+							<Link
+								href={'/marketing-report/current'}
+								target='_blank'>
+								<FileText />
+								<span className='text-ellipsis'>Ver Relatório Público</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

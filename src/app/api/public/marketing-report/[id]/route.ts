@@ -4,6 +4,9 @@ import { getMarketingReportAggregate } from '@/services/marketing-report/get-mar
 import { formatMarketingReportText } from '@/services/marketing-report/format-marketing-report-text';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const TEXT_HEADERS = {
 	'Content-Type': 'text/plain; charset=utf-8',
 };

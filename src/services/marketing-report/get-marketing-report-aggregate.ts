@@ -1,10 +1,12 @@
 /** @format */
 
-import { resolveGoogleAdsAccount, type GoogleAdsScope } from '@/lib/google-ads-account';
+import {
+	resolveGoogleAdsAccount,
+	type GoogleAdsScope,
+} from '@/lib/google-ads-account';
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { prisma } from '@/lib/prisma';
 import { GoogleAdsApi } from 'google-ads-api';
-import { unstable_cache } from 'next/cache';
 
 export type MarketingReportAggregate = {
 	periodStart: string;
@@ -33,7 +35,9 @@ export type MarketingReportAggregate = {
 	};
 };
 
-type ApiResponse<T> = { ok: true; data: T; error: null } | { ok: false; data: null; error: string };
+type ApiResponse<T> =
+	| { ok: true; data: T; error: null }
+	| { ok: false; data: null; error: string };
 
 function toIsoDate(value: Date) {
 	return value.toISOString().split('T')[0];
@@ -68,7 +72,9 @@ type GoogleAdsApiErrorPayload = {
 	requestId?: string;
 };
 
-function getGoogleAdsApiErrorPayload(value: unknown): GoogleAdsApiErrorPayload | null {
+function getGoogleAdsApiErrorPayload(
+	value: unknown,
+): GoogleAdsApiErrorPayload | null {
 	const payload = (() => {
 		if (typeof value === 'string') {
 			try {
@@ -96,8 +102,6 @@ function isGoogleAdsPermissionDenied(value: unknown) {
 
 	return { requestId, message };
 }
-
-const MARKETING_REPORT_CACHE_TAG = 'marketing-report';
 
 const brl = new Intl.NumberFormat('pt-BR', {
 	style: 'currency',
@@ -152,79 +156,85 @@ async function fetchGoogleCost(options: {
 	return costMicros / 1_000_000;
 }
 
-const getMarketingReportAggregateCached = unstable_cache(
-	async (): Promise<MarketingReportAggregate> => {
-		const metaInvestment = await prisma.metaInvestment.findFirst({
-			orderBy: [{ periodEnd: 'desc' }, { lastSyncAt: 'desc' }],
-		});
+async function getMarketingReportAggregateData(): Promise<MarketingReportAggregate> {
+	const metaInvestment = await prisma.metaInvestment.findFirst({
+		orderBy: [{ periodEnd: 'desc' }, { lastSyncAt: 'desc' }],
+	});
 
-		if (!metaInvestment) {
-			throw new Error('Nenhum investimento META encontrado');
-		}
+	if (!metaInvestment) {
+		throw new Error('Nenhum investimento META encontrado');
+	}
 
-		const periodStart = toIsoDate(metaInvestment.periodStart);
-		const periodEnd = toIsoDate(metaInvestment.periodEnd);
+	const periodStart = toIsoDate(metaInvestment.periodStart);
+	const periodEnd = toIsoDate(metaInvestment.periodEnd);
 
-		const [googleCentroProdutos, googleIcaraiServicos] = await Promise.all([
-			fetchGoogleCost({ scope: 'products', startDate: periodStart, endDate: periodEnd }),
-			fetchGoogleCost({ scope: 'services', startDate: periodStart, endDate: periodEnd }),
-		]);
+	const [googleCentroProdutos, googleIcaraiServicos] = await Promise.all([
+		fetchGoogleCost({
+			scope: 'products',
+			startDate: periodStart,
+			endDate: periodEnd,
+		}),
+		fetchGoogleCost({
+			scope: 'services',
+			startDate: periodStart,
+			endDate: periodEnd,
+		}),
+	]);
 
-		const faturamentoAgg = await prisma.saleItem.aggregate({
-			_sum: { totalValue: true },
-			where: {
-				sale: {
-					data_pedido: {
-						gte: metaInvestment.periodStart,
-						lte: metaInvestment.periodEnd,
-					},
-					OR: [
-						{ Origin: { name: { contains: 'google', mode: 'insensitive' } } },
-						{ Origin: { name: { contains: 'meta', mode: 'insensitive' } } },
-					],
+	const faturamentoAgg = await prisma.saleItem.aggregate({
+		_sum: { totalValue: true },
+		where: {
+			sale: {
+				data_pedido: {
+					gte: metaInvestment.periodStart,
+					lte: metaInvestment.periodEnd,
 				},
+				OR: [
+					{ Origin: { name: { contains: 'google', mode: 'insensitive' } } },
+					{ Origin: { name: { contains: 'meta', mode: 'insensitive' } } },
+				],
 			},
-		});
+		},
+	});
 
-		const faturamentoTotal = faturamentoAgg._sum.totalValue ?? 0;
-		const meta = metaInvestment.totalInvestment;
-		const custoTotal = meta + googleCentroProdutos + googleIcaraiServicos;
-		const roasGeral = custoTotal === 0 ? 0 : faturamentoTotal / custoTotal;
+	const faturamentoTotal = faturamentoAgg._sum.totalValue ?? 0;
+	const meta = metaInvestment.totalInvestment;
+	const custoTotal = meta + googleCentroProdutos + googleIcaraiServicos;
+	const roasGeral = custoTotal === 0 ? 0 : faturamentoTotal / custoTotal;
 
-		return {
+	return {
+		periodStart,
+		periodEnd,
+		investments: {
+			meta,
+			googleCentroProdutos,
+			googleIcaraiServicos,
+		},
+		custoTotal,
+		faturamentoTotal,
+		roasGeral,
+		formatted: {
+			meta: formatBRL(meta),
+			googleCentroProdutos: formatBRL(googleCentroProdutos),
+			googleIcaraiServicos: formatBRL(googleIcaraiServicos),
+			custoTotal: formatBRL(custoTotal),
+			faturamentoTotal: formatBRL(faturamentoTotal),
+			roasGeral: formatRoas(roasGeral),
+		},
+		metaInvestmentRef: {
+			id: metaInvestment.id,
 			periodStart,
 			periodEnd,
-			investments: {
-				meta,
-				googleCentroProdutos,
-				googleIcaraiServicos,
-			},
-			custoTotal,
-			faturamentoTotal,
-			roasGeral,
-			formatted: {
-				meta: formatBRL(meta),
-				googleCentroProdutos: formatBRL(googleCentroProdutos),
-				googleIcaraiServicos: formatBRL(googleIcaraiServicos),
-				custoTotal: formatBRL(custoTotal),
-				faturamentoTotal: formatBRL(faturamentoTotal),
-				roasGeral: formatRoas(roasGeral),
-			},
-			metaInvestmentRef: {
-				id: metaInvestment.id,
-				periodStart,
-				periodEnd,
-				lastSyncAt: metaInvestment.lastSyncAt.toISOString(),
-			},
-		};
-	},
-	['marketing-report', 'current'],
-	{ tags: [MARKETING_REPORT_CACHE_TAG], revalidate: false },
-);
+			lastSyncAt: metaInvestment.lastSyncAt.toISOString(),
+		},
+	};
+}
 
-export async function getMarketingReportAggregate(): Promise<ApiResponse<MarketingReportAggregate>> {
+export async function getMarketingReportAggregate(): Promise<
+	ApiResponse<MarketingReportAggregate>
+> {
 	try {
-		const data = await getMarketingReportAggregateCached();
+		const data = await getMarketingReportAggregateData();
 
 		return {
 			ok: true,
@@ -232,7 +242,8 @@ export async function getMarketingReportAggregate(): Promise<ApiResponse<Marketi
 			error: null,
 		};
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Erro desconhecido';
+		const message =
+			error instanceof Error ? error.message : 'Erro desconhecido';
 		if (message === 'Nenhum investimento META encontrado') {
 			return { ok: false, data: null, error: message };
 		}
@@ -246,11 +257,16 @@ export async function getMarketingReportAggregate(): Promise<ApiResponse<Marketi
 			return {
 				ok: false,
 				data: null,
-				error: 'Sem permissão para acessar o Google Ads (verifique login_customer_id e permissões do usuário).',
+				error:
+					'Sem permissão para acessar o Google Ads (verifique login_customer_id e permissões do usuário).',
 			};
 		}
 
 		console.error('getMarketingReportAggregate', serializeError(error));
-		return { ok: false, data: null, error: 'Erro ao agregar dados do relat\u00f3rio de marketing' };
+		return {
+			ok: false,
+			data: null,
+			error: 'Erro ao agregar dados do relat\u00f3rio de marketing',
+		};
 	}
 }
