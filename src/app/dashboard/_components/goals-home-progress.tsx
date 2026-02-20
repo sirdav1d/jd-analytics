@@ -90,7 +90,7 @@ export default function GoalsHomeProgress({
 				<div className='flex flex-col gap-2'>
 					<div className='flex items-center gap-4 justify-between'>
 						<p className='font-medium text-xs text-nowrap'>
-							ROAS {marketing.currentRoas.toFixed(2)}x
+							ROAS GERAL {marketing.currentRoas.toFixed(2)}x
 						</p>
 						<p className='font-medium text-xs text-nowrap'>
 							Meta {marketing.roasTarget.toFixed(0)}x

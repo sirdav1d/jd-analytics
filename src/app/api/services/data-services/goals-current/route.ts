@@ -1,19 +1,15 @@
 /** @format */
 
-import { resolveGoogleAdsAccount } from '@/lib/google-ads-account';
-import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { prisma } from '@/lib/prisma';
+import { getMarketingReportAggregate } from '@/services/marketing-report/get-marketing-report-aggregate';
 import { endOfMonth, startOfMonth } from 'date-fns';
-import { GoogleAdsApi } from 'google-ads-api';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
 	try {
 		const today = new Date();
 		const monthStart = startOfMonth(today);
 		const monthEnd = endOfMonth(today);
-		const scopeParam = req.nextUrl.searchParams.get('scope');
-		const { customerId, managerId } = resolveGoogleAdsAccount(scopeParam);
 
 		// 1. Commercial Data (Revenue)
 		// Get current month revenue goals
@@ -75,71 +71,11 @@ export async function GET(req: NextRequest) {
 
 		if (roasGoal) {
 			roasTarget = roasGoal.roas;
+		}
 
-			// Get revenue from Google origin orders
-			const googleOrders = await prisma.pedido.findMany({
-				where: {
-					data_pedido: {
-						gte: monthStart,
-						lte: today,
-					},
-					Origin: {
-						name: {
-							contains: 'google',
-							mode: 'insensitive',
-						},
-					},
-					cancelled: false,
-				},
-				include: {
-					items: true,
-				},
-			});
-
-			const googleRevenue = googleOrders.reduce((total, order) => {
-				const orderTotal = order.items.reduce(
-					(sum, item) => sum + item.totalValue,
-					0,
-				);
-				return total + orderTotal;
-			}, 0);
-
-			// Get Google Ads cost
-			try {
-				const orgId = process.env.JD_CENTRO_ID!;
-				const { refreshToken } = await getAuthenticatedClient(orgId);
-
-				if (refreshToken) {
-					const googleAdsClient = new GoogleAdsApi({
-						client_id: process.env.GOOGLE_CLIENT_ID!,
-						client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-						developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
-					});
-
-					const customer = googleAdsClient.Customer({
-						customer_id: customerId,
-						refresh_token: refreshToken,
-						linked_customer_id: managerId,
-					});
-
-					const data = await customer.report({
-						entity: 'customer',
-						metrics: ['metrics.cost_micros'],
-						from_date: monthStart.toISOString().split('T')[0],
-						to_date: today.toISOString().split('T')[0],
-					});
-
-					const costMicros = data?.[0]?.metrics?.cost_micros ?? 0;
-					const cost = costMicros / 1_000_000;
-
-					// Calculate current ROAS
-					currentRoas = cost === 0 ? 0 : googleRevenue / cost;
-				}
-			} catch (error) {
-				console.log('Error fetching Google Ads data:', error);
-				// If can't fetch Google Ads data, ROAS stays 0
-				currentRoas = 0;
-			}
+		const aggregate = await getMarketingReportAggregate();
+		if (aggregate.ok) {
+			currentRoas = aggregate.data.roasGeral;
 		}
 
 		// Calculate ROAS difference and percentage

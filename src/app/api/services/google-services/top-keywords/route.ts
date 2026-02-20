@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 		const customer = googleAdsClient.Customer({
 			customer_id: customerId,
 			refresh_token: refreshToken,
-			linked_customer_id: managerId,
+			login_customer_id: managerId,
 		});
 
 		const campaignConstraints: Constraints = [];
