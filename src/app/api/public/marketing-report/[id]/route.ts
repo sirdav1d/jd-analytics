@@ -12,7 +12,7 @@ const TEXT_HEADERS = {
 };
 
 export async function GET(
-	_req: NextRequest,
+	req: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	const { id } = await params;
@@ -23,10 +23,22 @@ export async function GET(
 		});
 	}
 
-	const aggregate = await getMarketingReportAggregate();
+	const rawPeriod = req.nextUrl.searchParams.get('period');
+	const period =
+		rawPeriod === 'current-month' || rawPeriod === 'last-month'
+			? rawPeriod
+			: undefined;
+	const date = req.nextUrl.searchParams.get('date') ?? undefined;
+
+	const aggregate = await getMarketingReportAggregate({ period, date });
 	if (!aggregate.ok) {
-		const status =
-			aggregate.error === 'Nenhum investimento META encontrado' ? 404 : 500;
+		const status = aggregate.error.startsWith(
+			'Nenhum investimento META encontrado',
+		)
+			? 404
+			: aggregate.error.startsWith('date invalida')
+				? 400
+				: 500;
 		return new NextResponse(aggregate.error, { status, headers: TEXT_HEADERS });
 	}
 

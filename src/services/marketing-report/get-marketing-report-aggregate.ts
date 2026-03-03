@@ -6,6 +6,7 @@ import {
 } from '@/lib/google-ads-account';
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { prisma } from '@/lib/prisma';
+import { startOfMonth, subMonths } from 'date-fns';
 import { GoogleAdsApi } from 'google-ads-api';
 
 export type MarketingReportAggregate = {
@@ -35,12 +36,26 @@ export type MarketingReportAggregate = {
 	};
 };
 
+export type MarketingReportPeriodPreset = 'current-month' | 'last-month';
+
+export type MarketingReportAggregateFilters = {
+	date?: string;
+	period?: MarketingReportPeriodPreset;
+};
+
 type ApiResponse<T> =
 	| { ok: true; data: T; error: null }
 	| { ok: false; data: null; error: string };
 
 function toIsoDate(value: Date) {
 	return value.toISOString().split('T')[0];
+}
+
+function parseDateOnly(value: string) {
+	const match = /^(\d{4})-(\d{2})-(\d{2})$/u.exec(value);
+	if (!match) return new Date(value);
+	const [, year, month, day] = match;
+	return new Date(Number(year), Number(month) - 1, Number(day));
 }
 
 function serializeError(value: unknown) {
@@ -120,6 +135,27 @@ function formatRoas(value: number) {
 	});
 }
 
+function resolveTargetMonthStart(filters?: MarketingReportAggregateFilters) {
+	if (!filters) return null;
+
+	if (filters.period === 'last-month') {
+		return startOfMonth(subMonths(new Date(), 1));
+	}
+
+	if (filters.period === 'current-month') {
+		return startOfMonth(new Date());
+	}
+
+	if (!filters.date) return null;
+
+	const parsedDate = parseDateOnly(filters.date);
+	if (Number.isNaN(parsedDate.getTime())) {
+		throw new Error('date invalida. Use o formato YYYY-MM-DD.');
+	}
+
+	return startOfMonth(parsedDate);
+}
+
 async function fetchGoogleCost(options: {
 	scope: GoogleAdsScope;
 	startDate: string;
@@ -156,14 +192,39 @@ async function fetchGoogleCost(options: {
 	return costMicros / 1_000_000;
 }
 
-async function getMarketingReportAggregateData(): Promise<MarketingReportAggregate> {
-	const metaInvestment = await prisma.metaInvestment.findFirst({
+async function getMetaInvestment(filters?: MarketingReportAggregateFilters) {
+	const targetMonthStart = resolveTargetMonthStart(filters);
+
+	if (targetMonthStart) {
+		const scopedInvestment = await prisma.metaInvestment.findFirst({
+			where: { periodStart: targetMonthStart },
+			orderBy: [{ periodEnd: 'desc' }, { lastSyncAt: 'desc' }],
+		});
+
+		if (!scopedInvestment) {
+			throw new Error(
+				`Nenhum investimento META encontrado para o mes ${toIsoDate(targetMonthStart)}`,
+			);
+		}
+
+		return scopedInvestment;
+	}
+
+	const latestInvestment = await prisma.metaInvestment.findFirst({
 		orderBy: [{ periodEnd: 'desc' }, { lastSyncAt: 'desc' }],
 	});
 
-	if (!metaInvestment) {
+	if (!latestInvestment) {
 		throw new Error('Nenhum investimento META encontrado');
 	}
+
+	return latestInvestment;
+}
+
+async function getMarketingReportAggregateData(
+	filters?: MarketingReportAggregateFilters,
+): Promise<MarketingReportAggregate> {
+	const metaInvestment = await getMetaInvestment(filters);
 
 	const periodStart = toIsoDate(metaInvestment.periodStart);
 	const periodEnd = toIsoDate(metaInvestment.periodEnd);
@@ -230,11 +291,13 @@ async function getMarketingReportAggregateData(): Promise<MarketingReportAggrega
 	};
 }
 
-export async function getMarketingReportAggregate(): Promise<
+export async function getMarketingReportAggregate(
+	filters?: MarketingReportAggregateFilters,
+): Promise<
 	ApiResponse<MarketingReportAggregate>
 > {
 	try {
-		const data = await getMarketingReportAggregateData();
+		const data = await getMarketingReportAggregateData(filters);
 
 		return {
 			ok: true,
@@ -244,7 +307,10 @@ export async function getMarketingReportAggregate(): Promise<
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : 'Erro desconhecido';
-		if (message === 'Nenhum investimento META encontrado') {
+		if (message.startsWith('Nenhum investimento META encontrado')) {
+			return { ok: false, data: null, error: message };
+		}
+		if (message.startsWith('date invalida')) {
 			return { ok: false, data: null, error: message };
 		}
 
