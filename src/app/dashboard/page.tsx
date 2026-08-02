@@ -6,7 +6,7 @@ import { FetchBigNumbers } from '@/services/data-services/get-comercial-big-numb
 import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 import { FetchRankings } from '@/services/data-services/get-rankings';
 import { FetchResultByOrg } from '@/services/data-services/get-result-by-org';
-import { startOfMonth } from 'date-fns';
+import { formatBusinessCivilDate } from '@/services/data-services/civil-date-range';
 import { Suspense } from 'react';
 import ComparisonUnit from './_components/comparison-unit';
 import Filter from './_components/filter';
@@ -22,15 +22,10 @@ export default async function OverviewPage(props: {
 	searchParams: SearchParams;
 }) {
 	function formattedEndDate() {
-		const date = new Date();
-		const endDate = date.toISOString().split('T')[0];
-		return endDate;
+		return formatBusinessCivilDate();
 	}
 	function formattedStartDate() {
-		const date = new Date();
-		const start = startOfMonth(date);
-		const startDate = start.toISOString().split('T')[0];
-		return startDate;
+		return `${formatBusinessCivilDate().slice(0, 7)}-01`;
 	}
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();

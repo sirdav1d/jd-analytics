@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Microvix>
+  <ResponseData>
+    <C>
+      <D>documento</D>
+      <D>timestamp</D>
+      <D>descricao</D>
+      <D>cancelado</D>
+    </C>
+    <R>
+      <D>000123</D>
+      <D>8146561524</D>
+      <D><![CDATA[Produto &lt;teste&gt;]]></D>
+      <D />
+    </R>
+  </ResponseData>
+  <ResponseResult>
+    <ResponseSuccess>True</ResponseSuccess>
+  </ResponseResult>
+</Microvix>

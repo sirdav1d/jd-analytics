@@ -3,6 +3,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 import { revalidateTag } from 'next/cache';
 
 interface ICreateSalesGoalAction {
@@ -16,6 +17,7 @@ export async function CreateSalesGoalAction({
 	revenue,
 	userId,
 }: ICreateSalesGoalAction) {
+	await requireAdmin();
 	try {
 		const goal = await prisma.salesGoal.create({
 			data: {

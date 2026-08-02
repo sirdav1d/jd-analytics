@@ -4,10 +4,12 @@
 'use server';
 
 import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutura
+import { requireAdmin } from '@/lib/auth';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
 import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function deleteUserAction(userId: string) {
+	await requireAdmin();
 	try {
 		const user = await prisma.user.update({
 			where: { id: userId },

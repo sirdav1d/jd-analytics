@@ -34,16 +34,24 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 		);
 	}
 
+	const revenueByType = new Map<string, number>(
+		(allData.data.salesByItemType ?? []).map(
+			(item: { type: string; revenue: number }) => [item.type, item.revenue],
+		),
+	);
+
 	const chartData = [
 		{
-			name: allData.data.salesByItemType[0]?.type ?? '',
-			value: allData.data.salesByItemType[0]?.revenue ?? 0,
-			fill: `var(--color-${allData.data.salesByItemType[0]?.type})`,
+			id: 'service',
+			name: 'Serviço',
+			value: revenueByType.get('Serviço') ?? 0,
+			fill: 'var(--color-Serviço)',
 		},
 		{
-			name: allData.data.salesByItemType[1]?.type ?? '',
-			value: allData.data.salesByItemType[1]?.revenue ?? 0,
-			fill: `var(--color-${allData.data.salesByItemType[1]?.type})`,
+			id: 'product',
+			name: 'Produto',
+			value: revenueByType.get('Produto') ?? 0,
+			fill: 'var(--color-Produto)',
 		},
 	];
 

@@ -3,6 +3,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 
 interface IUpdateRoasGoalAction {
@@ -14,6 +15,7 @@ export async function UpdateRoasGoalAction({
 	roas,
 	goalId,
 }: IUpdateRoasGoalAction) {
+	await requireAdmin();
 	try {
 		const goal = await prisma.roasGoal.update({
 			where: { id: goalId },

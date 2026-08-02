@@ -1,6 +1,8 @@
 /** @format */
 
 import { resolveGoogleAdsAccount } from '@/lib/google-ads-account';
+import { requireAdmin } from '@/lib/auth';
+import { AuthorizationError } from '@/lib/authorization';
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { prisma } from '@/lib/prisma';
 import { endOfMonth, startOfMonth } from 'date-fns';
@@ -9,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
 	try {
+		await requireAdmin();
 		const scopeParam = req.nextUrl.searchParams.get('scope');
 		const { customerId, managerId } = resolveGoogleAdsAccount(scopeParam);
 		const roasGoals = await prisma.roasGoal.findMany({
@@ -146,6 +149,9 @@ export async function GET(req: NextRequest) {
 			error: null,
 		});
 	} catch (error) {
+		if (error instanceof AuthorizationError) {
+			return NextResponse.json({ error: error.message }, { status: error.status });
+		}
 		console.error('Erro ao buscar ROAS goals:', error);
 		return NextResponse.json(
 			{ ok: false, error: 'Erro ao buscar metas de ROAS', data: null },

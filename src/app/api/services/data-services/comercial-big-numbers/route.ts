@@ -1,6 +1,7 @@
 /** @format */
 
 import { prisma } from '@/lib/prisma';
+import { resolveCivilDateRange } from '@/services/data-services/civil-date-range';
 import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -23,15 +24,23 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
-	const start = new Date(`${startDate}T00:00:00`);
-	const end = new Date(`${endDate}T23:59:59`);
-
-	// 2️⃣ Calcula o período anterior com mesma duração
-	const durationMs = end.getTime() - start.getTime();
-	const prevEndMs = start.getTime() - 1;
-	const prevStartMs = prevEndMs - durationMs;
-	const prevStart = new Date(prevStartMs);
-	const prevEnd = new Date(prevEndMs);
+	let range: ReturnType<typeof resolveCivilDateRange>;
+	try {
+		range = resolveCivilDateRange(startDate, endDate);
+	} catch {
+		return NextResponse.json(
+			{ ok: false, error: 'Intervalo de datas inválido.', data: null },
+			{ status: 400 },
+		);
+	}
+	const {
+		start,
+		end,
+		previousStart: prevStart,
+		previousEnd: prevEnd,
+		previousStartDate,
+		previousEndDate,
+	} = range;
 
 	try {
 		function whereVenda(periodStart: Date, periodEnd: Date) {
@@ -100,7 +109,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${start} AND ${end}
+          p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
           ${Prisma.sql`AND p."organizationId" = ${org}`}
           ${
 						customerType && customerType !== 'all'
@@ -128,7 +137,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${start}
+              AND p2."data_pedido" < CAST(${startDate} AS date)
               ${Prisma.sql`AND p2."organizationId" = ${org}`}
               ${
 								customerType && customerType !== 'all'
@@ -167,7 +176,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${start} AND ${end}
+          p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
           ${
 						customerType && customerType !== 'all'
 							? Prisma.sql`AND EXISTS (
@@ -194,7 +203,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${start}
+              AND p2."data_pedido" < CAST(${startDate} AS date)
               ${
 								customerType && customerType !== 'all'
 									? Prisma.sql`AND EXISTS (
@@ -235,7 +244,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${start} AND ${end}
+          p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
           ${Prisma.sql`AND p."organizationId" = ${org}`}
           ${
 						customerType && customerType !== 'all'
@@ -263,7 +272,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${start}
+              AND p2."data_pedido" < CAST(${startDate} AS date)
               ${Prisma.sql`AND p2."organizationId" = ${org}`}
               ${
 								customerType && customerType !== 'all'
@@ -298,7 +307,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${start} AND ${end}
+          p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
           ${
 						customerType && customerType !== 'all'
 							? Prisma.sql`AND EXISTS (
@@ -325,7 +334,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${start}
+              AND p2."data_pedido" < CAST(${startDate} AS date)
               ${
 								customerType && customerType !== 'all'
 									? Prisma.sql`AND EXISTS (
@@ -403,7 +412,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${prevStart} AND ${prevEnd}
+          p."data_pedido" BETWEEN CAST(${previousStartDate} AS date) AND CAST(${previousEndDate} AS date)
           ${Prisma.sql`AND p."organizationId" = ${org}`}
           ${
 						customerType && customerType !== 'all'
@@ -431,7 +440,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${prevStart}
+              AND p2."data_pedido" < CAST(${previousStartDate} AS date)
               ${Prisma.sql`AND p2."organizationId" = ${org}`}
               ${
 								customerType && customerType !== 'all'
@@ -466,7 +475,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${prevStart} AND ${prevEnd}
+          p."data_pedido" BETWEEN CAST(${previousStartDate} AS date) AND CAST(${previousEndDate} AS date)
           ${
 						customerType && customerType !== 'all'
 							? Prisma.sql`AND EXISTS (
@@ -493,7 +502,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${prevStart}
+              AND p2."data_pedido" < CAST(${previousStartDate} AS date)
               ${
 								customerType && customerType !== 'all'
 									? Prisma.sql`AND EXISTS (
@@ -530,7 +539,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${prevStart} AND ${prevEnd}
+          p."data_pedido" BETWEEN CAST(${previousStartDate} AS date) AND CAST(${previousEndDate} AS date)
           ${Prisma.sql`AND p."organizationId" = ${org}`}
           ${
 						customerType && customerType !== 'all'
@@ -558,7 +567,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${prevStart}
+              AND p2."data_pedido" < CAST(${previousStartDate} AS date)
               ${Prisma.sql`AND p2."organizationId" = ${org}`}
               ${
 								customerType && customerType !== 'all'
@@ -593,7 +602,7 @@ export async function GET(req: NextRequest) {
           COUNT(DISTINCT p."customerId") AS cnt
         FROM "Pedido" p
         WHERE 
-          p."data_pedido" BETWEEN ${prevStart} AND ${prevEnd}
+          p."data_pedido" BETWEEN CAST(${previousStartDate} AS date) AND CAST(${previousEndDate} AS date)
           ${
 						customerType && customerType !== 'all'
 							? Prisma.sql`AND EXISTS (
@@ -620,7 +629,7 @@ export async function GET(req: NextRequest) {
             FROM "Pedido" p2
             WHERE 
               p2."customerId" = p."customerId"
-              AND p2."data_pedido" < ${prevStart}
+              AND p2."data_pedido" < CAST(${previousStartDate} AS date)
               ${
 								customerType && customerType !== 'all'
 									? Prisma.sql`AND EXISTS (

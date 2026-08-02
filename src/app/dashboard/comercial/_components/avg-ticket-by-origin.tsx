@@ -26,6 +26,10 @@ const chartConfig = {
 		label: 'Google',
 		color: 'hsl(var(--chart-1))',
 	},
+	Balcão: {
+		label: 'Balcão',
+		color: 'hsl(var(--chart-1))',
+	},
 	Comercial_Ativo: {
 		label: 'Comercial Ativo',
 		color: 'hsl(var(--chart-2))',

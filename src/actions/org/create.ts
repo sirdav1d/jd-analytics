@@ -3,8 +3,10 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 
 export async function CreateOrgAction(name: string) {
+	await requireAdmin();
 	try {
 		const organization = await prisma.organization.create({
 			data: { name: name },

@@ -1,6 +1,7 @@
 /** @format */
 
 import { prisma } from '@/lib/prisma';
+import { resolveCivilDateRange } from '@/services/data-services/civil-date-range';
 import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -23,8 +24,16 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
-	const start = new Date(`${startDate}T00:00:00`);
-	const end = new Date(`${endDate}T23:59:59`);
+	let range: ReturnType<typeof resolveCivilDateRange>;
+	try {
+		range = resolveCivilDateRange(startDate, endDate);
+	} catch {
+		return NextResponse.json(
+			{ ok: false, error: 'Intervalo de datas inválido.', data: null },
+			{ status: 400 },
+		);
+	}
+	const { start, end } = range;
 
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -199,7 +208,7 @@ export async function GET(req: NextRequest) {
       JOIN "SaleItem" si  ON si."sale_id" = p."id"
       JOIN "Product" pr   ON pr."id" = si."product_id"
       WHERE
-        p."data_pedido" BETWEEN ${start} AND ${end}
+        p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
 				${
 					org && org !== 'all'
 						? Prisma.sql`AND p."organizationId" = ${org}`

@@ -1,6 +1,7 @@
 /** @format */
 
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
+import { resolveCivilDateRange } from '@/services/data-services/civil-date-range';
 import { formatMetricsChannel } from '@/utils/format-channel-data-google';
 import { formatMetrics } from '@/utils/format-static-data-google';
 import { formatMetricsTraffic } from '@/utils/format-traffic-data-google';
@@ -9,14 +10,18 @@ import { generateBodyStaticAnalytics } from '@/utils/google/body-static-analytic
 import { generateBodyTrafficAnalytics } from '@/utils/google/body-traffic-analytics';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
-import {
-	format,
-	subDays,
-	differenceInCalendarDays,
-	startOfDay,
-	endOfDay,
-} from 'date-fns';
 import { prisma } from '@/lib/prisma';
+
+const STATIC_ANALYTICS_METRICS = [
+	'sessions',
+	'totalUsers',
+	'bounceRate',
+	'sessionConversionRate',
+	'purchaseRevenue',
+	'averageSessionDuration',
+	'eventCount',
+	'screenPageViews',
+] as const;
 
 export async function GET(req: NextRequest) {
 	const propertyId = '295260064';
@@ -33,21 +38,14 @@ export async function GET(req: NextRequest) {
 		});
 	}
 
-	const diffInDays = differenceInCalendarDays(
-		new Date(`${endDate}T00:00:00`),
-		new Date(`${startDate}T00:00:00`),
-	);
-
-	const previousStartDate = format(
-		subDays(new Date(`${startDate}T00:00:00`), diffInDays + 1),
-		'yyyy-MM-dd',
-	);
-	const previousEndDate = format(
-		subDays(new Date(`${endDate}T00:00:00`), diffInDays + 1),
-		'yyyy-MM-dd',
-	);
-
 	try {
+		const currentRange = resolveCivilDateRange(startDate, endDate);
+		const previousStartDate = currentRange.previousStartDate;
+		const previousEndDate = currentRange.previousEndDate;
+		const previousRange = resolveCivilDateRange(
+			previousStartDate,
+			previousEndDate,
+		);
 		const orgId = process.env.JD_CENTRO_ID;
 
 		const { oauth2Client } = await getAuthenticatedClient(orgId!);
@@ -125,7 +123,7 @@ export async function GET(req: NextRequest) {
 			formatMetricsChannel(dataChannel),
 		];
 
-		const staticComparison = Object.keys(staticMetrics).reduce(
+		const staticComparison = STATIC_ANALYTICS_METRICS.reduce(
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(acc: Record<string, any>, key) => {
 				const currentVal = parseFloat(staticMetrics[key] ?? '0') || 0;
@@ -152,8 +150,8 @@ export async function GET(req: NextRequest) {
 			prisma.pedido.findMany({
 				where: {
 					data_pedido: {
-						gte: startOfDay(new Date(startDate)),
-						lte: endOfDay(new Date(endDate)),
+						gte: currentRange.start,
+						lte: currentRange.end,
 					},
 					Origin: {
 						name: {
@@ -169,8 +167,8 @@ export async function GET(req: NextRequest) {
 			prisma.pedido.findMany({
 				where: {
 					data_pedido: {
-						gte: startOfDay(new Date(previousStartDate)),
-						lte: endOfDay(new Date(previousEndDate)),
+						gte: previousRange.start,
+						lte: previousRange.end,
 					},
 					Origin: {
 						name: {

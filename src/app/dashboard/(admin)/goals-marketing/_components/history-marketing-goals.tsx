@@ -17,12 +17,26 @@ import {
 } from '@/components/ui/table';
 import { DatabaseBackup } from 'lucide-react';
 import React, { use } from 'react';
+import { formatRoas, type RoasValue } from './roas-value';
+
+type MarketingGoalHistoryItem = {
+	goalDateRef: string;
+	faturamento: number;
+	custo: number;
+	roasAtingido: RoasValue;
+	roas: number;
+};
+
+type MarketingGoalsResponse = {
+	ok: boolean;
+	data: MarketingGoalHistoryItem[] | null;
+	error?: string | null;
+};
 
 export default function HistoryMarketingGoals({
 	data,
 }: {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	data: Promise<any>;
+	data: Promise<MarketingGoalsResponse>;
 }) {
 	const allData = use(data);
 
@@ -77,8 +91,7 @@ export default function HistoryMarketingGoals({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-									{history.map((item: any, index: number) => {
+									{history.map((item, index) => {
 										return (
 											<TableRow key={index}>
 												<TableCell className='text-nowrap '>
@@ -97,7 +110,7 @@ export default function HistoryMarketingGoals({
 													})}
 												</TableCell>
 												<TableCell className='text-nowrap text-center'>
-													{item.roasAtingido.toFixed(2)}x
+													{formatRoas(item.roasAtingido)}
 												</TableCell>
 												<TableCell className='text-nowrap text-center'>
 													{item.roas}x

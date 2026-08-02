@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import { updateUserAction } from '@/actions/user/update';
+import { updateSelfAction } from '@/actions/user/update-self';
 import { Button } from '@/components/ui/button';
 import {
 	Card,
@@ -29,21 +29,17 @@ const formSchema = z
 	.object({
 		newPassword: z
 			.string()
-			.min(6, { message: 'Este campo deve conter no mínimo 6 dígitos' }),
+			.min(8, { message: 'Este campo deve conter no mínimo 8 dígitos' }),
 		confirmPassword: z
 			.string()
-			.min(6, { message: 'Este campo deve conter no mínimo 6 dígitos' }),
+			.min(8, { message: 'Este campo deve conter no mínimo 8 dígitos' }),
 	})
 	.refine((data) => data.newPassword === data.confirmPassword, {
 		message: 'As senhas devem ser iguais',
 		path: ['confirmPassword'], // o erro será associado a este campo
 	});
 
-export default function UserConfigAccount({
-	userEmail,
-}: {
-	userEmail: string;
-}) {
+export default function UserConfigAccount() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -57,14 +53,12 @@ export default function UserConfigAccount({
 		// ✅ This will be type-safe and validated.
 		const { newPassword } = values;
 
-		const response = await updateUserAction({
-			userUp: { password: newPassword, email: userEmail },
-		});
-		if (!response.ok) {
-			toast.error('Algo deu errado', { description: String(response.error) });
-		} else {
+		try {
+			await updateSelfAction({ password: newPassword });
 			toast.success('Usuário atualizado com sucesso');
 			form.reset();
+		} catch (error) {
+			toast.error('Algo deu errado', { description: String(error) });
 		}
 	}
 	return (

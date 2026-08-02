@@ -1,33 +1,14 @@
 /** @format */
 
+import 'server-only';
+import { NextRequest } from 'next/server';
 import type { GoogleAdsScope } from '@/lib/google-ads-account';
+import { GET as readMarketingGoals } from '@/app/api/services/data-services/marketing-goal/route';
 
 export async function FetchGoalMarketingData(scope: GoogleAdsScope = 'products') {
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const response = await fetch(
-		`${baseURL}/api/services/data-services/marketing-goal?scope=${scope}`,
-		{
-			method: 'GET',
-			next: { revalidate: 30, tags: ['marketing-goal'] },
-		},
+	const request = new NextRequest(
+		`http://internal.invalid/api/services/data-services/marketing-goal?scope=${scope}`,
 	);
-
-	if (!response.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado - Erro interno do servidor',
-		};
-	}
-
-	const data = await response.json();
-
-	if (!data.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado ' + data.error,
-		};
-	}
-	return data;
+	const response = await readMarketingGoals(request);
+	return response.json();
 }

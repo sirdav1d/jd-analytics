@@ -8,6 +8,8 @@ import ModalFormGoal from './_components/modal-form-goal';
 import BigNumberRoas from './_components/big-number-roas';
 import HistoryMarketingGoals from './_components/history-marketing-goals';
 
+export const dynamic = 'force-dynamic';
+
 export default function GoalsMarketing() {
 	const marketingData = FetchGoalMarketingData();
 

@@ -2,6 +2,7 @@
 import AppSidebar from '@/components/app-sidebar';
 import HeaderDashboard from '@/components/header-dashboard';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -11,10 +12,8 @@ export default async function DashLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const session = await getServerSession();
-	if (!session) {
-		redirect('/sign-in');
-	}
+	const session = await getServerSession(authOptions);
+	if (!session) redirect('/sign-in');
 	const cookieStore = await cookies();
 	const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
 

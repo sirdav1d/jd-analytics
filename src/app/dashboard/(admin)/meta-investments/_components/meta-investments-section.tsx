@@ -10,22 +10,22 @@ import {
 import { DatabaseBackup } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { prisma } from '@/lib/prisma';
 import MetaInvestmentForm from './meta-investment-form';
 import MetaInvestmentsTable from './meta-investments-table';
 
 export default async function MetaInvestmentsSection() {
-	const base = process.env.NEXT_PUBLIC_API_URL ?? '';
-	const res = await fetch(`${base}/api/services/meta-investments`, {
-		next: { tags: ['meta-investments'] },
+	const persistedInvestments = await prisma.metaInvestment.findMany({
+		orderBy: { periodStart: 'desc' },
 	});
-
-	if (!res.ok) {
-		throw new Error('Falha ao carregar investimentos');
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const { data } = (await res.json()) as { data: any };
-	const investments = Array.isArray(data) ? data : data ? [data] : [];
+	const investments = persistedInvestments.map((investment) => ({
+		...investment,
+		periodStart: investment.periodStart.toISOString(),
+		periodEnd: investment.periodEnd.toISOString(),
+		lastSyncAt: investment.lastSyncAt.toISOString(),
+		createdAt: investment.createdAt.toISOString(),
+		updatedAt: investment.updatedAt.toISOString(),
+	}));
 
 	const last = investments[0];
 

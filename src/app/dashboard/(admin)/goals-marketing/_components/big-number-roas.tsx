@@ -8,12 +8,22 @@ import {
 } from '@/components/ui/card';
 import { Goal } from 'lucide-react';
 import React, { use } from 'react';
+import { formatRoas, type RoasValue } from './roas-value';
+
+type BigNumbersResponse = {
+	ok: boolean;
+	bigNumbers: {
+		metaAtual: number;
+		roasAtingido: RoasValue;
+		roasPrevisto: RoasValue;
+	} | null;
+	error?: string | null;
+};
 
 export default function BigNumberRoas({
 	data,
 }: {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	data: Promise<any>;
+	data: Promise<BigNumbersResponse>;
 }) {
 	const allData = use(data);
 
@@ -28,6 +38,12 @@ export default function BigNumberRoas({
 			</Card>
 		);
 	}
+	const forecastColor =
+		bigNumbersData.roasPrevisto === null
+			? ''
+			: bigNumbersData.roasPrevisto < bigNumbersData.metaAtual
+				? 'text-destructive'
+				: 'text-emerald-500';
 
 	return (
 		<div className='grid lg:grid-cols-3 gap-5 w-full'>
@@ -43,7 +59,7 @@ export default function BigNumberRoas({
 			<Card>
 				<CardHeader>
 					<CardTitle className='w-full flex items-center justify-between'>
-						{bigNumbersData.roasAtingido.toFixed(2)}x <Goal />
+						{formatRoas(bigNumbersData.roasAtingido)} <Goal />
 					</CardTitle>
 					<CardDescription>ROAS Atingido</CardDescription>
 				</CardHeader>
@@ -51,8 +67,8 @@ export default function BigNumberRoas({
 			<Card>
 				<CardHeader>
 					<CardTitle
-						className={`w-full flex items-center justify-between ${bigNumbersData.roasPrevisto < bigNumbersData.metaAtual ? 'text-destructive' : 'text-emerald-500'}`}>
-						{bigNumbersData.roasPrevisto.toFixed(2)}x
+						className={`w-full flex items-center justify-between ${forecastColor}`}>
+						{formatRoas(bigNumbersData.roasPrevisto)}
 						<Goal />
 					</CardTitle>
 					<CardDescription>Previsão de ROAS</CardDescription>
