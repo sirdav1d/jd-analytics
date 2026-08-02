@@ -8,6 +8,7 @@ import { useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from './button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { clearFileSelection } from '@/components/file-upload-reset';
 
 const mainVariant = {
 	initial: {
@@ -48,13 +49,15 @@ export const FileUpload = ({
 		fileInputRef.current?.click();
 	};
 
+	const handleReset = () => {
+		setFiles([]);
+		clearFileSelection(fileInputRef.current, onChange);
+	};
+
 	const { getRootProps, isDragActive } = useDropzone({
 		multiple: false,
 		noClick: true,
 		onDrop: handleFileChange,
-		onDropRejected: (error) => {
-			console.log(error);
-		},
 	});
 
 	return (
@@ -161,7 +164,7 @@ export const FileUpload = ({
 				variant={'outline'}
 				type='button'
 				className='z-[999999999999999999999999] w-full translate-y-2 mt-1'
-				onClick={() => setFiles(Array.from([]))}>
+				onClick={handleReset}>
 				Resetar
 			</Button>
 		</div>

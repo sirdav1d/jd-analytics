@@ -1,13 +1,22 @@
 /** @format */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function formatMetricsChannel(data: any) {
+type AnalyticsChannelRow = {
+	dimensionValues?: Array<{ value?: string | null }> | null;
+	metricValues?: Array<{ value?: string | null }> | null;
+};
+
+type AnalyticsChannelReport = {
+	rows?: AnalyticsChannelRow[] | null;
+};
+
+export function formatMetricsChannel(
+	data: AnalyticsChannelReport | null | undefined,
+) {
 	const trafficByChannel: Record<
 		string,
 		{ conversions: number; sessions: number }
 	> = {};
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	data.rows.forEach((row: any) => {
+	for (const row of data?.rows ?? []) {
 		const channel = row.dimensionValues?.[0]?.value || 'Desconhecido';
 		const conversions = Number(row.metricValues?.[0]?.value) || 0;
 		const sessions = Number(row.metricValues?.[1]?.value) || 0;
@@ -19,6 +28,6 @@ export function formatMetricsChannel(data: any) {
 
 		trafficByChannel[channel].conversions += conversions;
 		trafficByChannel[channel].sessions += sessions;
-	});
+	}
 	return trafficByChannel;
 }

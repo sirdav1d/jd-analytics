@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Microvix>
+  <ResponseData>
+    <C><D>documento</D><D>timestamp</D></C>
+    <R><D>000123</D></R>
+  </ResponseData>
+  <ResponseResult>
+    <ResponseSuccess>True</ResponseSuccess>
+  </ResponseResult>
+</Microvix>

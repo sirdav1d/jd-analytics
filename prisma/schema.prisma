@@ -9,30 +9,38 @@ datasource db {
 }
 
 model Organization {
-  id                 String   @id @default(uuid())
+  id                 String           @id @default(uuid())
   name               String
   googleAccessToken  String?
   googleRefreshToken String?
   googleScopes       String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  linxCnpj           String?          @unique
+  linxPortalId       Int?
+  linxCompanyId      Int?
+  linxSyncEnabled    Boolean?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
   googleExpiresAt    BigInt?
-  external_code      Int      @unique @default(autoincrement()) @db.SmallInt
+  external_code      Int              @unique @default(autoincrement()) @db.SmallInt
   Pedido             Pedido[]
+  linxCursors        LinxSyncCursor[]
+  linxSyncRuns       LinxSyncRun[]
 }
 
 model User {
-  id         String      @id @default(uuid())
-  name       String
-  email      String      @unique
-  password   String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @default(now()) @updatedAt
-  role       Role
-  externalId String      @unique
-  Pedidos    Pedido[]
-  SalesGoal  SalesGoal[]
-  isActive   Boolean     @default(true)
+  id                    String               @id @default(uuid())
+  name                  String
+  email                 String               @unique
+  password              String
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @default(now()) @updatedAt
+  role                  Role
+  externalId            String               @unique
+  Pedidos               Pedido[]
+  SalesGoal             SalesGoal[]
+  isActive              Boolean              @default(true)
+  requestedLinxSyncRuns LinxSyncRun[]        @relation("LinxSyncRequestedBy")
+  passwordResetTokens   PasswordResetToken[]
 }
 
 model Customer {
@@ -74,16 +82,20 @@ model PaymentMethod {
 }
 
 model SaleItem {
-  id         String   @id @default(uuid())
-  quantity   Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  productId  String   @map("product_id")
-  saleId     String   @map("sale_id")
-  totalValue Float    @map("total_value")
-  unitValue  Float    @map("unit_value")
-  product    Product  @relation(fields: [productId], references: [id])
-  sale       Pedido   @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  quantity      Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  productId     String   @map("product_id")
+  saleId        String   @map("sale_id")
+  totalValue    Float    @map("total_value")
+  unitValue     Float    @map("unit_value")
+  linxOrder     Int?
+  linxTimestamp BigInt?
+  product       Product  @relation(fields: [productId], references: [id])
+  sale          Pedido   @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@unique([saleId, linxOrder])
 }
 
 model Product {
@@ -98,28 +110,95 @@ model Product {
 }
 
 model Pedido {
-  id              String         @id @default(uuid())
-  data_pedido     DateTime       @db.Date
-  natureOperation String
-  operationType   String
-  documentNumber  String
-  origin_linx     String
-  cancelled       Boolean        @default(false)
-  userId          String
-  customerId      String?
-  paymentMethodId String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  organizationId  String
-  originId        String?        @default(dbgenerated("'941a73ef-4b63-4972-b77c-0f6f14962be9'::uuid")) @map("origin_id") @db.Uuid
-  customer        Customer?      @relation(fields: [customerId], references: [id])
-  organization    Organization   @relation(fields: [organizationId], references: [id])
-  paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
-  user            User           @relation(fields: [userId], references: [id])
-  items           SaleItem[]
-  Origin          Origin?        @relation(fields: [originId], references: [id])
+  id                         String         @id @default(uuid())
+  data_pedido                DateTime       @db.Date
+  natureOperation            String
+  operationType              String
+  documentNumber             String
+  origin_linx                String
+  cancelled                  Boolean        @default(false)
+  userId                     String
+  customerId                 String?
+  paymentMethodId            String?
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime       @updatedAt
+  organizationId             String
+  originId                   String?        @default(dbgenerated("'941a73ef-4b63-4972-b77c-0f6f14962be9'::uuid")) @map("origin_id") @db.Uuid
+  linxIdentifier             String?        @unique @db.Uuid
+  linxTimestamp              BigInt?
+  linxSyncedAt               DateTime?
+  linxRoutineOriginCode      Int?
+  linxSalesResponseId        Int?
+  linxOriginBindingsSyncedAt DateTime?
+  customer                   Customer?      @relation(fields: [customerId], references: [id])
+  organization               Organization   @relation(fields: [organizationId], references: [id])
+  paymentMethod              PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+  user                       User           @relation(fields: [userId], references: [id])
+  items                      SaleItem[]
+  Origin                     Origin?        @relation(fields: [originId], references: [id])
 
   @@unique([documentNumber, organizationId, data_pedido])
+  @@index([organizationId, linxRoutineOriginCode])
+  @@index([organizationId, linxSalesResponseId])
+}
+
+model LinxSyncCursor {
+  id             String         @id @default(uuid())
+  organizationId String
+  method         LinxSyncMethod
+  lastTimestamp  BigInt         @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, method])
+}
+
+model LinxSyncRun {
+  id                              String          @id @default(uuid())
+  organizationId                  String
+  requestedById                   String?
+  trigger                         LinxSyncTrigger
+  mode                            LinxSyncMode    @default(INCREMENTAL)
+  status                          LinxSyncStatus
+  stage                           String?
+  failureStage                    String?
+  reconciliationAuthorizationHash String?         @unique
+  processedOrders                 Int             @default(0)
+  processedItems                  Int             @default(0)
+  errorMessage                    String?
+  startedAt                       DateTime        @default(now())
+  finishedAt                      DateTime?
+  leaseExpiresAt                  DateTime?
+  organization                    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requestedBy                     User?           @relation("LinxSyncRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, startedAt])
+}
+
+model PasswordResetToken {
+  id            String    @id @default(uuid())
+  userId        String
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  consumedAt    DateTime?
+  invalidatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+}
+
+model PasswordResetRateLimit {
+  keyHash         String   @id
+  windowStartedAt DateTime
+  attemptCount    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([windowStartedAt])
 }
 
 model Origin {
@@ -139,6 +218,32 @@ enum Role {
 enum PersonType {
   FISICA
   JURIDICA
+}
+
+enum LinxSyncMethod {
+  MOVIMENTO
+  MOVIMENTO_PLANOS
+  MOVIMENTO_PRINCIPAL
+  ROTINA_ORIGEM
+  RESPOSTA_VENDA
+}
+
+enum LinxSyncTrigger {
+  CRON
+  MANUAL
+  RETRY
+  RECONCILIATION
+}
+
+enum LinxSyncMode {
+  INCREMENTAL
+  RECONCILIATION
+}
+
+enum LinxSyncStatus {
+  RUNNING
+  SUCCESS
+  FAILED
 }
 
 model MetaInvestment {

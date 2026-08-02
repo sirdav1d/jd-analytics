@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Microvix>
+  <ResponseData>
+    <C><D>codigo</D></C>
+  </ResponseData>
+  <ResponseResult>
+    <ResponseSuccess>False</ResponseSuccess>
+    <Message>Usuário ou senha inválidos</Message>
+  </ResponseResult>
+</Microvix>

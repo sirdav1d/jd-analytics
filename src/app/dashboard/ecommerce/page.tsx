@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-current';
 import { FetchAnalyticsData } from '@/services/google-services/get-analytics-data';
-import { getDefaultDateRange } from '@/utils/date-range';
+import { resolveBusinessMonthToDate } from '@/services/data-services/civil-date-range';
 import { Suspense } from 'react';
 import GoalsHomeProgress from '../_components/goals-home-progress';
 import SectionAnalytics from '../marketing/_components/section-analytics';
@@ -13,9 +13,8 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function EcommercePage(props: {
   searchParams: SearchParams;
 }) {
-  const { from, to } = getDefaultDateRange();
-  const formattedStartDate = from.toISOString().split('T')[0];
-  const formattedEndDate = to.toISOString().split('T')[0];
+  const { startDate: formattedStartDate, endDate: formattedEndDate } =
+    resolveBusinessMonthToDate();
   const searchParams = await props.searchParams;
   const startDate = searchParams.startDate || formattedStartDate;
   const endDate = searchParams.endDate || formattedEndDate;

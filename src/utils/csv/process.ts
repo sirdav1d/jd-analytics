@@ -2,12 +2,32 @@
 
 import 'server-only';
 
-import formidable, { File } from 'formidable';
+import formidable from 'formidable';
 import { NextRequest } from 'next/server';
-import { Readable } from 'stream';
+import { Readable, Transform } from 'stream';
+import type { ReadableStream as NodeReadableStream } from 'stream/web';
 import fs from 'fs/promises';
-// Defina aqui os cabeçalhos obrigatórios do CSV
-const expectedHeaders = [
+import type { IncomingMessage } from 'http';
+
+const MAX_CSV_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_MULTIPART_OVERHEAD = 64 * 1024;
+const MAX_MULTIPART_BODY_SIZE = MAX_CSV_FILE_SIZE + MAX_MULTIPART_OVERHEAD;
+const MAX_MULTIPART_FIELDS_SIZE = 64 * 1024;
+const CSV_MIME_TYPES = new Set([
+	'text/csv',
+	'application/csv',
+	'application/vnd.ms-excel',
+]);
+const INVALID_CSV_MESSAGE = 'O arquivo enviado não é um CSV válido.';
+
+export class CsvUploadError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'CsvUploadError';
+	}
+}
+
+export const ORDER_CSV_HEADERS = [
 	'Data do Lançamento',
 	'Código Empresa',
 	'Nome Empresa',
@@ -28,66 +48,129 @@ const expectedHeaders = [
 	'Cancelada',
 	'Código Cliente',
 	'Código Produto',
-];
+] as const;
 
-export async function parseFormData(req: NextRequest): Promise<File> {
-	const buffer = Buffer.from(await req.arrayBuffer());
-	// Cria uma stream a partir do Buffer
-	const nodeReq = Readable.from(buffer);
-
-	// Cria um "fake" objeto de requisição que inclua os headers esperados
-	const headers = Object.fromEntries(req.headers.entries());
-
-	return new Promise((resolve, reject) => {
-		// O "formidable" espera um IncomingMessage.
-		// Vamos simular isso injetando os headers e a stream.
-		const fakeReq = Object.assign(nodeReq, { headers });
-
-		const form = formidable({
-			multiples: false,
-			maxFileSize: 10 * 1024 * 1024, // 10 MB
-			allowEmptyFiles: false,
-		});
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		form.parse(fakeReq as any, (err, _fields, files) => {
-			if (err) {
-				return reject(err);
-			}
-
-			// Supondo que o input tenha name="csv"
-			const file = files.csv;
-			if (!file) {
-				return reject(new Error('Arquivo CSV não encontrado ou inválido.'));
-			}
-			resolve(file[0]);
-		});
-	});
+export function validateRequiredHeaders(
+	headers: string[],
+	expected: readonly string[],
+): string[] {
+	return expected.filter((header) => !headers.includes(header));
 }
 
-export async function validateCSV(file: File): Promise<boolean> {
-	// Se o file.mimetype estiver disponível, pode validar também
-	if (file.mimetype && !file.mimetype.includes('csv')) {
-		console.log('MIME type inválido:', file.mimetype);
-		return false;
+export function normalizeCsvHeader(header: string): string {
+	return header.trim().replace(/^"+|"+$/g, '');
+}
+
+export function parseBrazilianDate(value: string): Date {
+	const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value.trim());
+	if (!match) throw new Error(`Data inválida: ${value}`);
+	const [, day, month, year] = match;
+	const parsedDay = Number(day);
+	const parsedMonth = Number(month);
+	const parsedYear = Number(year);
+	const date = new Date(parsedYear, parsedMonth - 1, parsedDay);
+	if (
+		date.getFullYear() !== parsedYear ||
+		date.getMonth() !== parsedMonth - 1 ||
+		date.getDate() !== parsedDay
+	) {
+		throw new Error(`Data inválida: ${value}`);
+	}
+	return date;
+}
+
+export function parseDecimal(value: string): number {
+	const parsed = Number(value.replaceAll('.', '').replace(',', '.'));
+	if (!Number.isFinite(parsed)) throw new Error(`Decimal inválido: ${value}`);
+	return parsed;
+}
+
+export function parseBoolean(value: string): boolean {
+	return ['sim', 's', '1', 'true'].includes(value.trim().toLowerCase());
+}
+
+function invalidCsv() {
+	return new CsvUploadError(INVALID_CSV_MESSAGE);
+}
+
+export async function readMultipartCsv(req: NextRequest): Promise<string> {
+	const declaredLength = req.headers.get('content-length');
+	if (declaredLength !== null) {
+		const parsedLength = Number(declaredLength);
+		if (
+			!Number.isSafeInteger(parsedLength) ||
+			parsedLength < 0 ||
+			parsedLength > MAX_MULTIPART_BODY_SIZE
+		) {
+			throw invalidCsv();
+		}
 	}
 
+	if (!req.body) {
+		throw invalidCsv();
+	}
+
+	const source = Readable.fromWeb(
+		req.body as unknown as NodeReadableStream<Uint8Array>,
+	);
+	let receivedBytes = 0;
+	const limiter = new Transform({
+		transform(chunk: Buffer, _encoding, callback) {
+			receivedBytes += chunk.length;
+			if (receivedBytes > MAX_MULTIPART_BODY_SIZE) {
+				callback(invalidCsv());
+				return;
+			}
+			callback(null, chunk);
+		},
+	});
+	const limitedBody = source.pipe(limiter);
+	const headers = Object.fromEntries(req.headers.entries());
+	if (!headers['content-length'] && !headers['transfer-encoding']) {
+		headers['transfer-encoding'] = 'chunked';
+	}
+	const fakeRequest = Object.assign(limitedBody, {
+		headers,
+		method: req.method,
+		url: req.url,
+	}) as unknown as IncomingMessage;
+	const temporaryFiles = new Set<string>();
+	const form = formidable({
+		multiples: false,
+		allowEmptyFiles: false,
+		minFileSize: 1,
+		maxFileSize: MAX_CSV_FILE_SIZE,
+		maxTotalFileSize: MAX_CSV_FILE_SIZE,
+		maxFields: 4,
+		maxFieldsSize: MAX_MULTIPART_FIELDS_SIZE,
+		maxFiles: 1,
+		filter: ({ name, mimetype }) =>
+			name === 'csv' && (!mimetype || CSV_MIME_TYPES.has(mimetype)),
+	});
+	form.on('fileBegin', (_name, file) => {
+		temporaryFiles.add(file.filepath);
+	});
+
 	try {
-		// Lê apenas as primeiras linhas para verificar cabeçalhos
-		const content = await fs.readFile(file.filepath, 'utf-8');
-		const firstLine = content.split(/\r?\n/)[0].replace(/^\uFEFF/, '');
-		const headers = firstLine
-			.split(',')
-			.map((h) => h.trim().replace(/^"+|"+$/g, ''));
-		console.log(firstLine);
-		const missing = expectedHeaders.filter((h) => !headers.includes(h));
-		if (missing.length) {
-			console.log('Cabeçalhos faltando no CSV:', missing);
-			return false;
+		const [, files] = await form.parse(fakeRequest);
+		const file = files.csv?.[0];
+		if (
+			!file ||
+			file.size <= 0 ||
+			file.size > MAX_CSV_FILE_SIZE ||
+			(file.mimetype && !CSV_MIME_TYPES.has(file.mimetype))
+		) {
+			throw invalidCsv();
 		}
 
-		return true;
-	} catch (err) {
-		console.log('Erro ao ler CSV para validação:', err);
-		return false;
+		return await fs.readFile(file.filepath, 'utf8');
+	} catch {
+		source.destroy();
+		limiter.destroy();
+		throw invalidCsv();
+	} finally {
+		await Promise.allSettled(
+			[...temporaryFiles].map((filepath) => fs.unlink(filepath)),
+		);
 	}
 }

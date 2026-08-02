@@ -2,20 +2,23 @@
 
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FetchGoalMarketingData } from '@/services/data-services/get-marketing-goals';
+import { requireAdminPage } from '@/lib/auth';
+import { createMarketingGoalLoaders } from '@/services/data-services/get-marketing-goals';
 import { Suspense } from 'react';
 import ModalFormGoal from './_components/modal-form-goal';
 import BigNumberRoas from './_components/big-number-roas';
 import HistoryMarketingGoals from './_components/history-marketing-goals';
 
-export default function GoalsMarketing() {
-	const marketingData = FetchGoalMarketingData();
+export default async function GoalsMarketing() {
+	await requireAdminPage();
+	const { bigNumbers, history } = createMarketingGoalLoaders();
 
 	const today = new Date();
 
 	const formattedToday = today.toLocaleString('pt-BR', {
 		month: '2-digit',
 		year: 'numeric',
+		timeZone: 'America/Sao_Paulo',
 	});
 
 	return (
@@ -40,7 +43,7 @@ export default function GoalsMarketing() {
 							<Skeleton className='w-full h-24' />
 						</div>
 					}>
-					<BigNumberRoas data={marketingData} />
+					<BigNumberRoas data={bigNumbers} />
 				</Suspense>
 
 				<Separator className='mt-10 mb-5' />
@@ -50,7 +53,7 @@ export default function GoalsMarketing() {
 							<Skeleton className='w-full h-60' />
 						</div>
 					}>
-					<HistoryMarketingGoals data={marketingData} />
+					<HistoryMarketingGoals data={history} />
 				</Suspense>
 			</div>
 		</div>

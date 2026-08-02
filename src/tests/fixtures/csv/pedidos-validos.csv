@@ -1,0 +1,3 @@
+"Data do Lançamento","Código Empresa","Nome Empresa","Documento","Natureza de Operação","Operação","Origem","Nome Cliente","Descrição Produto","Valor Total Item","Forma de Pagamento","Marca Produto","Qtde Item","Valor Unitário Item","Setor Produto","Tipo Pessoa","Vendedor","Cancelada","Código Cliente","Código Produto"
+"28/07/2026","1","Empresa Teste","9001","VENDA","S","LOJA","Cliente Teste","Produto A","10,00","PIX","Marca A","1","10,00","SETOR TESTE","FÍSICA","201 - Vendedor Teste","Não","101","301"
+"28/07/2026","1","Empresa Teste","9001","VENDA","S","LOJA","Cliente Teste","Produto B","40,00","PIX","Marca B","2","20,00","SETOR TESTE","FÍSICA","201 - Vendedor Teste","Não","101","302"

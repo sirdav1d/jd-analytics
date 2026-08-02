@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Microvix>
+  <ResponseData>
+    <C><D>documento</D></C>
+  </ResponseData>
+  <ResponseResult>
+    <ResponseSuccess>true</ResponseSuccess>
+    <Message />
+  </ResponseResult>
+</Microvix>

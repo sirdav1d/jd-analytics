@@ -1,20 +1,28 @@
 /** @format */
 import { prisma } from '@/lib/prisma';
+import {
+	formatBusinessCivilDate,
+	resolveCivilDateRange,
+} from '@/services/data-services/civil-date-range';
 import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import {
-	differenceInCalendarDays,
-	endOfMonth,
-	startOfMonth as dfStartOfMonth,
-	getDaysInMonth,
-} from 'date-fns';
+
+function getCivilMonthBounds(civilDate: string) {
+	const [year, month] = civilDate.split('-').map(Number);
+	const start = new Date(Date.UTC(year, month - 1, 1));
+	const next = new Date(Date.UTC(year, month, 1));
+	const totalDays = new Date(Date.UTC(year, month, 0)).getUTCDate();
+	return { start, next, totalDays };
+}
 
 export async function GET(req: NextRequest) {
 	try {
 		const now = new Date();
+		const businessToday = formatBusinessCivilDate(now);
 		const { searchParams } = req.nextUrl;
-		const startParam = searchParams.get('startDate') ?? dfStartOfMonth(now);
-		const endParam = searchParams.get('endDate') ?? new Date();
+		const startParam =
+			searchParams.get('startDate') ?? `${businessToday.slice(0, 7)}-01`;
+		const endParam = searchParams.get('endDate') ?? businessToday;
 
 		if (!startParam || !endParam) {
 			return NextResponse.json(
@@ -29,19 +37,18 @@ export async function GET(req: NextRequest) {
 			);
 		}
 
-		const startDate = new Date(startParam);
-		const endDate = new Date(endParam);
-		const msInDay = 1000 * 60 * 60 * 24;
-		const diffDays = (endDate.getTime() - startDate.getTime()) / msInDay;
-		const useDaily = diffDays < 30;
-		const startOfMonth = new Date(
-			startDate.getFullYear(),
-			startDate.getMonth(),
-			1,
-			0,
-			0,
-			0,
-		);
+		const range = resolveCivilDateRange(startParam, endParam);
+		const { start: startDate, end: endDate, inclusiveDays } = range;
+		const useDaily = inclusiveDays <= 30;
+		const selectedMonthStart = getCivilMonthBounds(startParam).start;
+		const selectedMonthEndExclusive = getCivilMonthBounds(endParam).next;
+		const currentMonth = getCivilMonthBounds(businessToday);
+		const isCurrentMonthToDate =
+			startParam === `${businessToday.slice(0, 7)}-01` &&
+			endParam === businessToday;
+		const forecastMultiplier = isCurrentMonthToDate
+			? currentMonth.totalDays / inclusiveDays
+			: 1;
 
 		//OVERVIEW INICIO
 		const rawOverview = await prisma.pedido.groupBy({
@@ -55,12 +62,11 @@ export async function GET(req: NextRequest) {
 		const overview = await Promise.all(
 			rawOverview.map(async (item) => {
 				const seller = await prisma.user.findUnique({
-					where: { id: item.userId, isActive: true },
-					select: { name: true, role: true },
+					where: { id: item.userId },
+					select: { name: true },
 				});
 
-				// Filtra apenas vendedores
-				if (!seller || seller.role !== 'SELLER') return null;
+				if (!seller) return null;
 
 				const revenue = await prisma.saleItem.aggregate({
 					_sum: { totalValue: true },
@@ -76,7 +82,10 @@ export async function GET(req: NextRequest) {
 					_sum: { revenue: true },
 					where: {
 						userId: item.userId,
-						goalDateRef: { gte: startOfMonth, lte: endDate },
+						goalDateRef: {
+							gte: selectedMonthStart,
+							lt: selectedMonthEndExclusive,
+						},
 					},
 				});
 
@@ -85,51 +94,8 @@ export async function GET(req: NextRequest) {
 				const orderCount = item._count.id;
 				const avgTicket = orderCount ? totalRevenue / orderCount : 0;
 
-				// 3) Cálculo de forecast
-
-				// 1) Defina o mês corrente (sempre será “maio de 2025” enquanto estivermos em maio):
-				const currentMonthStart = dfStartOfMonth(now); // ex: 2025‑05‑01T00:00:00
-				const currentMonthEnd = endOfMonth(currentMonthStart);
-
-				const salesCurrentMonthAgg = await prisma.saleItem.aggregate({
-					_sum: { totalValue: true },
-					where: {
-						sale: {
-							data_pedido: {
-								gte: currentMonthStart, // 2025‑05‑01
-								lte: now, // “semana atual” ou data exata
-							},
-							userId: item.userId,
-						},
-					},
-				});
-				const totalRevenueCurrentMonth =
-					salesCurrentMonthAgg._sum.totalValue ?? 0;
-				const daysElapsedThisMonth =
-					differenceInCalendarDays(now, currentMonthStart) + 1;
-				const totalDaysInThisMonth = getDaysInMonth(currentMonthStart);
-				const avgDailyThisMonth =
-					daysElapsedThisMonth > 0
-						? totalRevenueCurrentMonth / daysElapsedThisMonth
-						: 0;
-
-				const forecast = avgDailyThisMonth * totalDaysInThisMonth;
-
-				const goalCurrentMonthAgg = await prisma.salesGoal.aggregate({
-					_sum: { revenue: true },
-					where: {
-						goalDateRef: {
-							gte: currentMonthStart,
-							lt: currentMonthEnd,
-						},
-						userId: item.userId,
-					},
-				});
-				const metaCurrentMonth = goalCurrentMonthAgg._sum.revenue ?? 0;
-
-				// 5) Cálculo do percentual de diferença:
-				const percentualDif =
-					metaCurrentMonth > 0 ? (forecast / metaCurrentMonth) * 100 : 100;
+				const forecast = totalRevenue * forecastMultiplier;
+				const percentualDif = meta > 0 ? (forecast / meta) * 100 : 100;
 
 				return {
 					vendedor: seller?.name ?? 'Unknown',
@@ -155,10 +121,10 @@ export async function GET(req: NextRequest) {
 				Array<{ period: string; revenue: number }>
 			>(
 				Prisma.sql`
-					 WITH days AS (
+						 WITH days AS (
 						 SELECT generate_series(
-							 ${startDate}::date,
-							 ${endDate}::date,
+							 CAST(${startParam} AS date),
+							 CAST(${endParam} AS date),
 							 '1 day'::interval
 						 ) AS day
 					 ), agg AS (
@@ -166,7 +132,7 @@ export async function GET(req: NextRequest) {
 										SUM(si.total_value)::float AS revenue
 						 FROM "Pedido" p
 						 JOIN "SaleItem" si ON si.sale_id = p.id
-						 WHERE p.data_pedido BETWEEN ${startDate} AND ${endDate}
+						 WHERE p.data_pedido BETWEEN CAST(${startParam} AS date) AND CAST(${endParam} AS date)
 						 GROUP BY day
 					 )
 					 SELECT to_char(days.day, 'YYYY-MM-DD') AS period,
@@ -186,7 +152,7 @@ export async function GET(req: NextRequest) {
 						 SUM(si.total_value)::float AS revenue
 					 FROM "Pedido" p
 					 JOIN "SaleItem" si ON si.sale_id = p.id
-					 WHERE p.data_pedido BETWEEN ${startDate} AND ${endDate}
+					 WHERE p.data_pedido BETWEEN CAST(${startParam} AS date) AND CAST(${endParam} AS date)
 					 GROUP BY period
 					 ORDER BY period
 				 `,
@@ -197,8 +163,8 @@ export async function GET(req: NextRequest) {
 			_sum: { revenue: true },
 			where: {
 				goalDateRef: {
-					gte: startOfMonth, // >= 1º dia do mês selecionado
-					lt: endDate, // < 1º dia do mês seguinte
+					gte: selectedMonthStart,
+					lt: selectedMonthEndExclusive,
 				},
 			},
 		});
@@ -212,44 +178,18 @@ export async function GET(req: NextRequest) {
 			},
 		});
 
-		const currentMonthStart = dfStartOfMonth(now);
-		const currentMonthEnd = endOfMonth(currentMonthStart);
-
-		const salesCurrentMonthAgg = await prisma.saleItem.aggregate({
-			_sum: { totalValue: true },
-			where: {
-				sale: {
-					data_pedido: {
-						gte: currentMonthStart,
-						lt: now < currentMonthEnd ? now : currentMonthEnd,
-					},
-				},
-			},
-		});
-		const realizadoCurrentMonth = salesCurrentMonthAgg._sum.totalValue ?? 0;
-
-		const diasPassadosNoMes =
-			differenceInCalendarDays(
-				now < currentMonthEnd ? now : currentMonthEnd,
-				currentMonthStart,
-			) + 1;
-
-		const totalDiasNoMes = getDaysInMonth(currentMonthStart); // ex: 31 para maio
-
-		const mediaDiariaNoMes =
-			diasPassadosNoMes > 0 ? realizadoCurrentMonth / diasPassadosNoMes : 0;
-
-		const forecastCurrentMonth = mediaDiariaNoMes * totalDiasNoMes;
+		const realizado = salesSum._sum.totalValue ?? 0;
+		const forecast = realizado * forecastMultiplier;
 
 		const percentualDif =
 			salesGoalSum._sum.revenue != null && salesGoalSum._sum.revenue > 0
-				? (forecastCurrentMonth / salesGoalSum._sum.revenue) * 100
+				? (forecast / salesGoalSum._sum.revenue) * 100
 				: 0;
 
 		const companySummary = {
 			meta: salesGoalSum._sum.revenue ?? 0,
-			realizado: salesSum._sum.totalValue ?? 0,
-			forecast: forecastCurrentMonth,
+			realizado,
+			forecast,
 			diffPercent: percentualDif,
 		};
 

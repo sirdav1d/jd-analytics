@@ -23,10 +23,11 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
-	const start = new Date(`${startDate}T00:00:00`);
-	const end = new Date(`${endDate}T23:59:59`);
+	const start = new Date(`${startDate}T00:00:00.000Z`);
+	const end = new Date(`${endDate}T00:00:00.000Z`);
 	const msInDay = 1000 * 60 * 60 * 24;
-	const dateDiffInDays = Math.ceil((end.getTime() - start.getTime()) / msInDay);
+	const dateDiffInDays =
+		Math.floor((end.getTime() - start.getTime()) / msInDay) + 1;
 	const isGroupedByMonth = dateDiffInDays > 30;
 	const groupFormat = isGroupedByMonth ? 'YYYY-MM' : 'YYYY-MM-DD';
 
@@ -58,7 +59,7 @@ export async function GET(req: NextRequest) {
         JOIN "Customer" c   ON p."customerId"   = c."id"
         JOIN "Product" pr   ON si."product_id"  = pr."id"
         WHERE
-          p."data_pedido" BETWEEN ${start} AND ${end}
+          p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
           ${sqlOrgFilter}
           ${sqlCategoryFilter}
           ${sqlCustomerTypeFilter}
@@ -99,7 +100,7 @@ export async function GET(req: NextRequest) {
     JOIN "Customer" c   ON p."customerId"   = c."id"
     JOIN "Product" pr   ON si."product_id"  = pr."id"
     WHERE
-      p."data_pedido" BETWEEN ${start} AND ${end}
+      p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
       ${sqlOrgFilter}
       ${sqlCategoryFilterForSector}
       ${sqlCustomerTypeFilter}
@@ -125,7 +126,7 @@ export async function GET(req: NextRequest) {
 			JOIN "Product" pr   ON si."product_id" = pr."id"
 			JOIN "PaymentMethod" pm ON p."paymentMethodId" = pm."id"
 			WHERE
-				p."data_pedido" BETWEEN ${start} AND ${end}
+				p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
 				${sqlOrgFilter}
 				${sqlCategoryFilter}
 				${sqlCustomerTypeFilter}
@@ -162,7 +163,7 @@ export async function GET(req: NextRequest) {
   JOIN "Customer" c   ON p."customerId"   = c."id"
   JOIN "Product" pr   ON si."product_id"  = pr."id"
   WHERE
-    p."data_pedido" BETWEEN ${start} AND ${end}
+    p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
     ${sqlOrgFilter}
     ${sqlCategoryFilter}
     ${sqlCustomerTypeFilter}
@@ -185,12 +186,12 @@ export async function GET(req: NextRequest) {
 		JOIN "Customer" c      ON p."customerId" = c."id"
 		JOIN "Product" pr      ON si."product_id" = pr."id"
 		WHERE
-			p."data_pedido" BETWEEN ${start} AND ${end}
+			p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
 			AND NOT EXISTS (
 				SELECT 1
 				FROM "Pedido" p2
 				WHERE p2."customerId" = c."id"
-					AND p2."data_pedido" < ${start}
+					AND p2."data_pedido" < CAST(${startDate} AS date)
 			)
 			${sqlOrgFilter}
 			${sqlCategoryFilter}
@@ -207,12 +208,12 @@ JOIN "Pedido" p        ON si."sale_id" = p."id"
 JOIN "Customer" c      ON p."customerId" = c."id"
 JOIN "Product" pr      ON si."product_id" = pr."id"
 WHERE
-	p."data_pedido" BETWEEN ${start} AND ${end}
+	p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
 	AND EXISTS (
 		SELECT 1
 		FROM "Pedido" p2
 		WHERE p2."customerId" = c."id"
-			AND p2."data_pedido" < ${start}
+			AND p2."data_pedido" < CAST(${startDate} AS date)
 	)
 	${sqlOrgFilter}
 	${sqlCategoryFilter}
@@ -247,7 +248,7 @@ WHERE
 			JOIN "Customer" c      ON p."customerId" = c."id"
 			JOIN "Product" pr      ON si."product_id" = pr."id"
 			WHERE
-				p."data_pedido" BETWEEN ${start} AND ${end}
+				p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
 				${sqlOrgFilter}
 				${sqlCategoryFilter}
 				${sqlCustomerTypeFilter}

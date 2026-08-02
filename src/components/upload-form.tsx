@@ -8,24 +8,26 @@ import { FileUpload } from './ui/file-upload';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import {
+	getUploadError,
+	getUploadRoute,
+	type UploadDocumentKind,
+	type UploadResponse,
+} from './upload-route';
 
 interface UploadForm {
-	typeDoc: 'Pedidos' | 'Origem';
+	typeDoc: UploadDocumentKind;
 }
 
 export default function UploadForm({ typeDoc }: UploadForm) {
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const route =
-		typeDoc == 'Pedidos'
-			? `${baseURL}/api/upload`
-			: `${baseURL}/api/upload-origin`;
+	const route = getUploadRoute(typeDoc);
 	const [loading, setLoading] = useState(false);
 
 	const [file, setFile] = useState<File | null>(null);
 
 	const router = useRouter();
 	const handleFileChange = (files: File[] | null) => {
-		if (!files) {
+		if (!files || files.length === 0) {
 			setFile(null);
 			return;
 		}
@@ -37,7 +39,6 @@ export default function UploadForm({ typeDoc }: UploadForm) {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!file) {
-			console.log('Selecione um arquivo antes de enviar.');
 			return;
 		}
 
@@ -52,20 +53,19 @@ export default function UploadForm({ typeDoc }: UploadForm) {
 				body: formData,
 			});
 
-			const json = await res.json();
+			const json: UploadResponse = await res.json();
+			const errorMessage = getUploadError(res.ok, json);
 
-			if (json.ok) {
+			if (!errorMessage) {
 				toast.success('Upload feito com sucesso!');
 				setFile(null);
 				router.push('/dashboard/goals-result');
 			} else {
-				toast.error('Algo deu errado, tente novamente.');
-				console.log(`Erro: ${json.error}`);
+				toast.error(errorMessage);
 				setLoading(false);
 			}
-		} catch (error) {
+		} catch {
 			toast.error('Algo deu errado, tente novamente.');
-			console.log(error);
 			setLoading(false);
 		}
 	};

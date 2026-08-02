@@ -3,6 +3,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 import { revalidateTag } from 'next/cache';
 
 interface IUpdateSalesGoalAction {
@@ -14,6 +15,7 @@ export async function UpdateSalesGoalAction({
 	revenue,
 	goalId,
 }: IUpdateSalesGoalAction) {
+	await requireAdmin();
 	try {
 		const goal = await prisma.salesGoal.update({
 			where: { id: goalId },

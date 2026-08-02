@@ -3,6 +3,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 import { startOfMonth } from 'date-fns';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
@@ -15,6 +16,7 @@ export async function UpsertMetaInvestmentAction({
 	periodEnd,
 	totalInvestment,
 }: UpsertMetaInvestmentInput) {
+	await requireAdmin();
 	try {
 		const periodStart = startOfMonth(periodEnd);
 		const lastSyncAt = new Date();

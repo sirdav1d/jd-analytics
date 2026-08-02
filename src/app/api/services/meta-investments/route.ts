@@ -1,6 +1,8 @@
 /** @format */
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
+import { AuthorizationError } from '@/lib/authorization';
 import { startOfMonth } from 'date-fns';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,6 +16,7 @@ const parseDateOnly = (value: string) => {
 
 export async function GET(req: NextRequest) {
 	try {
+		await requireAdmin();
 		const { searchParams } = new URL(req.url);
 		const dateParam = searchParams.get('date');
 		const targetDate = dateParam ? parseDateOnly(dateParam) : new Date();
@@ -30,6 +33,9 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json({ ok: true, data: investments, error: null });
 	} catch (error) {
+		if (error instanceof AuthorizationError) {
+			return NextResponse.json({ error: error.message }, { status: error.status });
+		}
 		console.error('GET /meta-investments', error);
 		return NextResponse.json(
 			{ ok: false, data: null, error: 'Internal error' },
@@ -40,6 +46,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
 	try {
+		await requireAdmin();
 		const body = await req.json();
 		const rawPeriodEnd = body?.periodEnd;
 		const periodEnd =
@@ -85,6 +92,9 @@ export async function POST(req: NextRequest) {
 
 		return NextResponse.json({ ok: true, data: investment, error: null });
 	} catch (error) {
+		if (error instanceof AuthorizationError) {
+			return NextResponse.json({ error: error.message }, { status: error.status });
+		}
 		console.error('POST /meta-investments', error);
 		return NextResponse.json(
 			{ ok: false, data: null, error: 'Internal error' },

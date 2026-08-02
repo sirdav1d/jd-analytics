@@ -1,6 +1,6 @@
 /** @format */
 'use client';
-import { updateUserAction } from '@/actions/user/update';
+import { updateSelfAction } from '@/actions/user/update-self';
 import { Button } from '@/components/ui/button';
 import {
 	Form,
@@ -26,10 +26,8 @@ const formSchema = z.object({
 
 export default function UserForm({
 	name,
-	email,
 }: {
 	name: string;
-	email: string;
 }) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -40,15 +38,12 @@ export default function UserForm({
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		const { name } = values;
-		const response = await updateUserAction({
-			userUp: { name: name, email: email },
-		});
-		form.setValue('name', name);
-
-		if (!response.ok) {
-			toast.error('Algo deu errado', { description: String(response.error) });
-		} else {
+		try {
+			await updateSelfAction({ name });
+			form.setValue('name', name);
 			toast.success('Usuário atualizado com sucesso');
+		} catch (error) {
+			toast.error('Algo deu errado', { description: String(error) });
 		}
 	}
 	return (

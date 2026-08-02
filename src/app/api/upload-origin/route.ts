@@ -1,112 +1,45 @@
-/** @format */
-import { prisma } from '@/lib/prisma';
-import { parseFormData } from '@/utils/csv/process';
-import fs from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
-import { parse as parseCSV } from 'papaparse';
+import { revalidateTag } from 'next/cache';
+import { requireAdmin } from '@/lib/auth';
+import { AuthorizationError } from '@/lib/authorization';
+import { prisma } from '@/lib/prisma';
+import { readMultipartCsv } from '@/utils/csv/process';
+import { adaptOriginCsv } from '@/services/sales-import/csv-origin-adapter';
+import { importOrigins } from '@/services/sales-import/import-origins';
 
-// desabilita o bodyParser
-export const config = {
-	api: { bodyParser: false },
-};
-
-type CsvRow = Record<string, string>;
-
-function parseDateBR(dateStr: string): string {
-	const [day, month, year] = dateStr.split('/');
-	const yyyy = year.padStart(4, '0');
-	const mm = month.padStart(2, '0');
-	const dd = day.padStart(2, '0');
-	return `${yyyy}-${mm}-${dd}`;
-}
+const ORIGIN_UPLOAD_CACHE_TAGS = ['origin', 'origin-data'] as const;
 
 export async function POST(req: NextRequest) {
 	try {
-		const file = await parseFormData(req);
-		const raw = await fs.readFile(file.filepath, 'utf-8');
-		// CSV separado por ponto‐e‐vírgula
-		const { data: rows, errors } = parseCSV<CsvRow>(raw, {
-			header: true,
-			delimiter: ';',
-			skipEmptyLines: true,
-		});
-		if (errors.length) {
-			console.error('CSV parse errors', errors);
-			return NextResponse.json(
-				{ ok: false, error: 'Erro no CSV' },
-				{ status: 400 },
-			);
+		await requireAdmin();
+	} catch (error) {
+		if (error instanceof AuthorizationError) {
+			return NextResponse.json({ error: error.message }, { status: error.status });
 		}
+		return NextResponse.json({ error: 'Erro interno ao importar o CSV.' }, { status: 500 });
+	}
 
-		for (const r of rows) {
-			const orgName = r['Empresa'].trim();
-			const saleDate = parseDateBR(r['Data']);
-			// documento vem no formato "2676/0", pegamos antes da barra
-			const [docNum] = r['Documento/ECF'].trim().split('/');
-			const originName = r['Resposta'].trim() || 'Desconhecido';
-
-			const orgId =
-				orgName === 'JD INFO - DOMINUS'
-					? process.env.JD_CENTRO_ID
-					: process.env.JD_ICARAI_ID;
-			// 1) Ache organização pelo nome
-			const org = await prisma.organization.findUnique({
-				where: { id: orgId },
-			});
-			if (!org) {
-				console.warn(`Org não encontrada: ${orgName}, pulando`);
-				continue;
-			}
-
-			// 2) Upsert de Origin
-			const origin = await prisma.origin.upsert({
-				where: { name: originName },
-				update: {},
-				create: { name: originName },
-			});
-
-			const existingPedido = await prisma.pedido.findUnique({
-				where: {
-					documentNumber_organizationId_data_pedido: {
-						documentNumber: docNum,
-						organizationId: org.id,
-						data_pedido: new Date(saleDate),
-					},
-				},
-			});
-			console.log(r);
-
-			if (!existingPedido) {
-				console.log(r, origin, docNum, org.id, saleDate);
-				// Trate o caso do registro não existir antes de tentar atualizar
-				throw new Error('Pedido não encontrado para atualizar');
-			}
-
-			const p = await prisma.pedido.update({
-				where: {
-					documentNumber_organizationId_data_pedido: {
-						documentNumber: docNum,
-						organizationId: org.id,
-						data_pedido: new Date(saleDate),
-					},
-				},
-				data: { originId: origin.id },
-			});
-
-			if (!p) {
-				console.error('Número do pedido não encontrado', docNum);
-				continue;
-			}
-		}
-
+	let updates;
+	try {
+		const csvText = await readMultipartCsv(req);
+		updates = adaptOriginCsv(csvText);
+	} catch {
 		return NextResponse.json(
-			{ ok: true, imported: rows.length },
-			{ status: 201 },
+			{ error: 'O arquivo enviado não é um CSV válido.' },
+			{ status: 400 },
 		);
-	} catch (err: unknown) {
-		console.error('Erro na rota de importação de origens:', err);
+	}
+
+	try {
+		const summary = await prisma.$transaction(
+			(tx) => importOrigins(tx, updates),
+			{ maxWait: 5_000, timeout: 30_000 },
+		);
+		for (const tag of ORIGIN_UPLOAD_CACHE_TAGS) revalidateTag(tag);
+		return NextResponse.json(summary);
+	} catch {
 		return NextResponse.json(
-			{ ok: false, error: err instanceof Error ? err.message : 'Erro interno' },
+			{ error: 'Erro interno ao importar o CSV.' },
 			{ status: 500 },
 		);
 	}

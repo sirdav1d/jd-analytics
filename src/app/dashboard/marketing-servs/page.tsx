@@ -5,7 +5,7 @@ import { FetchGoalsCurrentData } from '@/services/data-services/get-goals-curren
 import { FetchADSData } from '@/services/google-services/get-ads-data';
 import { FetchTopADSData } from '@/services/google-services/get-top-ads';
 import { FetchKeywordADSData } from '@/services/google-services/get-top-keywords';
-import { getDefaultDateRange } from '@/utils/date-range';
+import { resolveBusinessMonthToDate } from '@/services/data-services/civil-date-range';
 import { Suspense } from 'react';
 import GoalsHomeProgress from '../_components/goals-home-progress';
 import SectionAds from '../marketing/_components/section-ads';
@@ -17,9 +17,8 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function MarketingServs(props: {
 	searchParams: SearchParams;
 }) {
-	const { from, to } = getDefaultDateRange();
-	const formattedStartDate = from.toISOString().split('T')[0];
-	const formattedEndDate = to.toISOString().split('T')[0];
+	const { startDate: formattedStartDate, endDate: formattedEndDate } =
+		resolveBusinessMonthToDate();
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate;
 	const endDate = searchParams.endDate || formattedEndDate;

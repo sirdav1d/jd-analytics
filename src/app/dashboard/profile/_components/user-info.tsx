@@ -8,10 +8,7 @@ import UserForm from './user-form';
 type UserInfoProps = {
 	name: string;
 	id: string;
-	createdAt: Date;
-	updatedAt: Date;
 	email: string;
-	password: string;
 	role: $Enums.Role;
 };
 
@@ -27,10 +24,7 @@ export default function UserInfo({ user }: { user: UserInfoProps }) {
 				<div className='flex items-center space-x-4'>
 					<UserIcon className='text-red-600' />
 					<div className='w-full'>
-						<UserForm
-							name={user.name!}
-							email={user.email!}
-						/>
+					<UserForm name={user.name} />
 					</div>
 				</div>
 				<div className='flex items-center space-x-4'>

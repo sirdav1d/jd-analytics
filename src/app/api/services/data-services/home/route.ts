@@ -20,11 +20,12 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
-	const start = new Date(`${startDate}T00:00:00`);
-	const end = new Date(`${endDate}T23:59:59`);
+	const start = new Date(`${startDate}T00:00:00.000Z`);
+	const end = new Date(`${endDate}T00:00:00.000Z`);
 
 	const msInDay = 1000 * 60 * 60 * 24;
-	const diffDays = Math.round((end.getTime() - start.getTime()) / msInDay);
+	const diffDays =
+		Math.floor((end.getTime() - start.getTime()) / msInDay) + 1;
 
 	// Se o período for até 30 dias, agrupamos por dia; caso contrário, por mês
 	const isGroupedByMonth = diffDays > 30;
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
     JOIN "Customer" c     ON p."customerId"   = c."id"
     JOIN "Product" pr     ON si."product_id"  = pr."id"
     WHERE
-      p."data_pedido" BETWEEN ${start} AND ${end}
+      p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
       AND p.cancelled = FALSE
     GROUP BY
       o.name,
@@ -90,7 +91,7 @@ export async function GET(req: NextRequest) {
         FROM "Pedido" p
         JOIN "Organization" o ON p."organizationId" = o."id"
         WHERE
-          p."data_pedido" BETWEEN ${start} AND ${end}
+          p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
           AND p.cancelled = FALSE
         GROUP BY
           o.name,
@@ -125,7 +126,7 @@ export async function GET(req: NextRequest) {
 					FROM "Pedido" p
 					JOIN "Organization" o ON o.id = p."organizationId"
 					WHERE
-						p."data_pedido" BETWEEN ${start} AND ${end}
+						p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
 						AND p."customerId" IS NOT NULL
 	
 						-- garante que esse cliente tenha EXATAMENTE 1 pedido no banco inteiro
@@ -170,15 +171,15 @@ export async function GET(req: NextRequest) {
         COUNT(DISTINCT p.id) AS sales_count,
         COUNT(DISTINCT p."customerId") FILTER (
           WHERE
-            co.first_order_date BETWEEN ${start} AND ${end}
-            AND co.last_order_date BETWEEN ${start} AND ${end}
+            co.first_order_date BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
+            AND co.last_order_date BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
             AND co.total_orders = 1
         ) AS new_customers
       FROM "Pedido" p
       JOIN "Organization" org ON org.id = p."organizationId"
       LEFT JOIN "SaleItem" i ON i."sale_id" = p.id
       LEFT JOIN customer_orders co ON co."customerId" = p."customerId"
-      WHERE p."data_pedido" BETWEEN ${start} AND ${end}
+      WHERE p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
         AND p.cancelled = false
       GROUP BY org.name
     `);

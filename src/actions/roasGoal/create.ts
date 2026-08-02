@@ -3,6 +3,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 
 interface ICreateRoasGoalAction {
@@ -14,6 +15,7 @@ export async function CreateRoasGoalAction({
 	goalDateRef,
 	roas,
 }: ICreateRoasGoalAction) {
+	await requireAdmin();
 	try {
 		const goal = await prisma.roasGoal.create({
 			data: {
@@ -30,7 +32,7 @@ export async function CreateRoasGoalAction({
 			};
 		}
 
-		revalidatePath('/');
+		revalidatePath('/dashboard/goals-marketing');
 
 		return {
 			error: null,
