@@ -42,17 +42,7 @@ export default function HistoryMarketingGoals({
 }) {
 	const allData = use(data);
 
-	const history = allData.data;
-	if (!history || !allData.ok) {
-		console.log(allData.error);
-		return (
-			<Card>
-				<CardHeader>
-					<CardTitle> Dados Não Encontrados</CardTitle>
-				</CardHeader>
-			</Card>
-		);
-	}
+	const history = allData.data ?? [];
 	const {
 		pageIndex,
 		pageSize,
@@ -62,6 +52,16 @@ export default function HistoryMarketingGoals({
 		setPageSize,
 	} = useClientPagination(history);
 
+	if (!allData.data || !allData.ok) {
+		console.log(allData.error);
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle> Dados Não Encontrados</CardTitle>
+				</CardHeader>
+			</Card>
+		);
+	}
 	return (
 		<div className='flex flex-col gap-5'>
 			<Accordion

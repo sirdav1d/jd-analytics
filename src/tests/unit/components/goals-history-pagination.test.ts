@@ -2,7 +2,8 @@
 
 import React, { createElement } from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import * as clientPagination from '@/hooks/use-client-pagination';
 
 type FulfilledPromise<T> = Promise<T> & {
 	status: 'fulfilled';
@@ -20,9 +21,39 @@ Object.assign(React, {
 	use: <T,>(promise: FulfilledPromise<T>) => promise.value,
 });
 
-afterEach(cleanup);
+afterEach(() => {
+	cleanup();
+	vi.restoreAllMocks();
+});
 
 describe('goal histories pagination', () => {
+	it('calls the marketing pagination Hook when the response becomes invalid', async () => {
+		const paginationSpy = vi.spyOn(clientPagination, 'useClientPagination');
+		const { default: HistoryMarketingGoals } = await import(
+			'@/app/dashboard/(admin)/goals-marketing/_components/history-marketing-goals'
+		);
+		const validData = fulfilled({
+			ok: true,
+			data: [
+				{
+					goalDateRef: '2026-06-01T00:00:00.000Z',
+					faturamento: 100,
+					custo: 10,
+					roasAtingido: 10,
+					roas: 3,
+				},
+			],
+		});
+		const invalidData = fulfilled({ ok: false, data: null, error: 'indisponível' });
+		const { rerender } = render(createElement(HistoryMarketingGoals, { data: validData }));
+
+		rerender(createElement(HistoryMarketingGoals, { data: invalidData }));
+
+		expect(paginationSpy).toHaveBeenCalledTimes(2);
+		expect(paginationSpy).toHaveBeenLastCalledWith([]);
+		expect(screen.getByText('Dados Não Encontrados')).toBeTruthy();
+	});
+
 	it('paginates marketing history table rows', async () => {
 		const { default: HistoryMarketingGoals } = await import(
 			'@/app/dashboard/(admin)/goals-marketing/_components/history-marketing-goals'
@@ -42,6 +73,10 @@ describe('goal histories pagination', () => {
 		fireEvent.click(screen.getByRole('button', { name: /Histórico de metas/i }));
 
 		expect(screen.getByText('2026-06')).toBeTruthy();
+		expect(screen.getByText('2026-05')).toBeTruthy();
+		expect(screen.getByText('2026-04')).toBeTruthy();
+		expect(screen.getByText('2026-03')).toBeTruthy();
+		expect(screen.getByText('2026-02')).toBeTruthy();
 		expect(screen.queryByText('2026-01')).toBeNull();
 		fireEvent.click(screen.getByRole('link', { name: 'Próxima página' }));
 		expect(screen.getByText('2026-01')).toBeTruthy();
