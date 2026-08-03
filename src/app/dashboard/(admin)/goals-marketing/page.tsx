@@ -9,6 +9,8 @@ import ModalFormGoal from './_components/modal-form-goal';
 import BigNumberRoas from './_components/big-number-roas';
 import HistoryMarketingGoals from './_components/history-marketing-goals';
 
+export const dynamic = 'force-dynamic';
+
 export default async function GoalsMarketing() {
 	await requireAdminPage();
 	const { bigNumbers, history } = createMarketingGoalLoaders();
