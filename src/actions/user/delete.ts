@@ -26,7 +26,7 @@ export async function deleteUserAction(userId: string) {
 			};
 		}
 		//enviar credenciais para e-mail cadastrado
-		revalidateTag('users');
+		revalidateTag('users', { expire: 0 });
 		revalidatePath('/dashboard/users');
 		return {
 			error: null,

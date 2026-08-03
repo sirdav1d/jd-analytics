@@ -30,7 +30,12 @@ const SALES_CACHE_TAGS = [
   "big-numbers-comercial",
   "origin",
   "origin-data",
+  "goals-current",
 ] as const;
+
+export function revalidateSalesCaches() {
+  for (const tag of SALES_CACHE_TAGS) revalidateTag(tag, { expire: 0 });
+}
 
 function historicalIdentityKey(
   organizationId: string,
@@ -299,9 +304,7 @@ export function buildProductionSyncDependencies(
         expected,
       });
     },
-    revalidateSales() {
-      for (const tag of SALES_CACHE_TAGS) revalidateTag(tag);
-    },
+    revalidateSales: revalidateSalesCaches,
     logger,
   };
 }

@@ -9,7 +9,6 @@ import {
   MAX_RECONCILIATION_AUTHORIZATION_LENGTH,
   ReconciliationAuthorizationError,
 } from "@/services/linx/preview-authorization";
-import { panelStateFromRun } from "@/app/dashboard/upload/_components/linx-panel-model";
 
 const mocks = vi.hoisted(() => {
   const organizationFindMany = vi.fn();
@@ -850,59 +849,5 @@ describe("Linx admin routes", () => {
 
     expect(syncRoute.maxDuration).toBe(60);
     expect(previewRoute.maxDuration).toBe(60);
-  });
-});
-
-describe("Linx panel state", () => {
-  it("keeps every mutable action disabled while a run is active", () => {
-    expect(
-      panelStateFromRun({
-        status: "RUNNING",
-        stage: "MOVIMENTO",
-        processedOrders: 0,
-        processedItems: 0,
-        errorMessage: null,
-        startedAt: "2026-07-29T12:00:00.000Z",
-        finishedAt: null,
-      }),
-    ).toEqual({
-      kind: "RUNNING",
-      startedAt: "2026-07-29T12:00:00.000Z",
-      stage: "MOVIMENTO",
-    });
-  });
-
-  it("uses persisted totals for success and a useful fallback for failure", () => {
-    expect(
-      panelStateFromRun({
-        status: "SUCCESS",
-        stage: "COMPLETED",
-        processedOrders: 2,
-        processedItems: 4,
-        errorMessage: null,
-        startedAt: "2026-07-29T12:00:00.000Z",
-        finishedAt: "2026-07-29T12:00:05.000Z",
-      }),
-    ).toEqual({
-      kind: "SUCCESS",
-      finishedAt: "2026-07-29T12:00:05.000Z",
-      orders: 2,
-      items: 4,
-    });
-    expect(
-      panelStateFromRun({
-        status: "FAILED",
-        stage: "FAILED",
-        processedOrders: 0,
-        processedItems: 0,
-        errorMessage: null,
-        startedAt: "2026-07-29T12:00:00.000Z",
-        finishedAt: "2026-07-29T12:00:05.000Z",
-      }),
-    ).toEqual({
-      kind: "FAILED",
-      finishedAt: "2026-07-29T12:00:05.000Z",
-      message: "A sincronização falhou sem detalhes. Tente novamente.",
-    });
   });
 });

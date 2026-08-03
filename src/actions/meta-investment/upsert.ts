@@ -36,8 +36,8 @@ export async function UpsertMetaInvestmentAction({
 			},
 		});
 
-		revalidateTag('meta-investments');
-		revalidateTag('marketing-report');
+		revalidateTag('meta-investments', { expire: 0 });
+		revalidateTag('marketing-report', { expire: 0 });
 		revalidatePath('/dashboard/meta-investments');
 		revalidatePath('/marketing-report/current');
 

@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
 			(tx) => importSales(tx, sales),
 			{ maxWait: 5_000, timeout: 30_000 },
 		);
-		for (const tag of ORDER_UPLOAD_CACHE_TAGS) revalidateTag(tag);
+		for (const tag of ORDER_UPLOAD_CACHE_TAGS)
+			revalidateTag(tag, { expire: 0 });
 		return NextResponse.json(summary);
 	} catch {
 		return NextResponse.json(

@@ -129,7 +129,7 @@ describe('marketing goals loaders', () => {
 		]);
 	});
 
-	it('reuses closed-month cache but refreshes the current month for each loader creation', async () => {
+	it('reuses the current-month cache for five minutes and keeps the closed-month daily cache', async () => {
 		const { createMarketingGoalLoaders } = await import(
 			'@/services/data-services/get-marketing-goals'
 		);
@@ -140,7 +140,11 @@ describe('marketing goals loaders', () => {
 		await Promise.all([second.bigNumbers, second.history]);
 
 		expect(mocks.report.mock.calls.filter(([query]) => query.from_date === '2026-06-01')).toHaveLength(1);
-		expect(mocks.report.mock.calls.filter(([query]) => query.from_date === '2026-08-01')).toHaveLength(2);
+		expect(mocks.report.mock.calls.filter(([query]) => query.from_date === '2026-08-01')).toHaveLength(1);
+		expect(mocks.cacheOptions).toContainEqual({
+			revalidate: 300,
+			tags: ['marketing-goals-google-ads-current'],
+		});
 		expect(mocks.cacheOptions).toContainEqual({
 			revalidate: 86_400,
 			tags: ['marketing-goals-google-ads-history'],

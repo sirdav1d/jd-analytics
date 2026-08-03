@@ -83,4 +83,27 @@ describe('admin TanStack table pagination', () => {
 			screen.getByRole('combobox', { name: 'Linhas por página' }).textContent,
 		).toBe('5');
 	});
+
+	it('shows the users empty state when the response data is null', () => {
+		type UserRecord = {
+			id: string;
+			name: string;
+			email: string;
+			role: string;
+		};
+		const columns: ColumnDef<UserRecord>[] = [
+			{ accessorKey: 'name', header: 'Nome' },
+			{ accessorKey: 'email', header: 'E-mail' },
+			{ accessorKey: 'role', header: 'Cargo' },
+		];
+
+		render(
+			createElement(UsersDataTable<UserRecord, unknown>, {
+				columns,
+				data: fulfilledPromise({ data: null }),
+			}),
+		);
+
+		expect(screen.getByText('Dados não encontrados')).toBeTruthy();
+	});
 });

@@ -1,8 +1,7 @@
 import bcrypt from "bcrypt";
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { redirect } from "next/navigation";
-import { assertActiveAdmin, AuthorizationError } from "@/lib/authorization";
+import { assertActiveAdmin, assertActiveUser } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
@@ -71,11 +70,8 @@ export async function requireAdmin() {
 	return user;
 }
 
-export async function requireAdminPage() {
-	try {
-		return await requireAdmin();
-	} catch (error) {
-		if (error instanceof AuthorizationError) redirect("/dashboard");
-		throw error;
-	}
+export async function requireActiveUser() {
+	const user = await getCurrentUser();
+	assertActiveUser(user);
+	return user;
 }

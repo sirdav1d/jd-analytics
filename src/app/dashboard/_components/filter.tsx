@@ -3,21 +3,29 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { format, startOfMonth } from 'date-fns';
-import { Loader2, Zap } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { format, isValid, parseISO, startOfMonth } from 'date-fns';
+import { Search } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
+
+function dateFromSearchParam(value: string | null, fallback: Date) {
+	if (!value) return fallback;
+
+	const parsed = parseISO(value);
+	return isValid(parsed) ? parsed : fallback;
+}
 
 export default function Filter() {
 	const now = new Date();
 	const searchParams = useSearchParams();
 	const [dateRange, setDateRange] = useState({
-		to: searchParams.get('endDate') || now,
-		from: searchParams.get('startDate') || startOfMonth(now),
+		from: dateFromSearchParam(searchParams.get('startDate'), startOfMonth(now)),
+		to: dateFromSearchParam(searchParams.get('endDate'), now),
 	});
 
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
+	const pathname = usePathname();
 
 	const handleDateChange = async (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -28,19 +36,25 @@ export default function Filter() {
 		if (dateRange.from && dateRange.to) {
 			const formattedFrom = format(dateRange.from, 'yyyy-MM-dd');
 			const formattedTo = format(dateRange.to, 'yyyy-MM-dd');
+			const isCurrentRange =
+				searchParams.get('startDate') === formattedFrom &&
+				searchParams.get('endDate') === formattedTo;
 
-			// Atualiza a URL sem recarregar a página (opção shallow para evitar recarregamento total)
-			startTransition(async () => {
+			startTransition(() => {
+				if (isCurrentRange) {
+					router.refresh();
+					return;
+				}
+
+				const nextParams = new URLSearchParams(searchParams.toString());
+				nextParams.set('startDate', formattedFrom);
+				nextParams.set('endDate', formattedTo);
 				router.push(
-					`/dashboard?startDate=${encodeURIComponent(
-						formattedFrom,
-					)}&endDate=${encodeURIComponent(formattedTo)}`,
+					`${pathname}?${nextParams.toString()}`,
 					{ scroll: false },
 				);
 			});
 		}
-
-		// Atualiza a URL com os parâmetros de data
 	};
 
 	return (
@@ -49,15 +63,7 @@ export default function Filter() {
 				onClick={(e) => handleDateChange(e)}
 				className='disabled:opacity-70 w-full md:w-fit'
 				disabled={isPending}>
-				{isPending ? (
-					<>
-						Atualizar <Loader2 className='animate-spin' />
-					</>
-				) : (
-					<>
-						Atualizar <Zap />
-					</>
-				)}
+				<Search />	Buscar
 			</Button>
 			<DatePickerWithRange
 				date={dateRange}

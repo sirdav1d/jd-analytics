@@ -50,6 +50,13 @@ vi.mock("next/link", async () => {
 			createElement("a", null, children),
 	};
 });
+vi.mock("@/components/linx-sync-control", async () => {
+	const { createElement } = await import("react");
+	return {
+		LinxSyncControl: ({ variant }: { variant: string }) =>
+			createElement("span", { "data-testid": `linx-${variant}` }, variant),
+	};
+});
 
 describe("AppSidebar", () => {
 	it("does not render administrative navigation for an active non-admin", () => {
@@ -58,5 +65,8 @@ describe("AppSidebar", () => {
 		expect(markup).not.toContain("Administrativo");
 		expect(markup).not.toContain("Definição de Metas");
 		expect(markup).not.toContain("Upload CSV");
+		expect(markup).toContain("linx-mobile");
+		expect(markup).toMatch(/<footer>.*linx-mobile.*<\/footer>/);
+		expect(markup).not.toContain("linx-desktop");
 	});
 });

@@ -1,5 +1,7 @@
+import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import DashboardLayout from "@/app/dashboard/layout";
+import AuthenticationLayout from "@/app/(public)/(auth)/layout";
 import MetaInvestmentsSection from "@/app/dashboard/(admin)/meta-investments/_components/meta-investments-section";
 
 vi.mock("@/lib/auth", () => ({
@@ -18,7 +20,9 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 vi.mock("next-auth", () => ({
-	getServerSession: async () => null,
+	getServerSession: async () => {
+		throw new Error("server session access is navigation middleware's responsibility");
+	},
 }));
 
 vi.mock("next/headers", () => ({
@@ -32,10 +36,21 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("dashboard layouts", () => {
-	it("redirects an unauthenticated platform user to the sign-in page", async () => {
-		await expect(DashboardLayout({ children: null })).rejects.toThrow(
-			"redirected to /sign-in",
-		);
+	it("returns the dashboard shell without reading the server session", async () => {
+		await expect(
+			DashboardLayout({ children: createElement("p", null, "Dashboard content") }),
+		).resolves.toMatchObject({
+			props: { defaultOpen: true },
+		});
+	});
+
+	it("returns the authentication main structure without session redirects", () => {
+		expect(
+			AuthenticationLayout({ children: createElement("p", null, "Sign in") }),
+		).toMatchObject({
+			type: "main",
+			props: { children: expect.anything() },
+		});
 	});
 
 	it("renders meta investments without database authorization for page navigation", async () => {

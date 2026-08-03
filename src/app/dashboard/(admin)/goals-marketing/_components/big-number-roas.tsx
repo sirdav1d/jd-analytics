@@ -7,10 +7,9 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Goal } from 'lucide-react';
-import React, { use } from 'react';
 import { formatRoas, type RoasValue } from './roas-value';
 
-type BigNumbersResponse = {
+export type BigNumbersResponse = {
 	ok: boolean;
 	bigNumbers: {
 		metaAtual: number | null;
@@ -23,13 +22,11 @@ type BigNumbersResponse = {
 export default function BigNumberRoas({
 	data,
 }: {
-	data: Promise<BigNumbersResponse>;
+	data: BigNumbersResponse;
 }) {
-	const allData = use(data);
-
-	const bigNumbersData = allData.bigNumbers;
-	if (!bigNumbersData || !allData.ok) {
-		console.log(allData.error);
+	const bigNumbersData = data.bigNumbers;
+	if (!bigNumbersData || !data.ok) {
+		console.log(data.error);
 		return (
 			<Card>
 				<CardHeader>

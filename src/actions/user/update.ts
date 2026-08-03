@@ -39,8 +39,8 @@ export async function updateUserAction({ userUp }: updateUserActionProps) {
 		const { password: storedPassword, ...safeUser } = user;
 		void storedPassword;
 		//enviar credenciais para e-mail cadastrado
-		revalidateTag('users');
-		revalidateTag('user');
+		revalidateTag('users', { expire: 0 });
+		revalidateTag('user', { expire: 0 });
 		return {
 			error: null,
 			ok: true,

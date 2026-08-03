@@ -32,7 +32,7 @@ describe('goal histories pagination', () => {
 		const { default: HistoryMarketingGoals } = await import(
 			'@/app/dashboard/(admin)/goals-marketing/_components/history-marketing-goals'
 		);
-		const validData = fulfilled({
+		const validData = {
 			ok: true,
 			data: [
 				{
@@ -43,8 +43,8 @@ describe('goal histories pagination', () => {
 					roas: 3,
 				},
 			],
-		});
-		const invalidData = fulfilled({ ok: false, data: null, error: 'indisponível' });
+		};
+		const invalidData = { ok: false, data: null, error: 'indisponível' };
 		const { rerender } = render(createElement(HistoryMarketingGoals, { data: validData }));
 
 		rerender(createElement(HistoryMarketingGoals, { data: invalidData }));
@@ -58,7 +58,7 @@ describe('goal histories pagination', () => {
 		const { default: HistoryMarketingGoals } = await import(
 			'@/app/dashboard/(admin)/goals-marketing/_components/history-marketing-goals'
 		);
-		const data = fulfilled({
+		const data = {
 			ok: true,
 			data: [6, 5, 4, 3, 2, 1].map((month) => ({
 				goalDateRef: `2026-${String(month).padStart(2, '0')}-01T00:00:00.000Z`,
@@ -67,7 +67,7 @@ describe('goal histories pagination', () => {
 				roasAtingido: 10,
 				roas: 3,
 			})),
-		});
+		};
 
 		render(createElement(HistoryMarketingGoals, { data }));
 		fireEvent.click(screen.getByRole('button', { name: /Histórico de metas/i }));

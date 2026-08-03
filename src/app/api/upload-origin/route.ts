@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
 			(tx) => importOrigins(tx, updates),
 			{ maxWait: 5_000, timeout: 30_000 },
 		);
-		for (const tag of ORIGIN_UPLOAD_CACHE_TAGS) revalidateTag(tag);
+		for (const tag of ORIGIN_UPLOAD_CACHE_TAGS)
+			revalidateTag(tag, { expire: 0 });
 		return NextResponse.json(summary);
 	} catch {
 		return NextResponse.json(

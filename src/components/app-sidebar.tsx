@@ -13,6 +13,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { LinxSyncControl } from '@/components/linx-sync-control';
 import {
 	Blocks,
 	ChevronDown,
@@ -268,7 +269,7 @@ export default function AppSidebar() {
 			</SidebarContent>
 
 			<Separator />
-			<SidebarFooter className='bg-white dark:bg-slate-900'>
+			<SidebarFooter className='shrink-0 bg-white dark:bg-slate-900'>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton
@@ -303,6 +304,7 @@ export default function AppSidebar() {
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
+				<LinxSyncControl variant='mobile' />
 			</SidebarFooter>
 		</Sidebar>
 	);

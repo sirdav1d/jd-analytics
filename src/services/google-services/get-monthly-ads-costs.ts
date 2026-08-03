@@ -57,10 +57,11 @@ export const getClosedMonthlyGoogleAdsCosts = unstable_cache(
 	},
 );
 
-export function getCurrentMonthlyGoogleAdsCosts(
-	scope: GoogleAdsScope,
-	fromDate: string,
-	toDate: string,
-) {
-	return reportMonthlyGoogleAdsCosts(scope, fromDate, toDate);
-}
+export const getCurrentMonthlyGoogleAdsCosts = unstable_cache(
+	reportMonthlyGoogleAdsCosts,
+	['marketing-goals-google-ads-current'],
+	{
+		revalidate: 300,
+		tags: ['marketing-goals-google-ads-current'],
+	},
+);

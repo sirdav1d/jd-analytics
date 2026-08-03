@@ -1,24 +1,8 @@
 // @vitest-environment jsdom
 
-import React, { createElement } from "react";
+import { createElement } from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-
-type FulfilledPromise<T> = Promise<T> & {
-	status: "fulfilled";
-	value: T;
-};
-
-function fulfilled<T>(value: T): FulfilledPromise<T> {
-	return Object.assign(Promise.resolve(value), {
-		status: "fulfilled" as const,
-		value,
-	});
-}
-
-Object.assign(React, {
-	use: <T,>(promise: FulfilledPromise<T>) => promise.value,
-});
 
 afterEach(cleanup);
 
@@ -27,14 +11,14 @@ describe("marketing ROAS without investment", () => {
 		const { default: BigNumberRoas } = await import(
 			"@/app/dashboard/(admin)/goals-marketing/_components/big-number-roas"
 		);
-		const data = fulfilled({
+		const data = {
 			ok: true,
 			bigNumbers: {
 				metaAtual: 3,
 				roasAtingido: 2.5,
 				roasPrevisto: null,
 			},
-		});
+		};
 
 		render(createElement(BigNumberRoas, { data }));
 
@@ -45,7 +29,7 @@ describe("marketing ROAS without investment", () => {
 		const { default: HistoryMarketingGoals } = await import(
 			"@/app/dashboard/(admin)/goals-marketing/_components/history-marketing-goals"
 		);
-		const data = fulfilled({
+		const data = {
 			ok: true,
 			data: [
 				{
@@ -56,7 +40,7 @@ describe("marketing ROAS without investment", () => {
 					roas: 3,
 				},
 			],
-		});
+		};
 
 		render(createElement(HistoryMarketingGoals, { data }));
 		fireEvent.click(

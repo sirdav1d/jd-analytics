@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export const DEFAULT_PAGE_SIZE = 5;
 export const PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50] as const;
@@ -13,8 +13,14 @@ export function useClientPagination<T>(
   const [pageSize, setStoredPageSize] = useState(initialPageSize);
   const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
   const safePageIndex = Math.min(pageIndex, pageCount - 1);
+  const [previousPageCount, setPreviousPageCount] = useState(pageCount);
 
-  useEffect(() => setStoredPageIndex((current) => Math.min(current, pageCount - 1)), [pageCount]);
+  if (previousPageCount !== pageCount) {
+    setPreviousPageCount(pageCount);
+    if (pageIndex > pageCount - 1) {
+      setStoredPageIndex(pageCount - 1);
+    }
+  }
 
   const setPageIndex = (next: number) =>
     setStoredPageIndex(Math.min(Math.max(next, 0), pageCount - 1));

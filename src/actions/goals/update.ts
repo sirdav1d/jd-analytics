@@ -32,12 +32,12 @@ export async function UpdateSalesGoalAction({
 			};
 		}
 
-		revalidateTag('users');
-		revalidateTag('rankings');
-		revalidateTag('tracking-goal');
-		revalidateTag('goal');
-		revalidateTag('sales-by');
-		revalidateTag('big-numbers-comercial');
+		revalidateTag('users', { expire: 0 });
+		revalidateTag('rankings', { expire: 0 });
+		revalidateTag('tracking-goal', { expire: 0 });
+		revalidateTag('goal', { expire: 0 });
+		revalidateTag('sales-by', { expire: 0 });
+		revalidateTag('big-numbers-comercial', { expire: 0 });
 
 		return {
 			error: null,

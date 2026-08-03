@@ -44,7 +44,7 @@ export async function createUserAction(
 		const { password: storedPassword, ...safeUser } = user;
 		void storedPassword;
 		//enviar credenciais para e-mail cadastrado
-		revalidateTag('users');
+		revalidateTag('users', { expire: 0 });
 		return {
 			error: null,
 			ok: true,

@@ -16,7 +16,6 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { DatabaseBackup } from 'lucide-react';
-import React, { use } from 'react';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { useClientPagination } from '@/hooks/use-client-pagination';
 import { formatRoas, type RoasValue } from './roas-value';
@@ -29,7 +28,7 @@ type MarketingGoalHistoryItem = {
 	roas: number;
 };
 
-type MarketingGoalsResponse = {
+export type MarketingGoalsResponse = {
 	ok: boolean;
 	data: MarketingGoalHistoryItem[] | null;
 	error?: string | null;
@@ -38,11 +37,9 @@ type MarketingGoalsResponse = {
 export default function HistoryMarketingGoals({
 	data,
 }: {
-	data: Promise<MarketingGoalsResponse>;
+	data: MarketingGoalsResponse;
 }) {
-	const allData = use(data);
-
-	const history = allData.data ?? [];
+	const history = data.data ?? [];
 	const {
 		pageIndex,
 		pageSize,
@@ -52,8 +49,8 @@ export default function HistoryMarketingGoals({
 		setPageSize,
 	} = useClientPagination(history);
 
-	if (!allData.data || !allData.ok) {
-		console.log(allData.error);
+	if (!data.data || !data.ok) {
+		console.log(data.error);
 		return (
 			<Card>
 				<CardHeader>

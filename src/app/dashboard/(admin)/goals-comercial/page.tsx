@@ -9,11 +9,9 @@ import HistoryGoal from './_components/history-goals';
 import { DataTable } from '../_components/data-table-current-goal/data-table';
 import { FetchGoalTargetData } from '@/services/data-services/get-goal-target';
 import { columns } from '../_components/data-table-current-goal/columns';
-import { requireAdminPage } from '@/lib/auth';
 import { readAllSellers } from '@/services/data-services/get-sellers';
 
 export default async function GoalsComercial() {
-	await requireAdminPage();
 	const [data, newData] = [readAllSellers(), FetchGoalTargetData()];
 
 	const today = new Date();

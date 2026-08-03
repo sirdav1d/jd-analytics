@@ -6,10 +6,15 @@ const prismaMock = vi.hoisted(() => ({
     findMany: vi.fn(),
   },
 }));
+const revalidateTag = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }));
+vi.mock("next/cache", () => ({ revalidateTag }));
 
-import { buildCatalogReader } from "@/services/linx/sync-runtime";
+import {
+  buildCatalogReader,
+  revalidateSalesCaches,
+} from "@/services/linx/sync-runtime";
 
 const identity = {
   identifier: "7c0ab11c-95b6-4e14-8186-bb5292198ff1",
@@ -22,6 +27,21 @@ const uppercaseIdentity = {
 };
 
 describe("Linx runtime complement reader", () => {
+  it("invalidates every sales consumer after a successful Linx commit", () => {
+    revalidateSalesCaches();
+
+    expect(revalidateTag.mock.calls.map(([tag]) => tag)).toEqual([
+      "tracking-goal",
+      "home",
+      "sales-by",
+      "rankings",
+      "big-numbers-comercial",
+      "origin",
+      "origin-data",
+      "goals-current",
+    ]);
+  });
+
   it("resolves routine/response deltas with one organization-bound GUID query and includes unbound Linx pedidos", async () => {
     prismaMock.pedido.findMany.mockResolvedValue([
       {

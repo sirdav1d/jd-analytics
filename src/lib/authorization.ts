@@ -24,3 +24,12 @@ export function assertActiveAdmin(
 		throw new AuthorizationError(403, "Acesso restrito a administradores");
 	}
 }
+
+export function assertActiveUser(
+	user: AuthorizedUser | null,
+): asserts user is AuthorizedUser {
+	if (!user) throw new AuthorizationError(401, "Não autenticado");
+	if (!user.isActive) {
+		throw new AuthorizationError(403, "Usuário inativo");
+	}
+}
