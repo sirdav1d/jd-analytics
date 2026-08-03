@@ -2,11 +2,13 @@
 
 import { getOAuth2Client } from '@/lib/google-client';
 import { prisma } from '@/lib/prisma';
-import type { OAuth2Client } from 'google-auth-library';
 
 export async function getAuthenticatedClient(
 	orgId: string,
-): Promise<{ oauth2Client: OAuth2Client; refreshToken: string }> {
+): Promise<{
+	oauth2Client: ReturnType<typeof getOAuth2Client>;
+	refreshToken: string;
+}> {
 	// 1) Se já tivermos um cliente em memória, retorne imediatamente
 
 	// 2) Caso contrário, busque as credenciais no banco
