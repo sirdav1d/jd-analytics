@@ -48,4 +48,17 @@ describe('shared table pagination', () => {
     fireEvent.click(screen.getByRole('link', { name: 'Página 2' }));
     expect(onPageChange).toHaveBeenCalledWith(1);
   });
+
+  it('adds shared vertical spacing to visible pagination navigation', () => {
+    render(createElement(TablePagination, {
+      pageIndex: 0,
+      pageSize: 5,
+      pageCount: 3,
+      totalItems: 11,
+      onPageChange: vi.fn(),
+      onPageSizeChange: vi.fn(),
+    }));
+
+    expect(screen.getByRole('navigation', { name: 'Paginação' }).classList.contains('py-5')).toBe(true);
+  });
 });

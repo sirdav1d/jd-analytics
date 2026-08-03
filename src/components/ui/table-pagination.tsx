@@ -75,7 +75,7 @@ export function TablePagination({
           </SelectContent>
         </Select>
       </div>
-      <Pagination aria-label='Paginação' className='mx-0 w-auto justify-end'>
+      <Pagination aria-label='Paginação' className='mx-0 w-auto justify-end py-5'>
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
