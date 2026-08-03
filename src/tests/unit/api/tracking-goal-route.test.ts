@@ -1,4 +1,4 @@
-import { beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
@@ -22,6 +22,8 @@ vi.mock("@/lib/prisma", () => ({
 import { GET } from "@/app/api/services/data-services/tracking-goal/route";
 
 beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date("2026-08-01T15:00:00.000Z"));
   mocks.pedidoGroupBy.mockResolvedValue([
     { userId: "manager-who-sells", _count: { id: 3 } },
   ]);
@@ -41,6 +43,10 @@ beforeEach(() => {
     }
     return [];
   });
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 test("keeps valid Linx sellers in goal charts regardless of their login role", async () => {

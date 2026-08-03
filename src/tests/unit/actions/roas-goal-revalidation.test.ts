@@ -15,9 +15,10 @@ vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidatePath }));
 
 describe('ROAS goal mutations', () => {
 	beforeEach(() => {
-		mocks.requireAdmin.mockResolvedValue(undefined);
-		mocks.create.mockResolvedValue({ id: 'created', roas: 4 });
-		mocks.update.mockResolvedValue({ id: 'updated', roas: 5 });
+		mocks.requireAdmin.mockReset().mockResolvedValue(undefined);
+		mocks.create.mockReset().mockResolvedValue({ id: 'created', roas: 4 });
+		mocks.update.mockReset().mockResolvedValue({ id: 'updated', roas: 5 });
+		mocks.revalidatePath.mockReset();
 	});
 
 	it('revalidates the marketing goals page after creation succeeds', async () => {
@@ -29,6 +30,8 @@ describe('ROAS goal mutations', () => {
 		});
 
 		expect(mocks.revalidatePath).toHaveBeenCalledWith('/dashboard/goals-marketing');
+		expect(mocks.requireAdmin).toHaveBeenCalledTimes(1);
+		expect(mocks.revalidatePath).toHaveBeenCalledTimes(1);
 	});
 
 	it('revalidates the marketing goals page after update succeeds', async () => {
@@ -37,5 +40,7 @@ describe('ROAS goal mutations', () => {
 		await UpdateRoasGoalAction({ goalId: 'updated', roas: 5 });
 
 		expect(mocks.revalidatePath).toHaveBeenCalledWith('/dashboard/goals-marketing');
+		expect(mocks.requireAdmin).toHaveBeenCalledTimes(1);
+		expect(mocks.revalidatePath).toHaveBeenCalledTimes(1);
 	});
 });

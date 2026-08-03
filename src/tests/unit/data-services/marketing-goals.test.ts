@@ -147,6 +147,116 @@ describe('marketing goals loaders', () => {
 		});
 	});
 
+	it('resolves big numbers while the historical Google report is still pending', async () => {
+		let resolveHistoricalReport!: (rows: unknown[]) => void;
+		const historicalReport = new Promise<unknown[]>((resolve) => {
+			resolveHistoricalReport = resolve;
+		});
+		mocks.report.mockImplementation(async (query) => {
+			if (query.from_date === '2026-06-01') return historicalReport;
+			return [
+				{ segments: { month: '2026-08-01' }, metrics: { cost_micros: 250_000_000 } },
+			];
+		});
+		const { createMarketingGoalLoaders } = await import(
+			'@/services/data-services/get-marketing-goals'
+		);
+		const loaders = createMarketingGoalLoaders(
+			'products',
+			new Date('2026-08-15T15:00:00.000Z'),
+		);
+
+		const firstSettled = await Promise.race([
+			loaders.bigNumbers.then(() => 'bigNumbers'),
+			new Promise<'blocked'>((resolve) => setTimeout(() => resolve('blocked'), 25)),
+		]);
+
+		expect(firstSettled).toBe('bigNumbers');
+		resolveHistoricalReport([
+			{ segments: { month: '2026-06-01' }, metrics: { cost_micros: 100_000_000 } },
+			{ segments: { month: '2026-07-01' }, metrics: { cost_micros: 200_000_000 } },
+		]);
+		await expect(loaders.history).resolves.toMatchObject({ ok: true });
+	});
+
+	it('keeps closed goals in history without blocking current-period cards', async () => {
+		mocks.findMany.mockResolvedValue(goals.slice(2));
+		let resolveHistoricalReport!: (rows: unknown[]) => void;
+		const historicalReport = new Promise<unknown[]>((resolve) => {
+			resolveHistoricalReport = resolve;
+		});
+		mocks.report.mockImplementation(async (query) => {
+			if (query.from_date === '2026-06-01') return historicalReport;
+			return [
+				{ segments: { month: '2026-08-01' }, metrics: { cost_micros: 250_000_000 } },
+			];
+		});
+		const { createMarketingGoalLoaders } = await import(
+			'@/services/data-services/get-marketing-goals'
+		);
+		const loaders = createMarketingGoalLoaders(
+			'products',
+			new Date('2026-08-15T15:00:00.000Z'),
+		);
+
+		const firstSettled = await Promise.race([
+			loaders.bigNumbers,
+			new Promise<'blocked'>((resolve) => setTimeout(() => resolve('blocked'), 25)),
+		]);
+
+		expect(firstSettled).toEqual({
+			ok: true,
+			bigNumbers: {
+				metaAtual: null,
+				roasAtingido: 3,
+				roasPrevisto: 3,
+			},
+			error: null,
+		});
+		resolveHistoricalReport([
+			{ segments: { month: '2026-06-01' }, metrics: { cost_micros: 100_000_000 } },
+			{ segments: { month: '2026-07-01' }, metrics: { cost_micros: 200_000_000 } },
+		]);
+		await expect(loaders.history).resolves.toMatchObject({ ok: true });
+	});
+
+	it('returns only future goals without querying revenue or Google Ads', async () => {
+		mocks.findMany.mockResolvedValue([goals[0]]);
+		const { createMarketingGoalLoaders } = await import(
+			'@/services/data-services/get-marketing-goals'
+		);
+		const loaders = createMarketingGoalLoaders(
+			'products',
+			new Date('2026-08-15T15:00:00.000Z'),
+		);
+
+		const [bigNumbers, history] = await Promise.all([
+			loaders.bigNumbers,
+			loaders.history,
+		]);
+
+		expect(bigNumbers).toEqual({
+			ok: true,
+			bigNumbers: {
+				metaAtual: null,
+				roasAtingido: null,
+				roasPrevisto: null,
+			},
+			error: null,
+		});
+		expect(history.data).toEqual([
+			expect.objectContaining({
+				id: 'future',
+				faturamento: 0,
+				custo: 0,
+				roasAtingido: null,
+			}),
+		]);
+		expect(mocks.queryRaw).not.toHaveBeenCalled();
+		expect(mocks.report).not.toHaveBeenCalled();
+		expect(mocks.getAuthenticatedClient).not.toHaveBeenCalled();
+	});
+
 	it('keeps zero-cost months nullable and never requests a future range', async () => {
 		mocks.report.mockImplementation(async (query) =>
 			query.from_date === '2026-06-01'
