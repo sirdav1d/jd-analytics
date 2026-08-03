@@ -17,7 +17,11 @@ interface DataItem {
 	current: number;
 	previous: number;
 	diff: number;
-	percentChange: number;
+	percentChange: number | null;
+}
+
+function formatPercentChange(value: number | null) {
+	return value === null ? 'N/A' : `${value.toFixed(2)}%`;
 }
 
 interface ListStaticADSProps {
@@ -51,8 +55,14 @@ export default function ListStaticADS({
 					<div className='text-2xl font-bold flex items-center gap-3'>
 						{formatCurrency(cost_micros.current / 1_000_000)}
 						<Badge
-							variant={`${cost_micros.diff > 0 ? 'destructive' : 'success'}`}>
-							{cost_micros.percentChange.toFixed(2)}%
+							variant={
+								cost_micros.percentChange === null
+									? 'outline'
+									: cost_micros.diff > 0
+										? 'destructive'
+										: 'success'
+							}>
+							{formatPercentChange(cost_micros.percentChange)}
 							{cost_micros.diff < 0 ? (
 								<TrendingDown
 									size={16}
@@ -82,8 +92,14 @@ export default function ListStaticADS({
 					<div className='text-2xl font-bold  flex items-center gap-3'>
 						{impressions ? impressions.current.toLocaleString('pt-BR') : 0}
 						<Badge
-							variant={`${impressions.diff < 0 ? 'destructive' : 'success'}`}>
-							{impressions.percentChange.toFixed(2)}%
+							variant={
+								impressions.percentChange === null
+									? 'outline'
+									: impressions.diff < 0
+										? 'destructive'
+										: 'success'
+							}>
+							{formatPercentChange(impressions.percentChange)}
 							{impressions.diff < 0 ? (
 								<TrendingDown
 									size={16}
@@ -112,8 +128,15 @@ export default function ListStaticADS({
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3'>
 						{clicks ? clicks.current.toLocaleString('pt-BR') : 0}
-						<Badge variant={`${clicks.diff < 0 ? 'destructive' : 'success'}`}>
-							{clicks.percentChange.toFixed(2)}%
+						<Badge
+							variant={
+								clicks.percentChange === null
+									? 'outline'
+									: clicks.diff < 0
+										? 'destructive'
+										: 'success'
+							}>
+							{formatPercentChange(clicks.percentChange)}
 							{clicks.diff < 0 ? (
 								<TrendingDown
 									size={16}
@@ -143,8 +166,15 @@ export default function ListStaticADS({
 				<CardContent>
 					<div className='text-2xl font-bold flex items-center gap-3'>
 						{(ctr.current * 100).toFixed(2)}%{' '}
-						<Badge variant={`${ctr.diff < 0 ? 'destructive' : 'success'}`}>
-							{ctr.percentChange.toFixed(2)}%
+						<Badge
+							variant={
+								ctr.percentChange === null
+									? 'outline'
+									: ctr.diff < 0
+										? 'destructive'
+										: 'success'
+							}>
+							{formatPercentChange(ctr.percentChange)}
 							{ctr.diff < 0 ? (
 								<TrendingDown
 									size={16}

@@ -13,10 +13,8 @@ export default function SectionLinx({
 	data: Promise<any>;
 }) {
 	const response = use(data);
-	console.log(response);
 
 	if (!response.ok || !response.data) {
-		console.log('LINX', response.error);
 		return (
 			<Card>
 				<CardHeader>

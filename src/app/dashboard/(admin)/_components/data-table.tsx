@@ -47,7 +47,7 @@ import { Separator } from '@/components/ui/separator';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
-	data: Promise<{ data: TData[] }>;
+	data: Promise<{ data: TData[] | null } | null | undefined>;
 }
 
 export function DataTable<TData, TValue>({
@@ -55,6 +55,7 @@ export function DataTable<TData, TValue>({
 	data,
 }: DataTableProps<TData, TValue>) {
 	const allData = use(data);
+	const tableData = Array.isArray(allData?.data) ? allData.data : [];
 
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -62,7 +63,7 @@ export function DataTable<TData, TValue>({
 	// const [customerType, setCustomerType] = useState('new');
 
 	const table = useReactTable({
-		data: allData.data,
+		data: tableData,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
@@ -74,9 +75,12 @@ export function DataTable<TData, TValue>({
 			sorting,
 			columnFilters,
 		},
+		initialState: {
+			pagination: { pageIndex: 0, pageSize: 5 },
+		},
 	});
 
-	if (!allData) {
+	if (!Array.isArray(allData?.data)) {
 		return <p>Dados não encontrados</p>;
 	}
 

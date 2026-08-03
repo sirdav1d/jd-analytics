@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { FetchBigNumbers } from '@/services/data-services/get-comercial-big-numbers';
 import { FetchSalesBy } from '@/services/data-services/get-comercial-sales-by';
 import { FetchRankings } from '@/services/data-services/get-rankings';
-import { startOfMonth } from 'date-fns';
+import { formatBusinessCivilDate } from '@/services/data-services/civil-date-range';
 import { Suspense } from 'react';
 import BigNumbers from './_components/big-numbers';
 import { CustomerComparisonChartComponent } from './_components/customer-comparison';
@@ -32,15 +32,10 @@ export default async function ComercialDashboard(props: {
 	searchParams: SearchParams;
 }) {
 	function formattedEndDate() {
-		const date = new Date();
-		const endDate = date.toISOString().split('T')[0];
-		return endDate;
+		return formatBusinessCivilDate();
 	}
 	function formattedStartDate() {
-		const date = new Date();
-		const start = startOfMonth(date);
-		const startDate = start.toISOString().split('T')[0];
-		return startDate;
+		return `${formatBusinessCivilDate().slice(0, 7)}-01`;
 	}
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();

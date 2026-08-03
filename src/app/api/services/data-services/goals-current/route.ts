@@ -1,15 +1,17 @@
 /** @format */
 
 import { prisma } from '@/lib/prisma';
+import { formatBusinessCivilDate } from '@/services/data-services/civil-date-range';
 import { getMarketingReportAggregate } from '@/services/marketing-report/get-marketing-report-aggregate';
-import { endOfMonth, startOfMonth } from 'date-fns';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
 	try {
-		const today = new Date();
-		const monthStart = startOfMonth(today);
-		const monthEnd = endOfMonth(today);
+		const todayCivil = formatBusinessCivilDate();
+		const [year, month, day] = todayCivil.split('-').map(Number);
+		const monthStart = new Date(Date.UTC(year, month - 1, 1));
+		const nextMonthStart = new Date(Date.UTC(year, month, 1));
+		const today = new Date(Date.UTC(year, month - 1, day));
 
 		// 1. Commercial Data (Revenue)
 		// Get current month revenue goals
@@ -17,7 +19,7 @@ export async function GET() {
 			where: {
 				goalDateRef: {
 					gte: monthStart,
-					lte: monthEnd,
+					lt: nextMonthStart,
 				},
 			},
 		});
@@ -61,7 +63,7 @@ export async function GET() {
 			where: {
 				goalDateRef: {
 					gte: monthStart,
-					lte: monthEnd,
+					lt: nextMonthStart,
 				},
 			},
 		});
@@ -73,7 +75,7 @@ export async function GET() {
 			roasTarget = roasGoal.roas;
 		}
 
-		const aggregate = await getMarketingReportAggregate();
+		const aggregate = await getMarketingReportAggregate({ date: todayCivil });
 		if (aggregate.ok) {
 			currentRoas = aggregate.data.roasGeral;
 		}

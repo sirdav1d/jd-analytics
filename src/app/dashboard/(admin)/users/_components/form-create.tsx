@@ -41,6 +41,12 @@ const formSchema = z.object({
 		.min(6, { message: 'A senha deve ter no mínimo 6 dígitos' }),
 });
 
+function generateExternalID() {
+	const timestamp = Date.now();
+	const random = Math.floor(Math.random() * 100000);
+	return `${timestamp}${random}`;
+}
+
 export default function FormCreate() {
 	const [isPending, startTransition] = useTransition();
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -58,9 +64,7 @@ export default function FormCreate() {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		const { name, email, role, password } = values;
-		const timestamp = Date.now();
-		const random = Math.floor(Math.random() * 100000);
-		const externalID = `${timestamp}${random}`;
+		const externalID = generateExternalID();
 
 		startTransition(async () => {
 			const response = await createUserAction(

@@ -24,6 +24,8 @@ import { ptBR } from 'date-fns/locale';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 import type { MetaInvestment } from '@/lib/api/meta-investments';
+import { TablePagination } from '@/components/ui/table-pagination';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 import MetaInvestmentForm from './meta-investment-form';
 
 const currency = new Intl.NumberFormat('pt-BR', {
@@ -48,6 +50,14 @@ export default function MetaInvestmentsTable({
 	investments,
 }: MetaInvestmentsTableProps) {
 	const [openId, setOpenId] = useState<string | null>(null);
+	const {
+		pageIndex,
+		pageSize,
+		pageCount,
+		pageItems,
+		setPageIndex,
+		setPageSize,
+	} = useClientPagination(investments);
 
 	if (!investments || investments.length === 0) {
 		return (
@@ -58,72 +68,83 @@ export default function MetaInvestmentsTable({
 	}
 
 	return (
-		<Table
-			className='rounded-md'
-			title='Histórico de investimentos'>
-			<TableHeader className='bg-secondary'>
-				<TableRow className='bg-secondary text-foreground'>
-					<TableHead className='bg-secondary text-foreground'>
-						Período
-					</TableHead>
-					<TableHead className='text-nowrap text-center text-foreground'>
-						Valor acumulado
-					</TableHead>
-					<TableHead className='text-nowrap text-center text-foreground'>
-						Última atualização
-					</TableHead>
-					<TableHead className='text-nowrap text-center text-foreground'>
-						Ações
-					</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				{investments.map((item) => (
-					<TableRow key={item.id}>
-						<TableCell className='text-nowrap'>
-							{safeFormatDate(item.periodStart)} -{' '}
-							{safeFormatDate(item.periodEnd)}
-						</TableCell>
-						<TableCell className='text-nowrap text-center'>
-							{currency.format(item.totalInvestment)}
-						</TableCell>
-						<TableCell className='text-nowrap text-center'>
-							{format(new Date(item.lastSyncAt), "dd/MM/yyyy 'as' HH:mm", {
-								locale: ptBR,
-							})}
-						</TableCell>
-						<TableCell className='text-nowrap text-center'>
-							<Dialog
-								open={openId === item.id}
-								onOpenChange={(open) => setOpenId(open ? item.id : null)}>
-								<DialogTrigger asChild>
-									<Button
-										variant='outline'
-										size='icon'>
-										<Pencil className='h-4 w-4' />
-									</Button>
-								</DialogTrigger>
-								<DialogContent className='sm:max-w-[480px]'>
-									<DialogHeader>
-										<DialogTitle>Editar investimento</DialogTitle>
-										<DialogDescription>
-											Ajuste o investimento do período selecionado.
-										</DialogDescription>
-									</DialogHeader>
-									<MetaInvestmentForm
-										mode='edit'
-										defaultValues={{
-											periodEnd: item.periodEnd,
-											totalInvestment: item.totalInvestment,
-										}}
-										onSuccess={() => setOpenId(null)}
-									/>
-								</DialogContent>
-							</Dialog>
-						</TableCell>
+		<>
+			<Table
+				className='rounded-md'
+				title='Histórico de investimentos'>
+				<TableHeader className='bg-secondary'>
+					<TableRow className='bg-secondary text-foreground'>
+						<TableHead className='bg-secondary text-foreground'>
+							Período
+						</TableHead>
+						<TableHead className='text-nowrap text-center text-foreground'>
+							Valor acumulado
+						</TableHead>
+						<TableHead className='text-nowrap text-center text-foreground'>
+							Última atualização
+						</TableHead>
+						<TableHead className='text-nowrap text-center text-foreground'>
+							Ações
+						</TableHead>
 					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+				</TableHeader>
+				<TableBody>
+					{pageItems.map((item) => (
+						<TableRow key={item.id}>
+							<TableCell className='text-nowrap'>
+								{safeFormatDate(item.periodStart)} -{' '}
+								{safeFormatDate(item.periodEnd)}
+							</TableCell>
+							<TableCell className='text-nowrap text-center'>
+								{currency.format(item.totalInvestment)}
+							</TableCell>
+							<TableCell className='text-nowrap text-center'>
+								{format(new Date(item.lastSyncAt), "dd/MM/yyyy 'as' HH:mm", {
+									locale: ptBR,
+								})}
+							</TableCell>
+							<TableCell className='text-nowrap text-center'>
+								<Dialog
+									open={openId === item.id}
+									onOpenChange={(open) => setOpenId(open ? item.id : null)}>
+									<DialogTrigger asChild>
+										<Button
+											aria-label='Editar investimento'
+											variant='outline'
+											size='icon'>
+											<Pencil className='h-4 w-4' />
+										</Button>
+									</DialogTrigger>
+									<DialogContent className='sm:max-w-[480px]'>
+										<DialogHeader>
+											<DialogTitle>Editar investimento</DialogTitle>
+											<DialogDescription>
+												Ajuste o investimento do período selecionado.
+											</DialogDescription>
+										</DialogHeader>
+										<MetaInvestmentForm
+											mode='edit'
+											defaultValues={{
+												periodEnd: item.periodEnd,
+												totalInvestment: item.totalInvestment,
+											}}
+											onSuccess={() => setOpenId(null)}
+										/>
+									</DialogContent>
+								</Dialog>
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+			<TablePagination
+				pageIndex={pageIndex}
+				pageSize={pageSize}
+				pageCount={pageCount}
+				totalItems={investments.length}
+				onPageChange={setPageIndex}
+				onPageSizeChange={setPageSize}
+			/>
+		</>
 	);
 }

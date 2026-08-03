@@ -2,20 +2,43 @@
 
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FetchGoalMarketingData } from '@/services/data-services/get-marketing-goals';
+import { createMarketingGoalLoaders } from '@/services/data-services/get-marketing-goals';
 import { Suspense } from 'react';
 import ModalFormGoal from './_components/modal-form-goal';
-import BigNumberRoas from './_components/big-number-roas';
-import HistoryMarketingGoals from './_components/history-marketing-goals';
+import BigNumberRoas, {
+	type BigNumbersResponse,
+} from './_components/big-number-roas';
+import HistoryMarketingGoals, {
+	type MarketingGoalsResponse,
+} from './_components/history-marketing-goals';
 
-export default function GoalsMarketing() {
-	const marketingData = FetchGoalMarketingData();
+async function BigNumberRoasLoader({
+	data,
+}: {
+	data: Promise<BigNumbersResponse>;
+}) {
+	const response = await data;
+	return <BigNumberRoas data={response} />;
+}
+
+async function HistoryMarketingGoalsLoader({
+	data,
+}: {
+	data: Promise<MarketingGoalsResponse>;
+}) {
+	const response = await data;
+	return <HistoryMarketingGoals data={response} />;
+}
+
+export default async function GoalsMarketing() {
+	const { bigNumbers, history } = createMarketingGoalLoaders();
 
 	const today = new Date();
 
 	const formattedToday = today.toLocaleString('pt-BR', {
 		month: '2-digit',
 		year: 'numeric',
+		timeZone: 'America/Sao_Paulo',
 	});
 
 	return (
@@ -40,7 +63,7 @@ export default function GoalsMarketing() {
 							<Skeleton className='w-full h-24' />
 						</div>
 					}>
-					<BigNumberRoas data={marketingData} />
+					<BigNumberRoasLoader data={bigNumbers} />
 				</Suspense>
 
 				<Separator className='mt-10 mb-5' />
@@ -50,7 +73,7 @@ export default function GoalsMarketing() {
 							<Skeleton className='w-full h-60' />
 						</div>
 					}>
-					<HistoryMarketingGoals data={marketingData} />
+					<HistoryMarketingGoalsLoader data={history} />
 				</Suspense>
 			</div>
 		</div>

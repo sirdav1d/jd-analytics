@@ -2,10 +2,31 @@
 
 import { resolveGoogleAdsAccount } from '@/lib/google-ads-account';
 import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
+import { resolveCivilDateRange } from '@/services/data-services/civil-date-range';
 import { Constraints, enums, GoogleAdsApi } from 'google-ads-api';
 import { NextRequest, NextResponse } from 'next/server';
-import { parseISO, subMonths, format, startOfDay, endOfDay } from 'date-fns';
+import { parseISO, subMonths, format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
+
+const GOOGLE_ADS_METRIC_KEYS = [
+	'ctr',
+	'impressions',
+	'clicks',
+	'cost_micros',
+	'conversions',
+] as const;
+
+type GoogleAdsMetricKey = (typeof GOOGLE_ADS_METRIC_KEYS)[number];
+
+function readMetric(
+	metrics: Partial<Record<GoogleAdsMetricKey, unknown>> | null | undefined,
+	key: GoogleAdsMetricKey,
+) {
+	const value = metrics?.[key];
+	const parsed =
+		typeof value === 'number' ? value : Number.parseFloat(String(value ?? 0));
+	return Number.isFinite(parsed) ? parsed : 0;
+}
 
 export async function GET(req: NextRequest) {
 	const orgId = process.env.JD_CENTRO_ID;
@@ -51,6 +72,8 @@ export async function GET(req: NextRequest) {
 			'yyyy-MM-dd',
 		);
 		const previousEnd = format(subMonths(parseISO(endDate), 1), 'yyyy-MM-dd');
+		const currentRange = resolveCivilDateRange(startDate, endDate);
+		const previousRange = resolveCivilDateRange(previousStart, previousEnd);
 
 		const [
 			topCampaigns,
@@ -105,8 +128,8 @@ export async function GET(req: NextRequest) {
 			prisma.pedido.findMany({
 				where: {
 					data_pedido: {
-						gte: startOfDay(new Date(startDate)),
-						lte: endOfDay(new Date(endDate)),
+						gte: currentRange.start,
+						lte: currentRange.end,
 					},
 					Origin: {
 						name: {
@@ -120,8 +143,8 @@ export async function GET(req: NextRequest) {
 			prisma.pedido.findMany({
 				where: {
 					data_pedido: {
-						gte: startOfDay(new Date(previousStart)),
-						lte: endOfDay(new Date(previousEnd)),
+						gte: previousRange.start,
+						lte: previousRange.end,
 					},
 					Origin: {
 						name: {
@@ -148,23 +171,19 @@ export async function GET(req: NextRequest) {
 		const previousMetrics =
 			previousData.length > 0 ? previousData[0].metrics : null;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const parsedMetrics: { [key: string]: any } = {};
-		for (const key in currentMetrics) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const curr = parseFloat((currentMetrics as any)[key]);
-			const prev = parseFloat(
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				previousMetrics ? ((previousMetrics as any)[key] ?? '0') : '0',
-			);
+		const parsedMetrics = Object.fromEntries(
+			GOOGLE_ADS_METRIC_KEYS.map((key) => {
+				const curr = readMetric(currentMetrics, key);
+				const prev = readMetric(previousMetrics, key);
 
-			parsedMetrics[key] = {
+				return [key, {
 				current: curr,
 				previous: prev,
 				diff: curr - prev,
 				percentChange: prev === 0 ? null : ((curr - prev) / prev) * 100,
-			};
-		}
+				}] as const;
+			}),
+		);
 
 		function calcularTotal(pedidos: typeof pedidosAtual) {
 			return pedidos.reduce((total, pedido) => {

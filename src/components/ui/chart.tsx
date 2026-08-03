@@ -258,6 +258,34 @@ ChartTooltipContent.displayName = "ChartTooltip"
 
 const ChartLegend = RechartsPrimitive.Legend
 
+function getLegendItemIdentity(item: unknown) {
+  if (typeof item !== "object" || item === null) {
+    return "legend-item"
+  }
+
+  const nestedPayload =
+    "payload" in item &&
+    typeof item.payload === "object" &&
+    item.payload !== null
+      ? item.payload
+      : undefined
+
+  const candidates = [
+    "id" in item ? item.id : undefined,
+    "dataKey" in item ? item.dataKey : undefined,
+    nestedPayload && "id" in nestedPayload ? nestedPayload.id : undefined,
+    "value" in item ? item.value : undefined,
+  ]
+
+  const identity = candidates.find(
+    (candidate) =>
+      (typeof candidate === "string" && candidate.length > 0) ||
+      typeof candidate === "number"
+  )
+
+  return identity === undefined ? "legend-item" : `legend-${identity}`
+}
+
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
@@ -276,6 +304,8 @@ const ChartLegendContent = React.forwardRef<
       return null
     }
 
+    const identityOccurrences = new Map<string, number>()
+
     return (
       <div
         ref={ref}
@@ -288,10 +318,14 @@ const ChartLegendContent = React.forwardRef<
         {payload.map((item) => {
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
+          const identity = getLegendItemIdentity(item)
+          const occurrence = identityOccurrences.get(identity) ?? 0
+          identityOccurrences.set(identity, occurrence + 1)
+          const reactKey = occurrence === 0 ? identity : `${identity}-${occurrence}`
 
           return (
             <div
-              key={item.value}
+              key={reactKey}
               className={cn(
                 "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
               )}

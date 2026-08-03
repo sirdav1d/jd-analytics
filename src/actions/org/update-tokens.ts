@@ -4,6 +4,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 
 export async function updateOrganizationTokens(
 	organizationId: string,
@@ -11,6 +12,7 @@ export async function updateOrganizationTokens(
 	refreshToken: string,
 	expiresIn: number,
 ) {
+	await requireAdmin();
 	// Opcional: calcular a data de expiração, se preferir armazenar essa informação
 	// const expiresAt = new Date(Date.now() + expiresIn * 1000);
 

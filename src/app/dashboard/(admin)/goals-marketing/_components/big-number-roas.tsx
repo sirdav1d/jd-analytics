@@ -7,19 +7,26 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Goal } from 'lucide-react';
-import React, { use } from 'react';
+import { formatRoas, type RoasValue } from './roas-value';
+
+export type BigNumbersResponse = {
+	ok: boolean;
+	bigNumbers: {
+		metaAtual: number | null;
+		roasAtingido: RoasValue;
+		roasPrevisto: RoasValue;
+	} | null;
+	error?: string | null;
+};
 
 export default function BigNumberRoas({
 	data,
 }: {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	data: Promise<any>;
+	data: BigNumbersResponse;
 }) {
-	const allData = use(data);
-
-	const bigNumbersData = allData.bigNumbers;
-	if (!bigNumbersData || !allData.ok) {
-		console.log(allData.error);
+	const bigNumbersData = data.bigNumbers;
+	if (!bigNumbersData || !data.ok) {
+		console.log(data.error);
 		return (
 			<Card>
 				<CardHeader>
@@ -28,13 +35,21 @@ export default function BigNumberRoas({
 			</Card>
 		);
 	}
+	const forecastColor =
+		bigNumbersData.roasPrevisto === null || bigNumbersData.metaAtual === null
+			? ''
+			: bigNumbersData.roasPrevisto < bigNumbersData.metaAtual
+				? 'text-destructive'
+				: 'text-emerald-500';
 
 	return (
 		<div className='grid lg:grid-cols-3 gap-5 w-full'>
 			<Card>
 				<CardHeader>
 					<CardTitle className='w-full flex items-center justify-between'>
-						{bigNumbersData.metaAtual}x
+						{bigNumbersData.metaAtual === null
+							? '—'
+							: `${bigNumbersData.metaAtual}x`}
 						<Goal />
 					</CardTitle>
 					<CardDescription>Meta de ROAS Atual</CardDescription>
@@ -43,7 +58,7 @@ export default function BigNumberRoas({
 			<Card>
 				<CardHeader>
 					<CardTitle className='w-full flex items-center justify-between'>
-						{bigNumbersData.roasAtingido.toFixed(2)}x <Goal />
+						{formatRoas(bigNumbersData.roasAtingido)} <Goal />
 					</CardTitle>
 					<CardDescription>ROAS Atingido</CardDescription>
 				</CardHeader>
@@ -51,8 +66,8 @@ export default function BigNumberRoas({
 			<Card>
 				<CardHeader>
 					<CardTitle
-						className={`w-full flex items-center justify-between ${bigNumbersData.roasPrevisto < bigNumbersData.metaAtual ? 'text-destructive' : 'text-emerald-500'}`}>
-						{bigNumbersData.roasPrevisto.toFixed(2)}x
+						className={`w-full flex items-center justify-between ${forecastColor}`}>
+						{formatRoas(bigNumbersData.roasPrevisto)}
 						<Goal />
 					</CardTitle>
 					<CardDescription>Previsão de ROAS</CardDescription>

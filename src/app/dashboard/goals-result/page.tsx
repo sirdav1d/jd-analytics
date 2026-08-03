@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FetchGoalTrackingData } from '@/services/data-services/get-goal-tracking';
 import { IGoalTracking } from '@/services/data-services/types';
-import { startOfMonth } from 'date-fns';
+import { formatBusinessCivilDate } from '@/services/data-services/civil-date-range';
 import { Suspense } from 'react';
 import { Revenue } from './_components/charts/revenue';
 import SellerComparison from './_components/charts/seller-comparison-desktop';
@@ -21,17 +21,11 @@ export default async function GoalResultPage(props: {
 	searchParams: SearchParams;
 }) {
 	function formattedEndDate() {
-		const now = new Date();
-		const endDate = now;
-		return endDate;
+		return formatBusinessCivilDate();
 	}
 
 	function formattedStartDate() {
-		const now = new Date();
-		const startMonth = startOfMonth(now);
-
-		const startDate = startMonth.toISOString().split('T')[0];
-		return startDate;
+		return `${formatBusinessCivilDate().slice(0, 7)}-01`;
 	}
 	const searchParams = await props.searchParams;
 	const startDate = searchParams.startDate || formattedStartDate();

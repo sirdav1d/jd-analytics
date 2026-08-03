@@ -4,6 +4,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutura
+import { requireAdmin } from '@/lib/auth';
 import { $Enums } from '@prisma/client';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
 import bcrypt from 'bcrypt';
@@ -17,6 +18,7 @@ export async function createUserAction(
 	password: string,
 	externalId: string,
 ) {
+	await requireAdmin();
 	try {
 		
 
@@ -39,12 +41,14 @@ export async function createUserAction(
 				user: null,
 			};
 		}
+		const { password: storedPassword, ...safeUser } = user;
+		void storedPassword;
 		//enviar credenciais para e-mail cadastrado
-		revalidateTag('users');
+		revalidateTag('users', { expire: 0 });
 		return {
 			error: null,
 			ok: true,
-			user: user,
+			user: safeUser,
 		};
 	} catch (error) {
 		return {

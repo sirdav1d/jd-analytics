@@ -9,7 +9,13 @@ import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import svg from '@/assets/data-analysis-2.svg';
 
-export default function ResetPassPage() {
+export default async function ResetPassPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ token?: string | string[] }>;
+}) {
+	const params = await searchParams;
+	const token = typeof params.token === 'string' ? params.token : undefined;
 	return (
 		<div className='grid min-h-svh lg:grid-cols-2'>
 			<div className='flex flex-col gap-4 p-6 md:p-10'>
@@ -20,14 +26,16 @@ export default function ResetPassPage() {
 				<div className='flex flex-1 items-center justify-center'>
 					<div className='flex flex-col items-center gap-2 text-center'>
 						<h1 className='text-2xl font-bold capitalize'>
-							Esqueceu sua senha?
+							{token ? 'Escolha uma nova senha' : 'Esqueceu sua senha?'}
 						</h1>
 						<p className='text-balance text-sm text-muted-foreground max-w-sm'>
-							Preencha seu e-mail abaixo para receber uma nova senha
+							{token
+								? 'O link é de uso único e expira em 30 minutos.'
+								: 'Preencha seu e-mail para receber um link de recuperação.'}
 						</p>
 
 						<div className='w-full max-w-xs mt-5 text-left'>
-							<ResetPassForm />
+							<ResetPassForm token={token} />
 						</div>
 						<Separator className='my-5' />
 

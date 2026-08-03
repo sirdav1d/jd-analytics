@@ -1,6 +1,7 @@
 /** @format */
 
 import { prisma } from '@/lib/prisma';
+import { resolveCivilDateRange } from '@/services/data-services/civil-date-range';
 import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -23,8 +24,14 @@ export async function GET(req: NextRequest) {
 		);
 	}
 
-	const start = new Date(`${startDate}T00:00:00`);
-	const end = new Date(`${endDate}T23:59:59`);
+	try {
+		resolveCivilDateRange(startDate, endDate);
+	} catch {
+		return NextResponse.json(
+			{ ok: false, error: 'Intervalo de datas inválido.', data: null },
+			{ status: 400 },
+		);
+	}
 
 	try {
 		// CLAUSULAS DE FILTRO REUTILIZÁVEIS
@@ -40,7 +47,7 @@ export async function GET(req: NextRequest) {
 
 		const sqlCustomerTypeFilter =
 			customerType && customerType !== 'all'
-				? Prisma.raw(`AND c."person_type" = '${customerType}'::"PersonType"`)
+				? Prisma.sql`AND c."person_type" = ${customerType}::"PersonType"`
 				: Prisma.empty;
 
 		// Receita, quantidade de vendas e ticket médio por ORIGEM
@@ -68,9 +75,11 @@ export async function GET(req: NextRequest) {
         (SUM(si."total_value") / NULLIF(COUNT(DISTINCT p."id"), 0))::DOUBLE PRECISION AS avg_ticket
       FROM "SaleItem" si
       JOIN "Pedido" p     ON si."sale_id"   = p."id"
-      JOIN "Origin" o     ON p."origin_id"   = o."id"    -- ajuste se o campo FK tiver nome diferente
+      JOIN "Product" pr   ON pr."id"         = si."product_id"
+      LEFT JOIN "Customer" c ON c."id"       = p."customerId"
+      LEFT JOIN "Origin" o ON p."origin_id"  = o."id"
       WHERE
-        p."data_pedido" BETWEEN ${start} AND ${end}
+        p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
         ${sqlOrgFilter}
         ${sqlCategoryFilter}
         ${sqlCustomerTypeFilter}

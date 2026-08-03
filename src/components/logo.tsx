@@ -3,18 +3,29 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import React, { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+function subscribeToMounted() {
+	return () => {};
+}
+
+function getMountedSnapshot() {
+	return true;
+}
+
+function getServerMountedSnapshot() {
+	return false;
+}
+
 export default function Logo() {
 	const { theme } = useTheme();
-	const [mounted, setMounted] = useState(false);
-
-	// Garantir que o componente só seja renderizado após a montagem
-	useEffect(() => {
-		setMounted(true);
-	}, []);
+	const mounted = useSyncExternalStore(
+		subscribeToMounted,
+		getMountedSnapshot,
+		getServerMountedSnapshot,
+	);
 
 	if (!mounted) {
 		return <div className='w-32 h-10' />; // Placeholder para evitar o erro de hidratação

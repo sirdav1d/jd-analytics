@@ -3,41 +3,42 @@
 import * as React from 'react';
 
 const MOBILE_BREAKPOINT = 768;
+const MOBILE_QUERY = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`;
+
+function createMediaQueryStore(query: string) {
+	return {
+		getSnapshot() {
+			return window.matchMedia(query).matches;
+		},
+		getServerSnapshot() {
+			return false;
+		},
+		subscribe(onStoreChange: () => void) {
+			const mediaQueryList = window.matchMedia(query);
+			mediaQueryList.addEventListener('change', onStoreChange);
+			return () => mediaQueryList.removeEventListener('change', onStoreChange);
+		},
+	};
+}
+
+const mobileStore = createMediaQueryStore(MOBILE_QUERY);
 
 export function useIsMobile() {
-	const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-		undefined,
+	return React.useSyncExternalStore(
+		mobileStore.subscribe,
+		mobileStore.getSnapshot,
+		mobileStore.getServerSnapshot,
 	);
-
-	React.useEffect(() => {
-		const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
-		const onChange = () => {
-			setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-		};
-		mql.addEventListener('change', onChange);
-		setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-		return () => mql.removeEventListener('change', onChange);
-	}, []);
-
-	return !!isMobile;
 }
 
 const TABLET_BREAKPOINT = 1024;
+const TABLET_QUERY = `(max-width: ${TABLET_BREAKPOINT - 1}px)`;
+const tabletStore = createMediaQueryStore(TABLET_QUERY);
 
 export function useIsTablet() {
-	const [isTablet, setIsTablet] = React.useState<boolean | undefined>(
-		undefined,
+	return React.useSyncExternalStore(
+		tabletStore.subscribe,
+		tabletStore.getSnapshot,
+		tabletStore.getServerSnapshot,
 	);
-
-	React.useEffect(() => {
-		const mql = window.matchMedia(`(max-width: ${TABLET_BREAKPOINT - 1}px)`);
-		const onChange = () => {
-			setIsTablet(window.innerWidth < TABLET_BREAKPOINT);
-		};
-		mql.addEventListener('change', onChange);
-		setIsTablet(window.innerWidth < TABLET_BREAKPOINT);
-		return () => mql.removeEventListener('change', onChange);
-	}, []);
-
-	return !!isTablet;
 }

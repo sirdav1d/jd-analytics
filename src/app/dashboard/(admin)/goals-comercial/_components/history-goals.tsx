@@ -19,6 +19,8 @@ import {
 import { DatabaseBackup } from 'lucide-react';
 import React, { use } from 'react';
 import { format, isValid, parseISO } from 'date-fns';
+import { TablePagination } from '@/components/ui/table-pagination';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 
 interface IHistory {
 	month: string;
@@ -54,6 +56,14 @@ const formatMonthYear = (value: string | Date | null | undefined) => {
 export default function HistoryGoal({ data }: IHistoryData) {
 	const allData = use(data);
 	const history = Array.isArray(allData?.history) ? allData.history : [];
+	const {
+		pageIndex,
+		pageSize,
+		pageCount,
+		pageItems,
+		setPageIndex,
+		setPageSize,
+	} = useClientPagination(history);
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -65,12 +75,11 @@ export default function HistoryGoal({ data }: IHistoryData) {
 				type='single'
 				collapsible
 				className='w-full'>
-				{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-				{history.map((item: any, index: number) => {
+				{pageItems.map((item) => {
 					return (
 						<AccordionItem
-							key={index}
-							value={`item-${index}`}>
+							key={item.month}
+							value={item.month}>
 							<AccordionTrigger>
 								{formatMonthYear(item?.month)}
 							</AccordionTrigger>
@@ -93,24 +102,23 @@ export default function HistoryGoal({ data }: IHistoryData) {
 										</TableRow>
 									</TableHeader>
 									<TableBody className='border rounded-xl'>
-										{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-										{item.goals.map((item: any, index: number) => {
+										{item.goals.map((goal) => {
 											return (
-												<TableRow key={index}>
+												<TableRow key={`${item.month}-${goal.sellerName}`}>
 													<TableCell className='text-nowrap'>
 														{formatMonthYear(item.month)}
 													</TableCell>
 													<TableCell className='text-nowrap'>
-														{item.sellerName}
+														{goal.sellerName}
 													</TableCell>
 													<TableCell className='text-nowrap'>
-														{item.revenue.toLocaleString('pt-br', {
+														{goal.revenue.toLocaleString('pt-br', {
 															style: 'currency',
 															currency: 'brl',
 														})}
 													</TableCell>
 													<TableCell className='text-nowrap text-center'>
-														{item.realized.toLocaleString('pt-br', {
+														{goal.realized.toLocaleString('pt-br', {
 															style: 'currency',
 															currency: 'brl',
 														})}
@@ -123,8 +131,16 @@ export default function HistoryGoal({ data }: IHistoryData) {
 							</AccordionContent>
 						</AccordionItem>
 					);
-				})}
+					})}
 			</Accordion>
+			<TablePagination
+				pageIndex={pageIndex}
+				pageSize={pageSize}
+				pageCount={pageCount}
+				totalItems={history.length}
+				onPageChange={setPageIndex}
+				onPageSizeChange={setPageSize}
+			/>
 		</div>
 	);
 }

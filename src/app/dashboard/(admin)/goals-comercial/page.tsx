@@ -7,20 +7,19 @@ import BigNumbers from './_components/big-numbers';
 import { Separator } from '@/components/ui/separator';
 import HistoryGoal from './_components/history-goals';
 import { DataTable } from '../_components/data-table-current-goal/data-table';
-import getAllSellers from '@/actions/user/get-all';
 import { FetchGoalTargetData } from '@/services/data-services/get-goal-target';
 import { columns } from '../_components/data-table-current-goal/columns';
+import { readAllSellers } from '@/services/data-services/get-sellers';
 
-export default function GoalsComercial() {
-	const data = getAllSellers();
-
-	const newData = FetchGoalTargetData();
+export default async function GoalsComercial() {
+	const [data, newData] = [readAllSellers(), FetchGoalTargetData()];
 
 	const today = new Date();
 
 	const formattedToday = today.toLocaleString('pt-BR', {
 		month: '2-digit',
 		year: 'numeric',
+		timeZone: 'America/Sao_Paulo',
 	});
 	return (
 		<div className=' bg-background w-full grid grid-cols-1 max-w-full'>
@@ -32,7 +31,9 @@ export default function GoalsComercial() {
 					</p>
 				</div>
 				<div className='w-full md:w-fit mt-5'>
-					{<ModalFormComercialGoal sellers={data} />}
+					<Suspense fallback={<Skeleton className='h-10 w-full md:w-52' />}>
+						<ModalFormComercialGoal sellers={data} />
+					</Suspense>
 				</div>
 			</div>
 			<div>

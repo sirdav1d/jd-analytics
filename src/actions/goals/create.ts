@@ -3,6 +3,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 import { revalidateTag } from 'next/cache';
 
 interface ICreateSalesGoalAction {
@@ -16,6 +17,7 @@ export async function CreateSalesGoalAction({
 	revenue,
 	userId,
 }: ICreateSalesGoalAction) {
+	await requireAdmin();
 	try {
 		const goal = await prisma.salesGoal.create({
 			data: {
@@ -33,12 +35,12 @@ export async function CreateSalesGoalAction({
 			};
 		}
 
-		revalidateTag('users');
-		revalidateTag('rankings');
-		revalidateTag('tracking-goal');
-		revalidateTag('goal');
-		revalidateTag('sales-by');
-		revalidateTag('big-numbers-comercial');
+		revalidateTag('users', { expire: 0 });
+		revalidateTag('rankings', { expire: 0 });
+		revalidateTag('tracking-goal', { expire: 0 });
+		revalidateTag('goal', { expire: 0 });
+		revalidateTag('sales-by', { expire: 0 });
+		revalidateTag('big-numbers-comercial', { expire: 0 });
 
 		return {
 			error: null,
