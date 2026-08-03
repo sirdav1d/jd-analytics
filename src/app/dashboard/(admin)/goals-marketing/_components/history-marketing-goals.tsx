@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/table';
 import { DatabaseBackup } from 'lucide-react';
 import React, { use } from 'react';
+import { TablePagination } from '@/components/ui/table-pagination';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 import { formatRoas, type RoasValue } from './roas-value';
 
 type MarketingGoalHistoryItem = {
@@ -51,6 +53,15 @@ export default function HistoryMarketingGoals({
 			</Card>
 		);
 	}
+	const {
+		pageIndex,
+		pageSize,
+		pageCount,
+		pageItems,
+		setPageIndex,
+		setPageSize,
+	} = useClientPagination(history);
+
 	return (
 		<div className='flex flex-col gap-5'>
 			<Accordion
@@ -91,9 +102,9 @@ export default function HistoryMarketingGoals({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{history.map((item, index) => {
+									{pageItems.map((item) => {
 										return (
-											<TableRow key={index}>
+											<TableRow key={item.goalDateRef}>
 												<TableCell className='text-nowrap '>
 													{item.goalDateRef.slice(0, 7)}
 												</TableCell>
@@ -121,6 +132,14 @@ export default function HistoryMarketingGoals({
 								</TableBody>
 							</Table>
 						</div>
+						<TablePagination
+							pageIndex={pageIndex}
+							pageSize={pageSize}
+							pageCount={pageCount}
+							totalItems={history.length}
+							onPageChange={setPageIndex}
+							onPageSizeChange={setPageSize}
+						/>
 					</AccordionContent>
 				</AccordionItem>
 			</Accordion>
