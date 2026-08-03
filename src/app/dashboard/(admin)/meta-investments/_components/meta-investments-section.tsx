@@ -62,9 +62,7 @@ export default async function MetaInvestmentsSection() {
 						</h2>
 					</AccordionTrigger>
 					<AccordionContent>
-						<div className='border rounded-md'>
-							<MetaInvestmentsTable investments={investments} />
-						</div>
+						<MetaInvestmentsTable investments={investments} />
 					</AccordionContent>
 				</AccordionItem>
 			</Accordion>

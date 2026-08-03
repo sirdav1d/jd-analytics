@@ -5,6 +5,13 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { MetaInvestment } from '@/lib/api/meta-investments';
 import MetaInvestmentsTable from '@/app/dashboard/(admin)/meta-investments/_components/meta-investments-table';
+import MetaInvestmentsSection from '@/app/dashboard/(admin)/meta-investments/_components/meta-investments-section';
+
+const { findMany } = vi.hoisted(() => ({ findMany: vi.fn() }));
+
+vi.mock('@/lib/prisma', () => ({
+	prisma: { metaInvestment: { findMany } },
+}));
 
 vi.mock('@/app/dashboard/(admin)/meta-investments/_components/meta-investment-form', () => ({
 	default: () => null,
@@ -55,7 +62,10 @@ const investments: MetaInvestment[] = [
 	},
 ];
 
-afterEach(cleanup);
+afterEach(() => {
+	cleanup();
+	findMany.mockReset();
+});
 
 describe('Meta investment history pagination', () => {
 	it('shows five investments per page', () => {
@@ -68,5 +78,26 @@ describe('Meta investment history pagination', () => {
 
 		expect(screen.getByText('01/01 - 31/01')).toBeTruthy();
 		expect(screen.getAllByRole('button', { name: 'Editar investimento' })).toHaveLength(1);
+	});
+
+	it('keeps the pagination outside an external table border', async () => {
+		findMany.mockResolvedValue(
+			investments.map((investment) => ({
+				...investment,
+				periodStart: new Date(investment.periodStart),
+				periodEnd: new Date(investment.periodEnd),
+				lastSyncAt: new Date(investment.lastSyncAt),
+				createdAt: new Date(investment.periodStart),
+				updatedAt: new Date(investment.lastSyncAt),
+			})),
+		);
+
+		render(await MetaInvestmentsSection());
+		fireEvent.click(
+			screen.getByRole('button', { name: 'Histórico de investimentos' }),
+		);
+
+		const pagination = screen.getByRole('navigation', { name: 'Paginação' });
+		expect(pagination.closest('.border')).toBeNull();
 	});
 });
