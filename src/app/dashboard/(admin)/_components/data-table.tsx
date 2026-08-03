@@ -74,6 +74,9 @@ export function DataTable<TData, TValue>({
 			sorting,
 			columnFilters,
 		},
+		initialState: {
+			pagination: { pageIndex: 0, pageSize: 5 },
+		},
 	});
 
 	if (!allData) {

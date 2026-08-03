@@ -23,6 +23,7 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { use, useState } from 'react';
+import { DataTablePagination } from '../data-table-pagination';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -50,57 +51,66 @@ export function DataTable<TData, TValue>({
 			sorting,
 			columnFilters,
 		},
+		initialState: {
+			pagination: { pageIndex: 0, pageSize: 5 },
+		},
 	});
 
 	return (
-		<div className='rounded-md border'>
-			<Table>
-				<TableHeader className='bg-secondary'>
-					{table.getHeaderGroups().map((headerGroup) => (
-						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => {
-								return (
-									<TableHead
-										className='text-foreground font-semibold text-nowrap'
-										key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
-									</TableHead>
-								);
-							})}
-						</TableRow>
-					))}
-				</TableHeader>
-				<TableBody>
-					{table.getRowModel().rows?.length ? (
-						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && 'selected'}>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell
-										key={cell.id}
-										className='text-sm text-nowrap'>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
+		<div>
+			<div className='rounded-md border'>
+				<Table>
+					<TableHeader className='bg-secondary'>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id}>
+								{headerGroup.headers.map((header) => {
+									return (
+										<TableHead
+											className='text-foreground font-semibold text-nowrap'
+											key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+										</TableHead>
+									);
+								})}
 							</TableRow>
-						))
-					) : (
-						<TableRow>
-							<TableCell
-								colSpan={columns.length}
-								className='h-24 text-center'>
-								Sem resultados.
-							</TableCell>
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
+						))}
+					</TableHeader>
+					<TableBody>
+						{table.getRowModel().rows?.length ? (
+							table.getRowModel().rows.map((row) => (
+								<TableRow
+									key={row.id}
+									data-state={row.getIsSelected() && 'selected'}>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell
+											key={cell.id}
+											className='text-sm text-nowrap'>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className='h-24 text-center'>
+									Sem resultados.
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+			</div>
+			<DataTablePagination table={table} />
 		</div>
 	);
 }
