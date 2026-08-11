@@ -84,6 +84,9 @@ export function buildCatalogReader(
           description: true,
           brand: true,
           sector: true,
+          catalogStatus: true,
+          catalogLastCheckedAt: true,
+          catalogResolvedAt: true,
         },
       });
       return products.flatMap((product) =>
@@ -95,6 +98,9 @@ export function buildCatalogReader(
                 description: product.description,
                 brand: product.brand,
                 sector: product.sector,
+                catalogStatus: product.catalogStatus,
+                catalogLastCheckedAt: product.catalogLastCheckedAt,
+                catalogResolvedAt: product.catalogResolvedAt,
               },
             ],
       );
