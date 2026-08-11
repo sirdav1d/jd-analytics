@@ -595,6 +595,42 @@ describe("Linx admin routes", () => {
     expect(mocks.transaction).toHaveBeenCalledTimes(1);
   });
 
+  it("accepts an explicit reconciliation period", async () => {
+    const period = { from: "2026-08-05", to: "2026-08-06" };
+
+    const response = await previewPost(
+      jsonRequest("/api/admin/linx/reconciliation/preview", {
+        organizationId,
+        period,
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.previewProductionReconciliation).toHaveBeenCalledWith(
+      organizationId,
+      admin.id,
+      period,
+    );
+  });
+
+  it.each([
+    { from: "2026-02-30", to: "2026-03-01" },
+    { from: "2026-08-06", to: "2026-08-05" },
+    { from: "2026-07-01", to: "2026-08-01" },
+  ])("rejects invalid reconciliation period %# before preview", async (period) => {
+    mocks.previewProductionReconciliation.mockClear();
+
+    const response = await previewPost(
+      jsonRequest("/api/admin/linx/reconciliation/preview", {
+        organizationId,
+        period,
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.previewProductionReconciliation).not.toHaveBeenCalled();
+  });
+
   it.each([
     [
       "preview",

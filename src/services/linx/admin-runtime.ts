@@ -171,6 +171,7 @@ async function readDatabaseOrders(
 export async function previewProductionReconciliation(
   organizationId: string,
   issuedById: string,
+  period?: ReconciliationPeriod,
 ) {
   const startedAt = Date.now();
   const deadlineAt = startedAt + PREVIEW_RUNTIME_BUDGET_MS;
@@ -196,7 +197,7 @@ export async function previewProductionReconciliation(
 
   let linxOrders: ReconciliationOrder[] = [];
   const preview = await previewReconciliation(
-    { runtimeBudgetMs: PREVIEW_RUNTIME_BUDGET_MS },
+    { runtimeBudgetMs: PREVIEW_RUNTIME_BUDGET_MS, period },
     {
       now: Date.now,
       nowDate: () => new Date(),

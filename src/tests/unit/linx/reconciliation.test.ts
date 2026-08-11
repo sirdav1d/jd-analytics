@@ -441,6 +441,33 @@ describe("previewReconciliation", () => {
     });
   });
 
+  it("uses an explicit validated reconciliation period", async () => {
+    const dependencies = makeDependencies(10);
+    const period = { from: "2026-08-05", to: "2026-08-06" };
+
+    const preview = await previewReconciliation(
+      { runtimeBudgetMs: 1_000, period },
+      dependencies,
+    );
+
+    expect(preview.period).toEqual(period);
+    expect(dependencies.readLinxOrders).toHaveBeenCalledWith(period);
+    expect(dependencies.readDatabaseOrders).toHaveBeenCalledWith(period);
+  });
+
+  it.each([
+    [{ from: "2026-02-30", to: "2026-03-01" }],
+    [{ from: "2026-08-06", to: "2026-08-05" }],
+    [{ from: "2026-07-01", to: "2026-08-01" }],
+  ])("rejects invalid explicit period %#", async (period) => {
+    await expect(
+      previewReconciliation(
+        { runtimeBudgetMs: 1_000, period },
+        makeDependencies(10),
+      ),
+    ).rejects.toThrow("Período de conciliação inválido");
+  });
+
   it("authorizes only missing closed and changed Linx orders in canonical order", async () => {
     const dependencies = makeDependencies(1);
     dependencies.readLinxOrders.mockResolvedValue(reconciliationOrders([
