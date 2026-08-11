@@ -13,6 +13,26 @@ afterAll(async () => {
 });
 
 describeWithTestDatabase("Linx schema", () => {
+  it("defaults existing-style products to a known catalog state", async () => {
+    let productId: string | undefined;
+    try {
+      const product = await prisma!.product.create({
+        data: {
+          external_code: 2_000_000_000 + Math.floor(Math.random() * 100_000),
+          description: "Produto de contrato",
+          brand: "Marca",
+          sector: "Setor",
+        },
+      });
+      productId = product.id;
+      expect(product.catalogStatus).toBe("KNOWN");
+      expect(product.catalogLastCheckedAt).toBeNull();
+      expect(product.catalogResolvedAt).toBeNull();
+    } finally {
+      if (productId) await prisma!.product.delete({ where: { id: productId } });
+    }
+  });
+
   it("accepts nullable Linx identity on historical organizations", async () => {
     let organizationId: string | undefined;
 

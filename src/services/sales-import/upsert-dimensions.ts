@@ -81,21 +81,40 @@ export async function upsertProduct(
   item: CanonicalSaleItem,
   source: CanonicalSale["source"],
 ) {
-  return tx.product.upsert({
+  const metadata = {
+    description: item.description,
+    brand: item.brand,
+    sector: item.sector,
+  };
+  const catalogState = {
+    ...(item.catalogStatus !== undefined
+      ? { catalogStatus: item.catalogStatus }
+      : {}),
+    ...(item.catalogLastCheckedAt !== undefined
+      ? { catalogLastCheckedAt: item.catalogLastCheckedAt }
+      : {}),
+    ...(item.catalogResolvedAt !== undefined
+      ? { catalogResolvedAt: item.catalogResolvedAt }
+      : {}),
+  };
+  const product = await tx.product.upsert({
     where: { external_code: item.productCode },
-    update:
-      source === "LINX"
-        ? {
-            description: item.description,
-            brand: item.brand,
-            sector: item.sector,
-          }
-        : {},
+    update: source === "LINX" ? { ...metadata, ...catalogState } : {},
     create: {
       external_code: item.productCode,
-      description: item.description,
-      brand: item.brand,
-      sector: item.sector,
+      ...metadata,
+      ...catalogState,
     },
   });
+  if (source === "CSV") {
+    await tx.product.updateMany({
+      where: { id: product.id, catalogStatus: "PENDING" },
+      data: {
+        ...metadata,
+        catalogStatus: "KNOWN",
+        catalogResolvedAt: new Date(),
+      },
+    });
+  }
+  return product;
 }
