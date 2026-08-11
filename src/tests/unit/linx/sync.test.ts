@@ -8,6 +8,7 @@ import {
   type SyncInput,
 } from "@/services/linx/sync";
 import { ReconciliationAuthorizationError } from "@/services/linx/preview-authorization";
+import { mapCanonicalSales as mapLinxCanonicalSales } from "@/services/linx/sync-adapter";
 import type { CanonicalSale } from "@/services/sales-import/contracts";
 
 const METHODS = [
@@ -273,6 +274,77 @@ describe("runLinxSync", () => {
       expect(deps.repo.markRunFailed).toHaveBeenCalledTimes(1);
     },
   );
+
+  it("omits product 1314 before catalogs while preserving allowed items", async () => {
+    const deps = makeSyncDeps();
+    const mixedIdentifier = "7c0ab11c-95b6-4e14-8186-bb5292198ff1";
+    const ignoredOnlyIdentifier = "3f0fdd86-cd17-42ee-a2a7-55e559654c21";
+    const movement = (
+      identificador: string,
+      productCode: number,
+      order: number,
+    ) => ({
+      identificador,
+      timestamp: BigInt(44 + order),
+      documentNumber: identificador === mixedIdentifier ? "mixed" : "ignored",
+      launchDate: "2026-07-29",
+      customerCode: null,
+      sellerCode: 5,
+      productCode,
+      quantity: 1,
+      unitValue: 10,
+      totalValue: 10,
+      cancelled: false,
+      excluded: false,
+      order,
+      operationalOriginCode: null,
+      natureOperation: "Venda",
+      operationType: "S",
+    });
+    const completed = {
+      movements: [
+        movement(mixedIdentifier, 1314, 1),
+        movement(mixedIdentifier, 6, 2),
+        movement(ignoredOnlyIdentifier, 1314, 1),
+      ],
+      paymentLabels: new Map<string, string>(),
+      principals: new Map<string, number | null>(),
+      routineOrigins: new Map<number, string>(),
+      salesResponses: new Map<number, string>(),
+      origins: new Map(),
+    };
+    deps.validateRows.mockReturnValue({ ...completed, movements: [] });
+    deps.completeRows.mockResolvedValue(completed);
+    deps.loadMissingCatalogs.mockImplementation(async (_cnpj, movements) => {
+      if (movements.some(({ productCode }) => productCode === 1314)) {
+        throw new Error("ignored product reached catalogs");
+      }
+      return {
+        customers: new Map(),
+        sellers: new Map([[5, { externalCode: 5, name: "Ada" }]]),
+        products: new Map([
+          [
+            6,
+            {
+              productCode: 6,
+              description: "Produto permitido",
+              brand: "Marca",
+              sector: "Setor",
+            },
+          ],
+        ]),
+      };
+    });
+    deps.mapCanonicalSales.mockImplementation(mapLinxCanonicalSales);
+
+    const collected = await collectLinxData(input, deps);
+
+    expect(collected.sales).toHaveLength(1);
+    expect(collected.sales[0]).toMatchObject({
+      linxIdentifier: mixedIdentifier,
+      items: [{ productCode: 6, linxOrder: 2 }],
+    });
+  });
 
   it("commits a payment-only cursor after its movement is materialized", async () => {
     const deps = makeSyncDeps();
