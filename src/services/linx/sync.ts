@@ -184,8 +184,6 @@ const ZERO_CURSORS: Record<LinxSyncMethod, bigint> = {
   RESPOSTA_VENDA: BigInt(0),
 };
 
-const IGNORED_LINX_PRODUCT_CODES = new Set([1314]);
-
 function lastThirtyDays(now: Date): SyncRange {
   return reconciliationPeriodFor(now);
 }
@@ -316,25 +314,34 @@ export async function collectLinxData(
     completionScope,
   );
   deps.deadline.assert();
-  const importable = {
-    ...completed,
-    movements: completed.movements.filter(
-      ({ productCode }) => !IGNORED_LINX_PRODUCT_CODES.has(productCode),
-    ),
-  };
   await stage("CATALOGS");
   const catalogs = await deps.loadMissingCatalogs(
     organization.linxCnpj,
-    importable.movements,
+    completed.movements,
     { mode: input.mode },
   );
   deps.deadline.assert();
   await stage("MAPPING");
   const sales = deps.mapCanonicalSales({
     organizationExternalCode: organization.external_code,
-    ...importable,
+    ...completed,
     catalogs,
   });
+  const pendingProductCodes = [
+    ...new Set(
+      sales.flatMap((sale) =>
+        sale.items.flatMap((item) =>
+          item.catalogStatus === "PENDING" ? [item.productCode] : [],
+        ),
+      ),
+    ),
+  ].sort((left, right) => left - right);
+  for (const productCode of pendingProductCodes) {
+    deps.logger.warn("Produto Linx sem cadastro", {
+      organizationId: input.organizationId,
+      productCode,
+    });
+  }
   if (range) {
     for (const sale of sales) {
       assertDateWithinReconciliationPeriod(sale.date, range);
