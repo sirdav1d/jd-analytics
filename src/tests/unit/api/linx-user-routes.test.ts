@@ -95,9 +95,11 @@ describe("Linx authenticated operational routes", () => {
   it("returns only the latest successful completion timestamp", async () => {
     const response = await statusGet();
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
+    const body = await response.json();
+    expect(body).toEqual({
       lastSuccessfulSyncAt: "2026-08-03T23:15:00.000Z",
     });
+    expect(body).not.toHaveProperty("pendingProducts");
     expect(mocks.runFindFirst).toHaveBeenCalledWith({
       where: {
         organizationId,

@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => {
   const runFindFirst = vi.fn();
   const runUpdateMany = vi.fn();
   const cursorFindMany = vi.fn();
+  const productFindMany = vi.fn();
   const pedidoCount = vi.fn();
   return {
     requireAdmin: vi.fn(),
@@ -31,6 +32,7 @@ const mocks = vi.hoisted(() => {
     runFindFirst,
     runUpdateMany,
     cursorFindMany,
+    productFindMany,
     pedidoCount,
     queryRaw: vi.fn(),
     discoverLinxStores: vi.fn(),
@@ -43,6 +45,7 @@ const mocks = vi.hoisted(() => {
         updateMany: runUpdateMany,
       },
       linxSyncCursor: { findMany: cursorFindMany },
+      product: { findMany: productFindMany },
       pedido: { count: pedidoCount },
     organization: {
         findMany: organizationFindMany,
@@ -71,6 +74,7 @@ vi.mock("@/lib/prisma", () => ({
       updateMany: mocks.runUpdateMany,
     },
     linxSyncCursor: { findMany: mocks.cursorFindMany },
+    product: { findMany: mocks.productFindMany },
     pedido: { count: mocks.pedidoCount },
   },
 }));
@@ -120,6 +124,7 @@ beforeEach(() => {
   mocks.runFindFirst.mockResolvedValue(null);
   mocks.runUpdateMany.mockResolvedValue({ count: 0 });
   mocks.cursorFindMany.mockResolvedValue([]);
+  mocks.productFindMany.mockResolvedValue([]);
   mocks.discoverLinxStores.mockResolvedValue([
     {
       cnpj: "11222333000144",
@@ -253,6 +258,13 @@ describe("Linx admin routes", () => {
         updatedAt: new Date("2026-07-29T11:59:00.000Z"),
       },
     ]);
+    mocks.productFindMany.mockResolvedValue([
+      {
+        external_code: 9999,
+        description: "Produto não identificado — código 9999",
+        catalogLastCheckedAt: new Date("2026-08-11T12:00:00.000Z"),
+      },
+    ]);
 
     const response = await statusGet();
 
@@ -298,6 +310,22 @@ describe("Linx admin routes", () => {
           updatedAt: "2026-07-29T11:59:00.000Z",
         },
       ],
+      pendingProducts: [
+        {
+          externalCode: 9999,
+          description: "Produto não identificado — código 9999",
+          lastCheckedAt: "2026-08-11T12:00:00.000Z",
+        },
+      ],
+    });
+    expect(mocks.productFindMany).toHaveBeenCalledWith({
+      where: { catalogStatus: "PENDING" },
+      orderBy: { external_code: "asc" },
+      select: {
+        external_code: true,
+        description: true,
+        catalogLastCheckedAt: true,
+      },
     });
   });
 
