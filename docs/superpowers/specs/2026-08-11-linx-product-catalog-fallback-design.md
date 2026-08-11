@@ -1,7 +1,7 @@
 # Linx product catalog fallback design
 
 **Date:** 2026-08-11  
-**Status:** Approved in conversation; awaiting written-spec review
+**Status:** Approved
 
 ## Context
 
