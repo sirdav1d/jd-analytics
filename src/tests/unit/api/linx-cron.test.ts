@@ -143,10 +143,9 @@ describe("Linx cron", () => {
     });
   });
 
-  it("keeps the Google cron and schedules the Linx cron at 23:00 UTC", () => {
+  it("schedules the Linx cron at 20:00 UTC", () => {
     expect(vercelConfig.crons).toEqual([
-      { path: "/api/cron", schedule: "0 10 * * *" },
-      { path: "/api/cron/linx", schedule: "0 23 * * *" },
+      { path: "/api/cron/linx", schedule: "0 20 * * *" },
     ]);
     expect(maxDuration).toBe(60);
   });
