@@ -97,16 +97,26 @@ export async function upsertProduct(
       ? { catalogResolvedAt: item.catalogResolvedAt }
       : {}),
   };
+  const pendingLinxProduct =
+    source === "LINX" && item.catalogStatus === "PENDING";
   const product = await tx.product.upsert({
     where: { external_code: item.productCode },
-    update: source === "LINX" ? { ...metadata, ...catalogState } : {},
+    update:
+      source === "LINX" && !pendingLinxProduct
+        ? { ...metadata, ...catalogState }
+        : {},
     create: {
       external_code: item.productCode,
       ...metadata,
       ...catalogState,
     },
   });
-  if (source === "CSV") {
+  if (pendingLinxProduct) {
+    await tx.product.updateMany({
+      where: { id: product.id, catalogStatus: "PENDING" },
+      data: { ...metadata, ...catalogState },
+    });
+  } else if (source === "CSV") {
     await tx.product.updateMany({
       where: { id: product.id, catalogStatus: "PENDING" },
       data: {

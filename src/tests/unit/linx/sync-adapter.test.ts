@@ -590,7 +590,10 @@ describe("Linx production data adapters", () => {
             rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
           };
         }
-        return { columns: [], rows: [] };
+        return {
+          columns: ["cod_produto", "nome", "desc_marca", "desc_setor"],
+          rows: [],
+        };
       },
       catalogReader: emptyCatalogReader,
       deadline: createDeadline(() => 1_000, 10_000),
@@ -611,6 +614,33 @@ describe("Linx production data adapters", () => {
       catalogLastCheckedAt: checkedAt,
       catalogResolvedAt: null,
     });
+  });
+
+  it("rejects an empty product lookup with a malformed column contract", async () => {
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        return {
+          columns: ["codigo", "descricao"],
+          rows: [],
+        };
+      },
+      catalogReader: emptyCatalogReader,
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => new Date("2026-08-11T12:00:00.000Z"),
+    });
+
+    await expect(
+      adapters.loadMissingCatalogs(
+        "11222333000144",
+        [movementFixture({ productCode: 9999 })],
+      ),
+    ).rejects.toBeInstanceOf(LinxDataError);
   });
 
   it("retries a PENDING local product and resolves it from Linx", async () => {

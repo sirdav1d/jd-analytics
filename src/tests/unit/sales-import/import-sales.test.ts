@@ -382,14 +382,20 @@ describe("importSales", () => {
 
     expect(tx.product.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        update: expect.objectContaining({
+        update: {},
+        create: expect.objectContaining({
           catalogStatus: "PENDING",
-          catalogLastCheckedAt: checkedAt,
-          catalogResolvedAt: null,
         }),
-        create: expect.objectContaining({ catalogStatus: "PENDING" }),
       }),
     );
+    expect(tx.product.updateMany).toHaveBeenCalledWith({
+      where: { id: "product-1", catalogStatus: "PENDING" },
+      data: expect.objectContaining({
+        catalogStatus: "PENDING",
+        catalogLastCheckedAt: checkedAt,
+        catalogResolvedAt: null,
+      }),
+    });
   });
 
   it("lets CSV metadata resolve only a pending product", async () => {

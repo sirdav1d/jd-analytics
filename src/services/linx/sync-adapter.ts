@@ -121,6 +121,12 @@ type SyncRange = {
 };
 
 const CATALOG_LOOKUP_CONCURRENCY = 5;
+const REQUIRED_PRODUCT_CATALOG_COLUMNS = [
+  "cod_produto",
+  "nome",
+  "desc_marca",
+  "desc_setor",
+] as const;
 
 async function forEachCatalogLookup<T>(
   values: T[],
@@ -803,6 +809,13 @@ export function createLinxDataAdapters(input: AdapterInput) {
             to,
           }),
         );
+        if (
+          REQUIRED_PRODUCT_CATALOG_COLUMNS.some(
+            (column) => !response.columns.includes(column),
+          )
+        ) {
+          throw new LinxDataError();
+        }
         if (response.rows.length === 0) {
           products.set(productCode, {
             productCode,
