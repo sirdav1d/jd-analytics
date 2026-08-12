@@ -4,7 +4,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 
 interface ICreateRoasGoalAction {
 	goalDateRef: Date;
@@ -33,6 +33,8 @@ export async function CreateRoasGoalAction({
 		}
 
 		revalidatePath('/dashboard/goals-marketing');
+		revalidatePath('/dashboard');
+		updateTag('goals-current');
 
 		return {
 			error: null,

@@ -7,11 +7,16 @@ import type { MetaInvestment } from '@/lib/api/meta-investments';
 import MetaInvestmentsTable from '@/app/dashboard/(admin)/meta-investments/_components/meta-investments-table';
 import MetaInvestmentsSection from '@/app/dashboard/(admin)/meta-investments/_components/meta-investments-section';
 
-const { findMany } = vi.hoisted(() => ({ findMany: vi.fn() }));
+const { findMany, connection } = vi.hoisted(() => ({
+	findMany: vi.fn(),
+	connection: vi.fn(),
+}));
 
 vi.mock('@/lib/prisma', () => ({
 	prisma: { metaInvestment: { findMany } },
 }));
+
+vi.mock('next/server', () => ({ connection }));
 
 vi.mock('@/app/dashboard/(admin)/meta-investments/_components/meta-investment-form', () => ({
 	default: () => null,
@@ -65,6 +70,7 @@ const investments: MetaInvestment[] = [
 afterEach(() => {
 	cleanup();
 	findMany.mockReset();
+	connection.mockReset();
 });
 
 describe('Meta investment history pagination', () => {
@@ -99,5 +105,30 @@ describe('Meta investment history pagination', () => {
 
 		const pagination = screen.getByRole('navigation', { name: 'Paginação' });
 		expect(pagination.closest('.border')).toBeNull();
+	});
+
+	it('waits for a request before reading investments from the database', async () => {
+		const events: string[] = [];
+		let releaseConnection!: () => void;
+		const pendingConnection = new Promise<void>((resolve) => {
+			releaseConnection = resolve;
+		});
+		connection.mockImplementationOnce(() => {
+			events.push('connection');
+			return pendingConnection;
+		});
+		findMany.mockImplementationOnce(async () => {
+			events.push('findMany');
+			return [];
+		});
+
+		const section = MetaInvestmentsSection();
+
+		expect(connection).toHaveBeenCalledOnce();
+		expect(findMany).not.toHaveBeenCalled();
+		releaseConnection();
+		await section;
+
+		expect(events).toEqual(['connection', 'findMany']);
 	});
 });

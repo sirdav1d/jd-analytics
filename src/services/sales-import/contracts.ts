@@ -21,6 +21,9 @@ export type CanonicalSaleItem = {
   totalValue: number;
   linxOrder?: number;
   linxTimestamp?: bigint;
+  catalogStatus?: "KNOWN" | "PENDING";
+  catalogLastCheckedAt?: Date | null;
+  catalogResolvedAt?: Date | null;
   excluded?: boolean;
 };
 

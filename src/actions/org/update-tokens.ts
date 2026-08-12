@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
+import { revalidatePath, updateTag } from 'next/cache';
 
 export async function updateOrganizationTokens(
 	organizationId: string,
@@ -36,7 +37,13 @@ export async function updateOrganizationTokens(
 				org: null,
 			};
 		}
-		
+
+		revalidatePath('/dashboard', 'layout');
+		revalidatePath('/dashboard/marketing');
+		updateTag('goals-current');
+		updateTag('marketing-goals-google-ads-current');
+		updateTag('marketing-goals-google-ads-history');
+
 		return {
 			error: null,
 			ok: true,

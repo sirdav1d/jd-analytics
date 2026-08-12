@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { AuthorizationError } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 const selfSchema = z
 	.object({
@@ -27,6 +28,9 @@ export async function updateSelfAction(input: unknown) {
 				: {}),
 		},
 	});
+
+	revalidatePath("/dashboard/profile");
+	revalidatePath("/dashboard", "layout");
 
 	return { ok: true };
 }

@@ -11,10 +11,12 @@ import { DatabaseBackup } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { prisma } from '@/lib/prisma';
+import { connection } from 'next/server';
 import MetaInvestmentForm from './meta-investment-form';
 import MetaInvestmentsTable from './meta-investments-table';
 
 export default async function MetaInvestmentsSection() {
+	await connection();
 	const persistedInvestments = await prisma.metaInvestment.findMany({
 		orderBy: { periodStart: 'desc' },
 	});

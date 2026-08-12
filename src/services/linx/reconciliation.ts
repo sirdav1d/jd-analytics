@@ -59,6 +59,7 @@ export type ReconciliationPreviewDependencies = {
 };
 
 const SAO_PAULO_TIME_ZONE = "America/Sao_Paulo";
+const ISO_CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function normalizedNullableString(value: string | null | undefined) {
   return value ?? null;
@@ -178,6 +179,28 @@ export function reconciliationPeriodFor(now: Date): ReconciliationPeriod {
   return { from: isoCalendarDate(from), to: isoCalendarDate(to) };
 }
 
+export function validateReconciliationPeriod(
+  period: ReconciliationPeriod,
+): ReconciliationPeriod {
+  const parse = (value: string) => {
+    if (!ISO_CALENDAR_DATE.test(value)) {
+      throw new Error("Período de conciliação inválido");
+    }
+    const date = new Date(`${value}T00:00:00.000Z`);
+    if (Number.isNaN(date.getTime()) || isoCalendarDate(date) !== value) {
+      throw new Error("Período de conciliação inválido");
+    }
+    return date;
+  };
+  const from = parse(period.from);
+  const to = parse(period.to);
+  const elapsedDays = (to.getTime() - from.getTime()) / 86_400_000;
+  if (elapsedDays < 0 || elapsedDays > 29) {
+    throw new Error("Período de conciliação inválido");
+  }
+  return { from: isoCalendarDate(from), to: isoCalendarDate(to) };
+}
+
 export function assertDateWithinReconciliationPeriod(
   date: Date,
   period: ReconciliationPeriod,
@@ -287,7 +310,7 @@ function indexOrders(
 }
 
 export async function previewReconciliation(
-  input: { runtimeBudgetMs: number },
+  input: { runtimeBudgetMs: number; period?: ReconciliationPeriod },
   dependencies: ReconciliationPreviewDependencies,
 ): Promise<ReconciliationPreview> {
   if (!Number.isFinite(input.runtimeBudgetMs) || input.runtimeBudgetMs <= 0) {
@@ -295,7 +318,9 @@ export async function previewReconciliation(
   }
 
   const startedAt = dependencies.now();
-  const period = reconciliationPeriodFor(dependencies.nowDate());
+  const period = input.period
+    ? validateReconciliationPeriod(input.period)
+    : reconciliationPeriodFor(dependencies.nowDate());
   const linxOrders = await dependencies.readLinxOrders(period);
   const databaseOrders = await dependencies.readDatabaseOrders(period);
   const estimatedDurationMs = Math.max(0, dependencies.now() - startedAt);

@@ -81,6 +81,11 @@ model PaymentMethod {
   sales     Pedido[]
 }
 
+enum ProductCatalogStatus {
+  KNOWN
+  PENDING
+}
+
 model SaleItem {
   id            String   @id @default(uuid())
   quantity      Float
@@ -99,14 +104,19 @@ model SaleItem {
 }
 
 model Product {
-  id            String     @id @default(uuid())
-  description   String
-  brand         String
-  sector        String
-  external_code Int?       @unique(map: "Product_externalCode_key")
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  items         SaleItem[]
+  id                   String               @id @default(uuid())
+  description          String
+  brand                String
+  sector               String
+  external_code        Int?                 @unique(map: "Product_externalCode_key")
+  catalogStatus        ProductCatalogStatus @default(KNOWN)
+  catalogLastCheckedAt DateTime?
+  catalogResolvedAt    DateTime?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  items                SaleItem[]
+
+  @@index([catalogStatus])
 }
 
 model Pedido {

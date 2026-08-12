@@ -14,7 +14,7 @@ export async function GET() {
   }
 
   try {
-    const { organizations, activeOrganization, run, cursors } =
+    const { organizations, activeOrganization, run, cursors, pendingProducts } =
       await withLinxCoordination(prisma, new Date(), async (tx) => {
         const organizations = await tx.organization.findMany({
           orderBy: { name: "asc" },
@@ -30,7 +30,7 @@ export async function GET() {
         const activeOrganization = organizations.find(
           (organization) => organization.linxSyncEnabled === true,
         );
-        const [run, cursors] = await Promise.all([
+        const [run, cursors, pendingProducts] = await Promise.all([
           activeOrganization
             ? tx.linxSyncRun.findFirst({
                 where: { organizationId: activeOrganization.id },
@@ -62,8 +62,25 @@ export async function GET() {
                 },
               })
             : Promise.resolve([]),
+          activeOrganization
+            ? tx.product.findMany({
+                where: { catalogStatus: "PENDING" },
+                orderBy: { external_code: "asc" },
+                select: {
+                  external_code: true,
+                  description: true,
+                  catalogLastCheckedAt: true,
+                },
+              })
+            : Promise.resolve([]),
         ]);
-        return { organizations, activeOrganization, run, cursors };
+        return {
+          organizations,
+          activeOrganization,
+          run,
+          cursors,
+          pendingProducts,
+        };
       });
 
     return Response.json({
@@ -84,6 +101,18 @@ export async function GET() {
         lastTimestamp: cursor.lastTimestamp.toString(),
         updatedAt: cursor.updatedAt.toISOString(),
       })),
+      pendingProducts: pendingProducts.flatMap((product) =>
+        product.external_code === null
+          ? []
+          : [
+              {
+                externalCode: product.external_code,
+                description: product.description,
+                lastCheckedAt:
+                  product.catalogLastCheckedAt?.toISOString() ?? null,
+              },
+            ],
+      ),
     });
   } catch {
     return Response.json(

@@ -327,6 +327,21 @@ export async function collectLinxData(
     ...completed,
     catalogs,
   });
+  const pendingProductCodes = [
+    ...new Set(
+      sales.flatMap((sale) =>
+        sale.items.flatMap((item) =>
+          item.catalogStatus === "PENDING" ? [item.productCode] : [],
+        ),
+      ),
+    ),
+  ].sort((left, right) => left - right);
+  for (const productCode of pendingProductCodes) {
+    deps.logger.warn("Produto Linx sem cadastro", {
+      organizationId: input.organizationId,
+      productCode,
+    });
+  }
   if (range) {
     for (const sale of sales) {
       assertDateWithinReconciliationPeriod(sale.date, range);

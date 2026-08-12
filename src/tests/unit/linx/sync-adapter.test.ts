@@ -5,11 +5,13 @@ import { createDeadline } from "@/services/linx/deadline";
 import {
   LinxDataError,
   LinxDeadlineError,
+  LinxAuthError,
 } from "@/services/linx/errors";
 import {
   createLinxDataAdapters,
   type LinxCatalogReader,
 } from "@/services/linx/sync-adapter";
+import type { LinxMovement } from "@/services/linx/mappers/movement";
 import type { LinxCommand, LinxResponse } from "@/services/linx/types";
 import { parseLinxResponse } from "@/services/linx/xml";
 import { importSales } from "@/services/sales-import/import-sales";
@@ -51,6 +53,28 @@ const catalogs = {
     ],
   ]),
 };
+
+function movementFixture(overrides: Partial<LinxMovement> = {}): LinxMovement {
+  return {
+    identificador: "7c0ab11c-95b6-4e14-8186-bb5292198ff1",
+    timestamp: BigInt(1),
+    documentNumber: "1",
+    launchDate: "2026-08-11",
+    customerCode: null,
+    sellerCode: 5,
+    productCode: 6,
+    quantity: 1,
+    unitValue: 10,
+    totalValue: 10,
+    cancelled: false,
+    excluded: false,
+    order: 1,
+    operationalOriginCode: null,
+    natureOperation: "Venda",
+    operationType: "S",
+    ...overrides,
+  };
+}
 
 function makeImportTransaction() {
   return {
@@ -370,6 +394,9 @@ describe("Linx production data adapters", () => {
             description: "Produto",
             brand: "Marca",
             sector: "Setor",
+            catalogStatus: "KNOWN",
+            catalogLastCheckedAt: new Date("2026-07-29T12:00:00.000Z"),
+            catalogResolvedAt: new Date("2026-07-29T12:00:00.000Z"),
             quantity: 2,
             unitValue: 10.5,
             totalValue: 21,
@@ -419,7 +446,7 @@ describe("Linx production data adapters", () => {
     expect(execute).toHaveBeenCalledTimes(1);
   });
 
-  it("replaces stale persisted catalogs with validated point lookup values", async () => {
+  it("refreshes incremental parties while reusing a known local product", async () => {
     const execute = vi.fn(async (command: LinxCommand) => {
       if (command.name === "LinxClientesFornec") {
         return {
@@ -444,19 +471,6 @@ describe("Linx production data adapters", () => {
           ],
         };
       }
-      if (command.name === "LinxProdutos") {
-        return {
-          columns: ["cod_produto", "nome", "desc_marca", "desc_setor"],
-          rows: [
-            {
-              cod_produto: "6",
-              nome: "Produto atualizado",
-              desc_marca: "Marca nova",
-              desc_setor: "Setor novo",
-            },
-          ],
-        };
-      }
       throw new Error(`Comando inesperado: ${command.name}`);
     });
     const adapters = createLinxDataAdapters({
@@ -469,9 +483,12 @@ describe("Linx production data adapters", () => {
         readProducts: async () => [
           {
             productCode: 6,
-            description: "Produto",
-            brand: "Marca",
-            sector: "Setor",
+            description: "Produto persistido",
+            brand: "Marca persistida",
+            sector: "Setor persistido",
+            catalogStatus: "KNOWN",
+            catalogLastCheckedAt: null,
+            catalogResolvedAt: null,
           },
         ],
         readSaleComplements: async () => new Map(),
@@ -505,16 +522,172 @@ describe("Linx production data adapters", () => {
       ],
     );
 
-    expect(execute).toHaveBeenCalledTimes(3);
+    expect(execute).toHaveBeenCalledTimes(2);
     expect(catalogs.customers.get(4)).toMatchObject({
       name: "Ana atualizada",
       personType: "JURIDICA",
     });
     expect(catalogs.sellers.get(5)?.name).toBe("Bia atualizada");
     expect(catalogs.products.get(6)).toMatchObject({
-      description: "Produto atualizado",
-      brand: "Marca nova",
-      sector: "Setor novo",
+      description: "Produto persistido",
+      brand: "Marca persistida",
+      sector: "Setor persistido",
+    });
+  });
+
+  it("reuses a KNOWN local product without a Linx product lookup", async () => {
+    const readProducts = vi.fn(async () => [{
+      productCode: 1314,
+      description: "S.O. WINDOWS 11 PRO 32/64 BITS OEM (FQC-10529)",
+      brand: "MICROSSOFT",
+      sector: "ACESSORIOS OFFICE",
+      catalogStatus: "KNOWN" as const,
+      catalogLastCheckedAt: null,
+      catalogResolvedAt: null,
+    }]);
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        if (command.name === "LinxProdutos") {
+          throw new Error("A consulta de produto não deveria acontecer");
+        }
+        throw new Error(`Comando inesperado: ${command.name}`);
+      },
+      catalogReader: { ...emptyCatalogReader, readProducts },
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => new Date("2026-08-11T12:00:00.000Z"),
+    });
+
+    const loaded = await adapters.loadMissingCatalogs(
+      "11222333000144",
+      [movementFixture({ productCode: 1314 })],
+    );
+
+    expect(readProducts).toHaveBeenCalledWith([1314]);
+    expect(loaded.products.get(1314)).toEqual({
+      productCode: 1314,
+      description: "S.O. WINDOWS 11 PRO 32/64 BITS OEM (FQC-10529)",
+      brand: "MICROSSOFT",
+      sector: "ACESSORIOS OFFICE",
+      catalogStatus: "KNOWN",
+      catalogLastCheckedAt: null,
+      catalogResolvedAt: null,
+    });
+  });
+
+  it("uses code-specific PENDING metadata when Linx has no product", async () => {
+    const checkedAt = new Date("2026-08-11T12:00:00.000Z");
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        return {
+          columns: ["cod_produto", "nome", "desc_marca", "desc_setor"],
+          rows: [],
+        };
+      },
+      catalogReader: emptyCatalogReader,
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => checkedAt,
+    });
+
+    const loaded = await adapters.loadMissingCatalogs(
+      "11222333000144",
+      [movementFixture({ productCode: 9999 })],
+    );
+
+    expect(loaded.products.get(9999)).toEqual({
+      productCode: 9999,
+      description: "Produto não identificado — código 9999",
+      brand: "Não informado",
+      sector: "Não informado",
+      catalogStatus: "PENDING",
+      catalogLastCheckedAt: checkedAt,
+      catalogResolvedAt: null,
+    });
+  });
+
+  it("rejects an empty product lookup with a malformed column contract", async () => {
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        return {
+          columns: ["codigo", "descricao"],
+          rows: [],
+        };
+      },
+      catalogReader: emptyCatalogReader,
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => new Date("2026-08-11T12:00:00.000Z"),
+    });
+
+    await expect(
+      adapters.loadMissingCatalogs(
+        "11222333000144",
+        [movementFixture({ productCode: 9999 })],
+      ),
+    ).rejects.toBeInstanceOf(LinxDataError);
+  });
+
+  it("retries a PENDING local product and resolves it from Linx", async () => {
+    const checkedAt = new Date("2026-08-11T12:00:00.000Z");
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        return {
+          columns: ["cod_produto", "nome", "desc_marca", "desc_setor"],
+          rows: [{
+            cod_produto: "9999",
+            nome: "Produto resolvido",
+            desc_marca: "Marca real",
+            desc_setor: "Setor real",
+          }],
+        };
+      },
+      catalogReader: {
+        ...emptyCatalogReader,
+        readProducts: async () => [{
+          productCode: 9999,
+          description: "Produto não identificado — código 9999",
+          brand: "Não informado",
+          sector: "Não informado",
+          catalogStatus: "PENDING",
+          catalogLastCheckedAt: new Date("2026-08-10T12:00:00.000Z"),
+          catalogResolvedAt: null,
+        }],
+      },
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => checkedAt,
+    });
+
+    const loaded = await adapters.loadMissingCatalogs(
+      "11222333000144",
+      [movementFixture({ productCode: 9999 })],
+    );
+    expect(loaded.products.get(9999)).toMatchObject({
+      description: "Produto resolvido",
+      catalogStatus: "KNOWN",
+      catalogLastCheckedAt: checkedAt,
+      catalogResolvedAt: checkedAt,
     });
   });
 
@@ -701,6 +874,103 @@ describe("Linx production data adapters", () => {
           operationType: "S",
         },
       ]),
+    ).rejects.toBeInstanceOf(LinxDataError);
+  });
+
+  it("propagates Linx authentication failures during a product lookup", async () => {
+    const authFailure = new LinxAuthError();
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        throw authFailure;
+      },
+      catalogReader: emptyCatalogReader,
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => new Date("2026-08-11T12:00:00.000Z"),
+    });
+
+    await expect(
+      adapters.loadMissingCatalogs(
+        "11222333000144",
+        [movementFixture({ productCode: 9999 })],
+      ),
+    ).rejects.toBe(authFailure);
+  });
+
+  it("rejects a product point lookup for a different requested code", async () => {
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        return {
+          columns: ["cod_produto", "nome", "desc_marca", "desc_setor"],
+          rows: [{
+            cod_produto: "9998",
+            nome: "Produto incorreto",
+            desc_marca: "Marca",
+            desc_setor: "Setor",
+          }],
+        };
+      },
+      catalogReader: emptyCatalogReader,
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => new Date("2026-08-11T12:00:00.000Z"),
+    });
+
+    await expect(
+      adapters.loadMissingCatalogs(
+        "11222333000144",
+        [movementFixture({ productCode: 9999 })],
+      ),
+    ).rejects.toBeInstanceOf(LinxDataError);
+  });
+
+  it("rejects conflicting product metadata returned for one code", async () => {
+    const adapters = createLinxDataAdapters({
+      execute: async (command) => {
+        if (command.name === "LinxVendedores") {
+          return {
+            columns: ["cod_vendedor", "nome_vendedor"],
+            rows: [{ cod_vendedor: "5", nome_vendedor: "Bia" }],
+          };
+        }
+        return {
+          columns: ["cod_produto", "nome", "desc_marca", "desc_setor"],
+          rows: [
+            {
+              cod_produto: "9999",
+              nome: "Produto A",
+              desc_marca: "Marca",
+              desc_setor: "Setor",
+            },
+            {
+              cod_produto: "9999",
+              nome: "Produto B",
+              desc_marca: "Marca",
+              desc_setor: "Setor",
+            },
+          ],
+        };
+      },
+      catalogReader: emptyCatalogReader,
+      deadline: createDeadline(() => 1_000, 10_000),
+      nowDate: () => new Date("2026-08-11T12:00:00.000Z"),
+    });
+
+    await expect(
+      adapters.loadMissingCatalogs(
+        "11222333000144",
+        [movementFixture({ productCode: 9999 })],
+      ),
     ).rejects.toBeInstanceOf(LinxDataError);
   });
 

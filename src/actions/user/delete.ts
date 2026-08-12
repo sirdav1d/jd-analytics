@@ -6,7 +6,7 @@
 import { prisma } from '@/lib/prisma'; // ajuste o caminho conforme sua estrutura
 import { requireAdmin } from '@/lib/auth';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 
 export async function deleteUserAction(userId: string) {
 	await requireAdmin();
@@ -26,7 +26,11 @@ export async function deleteUserAction(userId: string) {
 			};
 		}
 		//enviar credenciais para e-mail cadastrado
-		revalidateTag('users', { expire: 0 });
+		updateTag('rankings');
+		updateTag('tracking-goal');
+		updateTag('sales-by');
+		updateTag('big-numbers-comercial');
+		updateTag('goals-current');
 		revalidatePath('/dashboard/users');
 		return {
 			error: null,

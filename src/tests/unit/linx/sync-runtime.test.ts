@@ -5,6 +5,9 @@ const prismaMock = vi.hoisted(() => ({
   pedido: {
     findMany: vi.fn(),
   },
+  product: {
+    findMany: vi.fn(),
+  },
 }));
 const revalidateTag = vi.hoisted(() => vi.fn());
 
@@ -27,6 +30,33 @@ const uppercaseIdentity = {
 };
 
 describe("Linx runtime complement reader", () => {
+  it("reads persisted product lifecycle metadata", async () => {
+    prismaMock.product.findMany.mockResolvedValue([{
+      external_code: 1314,
+      description: "Produto local",
+      brand: "Marca",
+      sector: "Setor",
+      catalogStatus: "KNOWN",
+      catalogLastCheckedAt: null,
+      catalogResolvedAt: null,
+    }]);
+
+    const products = await buildCatalogReader("org-1").readProducts([1314]);
+
+    expect(prismaMock.product.findMany).toHaveBeenCalledWith({
+      where: { external_code: { in: [1314] } },
+      select: expect.objectContaining({
+        catalogStatus: true,
+        catalogLastCheckedAt: true,
+        catalogResolvedAt: true,
+      }),
+    });
+    expect(products[0]).toMatchObject({
+      productCode: 1314,
+      catalogStatus: "KNOWN",
+    });
+  });
+
   it("invalidates every sales consumer after a successful Linx commit", () => {
     revalidateSalesCaches();
 

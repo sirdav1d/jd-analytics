@@ -40,7 +40,13 @@ import type {
 
 type ProductCatalogEntry = Pick<
   CanonicalSaleItem,
-  "productCode" | "description" | "brand" | "sector"
+  | "productCode"
+  | "description"
+  | "brand"
+  | "sector"
+  | "catalogStatus"
+  | "catalogLastCheckedAt"
+  | "catalogResolvedAt"
 >;
 
 export type LinxCatalogs = {
@@ -115,6 +121,12 @@ type SyncRange = {
 };
 
 const CATALOG_LOOKUP_CONCURRENCY = 5;
+const REQUIRED_PRODUCT_CATALOG_COLUMNS = [
+  "cod_produto",
+  "nome",
+  "desc_marca",
+  "desc_setor",
+] as const;
 
 async function forEachCatalogLookup<T>(
   values: T[],
@@ -713,19 +725,19 @@ export function createLinxDataAdapters(input: AdapterInput) {
         movements.map((movement) => movement.productCode),
       );
 
+      input.deadline.assert();
+      const persistedProducts = await input.catalogReader.readProducts(
+        productCodes,
+      );
       let persistedCustomers: CanonicalParty[] = [];
       let persistedSellers: CanonicalSeller[] = [];
-      let persistedProducts: ProductCatalogEntry[] = [];
       if (scope.mode === "RECONCILIATION") {
-        input.deadline.assert();
-        [persistedCustomers, persistedSellers, persistedProducts] =
-          await Promise.all([
-            input.catalogReader.readCustomers(customerCodes),
-            input.catalogReader.readSellers(sellerCodes),
-            input.catalogReader.readProducts(productCodes),
-          ]);
-        input.deadline.assert();
+        [persistedCustomers, persistedSellers] = await Promise.all([
+          input.catalogReader.readCustomers(customerCodes),
+          input.catalogReader.readSellers(sellerCodes),
+        ]);
       }
+      input.deadline.assert();
 
       const customers = new Map<number, CanonicalParty>(
         persistedCustomers.flatMap((customer) =>
@@ -742,10 +754,9 @@ export function createLinxDataAdapters(input: AdapterInput) {
         ),
       );
       const products = new Map(
-        persistedProducts.map((product) => [
-          product.productCode,
-          product,
-        ]),
+        persistedProducts
+          .filter((product) => (product.catalogStatus ?? "KNOWN") === "KNOWN")
+          .map((product) => [product.productCode, product]),
       );
       const missingCustomerCodes = customerCodes.filter(
         (code) => !customers.has(code),
@@ -787,7 +798,8 @@ export function createLinxDataAdapters(input: AdapterInput) {
         if (!seller || mapped.size !== 1) throw new LinxDataError();
         sellers.set(sellerCode, seller);
       });
-      const to = input.nowDate().toISOString().slice(0, 10);
+      const checkedAt = input.nowDate();
+      const to = checkedAt.toISOString().slice(0, 10);
       await forEachCatalogLookup(missingProductCodes, async (productCode) => {
         const response = await executePoint(
           productByCodeCommand({
@@ -797,14 +809,53 @@ export function createLinxDataAdapters(input: AdapterInput) {
             to,
           }),
         );
-        const mapped = mapCatalogs({
-          customers: [],
-          sellers: [],
-          products: response.rows,
-        }).products;
-        const product = mapped.get(productCode);
-        if (!product || mapped.size !== 1) throw new LinxDataError();
-        products.set(productCode, product);
+        if (
+          REQUIRED_PRODUCT_CATALOG_COLUMNS.some(
+            (column) => !response.columns.includes(column),
+          )
+        ) {
+          throw new LinxDataError();
+        }
+        if (response.rows.length === 0) {
+          products.set(productCode, {
+            productCode,
+            description: `Produto não identificado — código ${productCode}`,
+            brand: "Não informado",
+            sector: "Não informado",
+            catalogStatus: "PENDING",
+            catalogLastCheckedAt: checkedAt,
+            catalogResolvedAt: null,
+          });
+          return;
+        }
+        const candidates = response.rows.map((row) => {
+          const mapped = mapCatalogs({
+            customers: [],
+            sellers: [],
+            products: [row],
+          }).products;
+          const candidate = mapped.get(productCode);
+          if (!candidate || mapped.size !== 1) throw new LinxDataError();
+          return candidate;
+        });
+        const [product, ...duplicates] = candidates;
+        if (
+          !product ||
+          duplicates.some(
+            (candidate) =>
+              candidate.description !== product.description ||
+              candidate.brand !== product.brand ||
+              candidate.sector !== product.sector,
+          )
+        ) {
+          throw new LinxDataError();
+        }
+        products.set(productCode, {
+          ...product,
+          catalogStatus: "KNOWN",
+          catalogLastCheckedAt: checkedAt,
+          catalogResolvedAt: checkedAt,
+        });
       });
       return { customers, sellers, products };
     },

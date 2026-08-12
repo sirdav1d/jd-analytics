@@ -138,6 +138,10 @@ function makeTransactionDouble(options: {
         calls.push("product.upsert");
         return { id: "product-1" };
       }),
+      updateMany: vi.fn(async () => {
+        calls.push("product.updateMany");
+        return { count: 1 };
+      }),
     },
     saleItem: {
       create: vi.fn(async () => calls.push("saleItem.create")),
@@ -357,6 +361,57 @@ describe("importSales", () => {
         update: expect.objectContaining({ description: "Produto CSV" }),
       }),
     );
+  });
+
+  it("persists a pending Linx product with its successful check time", async () => {
+    const tx = makeTransactionDouble();
+    const checkedAt = new Date("2026-08-11T12:00:00.000Z");
+
+    await importSales(tx as never, [
+      makeCanonicalSale({
+        source: "LINX",
+        linxIdentifier: crypto.randomUUID(),
+        items: [makeCanonicalItem({
+          linxOrder: 1,
+          catalogStatus: "PENDING",
+          catalogLastCheckedAt: checkedAt,
+          catalogResolvedAt: null,
+        })],
+      }),
+    ]);
+
+    expect(tx.product.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: {},
+        create: expect.objectContaining({
+          catalogStatus: "PENDING",
+        }),
+      }),
+    );
+    expect(tx.product.updateMany).toHaveBeenCalledWith({
+      where: { id: "product-1", catalogStatus: "PENDING" },
+      data: expect.objectContaining({
+        catalogStatus: "PENDING",
+        catalogLastCheckedAt: checkedAt,
+        catalogResolvedAt: null,
+      }),
+    });
+  });
+
+  it("lets CSV metadata resolve only a pending product", async () => {
+    const tx = makeTransactionDouble();
+    await importSales(tx as never, [makeCanonicalSale()]);
+
+    expect(tx.product.updateMany).toHaveBeenCalledWith({
+      where: { id: "product-1", catalogStatus: "PENDING" },
+      data: expect.objectContaining({
+        description: "Produto CSV",
+        brand: "Marca CSV",
+        sector: "Setor CSV",
+        catalogStatus: "KNOWN",
+        catalogResolvedAt: expect.any(Date),
+      }),
+    });
   });
 
   it("applies explicit Linx removals after creates and updates in the supplied transaction", async () => {

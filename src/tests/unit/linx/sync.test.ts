@@ -8,6 +8,7 @@ import {
   type SyncInput,
 } from "@/services/linx/sync";
 import { ReconciliationAuthorizationError } from "@/services/linx/preview-authorization";
+import { mapCanonicalSales as mapLinxCanonicalSales } from "@/services/linx/sync-adapter";
 import type { CanonicalSale } from "@/services/sales-import/contracts";
 
 const METHODS = [
@@ -273,6 +274,154 @@ describe("runLinxSync", () => {
       expect(deps.repo.markRunFailed).toHaveBeenCalledTimes(1);
     },
   );
+
+  it("computes product 1314 from known local metadata", async () => {
+    const deps = makeSyncDeps();
+    const mixedIdentifier = "7c0ab11c-95b6-4e14-8186-bb5292198ff1";
+    const productOnlyIdentifier = "3f0fdd86-cd17-42ee-a2a7-55e559654c21";
+    const movement = (
+      identificador: string,
+      productCode: number,
+      order: number,
+    ) => ({
+      identificador,
+      timestamp: BigInt(44 + order),
+      documentNumber: identificador === mixedIdentifier ? "mixed" : "product-only",
+      launchDate: "2026-07-29",
+      customerCode: null,
+      sellerCode: 5,
+      productCode,
+      quantity: 1,
+      unitValue: 10,
+      totalValue: 10,
+      cancelled: false,
+      excluded: false,
+      order,
+      operationalOriginCode: null,
+      natureOperation: "Venda",
+      operationType: "S",
+    });
+    const completed = {
+      movements: [
+        movement(mixedIdentifier, 1314, 1),
+        movement(mixedIdentifier, 6, 2),
+        movement(productOnlyIdentifier, 1314, 1),
+      ],
+      paymentLabels: new Map<string, string>(),
+      principals: new Map<string, number | null>(),
+      routineOrigins: new Map<number, string>(),
+      salesResponses: new Map<number, string>(),
+      origins: new Map(),
+    };
+    deps.validateRows.mockReturnValue({ ...completed, movements: [] });
+    deps.completeRows.mockResolvedValue(completed);
+    deps.loadMissingCatalogs.mockImplementation(async () => {
+      return {
+        customers: new Map(),
+        sellers: new Map([[5, { externalCode: 5, name: "Ada" }]]),
+        products: new Map([
+          [
+            1314,
+            {
+              productCode: 1314,
+              description: "Produto 1314",
+              brand: "Marca",
+              sector: "Setor",
+              catalogStatus: "KNOWN" as const,
+            },
+          ],
+          [
+            6,
+            {
+              productCode: 6,
+              description: "Produto permitido",
+              brand: "Marca",
+              sector: "Setor",
+              catalogStatus: "KNOWN" as const,
+            },
+          ],
+        ]),
+      };
+    });
+    deps.mapCanonicalSales.mockImplementation(mapLinxCanonicalSales);
+
+    const collected = await collectLinxData(input, deps);
+
+    expect(collected.sales).toHaveLength(2);
+    expect(collected.sales).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          linxIdentifier: mixedIdentifier,
+          items: [
+            expect.objectContaining({ productCode: 1314, linxOrder: 1 }),
+            expect.objectContaining({ productCode: 6, linxOrder: 2 }),
+          ],
+        }),
+        expect.objectContaining({
+          linxIdentifier: productOnlyIdentifier,
+          items: [expect.objectContaining({ productCode: 1314 })],
+        }),
+      ]),
+    );
+    expect(deps.loadMissingCatalogs).toHaveBeenCalledWith(
+      "11222333000144",
+      completed.movements,
+      { mode: "INCREMENTAL" },
+    );
+  });
+
+  it("warns once per pending product code in ascending order", async () => {
+    const deps = makeSyncDeps();
+    deps.mapCanonicalSales.mockReturnValue([
+      {
+        ...saleWithIdentifier("7c0ab11c-95b6-4e14-8186-bb5292198ff1"),
+        items: [
+          {
+            productCode: 9002,
+            description: "Pendente 9002",
+            brand: "Não informado",
+            sector: "Não informado",
+            quantity: 1,
+            unitValue: 10,
+            totalValue: 10,
+            catalogStatus: "PENDING",
+          },
+          {
+            productCode: 9001,
+            description: "Pendente 9001",
+            brand: "Não informado",
+            sector: "Não informado",
+            quantity: 1,
+            unitValue: 10,
+            totalValue: 10,
+            catalogStatus: "PENDING",
+          },
+        ],
+      },
+      {
+        ...saleWithIdentifier("3f0fdd86-cd17-42ee-a2a7-55e559654c21"),
+        items: [
+          {
+            productCode: 9001,
+            description: "Pendente 9001",
+            brand: "Não informado",
+            sector: "Não informado",
+            quantity: 1,
+            unitValue: 10,
+            totalValue: 10,
+            catalogStatus: "PENDING",
+          },
+        ],
+      },
+    ]);
+
+    await collectLinxData(input, deps);
+
+    expect(deps.logger.warn.mock.calls).toEqual([
+      ["Produto Linx sem cadastro", { organizationId: "org-1", productCode: 9001 }],
+      ["Produto Linx sem cadastro", { organizationId: "org-1", productCode: 9002 }],
+    ]);
+  });
 
   it("commits a payment-only cursor after its movement is materialized", async () => {
     const deps = makeSyncDeps();

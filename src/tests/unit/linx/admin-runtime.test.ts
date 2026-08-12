@@ -243,6 +243,34 @@ describe("Linx ADMIN production composition", () => {
     });
   });
 
+  it("uses an explicit period for collection and authorization", async () => {
+    const period = { from: "2026-08-05", to: "2026-08-06" };
+
+    const preview = await previewProductionReconciliation(
+      organizationId,
+      "admin-id",
+      period,
+    );
+
+    expect(mocks.collectLinxData).toHaveBeenCalledWith(
+      expect.objectContaining({ organizationId, mode: "RECONCILIATION" }),
+      mocks.dependencies,
+      { reconciliationPeriod: period },
+    );
+    expect(preview.period).toEqual(period);
+    expect(
+      verifyReconciliationAuthorization(preview.authorizationToken!, {
+        key: "server-key",
+        now: new Date("2026-07-29T12:00:00.000Z"),
+        expected: {
+          organizationId,
+          cnpj: "11222333000144",
+          issuedById: "admin-id",
+        },
+      }).period,
+    ).toEqual(period);
+  });
+
   it("does not present cancelled or itemless Linx movements as new sales", async () => {
     const baseSale = {
       source: "LINX" as const,
