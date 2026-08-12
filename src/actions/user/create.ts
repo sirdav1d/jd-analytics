@@ -8,7 +8,7 @@ import { requireAdmin } from '@/lib/auth';
 import { $Enums } from '@prisma/client';
 // Importante: lembre-se de tratar a senha (por exemplo, usando hash) antes de salvar.
 import bcrypt from 'bcrypt';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 
 export async function createUserAction(
 	name: string,
@@ -44,7 +44,12 @@ export async function createUserAction(
 		const { password: storedPassword, ...safeUser } = user;
 		void storedPassword;
 		//enviar credenciais para e-mail cadastrado
-		revalidateTag('users', { expire: 0 });
+		updateTag('rankings');
+		updateTag('tracking-goal');
+		updateTag('sales-by');
+		updateTag('big-numbers-comercial');
+		updateTag('goals-current');
+		revalidatePath('/dashboard/users');
 		return {
 			error: null,
 			ok: true,

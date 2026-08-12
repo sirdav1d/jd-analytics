@@ -23,6 +23,7 @@ vi.mock("bcrypt", () => {
 	return { default: { hash }, hash };
 });
 vi.mock("@/lib/email/send-email", () => ({ sendEmail }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
 describe("self-service user actions", () => {
 	it("updates the authenticated user's own name without returning credentials", async () => {

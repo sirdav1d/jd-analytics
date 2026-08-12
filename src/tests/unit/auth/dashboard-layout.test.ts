@@ -29,6 +29,8 @@ vi.mock("next/headers", () => ({
 	cookies: async () => ({ get: () => undefined }),
 }));
 
+vi.mock("next/server", () => ({ connection: vi.fn() }));
+
 vi.mock("next/navigation", () => ({
 	redirect: (destination: string): never => {
 		throw new Error(`redirected to ${destination}`);

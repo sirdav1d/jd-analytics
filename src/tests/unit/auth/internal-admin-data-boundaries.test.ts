@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
 	forbiddenFetch: vi.fn(),
 	forbiddenCookies: vi.fn(),
 	forbiddenHeaders: vi.fn(),
+	connection: vi.fn(),
 }));
 
 vi.mock("@/lib/auth", () => ({ requireAdmin: mocks.requireAdmin }));
@@ -35,6 +36,11 @@ vi.mock("@/services/google-services/get-monthly-ads-costs", () => ({
 vi.mock("next/headers", () => ({
 	cookies: mocks.forbiddenCookies,
 	headers: mocks.forbiddenHeaders,
+}));
+
+vi.mock("next/server", async (importOriginal) => ({
+	...(await importOriginal<typeof import("next/server")>()),
+	connection: mocks.connection,
 }));
 
 const activeAdmin = {
@@ -81,6 +87,7 @@ beforeEach(() => {
 	mocks.queryRaw.mockResolvedValue([]);
 	mocks.currentGoogleAdsCosts.mockResolvedValue({});
 	mocks.closedGoogleAdsCosts.mockResolvedValue({});
+	mocks.connection.mockResolvedValue(undefined);
 });
 
 describe("internal administrative data boundaries", () => {
@@ -144,7 +151,7 @@ describe("internal administrative data boundaries", () => {
 		expectNoRequestContextOrHttpAccess();
 	});
 
-	it("loads meta investments through the real section without HTTP or request context", async () => {
+	it("loads meta investments at request time without HTTP or credential context", async () => {
 		const { default: MetaInvestmentsSection } = await import(
 			"@/app/dashboard/(admin)/meta-investments/_components/meta-investments-section"
 		);
@@ -153,6 +160,7 @@ describe("internal administrative data boundaries", () => {
 
 		expect(isValidElement(tree)).toBe(true);
 		expect(tree.type).toBe("div");
+		expect(mocks.connection).toHaveBeenCalledTimes(1);
 		expectNoRequestContextOrHttpAccess();
 	});
 });

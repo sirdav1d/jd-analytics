@@ -4,7 +4,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 
 interface ICreateSalesGoalAction {
 	userId: string;
@@ -35,12 +35,13 @@ export async function CreateSalesGoalAction({
 			};
 		}
 
-		revalidateTag('users', { expire: 0 });
-		revalidateTag('rankings', { expire: 0 });
-		revalidateTag('tracking-goal', { expire: 0 });
-		revalidateTag('goal', { expire: 0 });
-		revalidateTag('sales-by', { expire: 0 });
-		revalidateTag('big-numbers-comercial', { expire: 0 });
+		updateTag('rankings');
+		updateTag('tracking-goal');
+		updateTag('sales-by');
+		updateTag('big-numbers-comercial');
+		updateTag('goals-current');
+		revalidatePath('/dashboard/goals-comercial');
+		revalidatePath('/dashboard');
 
 		return {
 			error: null,

@@ -5,7 +5,7 @@
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
 import { startOfMonth } from 'date-fns';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 
 interface UpsertMetaInvestmentInput {
 	periodEnd: Date;
@@ -36,10 +36,10 @@ export async function UpsertMetaInvestmentAction({
 			},
 		});
 
-		revalidateTag('meta-investments', { expire: 0 });
-		revalidateTag('marketing-report', { expire: 0 });
+		updateTag('goals-current');
 		revalidatePath('/dashboard/meta-investments');
 		revalidatePath('/marketing-report/current');
+		revalidatePath('/dashboard');
 
 		return { ok: true, investment, error: null };
 	} catch (error) {

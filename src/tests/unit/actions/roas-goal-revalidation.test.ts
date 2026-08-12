@@ -5,13 +5,17 @@ const mocks = vi.hoisted(() => ({
 	create: vi.fn(),
 	update: vi.fn(),
 	revalidatePath: vi.fn(),
+	updateTag: vi.fn(),
 }));
 
 vi.mock('@/lib/auth', () => ({ requireAdmin: mocks.requireAdmin }));
 vi.mock('@/lib/prisma', () => ({
 	prisma: { roasGoal: { create: mocks.create, update: mocks.update } },
 }));
-vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidatePath }));
+vi.mock('next/cache', () => ({
+	revalidatePath: mocks.revalidatePath,
+	updateTag: mocks.updateTag,
+}));
 
 describe('ROAS goal mutations', () => {
 	beforeEach(() => {
@@ -19,6 +23,7 @@ describe('ROAS goal mutations', () => {
 		mocks.create.mockReset().mockResolvedValue({ id: 'created', roas: 4 });
 		mocks.update.mockReset().mockResolvedValue({ id: 'updated', roas: 5 });
 		mocks.revalidatePath.mockReset();
+		mocks.updateTag.mockReset();
 	});
 
 	it('revalidates the marketing goals page after creation succeeds', async () => {
@@ -30,8 +35,10 @@ describe('ROAS goal mutations', () => {
 		});
 
 		expect(mocks.revalidatePath).toHaveBeenCalledWith('/dashboard/goals-marketing');
+		expect(mocks.revalidatePath).toHaveBeenCalledWith('/dashboard');
+		expect(mocks.updateTag).toHaveBeenCalledWith('goals-current');
 		expect(mocks.requireAdmin).toHaveBeenCalledTimes(1);
-		expect(mocks.revalidatePath).toHaveBeenCalledTimes(1);
+		expect(mocks.revalidatePath).toHaveBeenCalledTimes(2);
 	});
 
 	it('revalidates the marketing goals page after update succeeds', async () => {
@@ -40,7 +47,9 @@ describe('ROAS goal mutations', () => {
 		await UpdateRoasGoalAction({ goalId: 'updated', roas: 5 });
 
 		expect(mocks.revalidatePath).toHaveBeenCalledWith('/dashboard/goals-marketing');
+		expect(mocks.revalidatePath).toHaveBeenCalledWith('/dashboard');
+		expect(mocks.updateTag).toHaveBeenCalledWith('goals-current');
 		expect(mocks.requireAdmin).toHaveBeenCalledTimes(1);
-		expect(mocks.revalidatePath).toHaveBeenCalledTimes(1);
+		expect(mocks.revalidatePath).toHaveBeenCalledTimes(2);
 	});
 });

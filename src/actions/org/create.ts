@@ -4,6 +4,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 export async function CreateOrgAction(name: string) {
 	await requireAdmin();
@@ -19,6 +20,8 @@ export async function CreateOrgAction(name: string) {
 				org: null,
 			};
 		}
+
+		revalidatePath('/dashboard', 'layout');
 
 		return {
 			error: null,

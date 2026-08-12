@@ -25,7 +25,10 @@ vi.mock("bcrypt", () => {
 	const hash = vi.fn(async () => "hashed-password");
 	return { default: { hash }, hash };
 });
-vi.mock("next/cache", () => ({ revalidateTag: vi.fn() }));
+vi.mock("next/cache", () => ({
+	revalidatePath: vi.fn(),
+	updateTag: vi.fn(),
+}));
 
 describe("administrative user mutations", () => {
 	it("does not return a password after creating a user", async () => {

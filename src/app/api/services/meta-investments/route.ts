@@ -85,10 +85,10 @@ export async function POST(req: NextRequest) {
 			},
 		});
 
-		revalidateTag('meta-investments', { expire: 0 });
-		revalidateTag('marketing-report', { expire: 0 });
+		revalidateTag('goals-current', { expire: 0 });
 		revalidatePath('/dashboard/meta-investments');
 		revalidatePath('/marketing-report/current');
+		revalidatePath('/dashboard');
 
 		return NextResponse.json({ ok: true, data: investment, error: null });
 	} catch (error) {
