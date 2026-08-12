@@ -159,8 +159,15 @@ const migrationPath = resolve(
 );
 
 describe("product catalog status migration", () => {
-  it("is bounded, atomic, additive, and defaults existing products to KNOWN", () => {
+  it("keeps additive DDL atomic and builds the index concurrently after commit", () => {
     const sql = readFileSync(migrationPath, "utf8");
+    const beginIndex = sql.indexOf("BEGIN;");
+    const alterTableIndex = sql.indexOf('ALTER TABLE "Product"');
+    const commitIndex = sql.indexOf("COMMIT;");
+    const concurrentIndex = sql.indexOf(
+      'CREATE INDEX CONCURRENTLY "Product_catalogStatus_idx"',
+    );
+
     expect(sql).toMatch(
       /^BEGIN;\n\nSET LOCAL lock_timeout = '5s';\nSET LOCAL statement_timeout = '60s';/,
     );
@@ -172,11 +179,12 @@ describe("product catalog status migration", () => {
     );
     expect(sql).toContain('"catalogLastCheckedAt" TIMESTAMP(3)');
     expect(sql).toContain('"catalogResolvedAt" TIMESTAMP(3)');
-    expect(sql).toContain(
-      'CREATE INDEX "Product_catalogStatus_idx" ON "Product"("catalogStatus")',
-    );
     expect(sql).not.toMatch(/DROP TABLE|DROP COLUMN|TRUNCATE|DELETE FROM/i);
-    expect(sql.trim()).toMatch(/COMMIT;$/);
+    expect(beginIndex).toBe(0);
+    expect(commitIndex).toBeGreaterThan(alterTableIndex);
+    expect(concurrentIndex).toBeGreaterThan(commitIndex);
+    expect(sql.match(/\bBEGIN;/g)).toHaveLength(1);
+    expect(sql.match(/\bCOMMIT;/g)).toHaveLength(1);
   });
 });
 ```
@@ -200,11 +208,16 @@ ADD COLUMN "catalogStatus" "ProductCatalogStatus" NOT NULL DEFAULT 'KNOWN',
 ADD COLUMN "catalogLastCheckedAt" TIMESTAMP(3),
 ADD COLUMN "catalogResolvedAt" TIMESTAMP(3);
 
-CREATE INDEX "Product_catalogStatus_idx"
-ON "Product"("catalogStatus");
-
 COMMIT;
+
+-- PostgreSQL requires concurrent index builds to run outside a transaction block.
+CREATE INDEX CONCURRENTLY "Product_catalogStatus_idx"
+ON "Product"("catalogStatus");
 ```
+
+The enum and columns remain inside the explicit bounded transaction. Prisma does not add an implicit transaction around PostgreSQL migration files, so the statement after `COMMIT` remains non-transactional as required by `CREATE INDEX CONCURRENTLY`.
+
+Apply this migration in a controlled deployment window with no other schema migration running. The application may remain online because the concurrent build does not block normal writes, but it can wait for existing transactions. Verify `Product_catalogStatus_idx` is valid after deployment. If the concurrent build fails, the enum and columns are already committed and PostgreSQL may leave an invalid index; do not rerun the whole migration blindly. Remove or rebuild the invalid index outside a transaction, then reconcile the Prisma migration state through the approved deployment procedure.
 
 Run:
 

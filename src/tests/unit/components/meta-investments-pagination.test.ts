@@ -109,15 +109,25 @@ describe('Meta investment history pagination', () => {
 
 	it('waits for a request before reading investments from the database', async () => {
 		const events: string[] = [];
-		connection.mockImplementationOnce(async () => {
+		let releaseConnection!: () => void;
+		const pendingConnection = new Promise<void>((resolve) => {
+			releaseConnection = resolve;
+		});
+		connection.mockImplementationOnce(() => {
 			events.push('connection');
+			return pendingConnection;
 		});
 		findMany.mockImplementationOnce(async () => {
 			events.push('findMany');
 			return [];
 		});
 
-		await MetaInvestmentsSection();
+		const section = MetaInvestmentsSection();
+
+		expect(connection).toHaveBeenCalledOnce();
+		expect(findMany).not.toHaveBeenCalled();
+		releaseConnection();
+		await section;
 
 		expect(events).toEqual(['connection', 'findMany']);
 	});

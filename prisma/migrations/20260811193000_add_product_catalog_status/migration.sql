@@ -10,6 +10,7 @@ ADD COLUMN "catalogStatus" "ProductCatalogStatus" NOT NULL DEFAULT 'KNOWN',
 ADD COLUMN "catalogLastCheckedAt" TIMESTAMP(3),
 ADD COLUMN "catalogResolvedAt" TIMESTAMP(3);
 
-CREATE INDEX "Product_catalogStatus_idx" ON "Product"("catalogStatus");
-
 COMMIT;
+
+-- PostgreSQL requires concurrent index builds to run outside a transaction block.
+CREATE INDEX CONCURRENTLY "Product_catalogStatus_idx" ON "Product"("catalogStatus");

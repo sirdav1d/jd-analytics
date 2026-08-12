@@ -73,22 +73,30 @@ describe("mutation cache revalidation", () => {
         import("@/actions/goals/create"),
         import("@/actions/goals/update"),
       ]);
+    const expectGoalCacheRefresh = () => {
+      expect(mocks.updateTag.mock.calls).toEqual([
+        ["rankings"],
+        ["tracking-goal"],
+        ["sales-by"],
+        ["big-numbers-comercial"],
+        ["goals-current"],
+      ]);
+      expect(mocks.revalidatePath.mock.calls).toEqual([
+        ["/dashboard/goals-comercial"],
+        ["/dashboard"],
+      ]);
+    };
 
     await CreateSalesGoalAction({
       userId: "seller",
       goalDateRef: new Date("2026-08-01T00:00:00.000Z"),
       revenue: 100,
     });
-    await UpdateSalesGoalAction({ goalId: "sales-updated", revenue: 200 });
+    expectGoalCacheRefresh();
 
-    expect(mocks.updateTag).toHaveBeenCalledWith("tracking-goal");
-    expect(mocks.updateTag).toHaveBeenCalledWith("rankings");
-    expect(mocks.updateTag).toHaveBeenCalledWith("goals-current");
-    expect(mocks.revalidatePath).toHaveBeenCalledTimes(4);
-    expect(mocks.revalidatePath).toHaveBeenCalledWith(
-      "/dashboard/goals-comercial",
-    );
-    expect(mocks.revalidatePath).toHaveBeenCalledWith("/dashboard");
+    vi.clearAllMocks();
+    await UpdateSalesGoalAction({ goalId: "sales-updated", revenue: 200 });
+    expectGoalCacheRefresh();
   });
 
   it("refreshes the users page after create, update, and deactivate", async () => {
@@ -98,6 +106,18 @@ describe("mutation cache revalidation", () => {
         import("@/actions/user/update"),
         import("@/actions/user/delete"),
       ]);
+    const expectUserCacheRefresh = () => {
+      expect(mocks.updateTag.mock.calls).toEqual([
+        ["rankings"],
+        ["tracking-goal"],
+        ["sales-by"],
+        ["big-numbers-comercial"],
+        ["goals-current"],
+      ]);
+      expect(mocks.revalidatePath.mock.calls).toEqual([
+        ["/dashboard/users"],
+      ]);
+    };
 
     await createUserAction(
       "New User",
@@ -106,16 +126,17 @@ describe("mutation cache revalidation", () => {
       "password123",
       "external-id",
     );
+    expectUserCacheRefresh();
+
+    vi.clearAllMocks();
     await updateUserAction({
       userUp: { email: "updated@example.com", name: "Updated User" },
     });
-    await deleteUserAction("user-updated");
+    expectUserCacheRefresh();
 
-    expect(mocks.updateTag).toHaveBeenCalledWith("rankings");
-    expect(mocks.updateTag).toHaveBeenCalledWith("tracking-goal");
-    expect(mocks.updateTag).toHaveBeenCalledWith("goals-current");
-    expect(mocks.revalidatePath).toHaveBeenCalledTimes(3);
-    expect(mocks.revalidatePath).toHaveBeenCalledWith("/dashboard/users");
+    vi.clearAllMocks();
+    await deleteUserAction("user-updated");
+    expectUserCacheRefresh();
   });
 
   it("refreshes profile data and the dashboard layout after self update", async () => {

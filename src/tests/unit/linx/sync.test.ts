@@ -352,10 +352,10 @@ describe("runLinxSync", () => {
       expect.arrayContaining([
         expect.objectContaining({
           linxIdentifier: mixedIdentifier,
-          items: expect.arrayContaining([
+          items: [
             expect.objectContaining({ productCode: 1314, linxOrder: 1 }),
             expect.objectContaining({ productCode: 6, linxOrder: 2 }),
-          ]),
+          ],
         }),
         expect.objectContaining({
           linxIdentifier: productOnlyIdentifier,
