@@ -6,7 +6,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -136,6 +136,7 @@ export function DataSyncControl({ variant }: DataSyncControlProps) {
   const isMutating = useIsMutating({ mutationKey: SYNC_MUTATION_KEY }) > 0;
   const unavailable = status.isError;
   const isRunning = status.data?.running === true;
+  const isLoading = isMutating || isRunning;
 
   return (
     <div className={cn(
@@ -146,10 +147,11 @@ export function DataSyncControl({ variant }: DataSyncControlProps) {
       <Button
         type="button"
         className={cn(variant === "mobile" && "w-full")}
-        disabled={isMutating || isRunning}
+        disabled={isLoading}
         onClick={() => mutation.mutate()}
       >
-        <RefreshCw /> Sincronizar dados
+        {isLoading ? <Loader2 className="animate-spin" /> : <RefreshCw />}
+        Sincronizar dados
       </Button>
       <div className={cn(
         "flex flex-col text-xs leading-tight text-muted-foreground",

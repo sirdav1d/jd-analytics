@@ -171,12 +171,19 @@ describe("DataSyncControl", () => {
     const buttons = await screen.findAllByRole("button", {
       name: "Sincronizar dados",
     });
+    for (const button of buttons) {
+      expect(button.querySelector(".lucide-refresh-cw")).not.toBeNull();
+      expect(button.querySelector(".animate-spin")).toBeNull();
+    }
+
     fireEvent.click(buttons[0]);
     await waitFor(() => {
       for (const button of screen.getAllByRole("button", {
         name: "Sincronizar dados",
       })) {
         expect((button as HTMLButtonElement).disabled).toBe(true);
+        expect(button.querySelector(".animate-spin")).not.toBeNull();
+        expect(button.querySelector(".lucide-refresh-cw")).toBeNull();
       }
     });
 
