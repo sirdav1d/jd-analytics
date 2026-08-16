@@ -15,7 +15,7 @@ function normalizeCustomerId(value: string) {
 }
 
 function toMicros(value: unknown) {
-  if (typeof value === "bigint" && value >= 0n) return value;
+  if (typeof value === "bigint" && value >= BigInt(0)) return value;
   if (
     typeof value === "number" &&
     Number.isSafeInteger(value) &&
@@ -30,8 +30,9 @@ function toMicros(value: unknown) {
 }
 
 export function microsToDecimal(micros: bigint) {
-  const whole = micros / 1_000_000n;
-  const fraction = String(micros % 1_000_000n).padStart(6, "0");
+  const microsPerUnit = BigInt(1_000_000);
+  const whole = micros / microsPerUnit;
+  const fraction = String(micros % microsPerUnit).padStart(6, "0");
   return `${whole}.${fraction}`;
 }
 
@@ -65,7 +66,7 @@ export async function readGoogleAccountSpend(
     to_date: range.endDate,
   });
 
-  let total = 0n;
+  let total = BigInt(0);
   for (const row of rows) {
     total += toMicros(row.metrics?.cost_micros);
   }
