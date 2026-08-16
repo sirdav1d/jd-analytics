@@ -21,6 +21,7 @@
 - Keep existing `/api/linx/*` user routes available.
 - Schedule the unified cron as `0 22 * * *`.
 - Never persist, return, or log tokens, raw provider responses, credential-bearing URLs, or raw external errors.
+- Tests must not load `.env`, copy credential values, or contain production-like secrets; use synthetic sentinels constructed inside each test.
 - Rotate the disclosed Meta token before production rollout.
 - Do not mutate Vercel Production or deploy without explicit rollout authorization.
 
@@ -89,9 +90,10 @@ import {
   normalizeMetaAdAccountId,
 } from "@/services/meta-ads/client";
 
+const syntheticToken = `test-${"x".repeat(24)}`;
 const config = {
   accountId: "306488710441939",
-  accessToken: "secret-token-that-must-never-leak",
+  accessToken: syntheticToken,
   apiVersion: "v25.0" as const,
 };
 
@@ -138,7 +140,7 @@ describe("Meta Ads account spend", () => {
 });
 ```
 
-Add independent cases for empty `data` returning `{ amount: "0", currency: "BRL" }`, non-BRL metadata, non-São-Paulo timezone, mismatched returned dates, multiple Insights rows, negative/malformed spend, invalid account IDs, and HTTP 500. The HTTP test must assert `String(error)` does not contain `secret-token`.
+Add independent cases for empty `data` returning `{ amount: "0", currency: "BRL" }`, non-BRL metadata, non-São-Paulo timezone, mismatched returned dates, multiple Insights rows, negative/malformed spend, invalid account IDs, and HTTP 500. The HTTP test must assert `String(error)` does not contain `syntheticToken`. It must not read `process.env` or load `.env`.
 
 - [ ] **Step 2: Run RED**
 
@@ -352,9 +354,10 @@ Add cases for no rows (`0.000000`), unsafe numeric integers, decimal strings, ne
 Create `src/tests/unit/marketing-spend/collect.test.ts`. The failure test must prove all readers settle while values are withheld and raw errors disappear:
 
 ```ts
+const privateMarker = ["private", "test", "marker"].join("-");
 const result = await collectMarketingSpend(range, {
   now: () => 0,
-  readMeta: vi.fn().mockRejectedValue(new Error("raw secret")),
+  readMeta: vi.fn().mockRejectedValue(new Error(privateMarker)),
   readGoogleProducts: vi.fn().mockResolvedValue({ amount: "2", currency: "BRL" }),
   readGoogleServices: vi.fn().mockResolvedValue({ amount: "3", currency: "BRL" }),
 });
@@ -367,7 +370,7 @@ expect(result.results.META).toEqual({
 });
 expect(result.results.GOOGLE_PRODUCTS.status).toBe("SUCCESS");
 expect(result.results.GOOGLE_SERVICES.status).toBe("SUCCESS");
-expect(JSON.stringify(result)).not.toContain("raw secret");
+expect(JSON.stringify(result)).not.toContain(privateMarker);
 ```
 
 Add a success case asserting the three exact amount keys and `currency: "BRL"`.
@@ -555,7 +558,7 @@ expect(deps.upsertMeta).toHaveBeenCalledWith({
 expect(deps.revalidate).toHaveBeenCalledTimes(1);
 ```
 
-Use deferred promises to prove Linx and media start before either resolves. Table-test `META`, `GOOGLE_PRODUCTS`, and `GOOGLE_SERVICES` failures; each must leave `upsertMeta` and `revalidate` untouched. Add a Linx failure with raw text `password=secret` and assert neither serialized result nor thrown public error contains it. Add a failure where media finishes successfully after Linx rejects to prove the coordinator settles both branches before returning.
+Use deferred promises to prove Linx and media start before either resolves. Table-test `META`, `GOOGLE_PRODUCTS`, and `GOOGLE_SERVICES` failures; each must leave `upsertMeta` and `revalidate` untouched. Add a Linx failure with a synthetic marker built inside the test and assert neither serialized result nor thrown public error contains it. Add a failure where media finishes successfully after Linx rejects to prove the coordinator settles both branches before returning. No test may import values from `.env`.
 
 - [ ] **Step 5: Run coordinator RED**
 

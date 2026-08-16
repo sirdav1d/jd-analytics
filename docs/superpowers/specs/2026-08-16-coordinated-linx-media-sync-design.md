@@ -60,6 +60,8 @@ Cada falha de provedor é convertida em mensagem segura e específica da fonte. 
 
 Testes unitários cobrem validação do ID e da resposta Meta, conversão exata dos micros do Google, início paralelo das quatro fontes, persistência em `MetaInvestment` somente após sucesso completo e falhas que comprovam ausência de atualização e revalidação. Testes de rota e componente cobrem autorização, proteção do cron, agendamento e estado compartilhado do controle. Os testes existentes do relatório continuam protegendo os custos Google ao vivo e o faturamento Linx atribuído.
 
+Os testes não carregam `.env` nem reproduzem valores de credenciais. Quando precisarem validar proteção contra vazamento, usam somente sentinelas sintéticas construídas dentro do próprio teste.
+
 Não é necessária uma `TEST_DATABASE_URL`, pois não haverá schema, migração, trava ou transação nova. A persistência usa o `upsert` já exercitado pelo projeto; o coordenador será testado por dependências injetadas, sem escrever no banco de produção.
 
 ## Entrada em produção
