@@ -50,11 +50,11 @@ vi.mock("next/link", async () => {
 			createElement("a", null, children),
 	};
 });
-vi.mock("@/components/linx-sync-control", async () => {
+vi.mock("@/components/data-sync-control", async () => {
 	const { createElement } = await import("react");
 	return {
-		LinxSyncControl: ({ variant }: { variant: string }) =>
-			createElement("span", { "data-testid": `linx-${variant}` }, variant),
+		DataSyncControl: ({ variant }: { variant: string }) =>
+			createElement("span", { "data-testid": `data-${variant}` }, variant),
 	};
 });
 
@@ -65,8 +65,8 @@ describe("AppSidebar", () => {
 		expect(markup).not.toContain("Administrativo");
 		expect(markup).not.toContain("Definição de Metas");
 		expect(markup).not.toContain("Upload CSV");
-		expect(markup).toContain("linx-mobile");
-		expect(markup).toMatch(/<footer>.*linx-mobile.*<\/footer>/);
-		expect(markup).not.toContain("linx-desktop");
+		expect(markup).toContain("data-mobile");
+		expect(markup).toMatch(/<footer>.*data-mobile.*<\/footer>/);
+		expect(markup).not.toContain("data-desktop");
 	});
 });

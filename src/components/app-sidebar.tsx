@@ -13,7 +13,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { LinxSyncControl } from '@/components/linx-sync-control';
+import { DataSyncControl } from '@/components/data-sync-control';
 import {
 	Blocks,
 	ChevronDown,
@@ -304,7 +304,7 @@ export default function AppSidebar() {
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
-				<LinxSyncControl variant='mobile' />
+				<DataSyncControl variant='mobile' />
 			</SidebarFooter>
 		</Sidebar>
 	);

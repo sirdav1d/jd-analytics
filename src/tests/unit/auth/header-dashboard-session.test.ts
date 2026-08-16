@@ -23,9 +23,9 @@ vi.mock("next-themes", () => ({
 	useTheme: () => ({ theme: "light", systemTheme: "light", setTheme: vi.fn() }),
 }));
 
-vi.mock("@/components/linx-sync-control", () => ({
-	LinxSyncControl: ({ variant }: { variant: string }) =>
-		createElement("span", { "data-testid": `linx-${variant}` }, variant),
+vi.mock("@/components/data-sync-control", () => ({
+	DataSyncControl: ({ variant }: { variant: string }) =>
+		createElement("span", { "data-testid": `data-${variant}` }, variant),
 }));
 
 describe("HeaderDashboard session display", () => {
@@ -37,8 +37,8 @@ describe("HeaderDashboard session display", () => {
 		render(createElement(HeaderDashboard));
 
 		expect(screen.getByText("Ana Admin")).toBeTruthy();
-		expect(screen.getByTestId("linx-desktop")).toBeTruthy();
-		expect(screen.queryByTestId("linx-mobile")).toBeNull();
+		expect(screen.getByTestId("data-desktop")).toBeTruthy();
+		expect(screen.queryByTestId("data-mobile")).toBeNull();
 	});
 
 	it("displays the user fallback without redirecting when no session is available", () => {
