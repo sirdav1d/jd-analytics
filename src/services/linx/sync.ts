@@ -40,6 +40,7 @@ export type SyncInput = {
   /** Absolute wall-clock deadline as Unix epoch milliseconds. */
   deadlineAt: number;
   transactionTimeoutMs: number;
+  revalidateSales?: boolean;
   reconciliationAuthorization?: string;
 };
 
@@ -400,12 +401,14 @@ async function persistCollectedRun(
     { maxWait: maxWaitMs, timeout: transactionTimeoutMs },
   );
 
-  try {
-    deps.revalidateSales();
-  } catch {
-    deps.logger.warn("Dados sincronizados; falha ao invalidar cache", {
-      runId: run.id,
-    });
+  if (input.revalidateSales !== false) {
+    try {
+      deps.revalidateSales();
+    } catch {
+      deps.logger.warn("Dados sincronizados; falha ao invalidar cache", {
+        runId: run.id,
+      });
+    }
   }
 
   return summary;

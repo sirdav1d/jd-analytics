@@ -996,6 +996,25 @@ describe("runLinxSync", () => {
     );
   });
 
+  it("keeps the existing cache invalidation behavior by default", async () => {
+    const deps = makeSyncDeps();
+
+    await runLinxSyncWithDependencies(input, deps);
+
+    expect(deps.revalidateSales).toHaveBeenCalledTimes(1);
+  });
+
+  it("can defer cache invalidation for a coordinated synchronization", async () => {
+    const deps = makeSyncDeps();
+
+    await runLinxSyncWithDependencies(
+      { ...input, revalidateSales: false },
+      deps,
+    );
+
+    expect(deps.revalidateSales).not.toHaveBeenCalled();
+  });
+
   it("sanitizes an upstream credential before recording operational failure", async () => {
     const deps = makeSyncDeps();
     deps.fetchMovementPages.mockRejectedValue(
