@@ -5,10 +5,28 @@ import {
   type GoogleAdsScope,
 } from "@/lib/google-ads-account";
 import { getAuthenticatedClient } from "@/lib/google-authenticated-client";
+import { resolveCivilDateRange } from "@/services/data-services/civil-date-range";
 import type {
   AccountSpend,
   MarketingSpendRange,
 } from "./types";
+
+const GOOGLE_REPORT_TIMEOUT_MS = 15_000;
+
+async function withGoogleReportTimeout<T>(operation: Promise<T>) {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timeout = setTimeout(() => {
+      reject(new Error("Tempo limite da consulta Google Ads excedido."));
+    }, GOOGLE_REPORT_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([operation, deadline]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
 
 function normalizeCustomerId(value: string) {
   return value.replaceAll(/\D/gu, "");
@@ -40,6 +58,7 @@ export async function readGoogleAccountSpend(
   scope: GoogleAdsScope,
   range: MarketingSpendRange,
 ): Promise<AccountSpend> {
+  resolveCivilDateRange(range.startDate, range.endDate);
   const organizationId = process.env.JD_CENTRO_ID;
   if (!organizationId) {
     throw new Error("JD_CENTRO_ID não configurado");
@@ -59,12 +78,12 @@ export async function readGoogleAccountSpend(
       ? normalizeCustomerId(managerId)
       : undefined,
   });
-  const rows = await customer.report({
+  const rows = await withGoogleReportTimeout(customer.report({
     entity: "customer",
     metrics: ["metrics.cost_micros"],
     from_date: range.startDate,
     to_date: range.endDate,
-  });
+  }));
 
   let total = BigInt(0);
   for (const row of rows) {

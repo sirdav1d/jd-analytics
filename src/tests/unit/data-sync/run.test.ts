@@ -115,6 +115,30 @@ describe("coordinated data synchronization", () => {
     await expect(pending).resolves.toMatchObject({ cutoffDate: "2026-08-16" });
   });
 
+  it("measures Linx when its branch settles, independently from media", async () => {
+    const deps = makeDependencies();
+    deps.nowMs.mockReturnValueOnce(100).mockReturnValueOnce(105);
+    let resolveLinx!: (value: typeof linxSummary) => void;
+    let resolveMedia!: (value: MarketingSpendBatch) => void;
+    deps.runLinx.mockImplementation(() => new Promise((resolve) => {
+      resolveLinx = resolve;
+    }));
+    deps.collectSpend.mockImplementation(() => new Promise((resolve) => {
+      resolveMedia = resolve;
+    }));
+
+    const pending = runDataSyncWithDependencies(input, deps);
+    resolveLinx(linxSummary);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(deps.nowMs).toHaveBeenCalledTimes(2);
+    resolveMedia(successfulMedia());
+    await expect(pending).resolves.toMatchObject({
+      sources: { LINX: { status: "SUCCESS", durationMs: 5 } },
+    });
+  });
+
   it.each([
     ["META", "Não foi possível consultar o investimento Meta."],
     [

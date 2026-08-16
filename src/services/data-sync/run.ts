@@ -74,22 +74,33 @@ export async function runDataSyncWithDependencies(
     ...input,
     mode: "INCREMENTAL",
     revalidateSales: false,
-  });
+  }).then(
+    (value) => ({
+      status: "fulfilled" as const,
+      value,
+      durationMs: Math.max(0, deps.nowMs() - linxStartedAt),
+    }),
+    (reason: unknown) => ({
+      status: "rejected" as const,
+      reason,
+      durationMs: Math.max(0, deps.nowMs() - linxStartedAt),
+    }),
+  );
   const mediaPromise = deps.collectSpend(range);
-  const [linx, media] = await Promise.allSettled([
+  const [linx, [media]] = await Promise.all([
     linxPromise,
-    mediaPromise,
+    Promise.allSettled([mediaPromise]),
   ]);
 
   const linxResult = linx.status === "fulfilled"
     ? {
         status: "SUCCESS" as const,
-        durationMs: Math.max(0, deps.nowMs() - linxStartedAt),
+        durationMs: linx.durationMs,
         summary: linx.value,
       }
     : {
         status: "FAILED" as const,
-        durationMs: Math.max(0, deps.nowMs() - linxStartedAt),
+        durationMs: linx.durationMs,
         error: "Não foi possível concluir a sincronização Linx.",
       };
   const mediaBatch = media.status === "fulfilled"

@@ -6,6 +6,8 @@ import type {
 } from "@/services/marketing-spend/types";
 import type { MetaAdsConfig } from "./config";
 
+const META_REQUEST_TIMEOUT_MS = 15_000;
+
 const metadataSchema = z.object({
   id: z.string(),
   currency: z.string(),
@@ -65,12 +67,13 @@ export function createMetaAdsClient(
   const accountId = normalizeMetaAdAccountId(config.accountId);
 
   async function request(path: string, params: Record<string, string>) {
-    const search = new URLSearchParams({
-      ...params,
-      access_token: config.accessToken,
-    });
+    const search = new URLSearchParams(params);
     const response = await deps.fetch(
       `https://graph.facebook.com/${config.apiVersion}/${path}?${search}`,
+      {
+        headers: { Authorization: `Bearer ${config.accessToken}` },
+        signal: AbortSignal.timeout(META_REQUEST_TIMEOUT_MS),
+      },
     );
     if (!response.ok) {
       throw new Error(

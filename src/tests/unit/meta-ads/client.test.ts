@@ -38,7 +38,8 @@ function createFetch(
   metadata: unknown = validMetadata(),
   insights: unknown = validInsights(),
 ) {
-  return vi.fn(async (input: RequestInfo | URL) => {
+  return vi.fn(async (...args: [RequestInfo | URL, RequestInit?]) => {
+    const input = args[0];
     const isInsights = new URL(String(input)).pathname.endsWith("/insights");
     return new Response(JSON.stringify(isInsights ? insights : metadata), {
       status: 200,
@@ -66,6 +67,9 @@ describe("Meta Ads account spend", () => {
 
   it("reads BRL account spend for the exact inclusive range", async () => {
     const fetchMock = createFetch();
+    const timeoutSignal = new AbortController().signal;
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout")
+      .mockReturnValue(timeoutSignal);
     const client = createMetaAdsClient(config, {
       fetch: fetchMock as unknown as typeof fetch,
     });
@@ -92,6 +96,15 @@ describe("Meta Ads account spend", () => {
     expect(insightsUrl?.searchParams.get("level")).toBe("account");
     expect(JSON.parse(insightsUrl?.searchParams.get("time_range") ?? "null"))
       .toEqual({ since: range.startDate, until: range.endDate });
+    for (const [input, init] of fetchMock.mock.calls) {
+      expect(new URL(String(input)).searchParams.has("access_token")).toBe(false);
+      expect(new Headers(init?.headers).get("authorization")).toBe(
+        `Bearer ${syntheticToken}`,
+      );
+      expect(init?.signal).toBe(timeoutSignal);
+    }
+    expect(timeoutSpy).toHaveBeenCalledTimes(2);
+    expect(timeoutSpy).toHaveBeenCalledWith(15_000);
   });
 
   it("returns zero when Insights has no spend row", async () => {

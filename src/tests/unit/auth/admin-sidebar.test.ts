@@ -65,8 +65,10 @@ describe("AppSidebar", () => {
 		expect(markup).not.toContain("Administrativo");
 		expect(markup).not.toContain("Definição de Metas");
 		expect(markup).not.toContain("Upload CSV");
-		expect(markup).toContain("data-mobile");
-		expect(markup).toMatch(/<footer>.*data-mobile.*<\/footer>/);
-		expect(markup).not.toContain("data-desktop");
+		expect(markup).toContain('data-testid="data-mobile"');
+		expect(markup).toMatch(
+			/<footer>.*data-testid="data-mobile".*<\/footer>/,
+		);
+		expect(markup).not.toContain('data-testid="data-desktop"');
 	});
 });

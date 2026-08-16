@@ -42,6 +42,17 @@ beforeEach(() => {
 });
 
 describe("Google Ads account spend", () => {
+  it.each([
+    [{ startDate: "2026-8-01", endDate: "2026-08-16" }],
+    [{ startDate: "2026-08-32", endDate: "2026-09-01" }],
+    [{ startDate: "2026-08-16", endDate: "2026-08-01" }],
+  ])("rejects an invalid report range before authentication", async (invalidRange) => {
+    await expect(readGoogleAccountSpend("products", invalidRange)).rejects
+      .toThrow("Intervalo de datas inválido");
+    expect(mocks.getAuthenticatedClient).not.toHaveBeenCalled();
+    expect(mocks.report).not.toHaveBeenCalled();
+  });
+
   it("sums all integer micros without losing precision", async () => {
     mocks.report.mockResolvedValueOnce([
       { metrics: { cost_micros: 1_234_567 } },
@@ -94,5 +105,20 @@ describe("Google Ads account spend", () => {
     await expect(readGoogleAccountSpend("products", range)).rejects
       .toThrow("JD_CENTRO_ID não configurado");
     expect(mocks.getAuthenticatedClient).not.toHaveBeenCalled();
+  });
+
+  it("fails safely when the Google report exceeds the request deadline", async () => {
+    vi.useFakeTimers();
+    try {
+      mocks.report.mockReturnValueOnce(new Promise(() => {}));
+
+      const result = expect(readGoogleAccountSpend("products", range)).rejects
+        .toThrow("Tempo limite da consulta Google Ads excedido.");
+      await vi.advanceTimersByTimeAsync(15_000);
+
+      await result;
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
