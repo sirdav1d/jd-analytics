@@ -1,5 +1,7 @@
 # Unified Linx and Marketing Sync Implementation Plan
 
+> **Cancelado:** este plano depende de tabelas novas e não deve ser executado. Ele foi substituído pela especificação `2026-08-16-coordinated-linx-media-sync-design.md`; um novo plano sem mudanças de schema será criado.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Synchronize Linx revenue and month-to-date spend from Meta, Google Products, and Google Services under one manual or scheduled run, then publish one consistent ROAS cutoff to the dashboard and public report.

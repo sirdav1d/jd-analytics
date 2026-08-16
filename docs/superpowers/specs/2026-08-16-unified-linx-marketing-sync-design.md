@@ -1,7 +1,9 @@
 # Sincronização unificada de Linx e investimento de mídia
 
+> **Substituída:** esta proposta de tabelas e snapshots não deve ser implementada. A decisão vigente está em `2026-08-16-coordinated-linx-media-sync-design.md` e reutiliza somente as tabelas atuais.
+
 **Data:** 2026-08-16  
-**Status:** aprovado para planejamento  
+**Status:** substituída; não implementar
 **Escopo inicial:** mês atual
 
 ## Contexto

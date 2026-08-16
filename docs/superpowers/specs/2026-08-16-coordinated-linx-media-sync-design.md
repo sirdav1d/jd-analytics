@@ -1,51 +1,67 @@
-# Coordinated Linx and Media Sync Design
+# Sincronização coordenada de Linx e mídia sem novas tabelas
 
-## Goal
+**Data:** 2026-08-16
 
-Update Linx revenue and the existing current-month Meta investment in one coordinated manual or scheduled operation. Verify both Google Ads accounts during that same operation, then refresh the dashboard and public marketing report only when every source succeeds.
+**Status:** aprovado e revisado
 
-## Constraints
+**Fonte de verdade:** esta especificação substitui o desenho anterior baseado em snapshots.
 
-- Do not add tables, Prisma models, or database migrations.
-- Preserve `MetaInvestment` as the sole persisted Meta monthly investment record.
-- Keep Google Ads costs live in the existing report aggregation.
-- Restrict automation to the current São Paulo business month.
-- Keep the existing Linx sync records and all historical manual Meta records.
-- Schedule the Vercel cron at `0 22 * * *`.
-- Never expose tokens, raw provider responses, or provider error bodies.
+## Objetivo
 
-## Flow
+Atualizar o faturamento Linx e o investimento Meta do mês atual em uma única operação manual ou agendada. As duas contas Google Ads também são consultadas nessa operação. O dashboard e o relatório público só são revalidados quando as quatro fontes concluem com sucesso.
 
-`POST /api/sync` and `GET /api/cron/sync` call one server-side coordinator. It establishes one civil cutoff from `America/Sao_Paulo`: the first day of the current month through today.
+## Restrições
 
-The coordinator starts these operations in parallel:
+- Não adicionar tabelas, modelos Prisma ou migrações de banco.
+- Manter `MetaInvestment` como o único registro persistido de investimento Meta mensal.
+- Manter os custos Google Ads consultados ao vivo pelo agregador existente do relatório.
+- Automatizar inicialmente apenas o mês civil atual de São Paulo.
+- Preservar `LinxSyncRun`, o formulário manual do Meta e todo o histórico existente.
+- Manter como faturamento atribuído somente vendas Linx cuja origem contenha Google ou Meta.
+- Agendar o cron da Vercel em `0 22 * * *`.
+- Nunca expor tokens, respostas brutas dos provedores ou corpos de erro externos.
 
-1. Existing incremental Linx sync.
-2. Meta account-level Insights read for the cutoff range.
-3. Google Ads Produtos cost read for the cutoff range.
-4. Google Ads Serviços cost read for the cutoff range.
+## Fluxo
 
-The Google reads validate account availability and cost retrieval in the same execution; their values are not stored in a new aggregate. The current report continues to obtain both Google amounts live, as it does today.
+`POST /api/sync` e `GET /api/cron/sync` chamam o mesmo coordenador no servidor. O coordenador calcula uma única vez o corte civil em `America/Sao_Paulo`: do primeiro dia do mês atual até o dia atual, inclusive.
 
-If every operation succeeds, the coordinator upserts the existing `MetaInvestment` row for the current month with the Meta amount and cutoff, then invalidates the dashboard and public-report cache paths. The browser refresh therefore renders Linx revenue, the newly persisted Meta amount, and freshly read Google amounts.
+O coordenador inicia estas operações em paralelo:
 
-If any operation fails, the coordinator does not write `MetaInvestment` and does not invalidate the report. Linx may already have completed its independent incremental import, which is safe and remains recorded by its current mechanisms. The customer-visible report retains its previous Meta cutoff until a complete future run succeeds.
+1. Sincronização incremental existente do Linx.
+2. Leitura do Insights do Meta no nível da conta para o intervalo comum.
+3. Leitura do custo Google Ads Produtos para o mesmo intervalo.
+4. Leitura do custo Google Ads Serviços para o mesmo intervalo.
+
+As leituras Google comprovam, na mesma execução, que as duas contas responderam para o corte solicitado. Os valores não são persistidos. O relatório continua obtendo os dois custos Google ao vivo, como faz hoje.
+
+Se todas as operações concluírem, o coordenador faz `upsert` na linha existente de `MetaInvestment` do mês atual, atualizando `totalInvestment`, `periodEnd` e `lastSyncAt`. Somente depois invalida o dashboard, as metas de marketing, a tela de investimentos Meta e `/marketing-report/current`. O navegador é atualizado após essa publicação.
+
+Se qualquer operação falhar, o coordenador não altera `MetaInvestment` e não invalida o relatório. O Linx pode já ter concluído sua importação incremental independente; esse resultado permanece registrado pelos mecanismos atuais. O relatório mantém o último corte Meta publicado até uma futura execução completa.
+
+## Consistência possível sem snapshot
+
+O fluxo garante que Meta só é atualizado depois de Linx, Meta e as duas contas Google responderem para o mesmo intervalo. Como o usuário decidiu não persistir um agregado, os valores Google exibidos pelo relatório são consultados novamente após a revalidação. Portanto, o sistema não promete uma fotografia atômica dos quatro valores: uma correção posterior feita pelo Google ou uma indisponibilidade entre as duas requisições pode alterar ou impedir a renderização do relatório. Essa é a troca explícita para não criar tabelas novas.
+
+Chamadas concorrentes são contidas pela trava já existente em `LinxSyncRun`. Uma segunda chamada que encontrar o Linx em execução não publica o Meta. As consultas de mídia que já tenham começado podem terminar, mas seus resultados são descartados.
 
 ## Interfaces
 
-- `POST /api/sync`: authenticated manual run; returns safe per-source status and cutoff.
-- `GET /api/sync/status`: authenticated status derived from existing Meta investment data and any in-flight client state; it does not require a new run table.
-- `GET /api/cron/sync`: protected by `CRON_SECRET`; runs the same coordinator.
-- Sidebar: `DataSyncControl` replaces the Linx-only control and refreshes after complete success.
+- `POST /api/sync`: execução manual autenticada; retorna o corte e resultados seguros por fonte.
+- `GET /api/sync/status`: reutiliza `LinxSyncRun` para informar se o Linx está em execução e a data do último Linx concluído; também retorna `MetaInvestment.lastSyncAt` do mês atual como a última atualização Meta. Como o formulário manual permanece disponível, essa data não é apresentada como prova de uma execução coordenada.
+- `GET /api/cron/sync`: protegido por `CRON_SECRET`; executa o mesmo coordenador.
+- Sidebar e cabeçalho: `DataSyncControl` substitui o controle exclusivo do Linx e atualiza a página somente após sucesso completo.
+- Formulário manual Meta: permanece como fallback administrativo e conserva o comportamento atual de atualização/revalidação independente.
 
-## Error Handling
+## Tratamento de erros
 
-Every provider failure is mapped to a source-specific safe Portuguese message. Raw errors and credentials are not stored, logged, or sent to the browser. A partial run returns a non-success response and leaves the persisted Meta value and public report cache untouched.
+Cada falha de provedor é convertida em mensagem segura e específica da fonte. Erros brutos e credenciais não são armazenados, registrados ou enviados ao navegador. Uma execução parcial retorna resposta sem sucesso e mantém intactos o Meta persistido e o cache do relatório público.
 
-## Testing
+## Testes
 
-Unit tests cover Meta ID and response validation, exact Google micros conversion, parallel collection, complete-success persistence into `MetaInvestment`, and failure cases that prove no Meta update or cache invalidation occurs. Route and component tests cover authorization, cron protection, scheduling, and shared sidebar state. Existing report tests remain the regression guard for live Google costs and attributed Linx revenue.
+Testes unitários cobrem validação do ID e da resposta Meta, conversão exata dos micros do Google, início paralelo das quatro fontes, persistência em `MetaInvestment` somente após sucesso completo e falhas que comprovam ausência de atualização e revalidação. Testes de rota e componente cobrem autorização, proteção do cron, agendamento e estado compartilhado do controle. Os testes existentes do relatório continuam protegendo os custos Google ao vivo e o faturamento Linx atribuído.
 
-## Production Rollout
+Não é necessária uma `TEST_DATABASE_URL`, pois não haverá schema, migração, trava ou transação nova. A persistência usa o `upsert` já exercitado pelo projeto; o coordenador será testado por dependências injetadas, sem escrever no banco de produção.
 
-Run unit, lint, Prisma validation, and build locally. Verify read-only Meta access without printing the token. Before any production deployment, rotate the token disclosed in the conversation and obtain explicit authorization to set the replacement in Vercel.
+## Entrada em produção
+
+Executar testes unitários, lint, validação Prisma e build local. Verificar o Meta de forma somente leitura sem imprimir o token. Antes de qualquer implantação em produção, rotacionar o token divulgado na conversa e obter autorização explícita para configurar o substituto na Vercel.
