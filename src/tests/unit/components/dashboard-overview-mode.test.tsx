@@ -17,7 +17,10 @@ function dataWithOrganizations(...organizations: string[]) {
 	return Promise.resolve({
 		ok: true,
 		data: {
-			result: organizations.map((organization) => ({ organization })),
+			result: organizations.map((organization) => ({
+				organization,
+				organizationId: `org-${organization}`,
+			})),
 		},
 	});
 }

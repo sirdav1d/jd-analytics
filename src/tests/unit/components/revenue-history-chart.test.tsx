@@ -8,6 +8,7 @@ import RevenueChart from '@/app/dashboard/_components/revenue-chart';
 const current = vi.hoisted(() => ({
 	response: {} as unknown,
 	config: {} as Record<string, { label?: string }>,
+	chartData: [] as Array<Record<string, unknown>>,
 }));
 
 vi.mock('react', async (importOriginal) => {
@@ -24,9 +25,16 @@ vi.mock('recharts', () => ({
 	Area: ({ children, dataKey }: { children?: ReactNode; dataKey: string }) => (
 		<div data-testid='area-series' data-key={dataKey}>{children}</div>
 	),
-	LineChart: ({ children }: { children?: ReactNode }) => (
-		<div data-testid='line-chart'>{children}</div>
-	),
+	LineChart: ({
+		children,
+		data,
+	}: {
+		children?: ReactNode;
+		data?: Array<Record<string, unknown>>;
+	}) => {
+		current.chartData = data ?? [];
+		return <div data-testid='line-chart'>{children}</div>;
+	},
 	Line: ({ children, dataKey }: { children?: ReactNode; dataKey: string }) => (
 		<div data-testid='line-series' data-key={dataKey}>{children}</div>
 	),
@@ -56,9 +64,12 @@ function responseWithOrganizations(...organizations: string[]) {
 	return {
 		ok: true,
 		data: {
-			result: organizations.map((organization) => ({ organization })),
+			result: organizations.map((organization, index) => ({
+				organization,
+				organizationId: `org-${index + 1}`,
+			})),
 			revenueByOrg: [
-				{ period: '2026-08-01', jd_centro: 266, jd_icaraí: 150 },
+				{ period: '2026-08-01', 'org-1': 266, 'org-2': 150 },
 			],
 		},
 	};
@@ -66,6 +77,7 @@ function responseWithOrganizations(...organizations: string[]) {
 
 beforeEach(() => {
 	current.config = {};
+	current.chartData = [];
 });
 
 afterEach(cleanup);
@@ -77,10 +89,10 @@ describe('RevenueChart', () => {
 
 		expect(screen.getByText('Faturamento por Unidade')).not.toBeNull();
 		expect(screen.getByTestId('area-chart')).not.toBeNull();
-		expect(screen.getByTestId('area-series').getAttribute('data-key')).toBe('jd_centro');
+		expect(screen.getByTestId('area-series').getAttribute('data-key')).toBe('org-1');
 		expect(screen.queryByTestId('line-chart')).toBeNull();
 		expect(screen.queryByTestId('chart-legend')).toBeNull();
-		expect(current.config.jd_centro.label).toBe('JD Centro');
+		expect(current.config['org-1'].label).toBe('JD Centro');
 	});
 
 	it('renders one line per organization and the legend for multiple organizations', () => {
@@ -89,11 +101,50 @@ describe('RevenueChart', () => {
 
 		expect(screen.getByTestId('line-chart')).not.toBeNull();
 		expect(screen.getAllByTestId('line-series').map((line) => line.getAttribute('data-key'))).toEqual([
-			'jd_centro',
-			'jd_icaraí',
+			'org-1',
+			'org-2',
 		]);
 		expect(screen.getByTestId('chart-legend')).not.toBeNull();
 		expect(screen.queryByTestId('area-chart')).toBeNull();
+	});
+
+	it('renders distinct history series for colliding and punctuated organization labels', () => {
+		current.response = {
+			ok: true,
+			data: {
+				result: [
+					{ organization: 'Loja A B', organizationId: 'org-space' },
+					{ organization: 'Loja A_B', organizationId: 'org-underscore' },
+					{ organization: 'Ótica & Café', organizationId: 'org-punctuation' },
+				],
+				revenueByOrg: [
+					{
+						period: '2026-08-01',
+						'org-space': 100,
+						'org-underscore': 200,
+						'org-punctuation': 300,
+					},
+				],
+			},
+		};
+		render(createElement(RevenueChart, { data: Promise.resolve(null) }));
+
+		expect(screen.getAllByTestId('line-series').map((line) => line.getAttribute('data-key'))).toEqual([
+			'org-space',
+			'org-underscore',
+			'org-punctuation',
+		]);
+		expect(current.config['org-space'].label).toBe('Loja A B');
+		expect(current.config['org-underscore'].label).toBe('Loja A_B');
+		expect(current.config['org-punctuation'].label).toBe('Ótica & Café');
+		expect(current.chartData).toEqual([
+			{
+				period: '2026-08-01',
+				'org-space': 100,
+				'org-underscore': 200,
+				'org-punctuation': 300,
+			},
+		]);
 	});
 
 	it('renders the empty state without a chart when no series is usable', () => {

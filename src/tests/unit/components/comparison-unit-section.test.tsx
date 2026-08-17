@@ -14,6 +14,7 @@ function dataWithOrganizations(...organizations: string[]) {
 		data: {
 			result: organizations.map((organization) => ({
 				organization,
+				organizationId: `org-${organization}`,
 				revenue: 100,
 				salesCount: 2,
 				newCustomers: 1,

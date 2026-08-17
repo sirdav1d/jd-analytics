@@ -20,10 +20,16 @@ export function getOrganizationSeries(response: unknown): OrganizationSeries[] {
 	const series: OrganizationSeries[] = [];
 
 	for (const row of result) {
-		if (!isRecord(row) || typeof row.organization !== 'string') continue;
+		if (
+			!isRecord(row) ||
+			typeof row.organization !== 'string' ||
+			typeof row.organizationId !== 'string'
+		) {
+			continue;
+		}
 		const label = row.organization.trim();
-		const dataKey = label.toLowerCase().replace(/\s+/g, '_');
-		if (!label || seen.has(dataKey)) continue;
+		const dataKey = row.organizationId;
+		if (!label || !dataKey.trim() || seen.has(dataKey)) continue;
 		seen.add(dataKey);
 		series.push({
 			dataKey,
