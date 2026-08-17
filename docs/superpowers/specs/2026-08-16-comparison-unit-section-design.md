@@ -1,38 +1,65 @@
-# Renderização condicional dos comparativos por unidade
+# Dashboard adaptável à quantidade de unidades
 
 ## Objetivo
 
-Exibir o bloco com “Faturamento por unidade”, “Total de vendas por unidade” e “Novos Clientes” somente quando houver dados de mais de uma empresa no período selecionado.
+Adaptar o dashboard principal à quantidade de organizações com dados no período selecionado. A mesma detecção controlará o bloco de comparativos, o título da visão geral e a apresentação dos dois gráficos históricos.
 
-## Arquitetura
+## Fonte da verdade
 
-Um novo componente servidor `ComparisonUnitSection` receberá a mesma promessa retornada por `FetchResultByOrg`. Ele aguardará a resposta, extrairá `data.result` e contará os valores distintos de `organization`.
+Um utilitário compartilhado validará a resposta de `FetchResultByOrg`, extrairá `data.result` e produzirá a lista de organizações distintas, ignorando nomes vazios e linhas duplicadas da mesma organização.
 
-O componente retornará `null` quando a resposta não for válida ou quando houver dados de zero ou uma organização distinta. Com duas ou mais organizações distintas, ele renderizará a grade completa e os três componentes `ComparisonUnit` existentes.
+A contagem considera somente organizações com dados no período selecionado. O cadastro global de empresas não participa da decisão.
 
-`OverviewPage` substituirá a grade montada diretamente pelo novo componente. `ComparisonUnit` continuará responsável apenas por apresentar um gráfico individual.
+## Comparativos por unidade
 
-## Escopo visual
+O componente servidor `ComparisonUnitSection` receberá a promessa retornada por `FetchResultByOrg` e usará o utilitário compartilhado.
 
-A condição abrangerá somente o bloco de três gráficos mostrado na referência:
+Com zero ou uma organização distinta, ele retornará `null`. Com duas ou mais, renderizará a grade completa com:
 
 - Faturamento por unidade;
 - Total de vendas por unidade;
 - Novos Clientes.
 
-`SalesVsRepairRevenue`, `RevenueChart` e os demais elementos do dashboard continuarão sendo renderizados independentemente dessa condição.
+`OverviewPage` delegará o bloco completo ao novo componente. `ComparisonUnit` continuará responsável somente por um gráfico individual.
 
-## Dados e casos de borda
+## Título da visão geral
 
-A contagem será baseada nas organizações com dados em `data.result` para o período selecionado, não no cadastro global de empresas. A contagem usará nomes distintos de organização, portanto linhas repetidas da mesma empresa continuarão representando uma única empresa.
+Um provider cliente no layout do dashboard armazenará se o histórico atual possui múltiplas organizações. Um sincronizador renderizado por `OverviewPage` consumirá a promessa já existente e atualizará o provider, sem realizar outra chamada à API.
 
-Se a resposta estiver ausente, malformada ou com `ok: false`, o bloco não será renderizado, pois não há confirmação de múltiplas empresas com dados no período.
+Na rota `/dashboard`, `Greeting` exibirá:
 
-## Testes
+- zero ou uma organização: `Visão Geral`;
+- duas ou mais organizações: `Visão Geral Centro Vs. Icaraí`.
 
-Os testes do componente servidor verificarão que:
+Os títulos das demais rotas continuarão inalterados. Ao sair da visão geral ou trocar o histórico, o estado não poderá manter um resultado obsoleto.
 
-- uma única organização retorna `null`;
-- linhas duplicadas da mesma organização retornam `null`;
-- duas organizações distintas renderizam a grade e os três gráficos;
-- uma resposta inválida ou malsucedida retorna `null`.
+## Gráficos históricos
+
+`SalesVsRepairRevenue` e `RevenueChart` usarão a mesma lista de organizações.
+
+Com exatamente uma organização, cada componente renderizará um `AreaChart` com uma única série `Area`, preenchimento em gradiente e os rótulos de valor atuais. A legenda inferior não será renderizada, mas o tooltip continuará exibindo o nome da organização.
+
+Com duas ou mais organizações, cada componente manterá o `LineChart`, as séries em linha e a legenda inferior existentes.
+
+Sem uma série utilizável, o componente exibirá o estado `Sem dados encontrados` em vez de tentar montar um gráfico vazio.
+
+Os títulos `Vendas por unidade` e `Faturamento por Unidade` permanecerão inalterados.
+
+## Escopo preservado
+
+Os demais elementos do dashboard continuarão independentes da condição, incluindo metas, indicadores, rankings e produtos. O componente global de gráficos e `ComparisonUnit` não terão seu comportamento alterado.
+
+## Testes e validação
+
+Os testes verificarão:
+
+- extração de organizações distintas, incluindo duplicatas e entradas inválidas;
+- ocultação do bloco de comparativos com uma organização e renderização com duas;
+- título curto com uma organização e título atual com múltiplas;
+- sincronização do provider sem nova chamada de rede;
+- `AreaChart` sem legenda inferior no modo de uma organização;
+- `LineChart` com legenda no modo de múltiplas organizações;
+- manutenção do nome da organização no tooltip por meio da configuração da série;
+- estado vazio quando não existir série utilizável.
+
+A validação executará testes focados, ESLint nos arquivos alterados e `npm test`. `npm run build` não será executado, conforme solicitado.
