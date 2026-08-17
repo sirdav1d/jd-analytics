@@ -11,6 +11,7 @@ import { Suspense } from 'react';
 import ComparisonUnitSection from './_components/comparison-unit-section';
 import Filter from './_components/filter';
 import GoalsHomeProgress from './_components/goals-home-progress';
+import OverviewUnitModeSync from './_components/overview-unit-mode-sync';
 import RevenueChart from './_components/revenue-chart';
 import { SalesVsRepairRevenue } from './_components/sales-vs-repair-revenue';
 import BigNumbers from './comercial/_components/big-numbers';
@@ -64,6 +65,7 @@ export default async function OverviewPage(props: {
 
 	return (
 		<div className='pb-4 w-full mx-auto flex flex-col gap-4 min-h-screen'>
+			<OverviewUnitModeSync data={revenueByOrg} />
 			<Suspense
 				fallback={
 					<div className='flex gap-5 flex-col'>

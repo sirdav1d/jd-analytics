@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import HeaderDashboard from "@/components/header-dashboard";
+import { DashboardOverviewProvider } from "@/providers/dashboard-overview-provider";
 
 const useSession = vi.hoisted(() => vi.fn());
 
@@ -34,7 +35,13 @@ describe("HeaderDashboard session display", () => {
 			data: { user: { name: "Ana Admin", role: "ADMIN", isActive: true } },
 		});
 
-		render(createElement(HeaderDashboard));
+		render(
+			createElement(
+				DashboardOverviewProvider,
+				null,
+				createElement(HeaderDashboard),
+			),
+		);
 
 		expect(screen.getByText("Ana Admin")).toBeTruthy();
 		expect(screen.getByTestId("data-desktop")).toBeTruthy();
@@ -44,7 +51,13 @@ describe("HeaderDashboard session display", () => {
 	it("displays the user fallback without redirecting when no session is available", () => {
 		useSession.mockReturnValue({ data: null });
 
-		render(createElement(HeaderDashboard));
+		render(
+			createElement(
+				DashboardOverviewProvider,
+				null,
+				createElement(HeaderDashboard),
+			),
+		);
 
 		expect(screen.getByText("usuário")).toBeTruthy();
 	});
