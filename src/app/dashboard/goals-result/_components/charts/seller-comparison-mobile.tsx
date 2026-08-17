@@ -19,7 +19,10 @@ import {
 } from '@/components/ui/chart';
 import { IGoalTracking } from '@/services/data-services/types';
 import { formatCurrency } from '@/utils/format-currency';
-import { normalizeVendedorLabel } from '@/utils/normalize-name-vendor-label';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { use } from 'react';
 
 interface ISellerComparisonProps {
@@ -52,7 +55,7 @@ export default function SellerComparisonMobile({
 
 	const chartData = allData.overview.map((item) => {
 		return {
-			name: normalizeVendedorLabel(item.vendedor),
+			name: item.vendedor,
 			ticket: item.avgTicket,
 			sales: item.orderCount,
 		};
@@ -61,13 +64,16 @@ export default function SellerComparisonMobile({
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='xl:hidden h-[780px] aspect-auto'>
+			className='xl:hidden min-w-0 w-full aspect-auto'
+			style={{ height: getMobileCategoricalChartHeight(chartData.length) }}>
 			<BarChart
 				accessibilityLayer
 				layout='vertical'
 				margin={{
+					top: 16,
 					right: 16,
-					left: -24,
+					left: 4,
+					bottom: 8,
 				}}
 				data={chartData}>
 				<CartesianGrid
@@ -77,13 +83,12 @@ export default function SellerComparisonMobile({
 
 				<YAxis
 					dataKey='name'
-					width={120}
+					width={104}
 					type='category'
 					tickLine={false}
 					tickMargin={10}
-					style={{ textTransform: 'lowercase' }}
 					axisLine={false}
-					tickFormatter={(value) => value.slice(0, 10) + '...'}
+					tick={<ResponsiveChartTick axis='y' width={96} />}
 				/>
 
 				<XAxis
@@ -98,7 +103,7 @@ export default function SellerComparisonMobile({
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
 				<ChartLegend
-					content={<ChartLegendContent className='md:text-sm  w-fit mx-auto' />}
+					content={<ChartLegendContent className='mx-auto flex flex-wrap justify-center gap-x-3 md:text-sm' />}
 				/>
 				<Bar
 					radius={4}

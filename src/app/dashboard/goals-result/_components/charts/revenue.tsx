@@ -26,7 +26,7 @@ export function Revenue({ data }: IRevenueProps) {
 			console.log(allData.error);
 		}
 		return (
-			<div className='h-80 w-full flex items-center justify-center text-sm text-muted-foreground'>
+			<div className='h-80 min-w-0 w-full flex items-center justify-center text-sm text-muted-foreground'>
 				Sem dados encontrados
 			</div>
 		);
@@ -40,15 +40,16 @@ export function Revenue({ data }: IRevenueProps) {
 	const chartData = allData.timeSeries;
 	return (
 		<ChartContainer
-			className='h-80 w-full '
+			className='h-80 min-w-0 w-full'
 			config={chartConfig}>
 			<AreaChart
 				accessibilityLayer
 				data={chartData}
 				margin={{
-					left: isMobile ? 24 : 40,
-					right: isMobile ? 24 : 40,
-					top: 20,
+					left: isMobile ? 8 : 40,
+					right: isMobile ? 12 : 40,
+					top: isMobile ? 24 : 20,
+					bottom: isMobile ? 8 : 0,
 				}}>
 				<CartesianGrid vertical={false} />
 				<XAxis
@@ -57,7 +58,8 @@ export function Revenue({ data }: IRevenueProps) {
 					tickLine={false}
 					axisLine={false}
 					tickMargin={8}
-					tick={isMobile ? false : true}
+					interval='preserveStartEnd'
+					minTickGap={28}
 				/>
 				<ChartTooltip
 					cursor={false}

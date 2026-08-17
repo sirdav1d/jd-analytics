@@ -19,6 +19,10 @@ import {
 } from '@/components/ui/chart';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { IGoalTracking } from '@/services/data-services/types';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { formatCurrency } from '@/utils/format-currency';
 import { normalizeVendedor } from '@/utils/normalize-name-vendor';
 import { normalizeVendedorLabel } from '@/utils/normalize-name-vendor-label';
@@ -52,7 +56,7 @@ export default function SellerRevenue({ data }: ISellerRevenueProps) {
 
 	const chartData = sellerData.overview.map((item) => {
 		return {
-			name: normalizeVendedor(item.vendedor),
+			name: item.vendedor,
 			revenue: item.totalRevenue,
 			fill: `var(--color-${normalizeVendedor(item.vendedor)})`,
 		};
@@ -70,13 +74,20 @@ export default function SellerRevenue({ data }: ISellerRevenueProps) {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className={'h-[480px] md:h-96 w-full'}>
+			className='min-w-0 w-full md:h-96'
+			style={{
+				height: isMobile
+					? getMobileCategoricalChartHeight(chartData.length)
+					: undefined,
+			}}>
 			<BarChart
 				accessibilityLayer
 				layout='vertical'
 				margin={{
-					right: isMobile ? 20 : 92,
-					left: isMobile ? -32 : -10,
+					top: isMobile ? 16 : 0,
+					right: isMobile ? 16 : 92,
+					left: isMobile ? 4 : -10,
+					bottom: isMobile ? 8 : 0,
 				}}
 				data={chartData}>
 				<CartesianGrid
@@ -84,25 +95,14 @@ export default function SellerRevenue({ data }: ISellerRevenueProps) {
 					vertical={isMobile ? false : true}
 				/>
 				<YAxis
-					width={isMobile ? 120 : 148}
+					width={isMobile ? 104 : 148}
 					dataKey='name'
 					tickMargin={8}
 					type='category'
 					tickLine={false}
 					axisLine={false}
 					fontSize={12}
-					style={{ textTransform: 'lowercase' }}
-					tickFormatter={(value) =>
-						isMobile
-							? chartConfig[value as keyof typeof chartConfig]?.label.slice(
-									0,
-									9,
-								) + '...'
-							: chartConfig[value as keyof typeof chartConfig]?.label.slice(
-									0,
-									16,
-								) + '...'
-					}
+					tick={isMobile ? <ResponsiveChartTick axis='y' width={96} /> : undefined}
 				/>
 				<XAxis
 					dataKey='revenue'
