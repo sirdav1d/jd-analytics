@@ -3,6 +3,7 @@
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { RevenueByOrigin } from '@/app/dashboard/comercial/_components/revenue-by-origin';
+import { SalesChartComponent } from '@/app/dashboard/comercial/_components/sales-chart-commercial';
 import { SalesByCategoryChart } from '@/app/dashboard/comercial/_components/sales-by-category-chart';
 import { getMobileCategoricalChartHeight } from '@/components/ui/responsive-chart';
 
@@ -17,6 +18,7 @@ const resolvedData = vi.hoisted(() => ({
 			{ category: 'ACESSORIOS OFFICE', revenue: 170 },
 			{ category: 'HARDWARE GAMER', revenue: 250 },
 		],
+		revenueOverTime: [{ label: 'Janeiro', revenue: 170 }],
 	},
 }));
 
@@ -58,6 +60,8 @@ vi.mock('recharts', async () => {
 			return null;
 		},
 		Bar: passthrough,
+		Area: passthrough,
+		AreaChart: () => null,
 		CartesianGrid: () => null,
 		LabelList: () => null,
 		XAxis: () => null,
@@ -112,4 +116,10 @@ describe('Comercial categorical charts on mobile', () => {
 		(captured.chartContainers[0]?.style as { height?: number }).height,
 		).toBe(getMobileCategoricalChartHeight(2));
 	});
+});
+
+test('keeps the commercial sales chart compact at the desktop breakpoint', () => {
+	render(<SalesChartComponent data={Promise.resolve(null)} />);
+
+	expect(captured.chartContainers[0]?.className).toContain('lg:h-72');
 });

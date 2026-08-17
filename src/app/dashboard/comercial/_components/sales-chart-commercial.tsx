@@ -51,7 +51,7 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 			</CardHeader>
 			<CardContent>
 				<ChartContainer
-					className='h-80 min-w-0 w-full'
+					className='h-80 min-w-0 w-full lg:h-72'
 					config={chartConfig}>
 					<AreaChart
 						accessibilityLayer
