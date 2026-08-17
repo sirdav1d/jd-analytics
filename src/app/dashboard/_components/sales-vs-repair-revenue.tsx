@@ -2,7 +2,15 @@
 
 'use client';
 
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from 'recharts';
+import {
+	Area,
+	AreaChart,
+	CartesianGrid,
+	LabelList,
+	Line,
+	LineChart,
+	XAxis,
+} from 'recharts';
 
 import {
 	ChartConfig,
@@ -15,13 +23,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { use } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { getOrganizationSeries } from './organization-series';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
 
-	if (!allData?.ok || !allData?.data?.salesByOrg) {
+	const series = getOrganizationSeries(allData);
+
+	if (!allData?.ok || !Array.isArray(allData?.data?.salesByOrg) || series.length === 0) {
 		if (allData && !allData.ok) {
 			console.log(allData.error);
 		}
@@ -38,16 +49,9 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 
 	const salesData = allData.data.salesByOrg;
 
-	const chartConfig = {
-		jd_centro: {
-			label: 'JD Centro',
-			color: 'hsl(var(--chart-1))',
-		},
-		jd_icaraí: {
-			label: 'JD Icaraí',
-			color: 'hsl(var(--chart-2))',
-		},
-	} satisfies ChartConfig;
+	const chartConfig: ChartConfig = Object.fromEntries(
+		series.map(({ dataKey, label, color }) => [dataKey, { label, color }]),
+	);
 
 	return (
 		<Card>
@@ -60,68 +64,85 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 				<ChartContainer
 					className='h-96 md:h-72 w-full'
 					config={chartConfig}>
-					<LineChart
-						accessibilityLayer
-						margin={{ top: 20, right: 28, left: 28 }}
-						data={salesData}>
-						<CartesianGrid vertical={false} />
-						{isMobile ? null : (
-							<XAxis
-								dataKey='period'
-								tickLine={false}
-								tickMargin={10}
-								axisLine={false}
-								fontSize={8}
+					{series.length === 1 ? (
+						<AreaChart
+							accessibilityLayer
+							data={salesData}
+							margin={{ top: 20, right: 28, left: 28 }}>
+							<CartesianGrid vertical={false} />
+							{isMobile ? null : (
+								<XAxis
+									dataKey='period'
+									tickLine={false}
+									tickMargin={10}
+									axisLine={false}
+									fontSize={8}
+								/>
+							)}
+							<ChartTooltip
+								cursor={false}
+								content={<ChartTooltipContent indicator='dot' />}
 							/>
-						)}
-						<ChartTooltip
-							cursor={false}
-							content={<ChartTooltipContent indicator='dot' />}
-						/>
-						<ChartLegend
-							content={<ChartLegendContent className='text-xs mt-5' />}
-						/>
-						<Line
-							dataKey='jd_centro'
-							dot={{
-								fill: 'var(--color-jd_centro)',
-							}}
-							activeDot={{
-								r: 6,
-							}}
-							type='natural'
-							strokeWidth={2}
-							stroke='var(--color-jd_centro)'
-							radius={4}>
-							<LabelList
-								position='top'
-								offset={12}
-								className='fill-foreground'
-								fontSize={10}
-								formatter={(val: number) => val.toLocaleString('pt-BR')}
+							<defs>
+								<linearGradient id='fill-single-sales' x1='0' y1='0' x2='0' y2='1'>
+									<stop offset='5%' stopColor={`var(--color-${series[0].dataKey})`} stopOpacity={0.8} />
+									<stop offset='95%' stopColor={`var(--color-${series[0].dataKey})`} stopOpacity={0.1} />
+								</linearGradient>
+							</defs>
+							<Area
+								dataKey={series[0].dataKey}
+								type='natural'
+								fill='url(#fill-single-sales)'
+								fillOpacity={0.4}
+								stroke={`var(--color-${series[0].dataKey})`}
+								strokeWidth={2}
+								dot={{ fill: `var(--color-${series[0].dataKey})` }}
+								activeDot={{ r: 6 }}>
+								<LabelList position='top' offset={12} className='fill-foreground' fontSize={10} formatter={(value: number) => value.toLocaleString('pt-BR')} />
+							</Area>
+						</AreaChart>
+					) : (
+						<LineChart
+							accessibilityLayer
+							margin={{ top: 20, right: 28, left: 28 }}
+							data={salesData}>
+							<CartesianGrid vertical={false} />
+							{isMobile ? null : (
+								<XAxis
+									dataKey='period'
+									tickLine={false}
+									tickMargin={10}
+									axisLine={false}
+									fontSize={8}
+								/>
+							)}
+							<ChartTooltip
+								cursor={false}
+								content={<ChartTooltipContent indicator='dot' />}
 							/>
-						</Line>
-						<Line
-							dataKey='jd_icaraí'
-							type='natural'
-							dot={{
-								fill: 'var(--color-jd_icaraí)',
-							}}
-							activeDot={{
-								r: 6,
-							}}
-							strokeWidth={2}
-							stroke='var(--color-jd_icaraí)'
-							radius={4}>
-							<LabelList
-								position='top'
-								offset={12}
-								className='fill-foreground'
-								fontSize={10}
-								formatter={(val: number) => val.toLocaleString('pt-BR')}
+							<ChartLegend
+								content={<ChartLegendContent className='text-xs mt-5' />}
 							/>
-						</Line>
-					</LineChart>
+							{series.map(({ dataKey }) => (
+								<Line
+									key={dataKey}
+									dataKey={dataKey}
+									type='natural'
+									strokeWidth={2}
+									stroke={`var(--color-${dataKey})`}
+									dot={{ fill: `var(--color-${dataKey})` }}
+									activeDot={{ r: 6 }}>
+									<LabelList
+										position='top'
+										offset={12}
+										className='fill-foreground'
+										fontSize={10}
+										formatter={(value: number) => value.toLocaleString('pt-BR')}
+									/>
+								</Line>
+							))}
+						</LineChart>
+					)}
 				</ChartContainer>
 			</CardContent>
 		</Card>
