@@ -51,15 +51,15 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square w-full h-full md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto h-[280px] min-w-0 w-full max-w-[320px] md:max-w-none md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<RadialBarChart
-				className='translate-y-10'
+				className='translate-y-6 md:translate-y-10'
 				accessibilityLayer
 				data={chartData}
 				endAngle={180}
 				margin={{ top: 10 }}
-				innerRadius={128}
-				outerRadius={200}>
+				innerRadius={isMobile ? '64%' : 128}
+				outerRadius={isMobile ? '92%' : 200}>
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent hideLabel />}
@@ -105,7 +105,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Restante'
-						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-14 translate-y-3 xl:translate-y-2  bg-background z-50'
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity -translate-x-10 md:-translate-x-14 translate-y-3 xl:translate-y-2 bg-background z-50'
 						fontSize={isMobile ? 12 : 14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {
@@ -125,7 +125,7 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 					<LabelList
 						position='outside'
 						dataKey='Atingido'
-						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-12 xl:translate-x-4 translate-y-3 xl:translate-y-2'
+						className='fill-foreground drop-shadow capitalize font-semibold mix-blend-luminosity translate-x-8 md:translate-x-12 xl:translate-x-4 translate-y-3 xl:translate-y-2'
 						fontSize={isMobile ? 12 : 14}
 						formatter={(val: number) =>
 							val.toLocaleString('pt-BR', {

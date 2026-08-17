@@ -16,6 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { TruncatedText } from '@/components/ui/truncated-text';
 import { IRankingSellers } from '@/services/data-services/types';
 import { Trophy } from 'lucide-react';
 import { use } from 'react';
@@ -26,7 +27,7 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 
 	if (!allData || !allData.ok) {
 		return (
-			<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
+			<Card className='col-span-full aspect-auto xl:col-span-1 h-full min-w-0 overflow-hidden'>
 				<CardHeader>
 					<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
 						Dados não encontrados
@@ -40,14 +41,14 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 	}
 
 	return (
-		<Card>
+		<Card className='min-w-0 overflow-hidden'>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-xl'>
 					Ranking de Vendedores
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<Table>
+				<Table className='min-w-[36rem] table-fixed md:min-w-0 md:table-auto'>
 					<TableHeader>
 						<TableRow>
 							<TableHead>Posição</TableHead>
@@ -86,21 +87,19 @@ export default function RankingSellers({ data }: { data: Promise<any> }) {
 													/>
 												) : null}
 											</TableCell>
-											<TableCell
-												title={salesperson.name}
-												className='text-xs text-nowrap'>
-												{salesperson.name}
+											<TableCell className='max-w-[8rem] min-w-0 text-xs sm:max-w-[14rem] lg:max-w-[18rem]'>
+												<TruncatedText value={salesperson.name} />
 											</TableCell>
-											<TableCell className='text-sm  text-center'>
+											<TableCell className='text-sm text-center text-nowrap'>
 												{salesperson.sales.toLocaleString('pt-br')}
 											</TableCell>
-											<TableCell className='text-xs  text-center'>
+											<TableCell className='text-xs text-center text-nowrap'>
 												{salesperson.revenue.toLocaleString('pt-br', {
 													currency: 'brl',
 													style: 'currency',
 												})}
 											</TableCell>
-											<TableCell className='text-xs text-center'>
+											<TableCell className='text-xs text-center text-nowrap'>
 												{salesperson.avgTicket.toLocaleString('pt-br', {
 													currency: 'brl',
 													style: 'currency',

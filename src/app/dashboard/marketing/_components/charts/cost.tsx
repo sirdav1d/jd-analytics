@@ -19,6 +19,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { formatCurrency } from '@/utils/format-currency';
 
 const chartConfigCost = {
@@ -48,6 +49,7 @@ export function CostsComponent({
 	cost_micros,
 	impressions,
 }: CostsComponentProps) {
+	const isMobile = useIsMobile();
 	const milImpressions = impressions / 1000;
 	const costNormalize = cost_micros / 1000000;
 
@@ -60,14 +62,16 @@ export function CostsComponent({
 	];
 	return (
 		<ChartContainer
-			className='h-80 md:h-72 w-full'
+			className='h-80 min-w-0 w-full overflow-hidden md:h-72'
 			config={chartConfigCost}>
 			<BarChart
 				accessibilityLayer
 				layout='vertical'
-				margin={{
-					right: 80,
-				}}
+				margin={
+					isMobile
+						? { top: 24, left: 8, right: 12, bottom: 8 }
+						: { right: 80 }
+				}
 				data={chartDataCost}>
 				<CartesianGrid horizontal={false} />
 				<YAxis
@@ -82,6 +86,7 @@ export function CostsComponent({
 					dataKey='cpm'
 					type='number'
 					scale={'sqrt'}
+					interval={isMobile ? 'preserveStartEnd' : undefined}
 					hide
 				/>
 				<ChartTooltip
@@ -133,7 +138,7 @@ export function CostsComponent({
 				</Bar>
 				<ChartLegend
 					content={
-						<ChartLegendContent className='translate-x-10  md:translate-x-0 w-fit mx-auto' />
+						<ChartLegendContent className='mx-auto max-w-full flex-wrap md:translate-x-0' />
 					}
 				/>
 			</BarChart>

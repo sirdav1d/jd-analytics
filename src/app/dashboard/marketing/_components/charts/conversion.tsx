@@ -19,6 +19,10 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartConfig = {
@@ -113,25 +117,31 @@ export function ConversionsComponent({
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-[640px] md:h-72 w-full'>
+			className='h-[640px] min-w-0 w-full overflow-hidden md:h-72'
+			style={{
+				height: isMobile
+					? getMobileCategoricalChartHeight(chartData.length)
+					: undefined,
+			}}>
 			<BarChart
 				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 				margin={{
-					top: isMobile ? 0 : 28,
-					left: isMobile ? -22 : 4,
-					right: isMobile ? 52 : 4,
+					top: isMobile ? 16 : 28,
+					left: isMobile ? 4 : 4,
+					right: isMobile ? 16 : 4,
+					bottom: isMobile ? 8 : 0,
 				}}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
 				{isMobile ? (
 					<YAxis
-						width={152}
+						width={104}
 						dataKey='name'
 						type='category'
 						tickLine={false}
 						tickMargin={10}
 						axisLine={false}
-						tickFormatter={(value) => value.slice(0, 20)}
+						tick={<ResponsiveChartTick axis='y' labelWidth={96} />}
 					/>
 				) : (
 					<XAxis
@@ -167,7 +177,7 @@ export function ConversionsComponent({
 					cursor={false}
 					content={<ChartTooltipContent indicator='dot' />}
 				/>
-				<ChartLegend content={<ChartLegendContent className='md:text-sm' />} />
+				<ChartLegend content={<ChartLegendContent className='max-w-full flex-wrap md:text-sm' />} />
 				<Bar
 					radius={4}
 					layout={`${isMobile ? 'vertical' : 'horizontal'}`}

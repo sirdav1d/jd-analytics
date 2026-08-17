@@ -62,11 +62,11 @@ describe.each([
         ),
       );
 
-      await waitFor(() => {
-        expect(container.querySelector("style")?.textContent).toContain(
-          "--color-Balcão:",
-        );
-      });
+		await waitFor(() => {
+			expect(container.querySelector("style")?.textContent).toContain(
+				"--color-Balcão: #242424;",
+			);
+		});
     });
   },
 );

@@ -51,23 +51,25 @@ export function SalesChartComponent({ data }: { data: Promise<any> }) {
 			</CardHeader>
 			<CardContent>
 				<ChartContainer
-					className='h-80 lg:h-72 w-full'
+					className='h-80 min-w-0 w-full lg:h-72'
 					config={chartConfig}>
 					<AreaChart
 						accessibilityLayer
 						data={chartData}
-						margin={{
-							top: 28,
-							left: isMobile ? 20 : 36,
-							right: isMobile ? 25 : 36,
-						}}>
+						margin={
+							isMobile
+								? { top: 24, left: 8, right: 12, bottom: 8 }
+								: { top: 28, left: 36, right: 36 }
+						}>
 						<CartesianGrid vertical={false} />
 						<XAxis
 							dataKey='label'
 							tickLine={false}
 							tickMargin={10}
 							axisLine={false}
-							fontSize={isMobile ? 0 : 8}
+							fontSize={8}
+							interval={isMobile ? 'preserveStartEnd' : undefined}
+							minTickGap={isMobile ? 28 : undefined}
 						/>
 						<ChartTooltip
 							cursor={false}

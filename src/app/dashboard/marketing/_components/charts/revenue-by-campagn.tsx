@@ -12,6 +12,7 @@ import {
 	ChartLegend,
 	ChartLegendContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartData = [
 	{ name: 'Jan', campangn1: 4000, campangn2: 1400, campangn3: 8000 },
@@ -38,23 +39,26 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function RevenueComponent() {
+	const isMobile = useIsMobile();
+
 	return (
 		<ChartContainer
-			className='h-80 md:h-72 w-full'
+			className='h-80 min-w-0 w-full overflow-hidden md:h-72'
 			config={chartConfig}>
 			<LineChart
 				data={chartData}
-				margin={{
-					top: 28,
-					left: 24,
-					right: 24,
-				}}>
+				margin={
+					isMobile
+						? { top: 24, left: 8, right: 12, bottom: 8 }
+						: { top: 28, left: 24, right: 24 }
+				}>
 				<CartesianGrid vertical={false} />
 				<XAxis
 					dataKey='name'
 					tickMargin={12}
 					tickLine={false}
 					axisLine={false}
+					minTickGap={isMobile ? 28 : undefined}
 				/>
 				<ChartTooltip
 					cursor={false}
@@ -62,7 +66,7 @@ export function RevenueComponent() {
 				/>
 				<ChartLegend
 					content={
-						<ChartLegendContent className=' text-xs pt-3 md:text-sm text-nowrap' />
+						<ChartLegendContent className='max-w-full flex-wrap pt-3 text-xs md:text-sm' />
 					}
 				/>
 				<Line

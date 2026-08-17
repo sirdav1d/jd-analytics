@@ -33,9 +33,15 @@ export async function GET(req: NextRequest) {
 	const groupFormat = isGroupedByMonth ? 'YYYY-MM' : 'YYYY-MM-DD';
 
 	const rowsRevenueOverTime = await prisma.$queryRaw<
-		Array<{ organization: string; label: string; revenue: string }>
+		Array<{
+			organizationId: string;
+			organization: string;
+			label: string;
+			revenue: string;
+		}>
 	>(Prisma.sql`
     SELECT
+      o.id AS "organizationId",
       o.name AS organization,
       TO_CHAR(
         date_trunc(${Prisma.raw(`'${groupBy}'`)}, p."data_pedido"),
@@ -51,37 +57,41 @@ export async function GET(req: NextRequest) {
       p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
       AND p.cancelled = FALSE
     GROUP BY
+      o.id,
       o.name,
       label
     ORDER BY
       label ASC,
-      o.name ASC;
+      o.name ASC,
+      o.id ASC;
   `);
 
 	const pivoted: Record<string, Record<string, number | string>> = {};
 
 	for (const row of rowsRevenueOverTime) {
-		const { organization, label, revenue } = row;
+		const { organizationId, label, revenue } = row;
 
 		// Se ainda não existir um objeto para esse período, inicializa com a chave period
 		if (!pivoted[label]) {
 			pivoted[label] = { period: label };
 		}
 
-		// Normaliza o nome da organização para minúsculo e _ no lugar de espaços
-		const key = organization.trim().toLowerCase().replace(/\s+/g, '_');
-
-		// Insere ou acumula a receita para essa org naquele período
-		pivoted[label][key] = Number(revenue);
+		pivoted[label][organizationId] = Number(revenue);
 	}
 
 	const revenueByOrg = Object.values(pivoted);
 
 	const rowsSalesOverTime = await prisma.$queryRaw<
-		Array<{ organization: string; label: string; sales_count: bigint }>
+		Array<{
+			organizationId: string;
+			organization: string;
+			label: string;
+			sales_count: bigint;
+		}>
 	>(
 		Prisma.sql`
         SELECT
+          o.id AS "organizationId",
           o.name AS organization,
           TO_CHAR(
             date_trunc(${Prisma.raw(`'${groupBy}'`)}, p."data_pedido"),
@@ -94,33 +104,45 @@ export async function GET(req: NextRequest) {
           p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
           AND p.cancelled = FALSE
         GROUP BY
+          o.id,
           o.name,
           label
         ORDER BY
           label ASC,
-          o.name ASC
+          o.name ASC,
+          o.id ASC
       `,
 	);
 
 	const pivotedSales: Record<string, Record<string, number | string>> = {};
 	for (const row of rowsSalesOverTime) {
-		const { organization, label, sales_count } = row;
+		const { organizationId, label, sales_count } = row;
 
 		if (!pivotedSales[label]) {
 			pivotedSales[label] = { period: label };
 		}
-		const key = organization.trim().toLowerCase().replace(/\s+/g, '_');
-		// Converte BigInt para Number
-		pivotedSales[label][key] = Number(sales_count);
+		pivotedSales[label][organizationId] = Number(sales_count);
 	}
 	const salesByOrg = Object.values(pivotedSales);
+	const historyOrganizations = Array.from(
+		new Map(
+			[...rowsRevenueOverTime, ...rowsSalesOverTime].map((row) => [
+				row.organizationId,
+				{
+					organizationId: row.organizationId,
+					organization: row.organization,
+				},
+			]),
+		).values(),
+	);
 
 	try {
 		const rowsClients = await prisma.$queryRaw<
-			Array<{ organization: string; cnt: string }>
+			Array<{ organizationId: string; organization: string; cnt: string }>
 		>(
 			Prisma.sql`
 					SELECT
+						o.id AS "organizationId",
 						o.name AS organization,
 						COUNT(DISTINCT p."customerId") AS cnt
 					FROM "Pedido" p
@@ -136,11 +158,12 @@ export async function GET(req: NextRequest) {
 							WHERE p3."customerId" = p."customerId"
 						) = 1
 	
-					GROUP BY o.name;
+					GROUP BY o.id, o.name;
 				`,
 		);
 
 		const novosClientesPorOrganizacao = rowsClients.map((row) => ({
+			organizationId: row.organizationId,
 			organization: row.organization,
 			newCustomers: Number(row.cnt),
 		}));
@@ -148,6 +171,7 @@ export async function GET(req: NextRequest) {
 		//  — Versão SEM filtro de organização, mas COM categoria e tipo de cliente
 		const rows = await prisma.$queryRaw<
 			Array<{
+				organizationId: string;
 				organization: string;
 				revenue: number;
 				sales_count: bigint;
@@ -166,6 +190,7 @@ export async function GET(req: NextRequest) {
         GROUP BY "customerId"
       )
       SELECT 
+		org.id AS "organizationId",
         org.name AS organization,
         COALESCE(SUM(i."total_value"), 0) AS revenue,
         COUNT(DISTINCT p.id) AS sales_count,
@@ -181,15 +206,16 @@ export async function GET(req: NextRequest) {
       LEFT JOIN customer_orders co ON co."customerId" = p."customerId"
       WHERE p."data_pedido" BETWEEN CAST(${startDate} AS date) AND CAST(${endDate} AS date)
         AND p.cancelled = false
-      GROUP BY org.name
+		GROUP BY org.id, org.name
     `);
 
 		const result = rows.map((row) => {
 			const newCustomers =
 				novosClientesPorOrganizacao.find(
-					(value) => value.organization == row.organization,
+					(value) => value.organizationId === row.organizationId,
 				)?.newCustomers ?? 0;
 			return {
+				organizationId: row.organizationId,
 				organization: row.organization,
 				revenue: Number(row.revenue),
 				salesCount: Number(row.sales_count),
@@ -199,7 +225,7 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json({
 			ok: true,
-			data: { result, revenueByOrg, salesByOrg },
+			data: { result, historyOrganizations, revenueByOrg, salesByOrg },
 			error: null,
 		});
 	} catch (error) {

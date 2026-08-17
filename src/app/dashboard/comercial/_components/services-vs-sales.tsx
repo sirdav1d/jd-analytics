@@ -13,13 +13,13 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
-import { useIsTablet } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { use } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ServicesVsSales({ data }: { data: Promise<any> }) {
 	const allData = use(data);
-	const isTablet = useIsTablet();
+	const isMobile = useIsMobile();
 
 	if (!allData.ok) {
 		console.log(allData.error);
@@ -79,7 +79,7 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					className='mx-auto h-[300px] w-full max-w-[320px] md:max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
 					<PieChart>
 						<ChartTooltip
 							cursor={false}
@@ -111,8 +111,8 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 							}}
 							bias={-40}
 							labelLine={false}
-							innerRadius={isTablet ? 68 : 80}
-							outerRadius={isTablet ? 88 : 104}
+							innerRadius={isMobile ? 72 : 80}
+							outerRadius={isMobile ? 96 : 104}
 							strokeWidth={4}>
 							<Label
 								content={({ viewBox }) => {
@@ -145,7 +145,10 @@ export function ServicesVsSales({ data }: { data: Promise<any> }) {
 								}}
 							/>
 						</Pie>
-						<ChartLegend content={<ChartLegendContent nameKey='name' />} />
+						<ChartLegend
+							content={<ChartLegendContent nameKey='name' />}
+							className='flex flex-wrap justify-center whitespace-normal'
+						/>
 					</PieChart>
 				</ChartContainer>
 			</CardContent>

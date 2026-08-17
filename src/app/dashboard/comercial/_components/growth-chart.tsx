@@ -10,6 +10,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartData = [
 	{ name: 'Jan', total: 1900 },
@@ -27,25 +28,27 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function GrowthChartComponent() {
+	const isMobile = useIsMobile();
+
 	return (
 		<ChartContainer
-			className='h-72 w-full'
+			className='h-80 min-w-0 w-full md:h-72'
 			config={chartConfig}>
 			<AreaChart
 				accessibilityLayer
 				data={chartData}
-				margin={{
-					top: 28,
-					left: 24,
-					right: 24,
-				}}>
+				margin={
+					isMobile
+						? { top: 24, left: 8, right: 12, bottom: 8 }
+						: { top: 28, left: 24, right: 24 }
+				}>
 				<CartesianGrid vertical={false} />
 				<XAxis
 					dataKey='name'
 					tickLine={false}
 					axisLine={false}
 					tickMargin={12}
-					tickFormatter={(value) => value.slice(0, 3)}
+					interval={isMobile ? 'preserveStartEnd' : undefined}
 				/>
 				<ChartTooltip
 					cursor={false}

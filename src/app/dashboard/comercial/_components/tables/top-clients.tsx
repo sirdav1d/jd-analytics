@@ -17,6 +17,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { TruncatedText } from '@/components/ui/truncated-text';
 import { ICustomer } from '@/services/data-services/types';
 import { Trophy } from 'lucide-react';
 import React, { use } from 'react';
@@ -27,7 +28,7 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 
 	if (!allData || !allData.ok) {
 		return (
-			<Card className='col-span-full aspect-auto xl:col-span-1 h-full'>
+			<Card className='col-span-full aspect-auto xl:col-span-1 h-full min-w-0 overflow-hidden'>
 				<CardHeader>
 					<CardTitle className='text-base text-balance md:text-xl 2xl:text-2xl'>
 						Dados não encontrados
@@ -40,14 +41,14 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 		);
 	}
 	return (
-		<Card>
+		<Card className='min-w-0 overflow-hidden'>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-xl'>
 					Top 5 Clientes
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<Table>
+				<Table className='min-w-[36rem] table-fixed md:min-w-0 md:table-auto'>
 					<TableHeader>
 						<TableRow>
 							<TableHead>Posição</TableHead>
@@ -82,15 +83,13 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 								<TableCell className='text-sm text-nowrap'>
 									{customer.code}
 								</TableCell>
-								<TableCell
-									title={customer.name}
-									className='text-xs text-nowrap'>
-									{customer.name.slice(0, 20) + '...'}
+								<TableCell className='max-w-[8rem] min-w-0 text-xs sm:max-w-[14rem] lg:max-w-[18rem]'>
+									<TruncatedText value={customer.name} />
 								</TableCell>
-								<TableCell className='text-center'>
+								<TableCell className='text-center text-nowrap'>
 									{customer.purchases.toLocaleString('pt-br')}
 								</TableCell>
-								<TableCell className=' text-xs text-center'>
+								<TableCell className='text-xs text-center text-nowrap'>
 									{customer.revenue.toLocaleString('pt-br', {
 										currency: 'brl',
 										style: 'currency',

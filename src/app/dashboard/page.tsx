@@ -8,9 +8,10 @@ import { FetchRankings } from '@/services/data-services/get-rankings';
 import { FetchResultByOrg } from '@/services/data-services/get-result-by-org';
 import { formatBusinessCivilDate } from '@/services/data-services/civil-date-range';
 import { Suspense } from 'react';
-import ComparisonUnit from './_components/comparison-unit';
+import ComparisonUnitSection from './_components/comparison-unit-section';
 import Filter from './_components/filter';
 import GoalsHomeProgress from './_components/goals-home-progress';
+import OverviewUnitModeSync from './_components/overview-unit-mode-sync';
 import RevenueChart from './_components/revenue-chart';
 import { SalesVsRepairRevenue } from './_components/sales-vs-repair-revenue';
 import BigNumbers from './comercial/_components/big-numbers';
@@ -64,6 +65,7 @@ export default async function OverviewPage(props: {
 
 	return (
 		<div className='pb-4 w-full mx-auto flex flex-col gap-4 min-h-screen'>
+			<OverviewUnitModeSync data={revenueByOrg} />
 			<Suspense
 				fallback={
 					<div className='flex gap-5 flex-col'>
@@ -108,26 +110,7 @@ export default async function OverviewPage(props: {
 				/>
 			</Suspense>
 
-			<div className='grid grid-cols-1 xl:grid-cols-3 gap-5 w-full'>
-				<ComparisonUnit
-					key={'revenue'}
-					type='revenue'
-					data={revenueByOrg}
-					title='Faturamento por unidade'
-				/>
-				<ComparisonUnit
-					key={'salesCount'}
-					type='salesCount'
-					data={revenueByOrg}
-					title='Total de vendas por unidade'
-				/>
-				<ComparisonUnit
-					key={'newCustomers'}
-					type='newCustomers'
-					data={revenueByOrg}
-					title='Novos Clientes'
-				/>
-			</div>
+			<ComparisonUnitSection data={revenueByOrg} />
 			<SalesVsRepairRevenue data={revenueByOrg} />
 			<RevenueChart data={revenueByOrg} />
 

@@ -8,6 +8,10 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
 	Bar,
@@ -118,25 +122,31 @@ export function TrafficComponent({
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='h-[600px] md:h-72 w-full'>
+			className='h-[600px] min-w-0 w-full overflow-hidden md:h-72'
+			style={{
+				height: isMobile
+					? getMobileCategoricalChartHeight(chartData.length)
+					: undefined,
+			}}>
 			<BarChart
 				margin={{
-					top: isMobile ? 0 : 28,
-					left: isMobile ? -20 : 4,
-					right: isMobile ? 36 : 4,
+					top: isMobile ? 16 : 28,
+					left: isMobile ? 4 : 4,
+					right: isMobile ? 16 : 4,
+					bottom: isMobile ? 8 : 0,
 				}}
 				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
 				{isMobile ? (
 					<YAxis
-						width={152}
+						width={104}
 						dataKey='name'
 						type='category'
 						tickLine={false}
 						tickMargin={10}
 						axisLine={false}
-						tickFormatter={(value) => value.slice(0, 20)}
+						tick={<ResponsiveChartTick axis='y' labelWidth={96} />}
 					/>
 				) : (
 					<XAxis

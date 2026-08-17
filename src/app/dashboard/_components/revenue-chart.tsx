@@ -2,7 +2,15 @@
 
 'use client';
 
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from 'recharts';
+import {
+	Area,
+	AreaChart,
+	CartesianGrid,
+	LabelList,
+	Line,
+	LineChart,
+	XAxis,
+} from 'recharts';
 
 import {
 	ChartConfig,
@@ -15,14 +23,21 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { use } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { getHistoryOrganizationSeries } from './organization-series';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RevenueChart({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
+	const chartMargin = isMobile
+		? { top: 24, left: 8, right: 12, bottom: 8 }
+		: { top: 20, left: 28, right: 28 };
+	const series = getHistoryOrganizationSeries(allData, 'revenueByOrg');
 
-	if (!allData?.ok || !allData?.data?.revenueByOrg) {
-		console.log(allData.error);
+	if (!allData?.ok || !Array.isArray(allData?.data?.revenueByOrg) || series.length === 0) {
+		if (allData && !allData.ok) {
+			console.log(allData.error);
+		}
 		return (
 			<Card>
 				<CardHeader>
@@ -35,104 +50,114 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 	}
 
 	const chartData = allData.data.revenueByOrg;
-	const chartConfig = {
-		jd_centro: {
-			label: 'JD Centro',
-			color: 'hsl(var(--chart-1))',
-		},
-		jd_icaraí: {
-			label: 'JD Icaraí',
-			color: 'hsl(var(--chart-2))',
-		},
-	} satisfies ChartConfig;
+	const chartConfig: ChartConfig = Object.fromEntries(
+		series.map(({ dataKey, label, color }) => [dataKey, { label, color }]),
+	);
+	const formatRevenue = (value: number) =>
+		value.toLocaleString('pt-br', {
+			style: 'currency',
+			currency: 'brl',
+			notation: 'compact',
+		});
+
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-xl'>
-					Faturamento por Unidade
+					Faturamento ao longo do tempo
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='w-full h-96 md:72'>
-					<LineChart
-						accessibilityLayer
-						data={chartData}
-						margin={{
-							top: 20,
-							left: 28,
-							right: 28,
-						}}>
-						<CartesianGrid vertical={false} />
-						{isMobile ? null : (
+					className='w-full h-96 md:h-72'>
+					{series.length === 1 ? (
+						<AreaChart
+							accessibilityLayer
+							data={chartData}
+							margin={chartMargin}>
+							<CartesianGrid vertical={false} />
 							<XAxis
 								dataKey='period'
 								tickLine={false}
 								axisLine={false}
 								tickMargin={8}
 								fontSize={8}
+								interval='preserveStartEnd'
+								minTickGap={28}
 							/>
-						)}
-
-						<ChartTooltip
-							cursor={false}
-							content={<ChartTooltipContent indicator='dot' />}
-						/>
-						<ChartLegend
-							content={<ChartLegendContent className='text-xs mt-8' />}
-						/>
-						<Line
-							dataKey='jd_centro'
-							type='natural'
-							stroke='var(--color-jd_centro)'
-							strokeWidth={2}
-							dot={{
-								fill: 'var(--color-jd_centro)',
-							}}
-							activeDot={{
-								r: 6,
-							}}>
-							<LabelList
-								position='top'
-								offset={12}
-								className='fill-foreground text-nowrap text-start'
-								fontSize={10}
-								formatter={(value: number) =>
-									value.toLocaleString('pt-br', {
-										style: 'currency',
-										currency: 'brl',
-										notation: 'compact',
-									})
-								}
+							<ChartTooltip
+								cursor={false}
+								content={<ChartTooltipContent indicator='dot' />}
 							/>
-						</Line>
-						<Line
-							dataKey='jd_icaraí'
-							type='natural'
-							stroke='var(--color-jd_icaraí)'
-							strokeWidth={2}
-							dot={{
-								fill: 'var(--color-jd_icaraí)',
-							}}
-							activeDot={{
-								r: 6,
-							}}>
-							<LabelList
-								position='top'
-								offset={12}
-								className='fill-foreground'
-								fontSize={10}
-								formatter={(value: number) =>
-									value.toLocaleString('pt-br', {
-										style: 'currency',
-										currency: 'brl',
-										notation: 'compact',
-									})
-								}
+							<defs>
+								<linearGradient id='fill-single-revenue' x1='0' y1='0' x2='0' y2='1'>
+									<stop offset='5%' stopColor={`var(--color-${series[0].dataKey})`} stopOpacity={0.8} />
+									<stop offset='95%' stopColor={`var(--color-${series[0].dataKey})`} stopOpacity={0.1} />
+								</linearGradient>
+							</defs>
+							<Area
+								dataKey={series[0].dataKey}
+								name={series[0].label}
+								type='natural'
+								fill='url(#fill-single-revenue)'
+								fillOpacity={0.4}
+								stroke={`var(--color-${series[0].dataKey})`}
+								strokeWidth={2}
+								dot={{ fill: `var(--color-${series[0].dataKey})` }}
+								activeDot={{ r: 6 }}>
+								<LabelList
+									position='top'
+									offset={12}
+									className='fill-foreground text-nowrap text-start'
+									fontSize={10}
+									formatter={formatRevenue}
+								/>
+							</Area>
+						</AreaChart>
+					) : (
+						<LineChart
+							accessibilityLayer
+							data={chartData}
+							margin={chartMargin}>
+							<CartesianGrid vertical={false} />
+							<XAxis
+								dataKey='period'
+								tickLine={false}
+								axisLine={false}
+								tickMargin={8}
+								fontSize={8}
+								interval='preserveStartEnd'
+								minTickGap={28}
 							/>
-						</Line>
-					</LineChart>
+							<ChartTooltip
+								cursor={false}
+								content={<ChartTooltipContent indicator='dot' />}
+							/>
+							<ChartLegend
+								content={<ChartLegendContent className='text-xs mt-8' />}
+							/>
+							{series.map(({ dataKey, label }) => (
+								<Line
+									key={dataKey}
+									dataKey={dataKey}
+									name={label}
+									type='natural'
+									stroke={`var(--color-${dataKey})`}
+									strokeWidth={2}
+									dot={{ fill: `var(--color-${dataKey})` }}
+									activeDot={{ r: 6 }}>
+									<LabelList
+										position='top'
+										offset={12}
+										className='fill-foreground text-nowrap text-start'
+										fontSize={10}
+										formatter={formatRevenue}
+									/>
+								</Line>
+							))}
+						</LineChart>
+					)}
 				</ChartContainer>
 			</CardContent>
 		</Card>

@@ -1,13 +1,8 @@
 /** @format */
 
-import {
-	resolveGoogleAdsAccount,
-	type GoogleAdsScope,
-} from '@/lib/google-ads-account';
-import { getAuthenticatedClient } from '@/lib/google-authenticated-client';
 import { prisma } from '@/lib/prisma';
+import { readGoogleAccountSpend } from '@/services/marketing-spend/google';
 import { startOfMonth, subMonths } from 'date-fns';
-import { GoogleAdsApi } from 'google-ads-api';
 
 export type MarketingReportAggregate = {
 	periodStart: string;
@@ -56,24 +51,6 @@ function parseDateOnly(value: string) {
 	if (!match) return new Date(value);
 	const [, year, month, day] = match;
 	return new Date(Number(year), Number(month) - 1, Number(day));
-}
-
-function serializeError(value: unknown) {
-	if (typeof value === 'string') {
-		return value;
-	}
-	if (value instanceof Error) {
-		return value.stack ?? value.message;
-	}
-	try {
-		return JSON.stringify(value);
-	} catch {
-		return String(value);
-	}
-}
-
-function normalizeCustomerId(value: string) {
-	return value.replaceAll(/\D/gu, '');
 }
 
 type GoogleAdsApiErrorPayload = {
@@ -156,42 +133,6 @@ function resolveTargetMonthStart(filters?: MarketingReportAggregateFilters) {
 	return startOfMonth(parsedDate);
 }
 
-async function fetchGoogleCost(options: {
-	scope: GoogleAdsScope;
-	startDate: string;
-	endDate: string;
-}): Promise<number> {
-	const orgId = process.env.JD_CENTRO_ID;
-	if (!orgId) {
-		throw new Error('JD_CENTRO_ID n\u00e3o configurado');
-	}
-
-	const { refreshToken } = await getAuthenticatedClient(orgId);
-	const { customerId, managerId } = resolveGoogleAdsAccount(options.scope);
-
-	const googleAdsClient = new GoogleAdsApi({
-		client_id: process.env.GOOGLE_CLIENT_ID!,
-		client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-		developer_token: process.env.GOOGLE_DEVELOPER_TOKEN!,
-	});
-
-	const customer = googleAdsClient.Customer({
-		customer_id: normalizeCustomerId(customerId),
-		refresh_token: refreshToken,
-		login_customer_id: managerId ? normalizeCustomerId(managerId) : undefined,
-	});
-
-	const rows = await customer.report({
-		entity: 'customer',
-		metrics: ['metrics.cost_micros'],
-		from_date: options.startDate,
-		to_date: options.endDate,
-	});
-
-	const costMicros = Number(rows?.[0]?.metrics?.cost_micros ?? 0);
-	return costMicros / 1_000_000;
-}
-
 async function getMetaInvestment(filters?: MarketingReportAggregateFilters) {
 	const targetMonthStart = resolveTargetMonthStart(filters);
 
@@ -229,18 +170,18 @@ async function getMarketingReportAggregateData(
 	const periodStart = toIsoDate(metaInvestment.periodStart);
 	const periodEnd = toIsoDate(metaInvestment.periodEnd);
 
-	const [googleCentroProdutos, googleIcaraiServicos] = await Promise.all([
-		fetchGoogleCost({
-			scope: 'products',
+	const [googleProducts, googleServices] = await Promise.all([
+		readGoogleAccountSpend('products', {
 			startDate: periodStart,
 			endDate: periodEnd,
 		}),
-		fetchGoogleCost({
-			scope: 'services',
+		readGoogleAccountSpend('services', {
 			startDate: periodStart,
 			endDate: periodEnd,
 		}),
 	]);
+	const googleCentroProdutos = Number(googleProducts.amount);
+	const googleIcaraiServicos = Number(googleServices.amount);
 
 	const faturamentoAgg = await prisma.saleItem.aggregate({
 		_sum: { totalValue: true },
@@ -328,7 +269,7 @@ export async function getMarketingReportAggregate(
 			};
 		}
 
-		console.error('getMarketingReportAggregate', serializeError(error));
+		console.error('getMarketingReportAggregate failed');
 		return {
 			ok: false,
 			data: null,

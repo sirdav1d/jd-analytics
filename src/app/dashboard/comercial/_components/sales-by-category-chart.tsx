@@ -11,6 +11,10 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { use } from 'react';
 import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 
@@ -80,15 +84,21 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'
+					style={{
+						height: isMobile
+							? getMobileCategoricalChartHeight(chartData.length)
+							: undefined,
+					}}>
 					<BarChart
 						accessibilityLayer
 						data={chartData}
 						layout='vertical'
-						margin={{
-							right: 60,
-							left: -40,
-						}}>
+						margin={
+							isMobile
+								? { top: 8, left: 0, right: 52, bottom: 24 }
+								: { right: 60, left: -40 }
+						}>
 						<XAxis
 							type='number'
 							dataKey='revenue'
@@ -96,13 +106,16 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						/>
 						<YAxis
 							style={{ lineHeight: '40px' }}
-							width={180}
+							width={isMobile ? 112 : 180}
 							fontSize={10}
 							dataKey='category'
 							type='category'
 							tickLine={false}
 							tickMargin={isMobile ? 8 : 12}
 							axisLine={false}
+							tick={
+								isMobile ? <ResponsiveChartTick axis='y' labelWidth={104} /> : undefined
+							}
 						/>
 						<ChartTooltip
 							cursor={false}
@@ -130,7 +143,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 						/>
 						<ChartLegend
 							content={<ChartLegendContent nameKey='category' />}
-							className='grid grid-cols-2 lg:grid-cols-3 text-nowrap translate-y-4 lg:translate-y-2 mx-auto w-fit text-[10px] lg:text-xs gap-y-2 gap-x-5  '
+							className='grid w-full grid-cols-2 gap-x-5 gap-y-2 whitespace-normal text-[10px] lg:grid-cols-3 lg:text-xs'
 						/>
 					</BarChart>
 				</ChartContainer>

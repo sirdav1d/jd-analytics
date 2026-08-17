@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import { format, isValid, parseISO, startOfMonth } from 'date-fns';
-import { Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
@@ -63,7 +63,8 @@ export default function Filter() {
 				onClick={(e) => handleDateChange(e)}
 				className='disabled:opacity-70 w-full md:w-fit'
 				disabled={isPending}>
-				<Search />	Buscar
+				{isPending ? <Loader2 className='animate-spin' /> : <Search />}
+				Buscar
 			</Button>
 			<DatePickerWithRange
 				date={dateRange}

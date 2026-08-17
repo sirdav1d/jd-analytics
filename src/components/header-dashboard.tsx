@@ -3,7 +3,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { LinxSyncControl } from '@/components/linx-sync-control';
+import { DataSyncControl } from '@/components/data-sync-control';
 import BtnSignOut from './btn-sign-out';
 import Greeting from './greeting';
 import { ModeToggle } from './ui/mode-toggle';
@@ -20,7 +20,7 @@ export default function HeaderDashboard() {
 				<Greeting />
 			</div>
 			<div className='flex items-center gap-5 '>
-				<LinxSyncControl variant='desktop' />
+				<DataSyncControl variant='desktop' />
 				<ModeToggle />
 				<BtnSignOut />
 			</div>

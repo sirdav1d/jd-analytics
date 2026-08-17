@@ -4,13 +4,17 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import { useDashboardOverview } from '@/providers/dashboard-overview-provider';
 
 export default function Greeting() {
 	const pathname = usePathname();
+	const { hasMultipleOrganizations } = useDashboardOverview();
 
 	function normalizePathname(pathname: string) {
 		if (pathname == '/dashboard') {
-			return 'Visão Geral Centro Vs. Icaraí';
+			return hasMultipleOrganizations
+				? 'Visão Geral Centro Vs. Icaraí'
+				: 'Visão Geral';
 		}
 
 		if (pathname == '/dashboard/users') {

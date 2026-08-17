@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { resolveBusinessMonthToDate } from "@/services/data-services/civil-date-range";
 
 export class ActiveLinxConfigurationError extends Error {
   constructor(message: string) {
@@ -38,4 +39,15 @@ export async function readLastSuccessfulSyncAt(organizationId: string) {
     select: { finishedAt: true },
   });
   return run?.finishedAt?.toISOString() ?? null;
+}
+
+export async function readCurrentMetaLastSyncAt(date: Date = new Date()) {
+  const { startDate } = resolveBusinessMonthToDate(date);
+  const investment = await prisma.metaInvestment.findUnique({
+    where: {
+      periodStart: new Date(`${startDate}T00:00:00.000Z`),
+    },
+    select: { lastSyncAt: true },
+  });
+  return investment?.lastSyncAt.toISOString() ?? null;
 }

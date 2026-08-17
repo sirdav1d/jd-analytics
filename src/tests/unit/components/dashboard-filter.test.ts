@@ -17,6 +17,18 @@ const params = vi.hoisted(() => ({
 		'startDate=2026-08-01&endDate=2026-08-03&view=summary',
 	),
 }));
+const transition = vi.hoisted(() => ({ isPending: false }));
+
+vi.mock('react', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('react')>();
+	return {
+		...actual,
+		useTransition: () => [
+			transition.isPending,
+			(callback: () => void) => callback(),
+		],
+	};
+});
 
 vi.mock('next/navigation', () => ({
 	useRouter: () => ({ push, refresh }),
@@ -47,6 +59,7 @@ vi.mock('@/components/ui/date-range-picker', () => ({
 describe('dashboard filter', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		transition.isPending = false;
 		params.value = new URLSearchParams(
 			'startDate=2026-08-01&endDate=2026-08-03&view=summary',
 		);
@@ -55,6 +68,21 @@ describe('dashboard filter', () => {
 	afterEach(() => {
 		cleanup();
 		vi.unstubAllGlobals();
+	});
+
+	it('replaces the search icon with a spinner while navigation is pending', () => {
+		const idle = render(createElement(Filter));
+		const idleButton = screen.getByRole('button', { name: 'Buscar' });
+		expect(idleButton.querySelector('.lucide-search')).not.toBeNull();
+		expect(idleButton.querySelector('.animate-spin')).toBeNull();
+		idle.unmount();
+
+		transition.isPending = true;
+		render(createElement(Filter));
+		const pendingButton = screen.getByRole('button', { name: 'Buscar' });
+		expect((pendingButton as HTMLButtonElement).disabled).toBe(true);
+		expect(pendingButton.querySelector('.animate-spin')).not.toBeNull();
+		expect(pendingButton.querySelector('.lucide-search')).toBeNull();
 	});
 
 	it('refreshes the same database period without calling Linx', async () => {

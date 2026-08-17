@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/chart';
 import { IGoalTracking } from '@/services/data-services/types';
 import { formatCurrency } from '@/utils/format-currency';
-import { normalizeVendedorLabel } from '@/utils/normalize-name-vendor-label';
+import { ResponsiveChartTick } from '@/components/ui/responsive-chart';
 import { use } from 'react';
 
 interface ISellerComparisonProps {
@@ -50,7 +50,7 @@ export default function SellerComparison({ data }: ISellerComparisonProps) {
 
 	const chartData = allData.overview.map((item) => {
 		return {
-			name: normalizeVendedorLabel(item.vendedor),
+			name: item.vendedor,
 			ticket: item.avgTicket,
 			sales: item.orderCount,
 		};
@@ -79,9 +79,8 @@ export default function SellerComparison({ data }: ISellerComparisonProps) {
 					dataKey='name'
 					tickMargin={12}
 					tickLine={false}
-					style={{ textTransform: 'lowercase' }}
 					axisLine={false}
-					tickFormatter={(value: string) => value.slice(0, 12) + '...'}
+					tick={<ResponsiveChartTick axis='x' labelWidth={96} />}
 				/>
 
 				<ChartTooltip

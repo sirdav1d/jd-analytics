@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import HeaderDashboard from "@/components/header-dashboard";
+import { DashboardOverviewProvider } from "@/providers/dashboard-overview-provider";
 
 const useSession = vi.hoisted(() => vi.fn());
 
@@ -23,9 +24,9 @@ vi.mock("next-themes", () => ({
 	useTheme: () => ({ theme: "light", systemTheme: "light", setTheme: vi.fn() }),
 }));
 
-vi.mock("@/components/linx-sync-control", () => ({
-	LinxSyncControl: ({ variant }: { variant: string }) =>
-		createElement("span", { "data-testid": `linx-${variant}` }, variant),
+vi.mock("@/components/data-sync-control", () => ({
+	DataSyncControl: ({ variant }: { variant: string }) =>
+		createElement("span", { "data-testid": `data-${variant}` }, variant),
 }));
 
 describe("HeaderDashboard session display", () => {
@@ -34,17 +35,29 @@ describe("HeaderDashboard session display", () => {
 			data: { user: { name: "Ana Admin", role: "ADMIN", isActive: true } },
 		});
 
-		render(createElement(HeaderDashboard));
+		render(
+			createElement(
+				DashboardOverviewProvider,
+				null,
+				createElement(HeaderDashboard),
+			),
+		);
 
 		expect(screen.getByText("Ana Admin")).toBeTruthy();
-		expect(screen.getByTestId("linx-desktop")).toBeTruthy();
-		expect(screen.queryByTestId("linx-mobile")).toBeNull();
+		expect(screen.getByTestId("data-desktop")).toBeTruthy();
+		expect(screen.queryByTestId("data-mobile")).toBeNull();
 	});
 
 	it("displays the user fallback without redirecting when no session is available", () => {
 		useSession.mockReturnValue({ data: null });
 
-		render(createElement(HeaderDashboard));
+		render(
+			createElement(
+				DashboardOverviewProvider,
+				null,
+				createElement(HeaderDashboard),
+			),
+		);
 
 		expect(screen.getByText("usuário")).toBeTruthy();
 	});

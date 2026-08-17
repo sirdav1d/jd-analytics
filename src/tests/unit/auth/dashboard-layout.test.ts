@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 import DashboardLayout from "@/app/dashboard/layout";
 import AuthenticationLayout from "@/app/(public)/(auth)/layout";
 import MetaInvestmentsSection from "@/app/dashboard/(admin)/meta-investments/_components/meta-investments-section";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { DashboardOverviewProvider } from "@/providers/dashboard-overview-provider";
 
 vi.mock("@/lib/auth", () => ({
 	authOptions: {},
@@ -38,10 +40,14 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("dashboard layouts", () => {
-	it("returns the dashboard shell without reading the server session", async () => {
-		await expect(
-			DashboardLayout({ children: createElement("p", null, "Dashboard content") }),
-		).resolves.toMatchObject({
+	it("wraps the dashboard shell in the overview provider without reading the server session", async () => {
+		const layout = await DashboardLayout({
+			children: createElement("p", null, "Dashboard content"),
+		});
+
+		expect(layout.type).toBe(DashboardOverviewProvider);
+		expect(layout.props.children).toMatchObject({
+			type: SidebarProvider,
 			props: { defaultOpen: true },
 		});
 	});
