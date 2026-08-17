@@ -23,14 +23,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { use } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { getOrganizationSeries } from './organization-series';
+import { getHistoryOrganizationSeries } from './organization-series';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
 
-	const series = getOrganizationSeries(allData);
+	const series = getHistoryOrganizationSeries(allData, 'salesByOrg');
 
 	if (!allData?.ok || !Array.isArray(allData?.data?.salesByOrg) || series.length === 0) {
 		if (allData && !allData.ok) {
@@ -91,6 +91,7 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 							</defs>
 							<Area
 								dataKey={series[0].dataKey}
+								name={series[0].label}
 								type='natural'
 								fill='url(#fill-single-sales)'
 								fillOpacity={0.4}
@@ -123,10 +124,11 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 							<ChartLegend
 								content={<ChartLegendContent className='text-xs mt-5' />}
 							/>
-							{series.map(({ dataKey }) => (
+							{series.map(({ dataKey, label }) => (
 								<Line
 									key={dataKey}
 									dataKey={dataKey}
+									name={label}
 									type='natural'
 									strokeWidth={2}
 									stroke={`var(--color-${dataKey})`}

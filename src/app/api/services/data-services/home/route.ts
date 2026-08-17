@@ -124,6 +124,17 @@ export async function GET(req: NextRequest) {
 		pivotedSales[label][organizationId] = Number(sales_count);
 	}
 	const salesByOrg = Object.values(pivotedSales);
+	const historyOrganizations = Array.from(
+		new Map(
+			[...rowsRevenueOverTime, ...rowsSalesOverTime].map((row) => [
+				row.organizationId,
+				{
+					organizationId: row.organizationId,
+					organization: row.organization,
+				},
+			]),
+		).values(),
+	);
 
 	try {
 		const rowsClients = await prisma.$queryRaw<
@@ -214,7 +225,7 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json({
 			ok: true,
-			data: { result, revenueByOrg, salesByOrg },
+			data: { result, historyOrganizations, revenueByOrg, salesByOrg },
 			error: null,
 		});
 	} catch (error) {

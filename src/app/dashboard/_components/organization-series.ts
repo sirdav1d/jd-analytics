@@ -8,18 +8,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null;
 }
 
-export function getOrganizationSeries(response: unknown): OrganizationSeries[] {
-	if (!isRecord(response) || response.ok !== true || !isRecord(response.data)) {
-		return [];
-	}
-
-	const result = response.data.result;
-	if (!Array.isArray(result)) return [];
-
+function getSeriesFromRows(rows: unknown): OrganizationSeries[] {
+	if (!Array.isArray(rows)) return [];
 	const seen = new Set<string>();
 	const series: OrganizationSeries[] = [];
 
-	for (const row of result) {
+	for (const row of rows) {
 		if (
 			!isRecord(row) ||
 			typeof row.organization !== 'string' ||
@@ -39,4 +33,40 @@ export function getOrganizationSeries(response: unknown): OrganizationSeries[] {
 	}
 
 	return series;
+}
+
+export function getOrganizationSeries(response: unknown): OrganizationSeries[] {
+	if (!isRecord(response) || response.ok !== true || !isRecord(response.data)) {
+		return [];
+	}
+
+	return getSeriesFromRows(response.data.result);
+}
+
+export function getHistoryOrganizationSeries(
+	response: unknown,
+	historyKey: 'salesByOrg' | 'revenueByOrg',
+): OrganizationSeries[] {
+	if (!isRecord(response) || response.ok !== true || !isRecord(response.data)) {
+		return [];
+	}
+
+	const history = response.data[historyKey];
+	if (!Array.isArray(history)) return [];
+
+	const availableDataKeys = new Set<string>();
+	for (const row of history) {
+		if (!isRecord(row)) continue;
+		for (const dataKey of Object.keys(row)) {
+			if (dataKey !== 'period') availableDataKeys.add(dataKey);
+		}
+	}
+
+	const metadata = Array.isArray(response.data.historyOrganizations)
+		? response.data.historyOrganizations
+		: response.data.result;
+
+	return getSeriesFromRows(metadata).filter(({ dataKey }) =>
+		availableDataKeys.has(dataKey),
+	);
 }

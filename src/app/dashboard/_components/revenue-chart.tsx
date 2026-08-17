@@ -23,13 +23,13 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { use } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { getOrganizationSeries } from './organization-series';
+import { getHistoryOrganizationSeries } from './organization-series';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RevenueChart({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
-	const series = getOrganizationSeries(allData);
+	const series = getHistoryOrganizationSeries(allData, 'revenueByOrg');
 
 	if (!allData?.ok || !Array.isArray(allData?.data?.revenueByOrg) || series.length === 0) {
 		if (allData && !allData.ok) {
@@ -95,6 +95,7 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 							</defs>
 							<Area
 								dataKey={series[0].dataKey}
+								name={series[0].label}
 								type='natural'
 								fill='url(#fill-single-revenue)'
 								fillOpacity={0.4}
@@ -133,10 +134,11 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 							<ChartLegend
 								content={<ChartLegendContent className='text-xs mt-8' />}
 							/>
-							{series.map(({ dataKey }) => (
+							{series.map(({ dataKey, label }) => (
 								<Line
 									key={dataKey}
 									dataKey={dataKey}
+									name={label}
 									type='natural'
 									stroke={`var(--color-${dataKey})`}
 									strokeWidth={2}

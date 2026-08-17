@@ -35,8 +35,8 @@ vi.mock('recharts', () => ({
 		current.chartData = data ?? [];
 		return <div data-testid='line-chart'>{children}</div>;
 	},
-	Line: ({ children, dataKey }: { children?: ReactNode; dataKey: string }) => (
-		<div data-testid='line-series' data-key={dataKey}>{children}</div>
+	Line: ({ children, dataKey, name }: { children?: ReactNode; dataKey: string; name?: string }) => (
+		<div data-testid='line-series' data-key={dataKey} data-name={name}>{children}</div>
 	),
 	CartesianGrid: () => null,
 	LabelList: () => null,
@@ -61,13 +61,15 @@ vi.mock('@/components/ui/chart', () => ({
 }));
 
 function responseWithOrganizations(...organizations: string[]) {
+	const historyOrganizations = organizations.map((organization, index) => ({
+		organization,
+		organizationId: `org-${index + 1}`,
+	}));
 	return {
 		ok: true,
 		data: {
-			result: organizations.map((organization, index) => ({
-				organization,
-				organizationId: `org-${index + 1}`,
-			})),
+			result: historyOrganizations,
+			historyOrganizations,
 			revenueByOrg: [
 				{ period: '2026-08-01', 'org-1': 266, 'org-2': 150 },
 			],
@@ -106,6 +108,36 @@ describe('RevenueChart', () => {
 		]);
 		expect(screen.getByTestId('chart-legend')).not.toBeNull();
 		expect(screen.queryByTestId('area-chart')).toBeNull();
+		expect(screen.getAllByTestId('line-series').map((line) => line.getAttribute('data-name'))).toEqual([
+			'JD Centro',
+			'JD Icaraí',
+		]);
+	});
+
+	it('uses the organizations present in revenue history to show names and legend', () => {
+		current.response = {
+			ok: true,
+			data: {
+				result: [
+					{ organization: 'JD Centro', organizationId: 'org-1' },
+				],
+				historyOrganizations: [
+					{ organization: 'JD Centro', organizationId: 'org-1' },
+					{ organization: 'JD Icaraí', organizationId: 'org-2' },
+				],
+				revenueByOrg: [
+					{ period: '2026-08-01', 'org-1': 266, 'org-2': 150 },
+				],
+			},
+		};
+		render(createElement(RevenueChart, { data: Promise.resolve(null) }));
+
+		expect(screen.getByTestId('line-chart')).not.toBeNull();
+		expect(screen.getByTestId('chart-legend')).not.toBeNull();
+		expect(screen.getAllByTestId('line-series').map((line) => line.getAttribute('data-name'))).toEqual([
+			'JD Centro',
+			'JD Icaraí',
+		]);
 	});
 
 	it('renders distinct history series for colliding and punctuated organization labels', () => {
@@ -113,6 +145,11 @@ describe('RevenueChart', () => {
 			ok: true,
 			data: {
 				result: [
+					{ organization: 'Loja A B', organizationId: 'org-space' },
+					{ organization: 'Loja A_B', organizationId: 'org-underscore' },
+					{ organization: 'Ótica & Café', organizationId: 'org-punctuation' },
+				],
+				historyOrganizations: [
 					{ organization: 'Loja A B', organizationId: 'org-space' },
 					{ organization: 'Loja A_B', organizationId: 'org-underscore' },
 					{ organization: 'Ótica & Café', organizationId: 'org-punctuation' },

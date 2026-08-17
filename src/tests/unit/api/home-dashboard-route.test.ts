@@ -68,6 +68,9 @@ test("returns dashboard data for a DATE column without shifting the day by timez
           newCustomers: 2,
         },
       ],
+      historyOrganizations: [
+        { organizationId: "org-centro", organization: "JD Centro" },
+      ],
       revenueByOrg: [{ period: "2026-08-01", "org-centro": 266 }],
       salesByOrg: [{ period: "2026-08-01", "org-centro": 3 }],
     },
@@ -184,6 +187,11 @@ test("keeps colliding and punctuated organization names in separate history fiel
           salesCount: 1,
           newCustomers: 1,
         },
+      ],
+      historyOrganizations: [
+        { organizationId: "org-space", organization: "Loja A B" },
+        { organizationId: "org-underscore", organization: "Loja A_B" },
+        { organizationId: "org-punctuation", organization: "Ótica & Café" },
       ],
       revenueByOrg: [
         {
