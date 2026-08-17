@@ -46,6 +46,12 @@ afterEach(() => {
 });
 
 describe('dashboard overview mode', () => {
+	it('shows only Visão Geral when the history has no usable organization series', async () => {
+		const fetchMock = await renderTitle();
+		expect(await screen.findByText('Visão Geral')).not.toBeNull();
+		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
 	it('shows only Visão Geral for one organization without fetching again', async () => {
 		const fetchMock = await renderTitle('JD Centro');
 		expect(await screen.findByText('Visão Geral')).not.toBeNull();
