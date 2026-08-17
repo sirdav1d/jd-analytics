@@ -182,7 +182,7 @@ export function DataSyncControl({ variant }: DataSyncControlProps) {
             : (
                 status.data.lastLinxSuccessfulSyncAt !== null &&
                   status.data.lastMetaSyncAt !== null
-                  ? <span>{formatAllDataTimestamp(
+                  ? <span className="line-clamp-2 max-w-40 ">{formatAllDataTimestamp(
                       status.data.lastLinxSuccessfulSyncAt,
                       status.data.lastMetaSyncAt,
                     )}</span>

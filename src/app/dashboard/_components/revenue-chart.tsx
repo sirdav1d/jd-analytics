@@ -64,7 +64,7 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 		<Card>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-xl'>
-					Faturamento por Unidade
+					Faturamento ao longo do tempo
 				</CardTitle>
 			</CardHeader>
 			<CardContent>

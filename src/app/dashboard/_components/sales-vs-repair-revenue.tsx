@@ -60,7 +60,7 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 		<Card>
 			<CardHeader>
 				<CardTitle className='text-base text-balance md:text-xl'>
-					Vendas por unidade
+					Vendas ao longo do tempo
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
