@@ -77,9 +77,14 @@ vi.mock('recharts', async () => {
 	};
 });
 
-function renderTick(axis: Record<string, unknown>, value: string) {
+function renderTick(axis: Record<string, unknown>, value: unknown) {
 	const tick = axis.tick as ReactElement;
 	render(<svg>{cloneElement(tick, { payload: { value } })}</svg>);
+}
+
+function getChartSellerName() {
+	const chartData = captured.barCharts[0]?.data as Array<{ name: unknown }>;
+	return chartData[0]?.name;
 }
 
 beforeEach(() => {
@@ -109,7 +114,9 @@ describe('Goals seller comparison ticks', () => {
 		expect(axis.tickFormatter).toBeUndefined();
 		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
 
-		renderTick(axis, sellerName);
+		const chartSellerName = getChartSellerName();
+		expect(chartSellerName).toBe(sellerName);
+		renderTick(axis, chartSellerName);
 		expect(screen.getByTitle(sellerName).textContent).toBe(sellerName);
 		expect(screen.queryByText(`${sellerName.slice(0, 10)}...`)).toBeNull();
 	});
@@ -122,7 +129,9 @@ describe('Goals seller comparison ticks', () => {
 		expect(axis.tickFormatter).toBeUndefined();
 		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
 
-		renderTick(axis, sellerName);
+		const chartSellerName = getChartSellerName();
+		expect(chartSellerName).toBe(sellerName);
+		renderTick(axis, chartSellerName);
 		expect(screen.getByTitle(sellerName).textContent).toBe(sellerName);
 		expect(screen.queryByText(`${sellerName.slice(0, 12)}...`)).toBeNull();
 	});
