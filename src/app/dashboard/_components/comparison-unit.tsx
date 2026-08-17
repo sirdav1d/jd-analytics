@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/chart';
 import React, { use } from 'react';
 import { PieChart, Pie, Cell, Label } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ComparisonProps {
 	title: string;
@@ -21,6 +22,7 @@ interface ComparisonProps {
 }
 export default function ComparisonUnit({ title, data, type }: ComparisonProps) {
 	const allData = use(data);
+	const isMobile = useIsMobile();
 
 	if (!allData.ok) {
 		return (
@@ -82,7 +84,7 @@ export default function ComparisonUnit({ title, data, type }: ComparisonProps) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto aspect-square w-full max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					className='mx-auto h-[280px] min-w-0 w-full max-w-[320px] md:aspect-square md:max-h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
 					<PieChart>
 						<ChartTooltip
 							cursor={false}
@@ -92,9 +94,9 @@ export default function ComparisonUnit({ title, data, type }: ComparisonProps) {
 							data={customerData}
 							dataKey={type}
 							nameKey='organization'
-							fontSize={12}
-							innerRadius={72}
-							outerRadius={94}
+							fontSize={isMobile ? 10 : 12}
+							innerRadius={isMobile ? 64 : 72}
+							outerRadius={isMobile ? 86 : 94}
 							label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
 							labelLine={false}>
 							{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}

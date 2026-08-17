@@ -29,6 +29,9 @@ import { getHistoryOrganizationSeries } from './organization-series';
 export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
+	const chartMargin = isMobile
+		? { top: 24, left: 8, right: 12, bottom: 8 }
+		: { top: 20, right: 28, left: 28 };
 
 	const series = getHistoryOrganizationSeries(allData, 'salesByOrg');
 
@@ -68,17 +71,17 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 						<AreaChart
 							accessibilityLayer
 							data={salesData}
-							margin={{ top: 20, right: 28, left: 28 }}>
+							margin={chartMargin}>
 							<CartesianGrid vertical={false} />
-							{isMobile ? null : (
-								<XAxis
-									dataKey='period'
-									tickLine={false}
-									tickMargin={10}
-									axisLine={false}
-									fontSize={8}
-								/>
-							)}
+							<XAxis
+								dataKey='period'
+								tickLine={false}
+								tickMargin={8}
+								axisLine={false}
+								fontSize={8}
+								interval='preserveStartEnd'
+								minTickGap={28}
+							/>
 							<ChartTooltip
 								cursor={false}
 								content={<ChartTooltipContent indicator='dot' />}
@@ -105,18 +108,18 @@ export function SalesVsRepairRevenue({ data }: { data: Promise<any> }) {
 					) : (
 						<LineChart
 							accessibilityLayer
-							margin={{ top: 20, right: 28, left: 28 }}
+							margin={chartMargin}
 							data={salesData}>
 							<CartesianGrid vertical={false} />
-							{isMobile ? null : (
-								<XAxis
-									dataKey='period'
-									tickLine={false}
-									tickMargin={10}
-									axisLine={false}
-									fontSize={8}
-								/>
-							)}
+							<XAxis
+								dataKey='period'
+								tickLine={false}
+								tickMargin={8}
+								axisLine={false}
+								fontSize={8}
+								interval='preserveStartEnd'
+								minTickGap={28}
+							/>
 							<ChartTooltip
 								cursor={false}
 								content={<ChartTooltipContent indicator='dot' />}

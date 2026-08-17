@@ -29,6 +29,9 @@ import { getHistoryOrganizationSeries } from './organization-series';
 export default function RevenueChart({ data }: { data: Promise<any> }) {
 	const allData = use(data);
 	const isMobile = useIsMobile();
+	const chartMargin = isMobile
+		? { top: 24, left: 8, right: 12, bottom: 8 }
+		: { top: 20, left: 28, right: 28 };
 	const series = getHistoryOrganizationSeries(allData, 'revenueByOrg');
 
 	if (!allData?.ok || !Array.isArray(allData?.data?.revenueByOrg) || series.length === 0) {
@@ -67,22 +70,22 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='w-full h-96 md:72'>
+					className='w-full h-96 md:h-72'>
 					{series.length === 1 ? (
 						<AreaChart
 							accessibilityLayer
 							data={chartData}
-							margin={{ top: 20, left: 28, right: 28 }}>
+							margin={chartMargin}>
 							<CartesianGrid vertical={false} />
-							{isMobile ? null : (
-								<XAxis
-									dataKey='period'
-									tickLine={false}
-									axisLine={false}
-									tickMargin={8}
-									fontSize={8}
-								/>
-							)}
+							<XAxis
+								dataKey='period'
+								tickLine={false}
+								axisLine={false}
+								tickMargin={8}
+								fontSize={8}
+								interval='preserveStartEnd'
+								minTickGap={28}
+							/>
 							<ChartTooltip
 								cursor={false}
 								content={<ChartTooltipContent indicator='dot' />}
@@ -116,17 +119,17 @@ export default function RevenueChart({ data }: { data: Promise<any> }) {
 						<LineChart
 							accessibilityLayer
 							data={chartData}
-							margin={{ top: 20, left: 28, right: 28 }}>
+							margin={chartMargin}>
 							<CartesianGrid vertical={false} />
-							{isMobile ? null : (
-								<XAxis
-									dataKey='period'
-									tickLine={false}
-									axisLine={false}
-									tickMargin={8}
-									fontSize={8}
-								/>
-							)}
+							<XAxis
+								dataKey='period'
+								tickLine={false}
+								axisLine={false}
+								tickMargin={8}
+								fontSize={8}
+								interval='preserveStartEnd'
+								minTickGap={28}
+							/>
 							<ChartTooltip
 								cursor={false}
 								content={<ChartTooltipContent indicator='dot' />}

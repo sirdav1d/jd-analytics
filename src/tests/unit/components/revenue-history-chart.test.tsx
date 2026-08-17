@@ -9,6 +9,10 @@ const current = vi.hoisted(() => ({
 	response: {} as unknown,
 	config: {} as Record<string, { label?: string }>,
 	chartData: [] as Array<Record<string, unknown>>,
+	isMobile: false,
+	areaCharts: [] as Array<Record<string, unknown>>,
+	lineCharts: [] as Array<Record<string, unknown>>,
+	xAxes: [] as Array<Record<string, unknown>>,
 }));
 
 vi.mock('react', async (importOriginal) => {
@@ -16,23 +20,28 @@ vi.mock('react', async (importOriginal) => {
 	return { ...actual, use: () => current.response };
 });
 
-vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => false }));
+vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => current.isMobile }));
 
 vi.mock('recharts', () => ({
-	AreaChart: ({ children }: { children?: ReactNode }) => (
+	AreaChart: ({ children, ...props }: { children?: ReactNode }) => {
+		current.areaCharts.push(props);
+		return (
 		<div data-testid='area-chart'>{children}</div>
-	),
+		);
+	},
 	Area: ({ children, dataKey }: { children?: ReactNode; dataKey: string }) => (
 		<div data-testid='area-series' data-key={dataKey}>{children}</div>
 	),
 	LineChart: ({
 		children,
 		data,
+		...props
 	}: {
 		children?: ReactNode;
 		data?: Array<Record<string, unknown>>;
 	}) => {
 		current.chartData = data ?? [];
+		current.lineCharts.push(props);
 		return <div data-testid='line-chart'>{children}</div>;
 	},
 	Line: ({ children, dataKey, name }: { children?: ReactNode; dataKey: string; name?: string }) => (
@@ -40,7 +49,10 @@ vi.mock('recharts', () => ({
 	),
 	CartesianGrid: () => null,
 	LabelList: () => null,
-	XAxis: () => null,
+	XAxis: (props: Record<string, unknown>) => {
+		current.xAxes.push(props);
+		return null;
+	},
 }));
 
 vi.mock('@/components/ui/chart', () => ({
@@ -80,6 +92,10 @@ function responseWithOrganizations(...organizations: string[]) {
 beforeEach(() => {
 	current.config = {};
 	current.chartData = [];
+	current.isMobile = false;
+	current.areaCharts = [];
+	current.lineCharts = [];
+	current.xAxes = [];
 });
 
 afterEach(cleanup);
@@ -112,6 +128,30 @@ describe('RevenueChart', () => {
 			'JD Centro',
 			'JD Icaraí',
 		]);
+	});
+
+	it('keeps the sparse date axis visible with compact margins for one organization on mobile', () => {
+		current.isMobile = true;
+		current.response = responseWithOrganizations('JD Centro');
+		render(createElement(RevenueChart, { data: Promise.resolve(null) }));
+
+		const xAxisProps = current.xAxes[0]!;
+		expect(xAxisProps.fontSize).toBe(8);
+		expect(xAxisProps.interval).toBe('preserveStartEnd');
+		expect(xAxisProps.minTickGap).toBe(28);
+		expect(current.areaCharts[0]?.margin).toEqual({ top: 24, left: 8, right: 12, bottom: 8 });
+	});
+
+	it('keeps the sparse date axis visible with compact margins for multiple organizations on mobile', () => {
+		current.isMobile = true;
+		current.response = responseWithOrganizations('JD Centro', 'JD Icaraí');
+		render(createElement(RevenueChart, { data: Promise.resolve(null) }));
+
+		const xAxisProps = current.xAxes[0]!;
+		expect(xAxisProps.fontSize).toBe(8);
+		expect(xAxisProps.interval).toBe('preserveStartEnd');
+		expect(xAxisProps.minTickGap).toBe(28);
+		expect(current.lineCharts[0]?.margin).toEqual({ top: 24, left: 8, right: 12, bottom: 8 });
 	});
 
 	it('uses the organizations present in revenue history to show names and legend', () => {
