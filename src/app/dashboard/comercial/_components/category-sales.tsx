@@ -10,6 +10,7 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import * as React from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Label, Pie, PieChart } from 'recharts';
 
 const chartData = [
@@ -34,13 +35,14 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function SalesByCategoryChart() {
+	const isMobile = useIsMobile();
 	const totalVisitors = React.useMemo(() => {
 		return chartData.reduce((acc, curr) => acc + curr.value, 0);
 	}, []);
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto aspect-square max-h-72 [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto h-[280px] w-full max-w-[320px] md:max-h-72 [&_.recharts-pie-label-text]:fill-foreground'>
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
@@ -52,7 +54,7 @@ export function SalesByCategoryChart() {
 					nameKey='name'
 					label={{ fontSize: '14px' }}
 					labelLine={false}
-					innerRadius={60}
+					innerRadius={isMobile ? 52 : 60}
 					strokeWidth={4}>
 					<Label
 						content={({ viewBox }) => {
@@ -88,7 +90,7 @@ export function SalesByCategoryChart() {
 							className='md:text-sm'
 						/>
 					}
-					className='-translate-y-2  gap-2 [&>*]:basis-1/4 [&>*]:justify-center text-sm'
+					className='flex flex-wrap justify-center gap-2 whitespace-normal text-sm'
 				/>
 			</PieChart>
 		</ChartContainer>

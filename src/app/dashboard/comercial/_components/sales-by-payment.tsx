@@ -9,6 +9,10 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { useIsMobile, useIsTablet } from '@/hooks/use-mobile';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { use } from 'react';
 import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 
@@ -83,15 +87,21 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='mx-auto  w-full h-[340px] [&_.recharts-pie-label-text]:fill-foreground'>
+					className='mx-auto h-[340px] w-full [&_.recharts-pie-label-text]:fill-foreground'
+					style={{
+						height: isMobile
+							? getMobileCategoricalChartHeight(chartData.length)
+							: undefined,
+					}}>
 					<BarChart
 						accessibilityLayer
 						data={chartData}
 						layout='vertical'
-						margin={{
-							right: 64,
-							left: -32,
-						}}>
+						margin={
+							isMobile
+								? { top: 8, left: 0, right: 52, bottom: 8 }
+								: { right: 64, left: -32 }
+						}>
 						<XAxis
 							type='number'
 							dataKey='value'
@@ -99,13 +109,16 @@ export function SalesByPayment({ data }: { data: Promise<any> }) {
 						/>
 						<YAxis
 							style={{ lineHeight: '40px' }}
-							width={160}
+							width={isMobile ? 112 : 160}
 							fontSize={10}
 							dataKey='name'
 							type='category'
 							tickLine={false}
 							tickMargin={isMobile ? 8 : 12}
 							axisLine={false}
+							tick={
+								isMobile ? <ResponsiveChartTick axis='y' width={104} /> : undefined
+							}
 						/>
 						<ChartTooltip
 							cursor={false}

@@ -10,6 +10,10 @@ import {
 	ChartTooltipContent,
 } from '@/components/ui/chart';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { use } from 'react';
 import {
 	Bar,
@@ -28,7 +32,7 @@ const chartConfig = {
 	},
 	Balcão: {
 		label: 'Balcão',
-		color: 'hsl(var(--chart-1))',
+		color: '#242424',
 	},
 	Comercial_Ativo: {
 		label: 'Comercial Ativo',
@@ -80,25 +84,30 @@ export function AvgTicketByOrigin({ data }: { data: Promise<any> }) {
 			<CardContent>
 				<ChartContainer
 					config={chartConfig}
-					className='h-[600px] md:h-72 w-full'>
+					className='h-[600px] w-full md:h-72'
+					style={{
+						height: isMobile
+							? getMobileCategoricalChartHeight(chartData.length)
+							: undefined,
+					}}>
 					<BarChart
-						margin={{
-							top: isMobile ? 0 : 28,
-							left: isMobile ? -20 : 4,
-							right: isMobile ? 36 : 4,
-						}}
+						margin={
+							isMobile
+								? { top: 16, left: 4, right: 16, bottom: 8 }
+								: { top: 28, left: 4, right: 4 }
+						}
 						layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 						data={chartData}>
 						<CartesianGrid vertical={false} />
 						{isMobile ? (
 							<YAxis
-								width={152}
+								width={104}
 								dataKey='origin'
 								type='category'
 								tickLine={false}
 								tickMargin={10}
 								axisLine={false}
-								tickFormatter={(value) => value.slice(0, 20)}
+								tick={<ResponsiveChartTick axis='y' width={96} />}
 							/>
 						) : (
 							<XAxis
