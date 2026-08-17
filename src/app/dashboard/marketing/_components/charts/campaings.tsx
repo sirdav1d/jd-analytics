@@ -19,6 +19,10 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import {
+	getMobileCategoricalChartHeight,
+	ResponsiveChartTick,
+} from '@/components/ui/responsive-chart';
 import { useIsMobile, useIsTablet } from '@/hooks/use-mobile';
 import { getTop5CampaignsByConversions } from '@/utils/get-top-campaigns';
 
@@ -75,20 +79,26 @@ export function CampagnComponent({ data }: DataProps) {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='w-full h-[800px] md:h-72'>
+			className='h-[800px] min-w-0 w-full overflow-hidden md:h-72'
+			style={{
+				height: isMobile
+					? getMobileCategoricalChartHeight(chartData.length)
+					: undefined,
+			}}>
 			<BarChart
 				accessibilityLayer
 				margin={{
-					top: 28,
-					left: isMobile ? -20 : 0,
-					right: isMobile ? 56 : 0,
+					top: isMobile ? 16 : 28,
+					left: isMobile ? 4 : 0,
+					right: isMobile ? 16 : 0,
+					bottom: isMobile ? 8 : 0,
 				}}
 				layout={`${isMobile ? 'vertical' : 'horizontal'}`}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
 				{isMobile ? (
 					<YAxis
-						width={120}
+						width={104}
 						type='category'
 						orientation='left'
 						dataKey='name'
@@ -96,7 +106,7 @@ export function CampagnComponent({ data }: DataProps) {
 						axisLine={false}
 						tickMargin={4}
 						fontSize={12}
-						tickFormatter={(value: string) => value.slice(0, 10) + '...'}
+						tick={<ResponsiveChartTick axis='y' width={96} />}
 					/>
 				) : (
 					<XAxis
@@ -106,7 +116,6 @@ export function CampagnComponent({ data }: DataProps) {
 						axisLine={false}
 						hide={isTablet}
 						fontSize={12}
-						tickFormatter={(value: string) => value.slice(0, 18) + '...'}
 					/>
 				)}
 
@@ -126,7 +135,7 @@ export function CampagnComponent({ data }: DataProps) {
 
 				<ChartLegend
 					content={
-						<ChartLegendContent className='md:text-sm translate-x-10  md:translate-x-0 w-fit mx-auto ' />
+						<ChartLegendContent className='mx-auto max-w-full flex-wrap md:text-sm md:translate-x-0' />
 					}
 				/>
 				<Bar

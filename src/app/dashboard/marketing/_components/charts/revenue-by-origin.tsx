@@ -10,6 +10,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const chartData = [
 	{ browser: 'chrome', visitors: 187, fill: 'var(--color-chrome)' },
@@ -46,12 +47,19 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartBarActive() {
+	const isMobile = useIsMobile();
+
 	return (
 		<ChartContainer
-			className='w-full h-80 md:h-72'
+			className='h-80 min-w-0 w-full overflow-hidden md:h-72'
 			config={chartConfig}>
 			<BarChart
 				accessibilityLayer
+				margin={
+					isMobile
+						? { top: 20, left: 8, right: 12, bottom: 8 }
+						: undefined
+				}
 				data={chartData}>
 				<CartesianGrid vertical={false} />
 				<XAxis
