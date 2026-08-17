@@ -70,6 +70,13 @@ const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
+const timeFormatter = new Intl.DateTimeFormat("pt-BR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: "America/Sao_Paulo",
+});
+
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   day: "2-digit",
   month: "2-digit",
@@ -86,6 +93,17 @@ function formatTimestamp(
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return `${label} indisponível`;
   return `${label}: ${dateTimeFormatter.format(date).replace(",", " às")}`;
+}
+
+function formatAllDataTimestamp(linxValue: string, metaValue: string) {
+  const timestamps = [linxValue, metaValue].map((value) => new Date(value));
+  if (timestamps.some((date) => Number.isNaN(date.getTime()))) {
+    return "Atualização dos dados indisponível";
+  }
+  const allDataUpdatedAt = new Date(Math.min(
+    ...timestamps.map((date) => date.getTime()),
+  ));
+  return `Todos os dados atualizados às ${timeFormatter.format(allDataUpdatedAt)}`;
 }
 
 function formatCutoff(value: string) {
@@ -162,18 +180,26 @@ export function DataSyncControl({ variant }: DataSyncControlProps) {
           : status.isPending
             ? <span>Consultando sincronização...</span>
             : (
-                <>
-                  <span>{formatTimestamp(
-                    "Último Linx",
-                    status.data.lastLinxSuccessfulSyncAt,
-                    "Linx ainda não sincronizado",
-                  )}</span>
-                  <span>{formatTimestamp(
-                    "Último Meta",
-                    status.data.lastMetaSyncAt,
-                    "Meta ainda não sincronizado",
-                  )}</span>
-                </>
+                status.data.lastLinxSuccessfulSyncAt !== null &&
+                  status.data.lastMetaSyncAt !== null
+                  ? <span>{formatAllDataTimestamp(
+                      status.data.lastLinxSuccessfulSyncAt,
+                      status.data.lastMetaSyncAt,
+                    )}</span>
+                  : (
+                      <>
+                        <span>{formatTimestamp(
+                          "Último Linx",
+                          status.data.lastLinxSuccessfulSyncAt,
+                          "Linx ainda não sincronizado",
+                        )}</span>
+                        <span>{formatTimestamp(
+                          "Último Meta",
+                          status.data.lastMetaSyncAt,
+                          "Meta ainda não sincronizado",
+                        )}</span>
+                      </>
+                    )
               )}
       </div>
     </div>

@@ -73,7 +73,7 @@ afterEach(() => {
 });
 
 describe("DataSyncControl", () => {
-  it("deduplicates status and shows Linx and Meta timestamps separately", async () => {
+  it("shows the time when all data sources were last updated", async () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({
       running: false,
       lastLinxSuccessfulSyncAt: "2026-08-16T21:59:58.000Z",
@@ -85,12 +85,11 @@ describe("DataSyncControl", () => {
 
     await waitFor(() => {
       expect(screen.getAllByText(
-        "Último Linx: 16/08/2026 às 18:59",
-      )).toHaveLength(2);
-      expect(screen.getAllByText(
-        "Último Meta: 16/08/2026 às 19:00",
+        "Todos os dados atualizados às 18:59",
       )).toHaveLength(2);
     });
+    expect(screen.queryByText(/Último Linx/)).toBeNull();
+    expect(screen.queryByText(/Último Meta/)).toBeNull();
     expect(screen.getAllByRole("button", {
       name: "Sincronizar dados",
     })).toHaveLength(2);
