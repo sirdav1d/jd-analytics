@@ -80,7 +80,7 @@ export default function SellerComparison({ data }: ISellerComparisonProps) {
 					tickMargin={12}
 					tickLine={false}
 					axisLine={false}
-					tick={<ResponsiveChartTick axis='x' width={96} />}
+					tick={<ResponsiveChartTick axis='x' labelWidth={96} />}
 				/>
 
 				<ChartTooltip

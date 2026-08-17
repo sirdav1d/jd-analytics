@@ -48,7 +48,7 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<Table className='w-full table-fixed lg:table-auto'>
+				<Table className='min-w-[36rem] table-fixed md:min-w-0 md:table-auto'>
 					<TableHeader>
 						<TableRow>
 							<TableHead>Posição</TableHead>
@@ -86,10 +86,10 @@ export default function TopClients({ data }: { data: Promise<any> }) {
 								<TableCell className='max-w-[8rem] min-w-0 text-xs sm:max-w-[14rem] lg:max-w-[18rem]'>
 									<TruncatedText value={customer.name} />
 								</TableCell>
-								<TableCell className='text-center'>
+								<TableCell className='text-center text-nowrap'>
 									{customer.purchases.toLocaleString('pt-br')}
 								</TableCell>
-								<TableCell className=' text-xs text-center'>
+								<TableCell className='text-xs text-center text-nowrap'>
 									{customer.revenue.toLocaleString('pt-br', {
 										currency: 'brl',
 										style: 'currency',

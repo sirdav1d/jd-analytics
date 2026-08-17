@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { cloneElement, type ReactElement } from 'react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { CampagnComponent } from '@/app/dashboard/marketing/_components/charts/campaings';
@@ -13,6 +13,7 @@ import {
 
 const captured = vi.hoisted(() => ({
 	barCharts: [] as Array<Record<string, unknown>>,
+	xAxes: [] as Array<Record<string, unknown>>,
 	yAxes: [] as Array<Record<string, unknown>>,
 	chartContainers: [] as Array<Record<string, unknown>>,
 }));
@@ -46,7 +47,10 @@ vi.mock('recharts', async () => {
 		Bar: passthrough,
 		CartesianGrid: () => null,
 		LabelList: () => null,
-		XAxis: () => null,
+		XAxis: (props: Record<string, unknown>) => {
+			captured.xAxes.push(props);
+			return null;
+		},
 	};
 });
 
@@ -54,11 +58,13 @@ const conversionMetric = { conversions: 1, sessions: 10 };
 
 function renderTick(axis: Record<string, unknown>, value: string) {
 	const tick = axis.tick as ReactElement;
-	render(cloneElement(tick, { payload: { value } }));
+	render(<svg>{cloneElement(tick, { payload: { value } })}</svg>);
 }
 
 beforeEach(() => {
+	cleanup();
 	captured.barCharts.length = 0;
+	captured.xAxes.length = 0;
 	captured.yAxes.length = 0;
 	captured.chartContainers.length = 0;
 	Object.defineProperty(window, 'matchMedia', {
@@ -68,6 +74,45 @@ beforeEach(() => {
 			addEventListener: vi.fn(),
 			removeEventListener: vi.fn(),
 		})),
+	});
+});
+
+describe('Marketing categorical charts on desktop', () => {
+	test('passes the complete campaign value to a spacious responsive x-axis tick', () => {
+		Object.defineProperty(window, 'matchMedia', {
+			writable: true,
+			value: vi.fn().mockImplementation(() => ({
+				matches: false,
+				addEventListener: vi.fn(),
+				removeEventListener: vi.fn(),
+			})),
+		});
+		const campaignName = 'Campanha Institucional Agosto 2026';
+		render(
+			<CampagnComponent
+				data={[
+					{
+						campaign: { id: 1, name: campaignName, resource_name: 'campaign', status: 1 },
+						metrics: { clicks: 1, conversions: 1, impressions: 1 },
+					},
+				]}
+			/>,
+		);
+
+		const axis = captured.xAxes[0]!;
+		const chartData = captured.barCharts[0]?.data as Array<{ name: unknown }>;
+		const chartCampaignName = chartData[0]?.name;
+		expect(captured.barCharts[0]?.layout).toBe('horizontal');
+		expect(chartCampaignName).toBe(campaignName);
+		expect(axis.tickFormatter).toBeUndefined();
+		expect(axis.height).toBeGreaterThanOrEqual(44);
+		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ReactElement).props.labelWidth).toBeGreaterThanOrEqual(120);
+		expect((axis.tick as ReactElement).props.offset).toBeLessThanOrEqual(8);
+
+		renderTick(axis, chartCampaignName as string);
+		expect(screen.getByTitle(campaignName).textContent).toBe(campaignName);
+		expect(screen.queryByText(/\.\.\.$/)).toBeNull();
 	});
 });
 
@@ -96,7 +141,7 @@ describe('Marketing categorical charts on mobile', () => {
 		expect(axis.width).toBe(104);
 		expect(axis.tickFormatter).toBeUndefined();
 		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
-		expect((axis.tick as ReactElement).props.width).toBe(96);
+		expect((axis.tick as ReactElement).props.labelWidth).toBe(96);
 		expect((captured.chartContainers[0]?.style as { height?: number }).height).toBe(
 			getMobileCategoricalChartHeight(1),
 		);

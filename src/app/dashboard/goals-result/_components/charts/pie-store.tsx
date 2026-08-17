@@ -51,15 +51,15 @@ export function PieStore({ companySummary }: IPieStoreProps) {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className='mx-auto h-[280px] min-w-0 w-full max-w-[320px] md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
+			className='mx-auto h-[280px] min-w-0 w-full max-w-[320px] md:max-w-none md:max-h-[288px] [&_.recharts-pie-label-text]:fill-foreground'>
 			<RadialBarChart
 				className='translate-y-6 md:translate-y-10'
 				accessibilityLayer
 				data={chartData}
 				endAngle={180}
 				margin={{ top: 10 }}
-				innerRadius={isMobile ? 92 : 128}
-				outerRadius={isMobile ? 148 : 200}>
+				innerRadius={isMobile ? '64%' : 128}
+				outerRadius={isMobile ? '92%' : 200}>
 				<ChartTooltip
 					cursor={false}
 					content={<ChartTooltipContent hideLabel />}

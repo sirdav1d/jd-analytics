@@ -106,16 +106,24 @@ export function CampagnComponent({ data }: DataProps) {
 						axisLine={false}
 						tickMargin={4}
 						fontSize={12}
-						tick={<ResponsiveChartTick axis='y' width={96} />}
+						tick={<ResponsiveChartTick axis='y' labelWidth={96} />}
 					/>
 				) : (
 					<XAxis
 						dataKey='name'
-						tickMargin={12}
+						height={44}
+						tickMargin={4}
 						tickLine={false}
 						axisLine={false}
 						hide={isTablet}
 						fontSize={12}
+						tick={
+							<ResponsiveChartTick
+								axis='x'
+								labelWidth={120}
+								offset={4}
+							/>
+						}
 					/>
 				)}
 

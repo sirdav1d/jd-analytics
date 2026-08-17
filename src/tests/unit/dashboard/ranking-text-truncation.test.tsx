@@ -2,6 +2,7 @@
 
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
+import RankingSellers from '@/app/dashboard/comercial/_components/tables/ranking-sellers';
 import TopClients from '@/app/dashboard/comercial/_components/tables/top-clients';
 import TopProducts from '@/app/dashboard/comercial/_components/tables/top-products';
 
@@ -15,6 +16,23 @@ vi.mock('react', async (importOriginal) => {
 });
 
 afterEach(cleanup);
+
+function expectScrollableRankingTable(name: string) {
+	const label = screen.getByTitle(name);
+	const table = label.closest('table');
+	const wrapper = table?.parentElement;
+	const card = wrapper?.parentElement?.parentElement;
+
+	expect(label.textContent).toBe(name);
+	expect(label.className).toContain('truncate');
+	expect(table?.className).toContain('min-w-[36rem]');
+	expect(table?.className).toContain('md:min-w-0');
+	expect(table?.className).toContain('md:table-auto');
+	expect(wrapper?.className).toContain('overflow-auto');
+	expect(card?.className).toContain('min-w-0');
+	expect(card?.className).toContain('overflow-hidden');
+	expect(screen.queryByText(/\.\.\.$/)).toBeNull();
+}
 
 it('keeps complete customer names in the DOM without JavaScript ellipses', () => {
 	const customerName = 'JOSÉ PAULO VILARINHO DA SILVA';
@@ -35,8 +53,7 @@ it('keeps complete customer names in the DOM without JavaScript ellipses', () =>
 
 	render(<TopClients data={Promise.resolve(null)} />);
 
-	expect(screen.getByText(customerName)).not.toBeNull();
-	expect(screen.queryByText(/\.\.\.$/)).toBeNull();
+	expectScrollableRankingTable(customerName);
 });
 
 it('keeps complete product names in the DOM without JavaScript ellipses', () => {
@@ -58,6 +75,27 @@ it('keeps complete product names in the DOM without JavaScript ellipses', () => 
 
 	render(<TopProducts data={Promise.resolve(null)} />);
 
-	expect(screen.getByText(productName)).not.toBeNull();
-	expect(screen.queryByText(/\.\.\.$/)).toBeNull();
+	expectScrollableRankingTable(productName);
+});
+
+it('keeps complete seller names while the five-column ranking scrolls inside the card', () => {
+	const sellerName = 'VENDEDOR COM NOME COMPLETO';
+	current.response = {
+		ok: true,
+		data: {
+			sellers: [
+				{
+					posicao: 1,
+					name: sellerName,
+					sales: 10,
+					revenue: 3200,
+					avgTicket: 320,
+				},
+			],
+		},
+	};
+
+	render(<RankingSellers data={Promise.resolve(null)} />);
+
+	expectScrollableRankingTable(sellerName);
 });

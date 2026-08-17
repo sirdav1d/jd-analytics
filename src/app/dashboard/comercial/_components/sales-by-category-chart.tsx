@@ -114,7 +114,7 @@ export function SalesByCategoryChart({ data }: { data: Promise<any> }) {
 							tickMargin={isMobile ? 8 : 12}
 							axisLine={false}
 							tick={
-								isMobile ? <ResponsiveChartTick axis='y' width={104} /> : undefined
+								isMobile ? <ResponsiveChartTick axis='y' labelWidth={104} /> : undefined
 							}
 						/>
 						<ChartTooltip

@@ -5,6 +5,7 @@ import { cloneElement, type ReactElement } from 'react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import SellerComparison from '@/app/dashboard/goals-result/_components/charts/seller-comparison-desktop';
 import SellerComparisonMobile from '@/app/dashboard/goals-result/_components/charts/seller-comparison-mobile';
+import SellerRevenue from '@/app/dashboard/goals-result/_components/charts/seller-revenue';
 import {
 	getMobileCategoricalChartHeight,
 	ResponsiveChartTick,
@@ -134,5 +135,34 @@ describe('Goals seller comparison ticks', () => {
 		renderTick(axis, chartSellerName);
 		expect(screen.getByTitle(sellerName).textContent).toBe(sellerName);
 		expect(screen.queryByText(`${sellerName.slice(0, 12)}...`)).toBeNull();
+	});
+});
+
+describe('Seller revenue desktop tick', () => {
+	test('passes chartData seller names unchanged to the responsive y-axis tick', () => {
+		Object.defineProperty(window, 'matchMedia', {
+			writable: true,
+			value: vi.fn().mockImplementation(() => ({
+				matches: false,
+				addEventListener: vi.fn(),
+				removeEventListener: vi.fn(),
+			})),
+		});
+
+		render(<SellerRevenue data={Promise.resolve(resolvedData)} />);
+
+		const axis = captured.yAxes[0]!;
+		const chartData = captured.barCharts[0]?.data as Array<{ name: unknown }>;
+		const chartSellerName = chartData[0]?.name;
+		expect(captured.barCharts[0]?.layout).toBe('vertical');
+		expect(axis.width).toBe(148);
+		expect(chartSellerName).toBe(sellerName);
+		expect(axis.tickFormatter).toBeUndefined();
+		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ReactElement).props.labelWidth).toBe(132);
+
+		renderTick(axis, chartSellerName);
+		expect(screen.getByTitle(sellerName).textContent).toBe(sellerName);
+		expect(screen.queryByText(/\.\.\.$/)).toBeNull();
 	});
 });

@@ -107,7 +107,7 @@ export function SalesCountByOrigin({ data }: { data: Promise<any> }) {
 								tickLine={false}
 								tickMargin={10}
 								axisLine={false}
-								tick={<ResponsiveChartTick axis='y' width={96} />}
+								tick={<ResponsiveChartTick axis='y' labelWidth={96} />}
 							/>
 						) : (
 							<XAxis

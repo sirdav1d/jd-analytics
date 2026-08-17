@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { render, screen } from "@testing-library/react";
+import { cloneElement } from "react";
 import { describe, expect, it } from "vitest";
 import {
 	getMobileCategoricalChartHeight,
@@ -20,7 +21,7 @@ describe("responsive chart primitives", () => {
 					axis="y"
 					x={100}
 					y={20}
-					width={96}
+					labelWidth={96}
 					payload={{ value: "Relacionamento comercial muito extenso" }}
 				/>
 			</svg>,
@@ -31,5 +32,32 @@ describe("responsive chart primitives", () => {
 		expect(label.className).toContain("text-ellipsis");
 		expect(label.className).toContain("whitespace-nowrap");
 		expect(label.textContent).not.toContain("...");
+	});
+
+	it("keeps label geometry when Recharts injects axis dimensions", () => {
+		const tick = (
+			<ResponsiveChartTick axis="y" labelWidth={96} labelHeight={24} />
+		);
+
+		const { container } = render(
+			<svg>
+				{cloneElement(tick, {
+					x: 200,
+					y: 80,
+					width: 600,
+					height: 400,
+					payload: { value: "Campanha integral" },
+				})}
+			</svg>,
+		);
+
+		const foreignObject = container.querySelector("foreignObject");
+		expect(foreignObject?.getAttribute("width")).toBe("96");
+		expect(foreignObject?.getAttribute("height")).toBe("24");
+		expect(foreignObject?.getAttribute("x")).toBe("96");
+		expect(foreignObject?.getAttribute("y")).toBe("68");
+		expect(screen.getByTitle("Campanha integral").textContent).toBe(
+			"Campanha integral",
+		);
 	});
 });

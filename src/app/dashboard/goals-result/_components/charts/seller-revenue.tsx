@@ -102,7 +102,12 @@ export default function SellerRevenue({ data }: ISellerRevenueProps) {
 					tickLine={false}
 					axisLine={false}
 					fontSize={12}
-					tick={isMobile ? <ResponsiveChartTick axis='y' width={96} /> : undefined}
+					tick={
+						<ResponsiveChartTick
+							axis='y'
+							labelWidth={isMobile ? 96 : 132}
+						/>
+					}
 				/>
 				<XAxis
 					dataKey='revenue'
