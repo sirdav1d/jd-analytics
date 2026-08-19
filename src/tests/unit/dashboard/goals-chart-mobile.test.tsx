@@ -9,7 +9,10 @@ import SellerRevenue from '@/app/dashboard/goals-result/_components/charts/selle
 import {
 	getMobileCategoricalChartHeight,
 	ResponsiveChartTick,
+	type ResponsiveChartTickProps,
 } from '@/components/ui/responsive-chart';
+
+type ResponsiveTickElement = ReactElement<ResponsiveChartTickProps>;
 
 const sellerName = 'VENDEDOR COM NOME COMPLETO';
 
@@ -79,7 +82,7 @@ vi.mock('recharts', async () => {
 });
 
 function renderTick(axis: Record<string, unknown>, value: unknown) {
-	const tick = axis.tick as ReactElement;
+	const tick = axis.tick as ResponsiveTickElement;
 	render(<svg>{cloneElement(tick, { payload: { value } })}</svg>);
 }
 
@@ -113,7 +116,7 @@ describe('Goals seller comparison ticks', () => {
 			getMobileCategoricalChartHeight(1),
 		);
 		expect(axis.tickFormatter).toBeUndefined();
-		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ResponsiveTickElement).type).toBe(ResponsiveChartTick);
 
 		const chartSellerName = getChartSellerName();
 		expect(chartSellerName).toBe(sellerName);
@@ -128,7 +131,7 @@ describe('Goals seller comparison ticks', () => {
 		const axis = captured.xAxes[0]!;
 		expect(captured.barCharts[0]?.layout).toBeUndefined();
 		expect(axis.tickFormatter).toBeUndefined();
-		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ResponsiveTickElement).type).toBe(ResponsiveChartTick);
 
 		const chartSellerName = getChartSellerName();
 		expect(chartSellerName).toBe(sellerName);
@@ -158,8 +161,8 @@ describe('Seller revenue desktop tick', () => {
 		expect(axis.width).toBe(148);
 		expect(chartSellerName).toBe(sellerName);
 		expect(axis.tickFormatter).toBeUndefined();
-		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
-		expect((axis.tick as ReactElement).props.labelWidth).toBe(132);
+		expect((axis.tick as ResponsiveTickElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ResponsiveTickElement).props.labelWidth).toBe(132);
 
 		renderTick(axis, chartSellerName);
 		expect(screen.getByTitle(sellerName).textContent).toBe(sellerName);

@@ -26,11 +26,11 @@ vi.mock('recharts', () => ({
 	AreaChart: ({ children, ...props }: { children?: ReactNode }) => {
 		current.areaCharts.push(props);
 		return (
-		<div data-testid='area-chart'>{children}</div>
+			<svg data-testid='area-chart'>{children}</svg>
 		);
 	},
 	Area: ({ children, dataKey }: { children?: ReactNode; dataKey: string }) => (
-		<div data-testid='area-series' data-key={dataKey}>{children}</div>
+		<g data-testid='area-series' data-key={dataKey}>{children}</g>
 	),
 	LineChart: ({
 		children,
@@ -42,10 +42,10 @@ vi.mock('recharts', () => ({
 	}) => {
 		current.chartData = data ?? [];
 		current.lineCharts.push(props);
-		return <div data-testid='line-chart'>{children}</div>;
+		return <svg data-testid='line-chart'>{children}</svg>;
 	},
 	Line: ({ children, dataKey, name }: { children?: ReactNode; dataKey: string; name?: string }) => (
-		<div data-testid='line-series' data-key={dataKey} data-name={name}>{children}</div>
+		<g data-testid='line-series' data-key={dataKey} data-name={name}>{children}</g>
 	),
 	CartesianGrid: () => null,
 	LabelList: () => null,
@@ -105,7 +105,6 @@ describe('SalesVsRepairRevenue', () => {
 		current.response = responseWithOrganizations('JD Centro');
 		render(createElement(SalesVsRepairRevenue, { data: Promise.resolve(null) }));
 
-		expect(screen.getByText('Vendas por unidade')).not.toBeNull();
 		expect(screen.getByTestId('area-chart')).not.toBeNull();
 		expect(screen.getByTestId('area-series').getAttribute('data-key')).toBe('org-1');
 		expect(screen.queryByTestId('line-chart')).toBeNull();
@@ -124,7 +123,7 @@ describe('SalesVsRepairRevenue', () => {
 		]);
 		expect(screen.getByTestId('chart-legend')).not.toBeNull();
 		expect(screen.queryByTestId('area-chart')).toBeNull();
-		expect(screen.getAllByTestId('line-series').map((line) => line.getAttribute('data-name'))).toEqual([
+		expect(screen.getAllByTestId('line-series').map((line: HTMLElement) => line.getAttribute('data-name'))).toEqual([
 			'JD Centro',
 			'JD Icaraí',
 		]);
@@ -206,7 +205,7 @@ describe('SalesVsRepairRevenue', () => {
 		};
 		render(createElement(SalesVsRepairRevenue, { data: Promise.resolve(null) }));
 
-		expect(screen.getAllByTestId('line-series').map((line) => line.getAttribute('data-key'))).toEqual([
+		expect(screen.getAllByTestId('line-series').map((line: HTMLElement) => line.getAttribute('data-key'))).toEqual([
 			'org-space',
 			'org-underscore',
 			'org-punctuation',

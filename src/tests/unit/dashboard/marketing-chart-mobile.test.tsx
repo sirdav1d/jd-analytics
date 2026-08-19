@@ -9,7 +9,10 @@ import { TrafficComponent } from '@/app/dashboard/marketing/_components/charts/t
 import {
 	getMobileCategoricalChartHeight,
 	ResponsiveChartTick,
+	type ResponsiveChartTickProps,
 } from '@/components/ui/responsive-chart';
+
+type ResponsiveTickElement = ReactElement<ResponsiveChartTickProps>;
 
 const captured = vi.hoisted(() => ({
 	barCharts: [] as Array<Record<string, unknown>>,
@@ -57,7 +60,7 @@ vi.mock('recharts', async () => {
 const conversionMetric = { conversions: 1, sessions: 10 };
 
 function renderTick(axis: Record<string, unknown>, value: string) {
-	const tick = axis.tick as ReactElement;
+	const tick = axis.tick as ResponsiveTickElement;
 	render(<svg>{cloneElement(tick, { payload: { value } })}</svg>);
 }
 
@@ -106,9 +109,9 @@ describe('Marketing categorical charts on desktop', () => {
 		expect(chartCampaignName).toBe(campaignName);
 		expect(axis.tickFormatter).toBeUndefined();
 		expect(axis.height).toBeGreaterThanOrEqual(44);
-		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
-		expect((axis.tick as ReactElement).props.labelWidth).toBeGreaterThanOrEqual(120);
-		expect((axis.tick as ReactElement).props.offset).toBeLessThanOrEqual(8);
+		expect((axis.tick as ResponsiveTickElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ResponsiveTickElement).props.labelWidth).toBeGreaterThanOrEqual(120);
+		expect((axis.tick as ResponsiveTickElement).props.offset).toBeLessThanOrEqual(8);
 
 		renderTick(axis, chartCampaignName as string);
 		expect(screen.getByTitle(campaignName).textContent).toBe(campaignName);
@@ -140,8 +143,8 @@ describe('Marketing categorical charts on mobile', () => {
 		});
 		expect(axis.width).toBe(104);
 		expect(axis.tickFormatter).toBeUndefined();
-		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
-		expect((axis.tick as ReactElement).props.labelWidth).toBe(96);
+		expect((axis.tick as ResponsiveTickElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ResponsiveTickElement).props.labelWidth).toBe(96);
 		expect((captured.chartContainers[0]?.style as { height?: number }).height).toBe(
 			getMobileCategoricalChartHeight(1),
 		);
@@ -168,7 +171,7 @@ describe('Marketing categorical charts on mobile', () => {
 
 		const axis = captured.yAxes[0]!;
 		expect(axis.tickFormatter).toBeUndefined();
-		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ResponsiveTickElement).type).toBe(ResponsiveChartTick);
 		expect((captured.chartContainers[0]?.style as { height?: number }).height).toBe(
 			getMobileCategoricalChartHeight(9),
 		);
@@ -194,7 +197,7 @@ describe('Marketing categorical charts on mobile', () => {
 
 		const axis = captured.yAxes[0]!;
 		expect(axis.tickFormatter).toBeUndefined();
-		expect((axis.tick as ReactElement).type).toBe(ResponsiveChartTick);
+		expect((axis.tick as ResponsiveTickElement).type).toBe(ResponsiveChartTick);
 		expect((captured.chartContainers[0]?.style as { height?: number }).height).toBe(
 			getMobileCategoricalChartHeight(9),
 		);
