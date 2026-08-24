@@ -124,6 +124,8 @@ O identificador subject do token será associado a um identificador estável do 
 
 O escopo inicial será mcp:read. As diferenças de acesso serão controladas pelos perfis do JD Analytics.
 
+O servidor publicará os metadados de recurso protegido e os metadados do servidor de autorização exigidos pelo protocolo. A identificação dinâmica de clientes seguirá CIMD quando suportada. O registro dinâmico legado permanecerá habilitado no Descope somente para compatibilidade com clientes que ainda dependam dele.
+
 Usuários inativos receberão FORBIDDEN mesmo que ainda possuam um token dentro do prazo de validade.
 
 ## 8. Autenticação das APIs do Google
@@ -330,6 +332,13 @@ Cada usuário terá os seguintes limites:
 7. Até 24 meses por consulta remota ao Google.
 
 As consultas agregadas do PostgreSQL poderão analisar todo o histórico disponível.
+
+Os limites serão globais entre as instâncias da aplicação e persistidos no PostgreSQL, sem adicionar outro fornecedor de infraestrutura:
+
+1. McpRateLimitBucket armazenará uma chave do usuário em formato hash, início da janela e contador. O incremento será atômico.
+2. McpRequestLease registrará as consultas em andamento com expiração. Registros expirados serão ignorados e removidos.
+3. A credencial do MCP terá somente as permissões necessárias sobre essas tabelas operacionais.
+4. As tabelas de limite não armazenarão email, nome ou parâmetros da consulta.
 
 Quando uma resposta ultrapassar o limite, o servidor exigirá paginação ou um intervalo menor.
 
