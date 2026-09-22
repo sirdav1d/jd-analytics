@@ -66,6 +66,20 @@ describe('protocolo OAuth do MCP', () => {
 		expect(() => assertMcpRequestOrigin(new Request('http://internal/api/mcp', { headers: { host: 'internal', forwarded: 'host=evil.example;host=jd.example.com;proto=https' } }))).toThrow();
 	});
 
+	it('aceita cabeçalhos de proxy concordantes enviados em ambos os formatos', () => {
+		vi.stubEnv('NEXTAUTH_URL', 'https://jd.example.com');
+		const request = new Request('http://internal/api/mcp', {
+			headers: {
+				host: 'internal',
+				'x-forwarded-host': 'jd.example.com',
+				'x-forwarded-proto': 'https',
+				forwarded: 'host=jd.example.com;proto=https',
+			},
+		});
+
+		expect(() => assertMcpRequestOrigin(request)).not.toThrow();
+	});
+
 	it('sanitiza erros OAuth e não expõe detalhes internos', async () => {
 		vi.stubEnv('NEXTAUTH_URL', 'https://jd.example.com');
 

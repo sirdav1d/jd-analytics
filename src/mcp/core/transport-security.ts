@@ -63,13 +63,19 @@ function forwardedOrigin(request: Request) {
 	const xForwardedHost = singleHeader(request, 'x-forwarded-host');
 	const xForwardedProto = singleHeader(request, 'x-forwarded-proto');
 	const forwarded = singleHeader(request, 'forwarded');
-	if (forwarded && (xForwardedHost || xForwardedProto)) throw new McpTransportError(403, 'Cabeçalhos encaminhados conflitantes.');
+	const xForwardedOrigin = xForwardedHost || xForwardedProto
+		? forwardedPairOrigin(xForwardedHost, xForwardedProto)
+		: undefined;
+	const forwardedValues = forwarded ? parseForwarded(forwarded) : undefined;
+	const standardForwardedOrigin = forwardedValues
+		? forwardedPairOrigin(forwardedValues.get('host'), forwardedValues.get('proto'))
+		: undefined;
 
-	if (xForwardedHost || xForwardedProto) return forwardedPairOrigin(xForwardedHost, xForwardedProto);
-	if (!forwarded) return undefined;
+	if (xForwardedOrigin && standardForwardedOrigin && xForwardedOrigin !== standardForwardedOrigin) {
+		throw new McpTransportError(403, 'Cabeçalhos encaminhados conflitantes.');
+	}
 
-	const values = parseForwarded(forwarded);
-	return forwardedPairOrigin(values.get('host'), values.get('proto'));
+	return xForwardedOrigin ?? standardForwardedOrigin;
 }
 
 function forwardedPairOrigin(host: string | undefined, proto: string | undefined) {
