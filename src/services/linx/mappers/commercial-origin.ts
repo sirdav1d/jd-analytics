@@ -8,7 +8,7 @@ const routineOriginSchema = z.object({
   descricao_rotina: text,
 });
 const movementPrincipalSchema = z.object({
-  identificador: z.string().uuid(),
+  identificador: z.guid(),
   id_resposta_venda: nullableInteger,
 });
 const salesResponseSchema = z.object({

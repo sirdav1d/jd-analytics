@@ -18,7 +18,7 @@ vi.mock("next/cache", () => ({
 }));
 
 function makeRequest() {
-  return new NextRequest("http://localhost/api/services/meta-investments", {
+  return new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/meta-investments`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({

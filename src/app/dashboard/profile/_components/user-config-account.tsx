@@ -110,8 +110,7 @@ export default function UserConfigAccount() {
 						<Button
 							disabled={
 								form.formState.isLoading ||
-								form.formState.isSubmitting ||
-								!form.formState.isValid
+								form.formState.isSubmitting
 							}
 							className='mt-5 disabled:opacity-70'>
 							{form.formState.isLoading || form.formState.isSubmitting ? (

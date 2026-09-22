@@ -45,7 +45,7 @@ const activeUser = {
 };
 
 function request(body?: unknown) {
-  return new Request("http://localhost/api/linx/sync", {
+  return new Request(`${process.env.NEXT_PUBLIC_API_URL}/api/linx/sync`, {
     method: "POST",
     headers:
       body === undefined ? undefined : { "content-type": "application/json" },

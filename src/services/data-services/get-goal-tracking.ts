@@ -1,34 +1,17 @@
-/** @format */
+import { requireActiveUser } from '@/lib/auth';
+import {
+	getGoalTracking,
+	type GoalTrackingResponse,
+} from '@/services/data-services/goals-shared-services';
+
+export { getGoalTracking } from '@/services/data-services/goals-shared-services';
+export type { GoalTrackingResponse } from '@/services/data-services/goals-shared-services';
 
 export async function FetchGoalTrackingData(
 	startDate: string,
 	endDate: string,
-) {
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const response = await fetch(
-		`${baseURL}/api/services/data-services/tracking-goal?startDate=${startDate}&endDate=${endDate}`,
-		{
-			method: 'GET',
-			next: { revalidate: 30, tags: ['tracking-goal'] },
-		},
-	);
+): Promise<GoalTrackingResponse> {
+	const user = await requireActiveUser();
 
-	if (!response.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado - Erro interno do servidor',
-		};
-	}
-
-	const data = await response.json();
-
-	if (!data.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado ' + data.error,
-		};
-	}
-	return data;
+	return getGoalTracking(user, { startDate, endDate });
 }

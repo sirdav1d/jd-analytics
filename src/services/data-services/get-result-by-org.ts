@@ -1,32 +1,19 @@
-/** @format */
+import { requireActiveUser } from '@/lib/auth';
+import {
+	getResultsByOrganization,
+	type ResultsByOrganizationData,
+} from '@/services/data-services/shared-read-services';
+import type { PeriodFilters } from '@/services/app-read-contracts';
+
+export { getResultsByOrganization } from '@/services/data-services/shared-read-services';
+export type { ResultsByOrganizationData } from '@/services/data-services/shared-read-services';
 
 export async function FetchResultByOrg(startDate: string, endDate: string) {
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const response = await fetch(
-		`${baseURL}/api/services/data-services/home?startDate=${startDate}&endDate=${endDate}`,
+	const user = await requireActiveUser();
+	const filters: PeriodFilters = { startDate, endDate };
 
-		{
-			next: { revalidate: 30, tags: ['home'] },
-			method: 'GET',
-		},
-	);
-
-	if (!response.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado - Erro interno do servidor',
-		};
-	}
-
-	const data = await response.json();
-
-	if (!data.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado ' + data.error,
-		};
-	}
-	return data;
+	return getResultsByOrganization(user, filters);
 }
+
+export type ResultsByOrganizationResponse = Awaited<ReturnType<typeof getResultsByOrganization>>;
+export type ResultsByOrganization = ResultsByOrganizationData;

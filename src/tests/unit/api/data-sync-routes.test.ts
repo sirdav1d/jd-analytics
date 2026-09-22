@@ -88,7 +88,7 @@ const success = {
 };
 
 function manualRequest(body?: unknown) {
-  return new Request("http://localhost/api/sync", {
+  return new Request(`${process.env.NEXT_PUBLIC_API_URL}/api/sync`, {
     method: "POST",
     headers: body === undefined
       ? undefined
@@ -98,7 +98,7 @@ function manualRequest(body?: unknown) {
 }
 
 function cronRequest(secret?: string) {
-  return new Request("http://localhost/api/cron/sync", {
+  return new Request(`${process.env.NEXT_PUBLIC_API_URL}/api/cron/sync`, {
     headers: secret ? { authorization: `Bearer ${secret}` } : undefined,
   });
 }

@@ -1,4 +1,12 @@
-/** @format */
+import { requireActiveUser } from '@/lib/auth';
+import {
+	getCommercialOriginData,
+	type CommercialOriginData,
+} from '@/services/data-services/shared-read-services';
+import type { CommercialFilters } from '@/services/app-read-contracts';
+
+export { getCommercialOriginData } from '@/services/data-services/shared-read-services';
+export type { CommercialOriginData } from '@/services/data-services/shared-read-services';
 
 export async function FetchOriginData(
 	startDate: string,
@@ -7,32 +15,11 @@ export async function FetchOriginData(
 	customerType: string,
 	org: string,
 ) {
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const response = await fetch(
-		`${baseURL}/api/services/data-services/data-origin?startDate=${startDate}&endDate=${endDate}&category=${category}&customerType=${customerType}&org=${org}`,
+	const user = await requireActiveUser();
+	const filters: CommercialFilters = { startDate, endDate, category, customerType, org };
 
-		{
-			next: { revalidate: 30, tags: ['origin-data'] },
-			method: 'GET',
-		},
-	);
-
-	if (!response.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado - Erro interno do servidor',
-		};
-	}
-
-	const data = await response.json();
-
-	if (!data.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado ' + data.error,
-		};
-	}
-	return data;
+	return getCommercialOriginData(user, filters);
 }
+
+export type CommercialOriginResponse = Awaited<ReturnType<typeof getCommercialOriginData>>;
+export type CommercialOrigin = CommercialOriginData;

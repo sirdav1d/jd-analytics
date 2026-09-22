@@ -2,6 +2,7 @@
 
 import 'server-only';
 import { Prisma } from '@prisma/client';
+import { assertActiveAdmin, type AuthorizedUser } from '@/lib/authorization';
 import type { GoogleAdsScope } from '@/lib/google-ads-account';
 import { prisma } from '@/lib/prisma';
 import { formatBusinessCivilDate } from '@/services/data-services/civil-date-range';
@@ -52,6 +53,17 @@ function goalMonth(goal: GoalRecord) {
 
 function ratio(revenue: number, cost: number) {
 	return cost === 0 ? null : revenue / cost;
+}
+
+function resolvedCost(
+	month: string,
+	currentMonth: string,
+	currentCosts: MonthlyGoogleAdsCosts,
+	closedCosts: MonthlyGoogleAdsCosts,
+) {
+	if (month === currentMonth) return currentCosts[month] ?? 0;
+
+	return closedCosts[month] ?? 0;
 }
 
 function serializeGoal(
@@ -191,9 +203,7 @@ export function createMarketingGoalLoaders(
 				const faturamento = isFuture ? 0 : (revenueByMonth.get(month) ?? 0);
 				const custo = isFuture
 					? 0
-					: month === context.currentMonth
-						? (currentCosts[month] ?? 0)
-						: (closedCosts[month] ?? 0);
+					: resolvedCost(month, context.currentMonth, currentCosts, closedCosts);
 				return serializeGoal(goal, {
 					faturamento,
 					custo,
@@ -232,4 +242,14 @@ export function createMarketingGoalLoaders(
 		bigNumbers,
 		history,
 	};
+}
+
+export async function getMarketingGoals(
+	user: AuthorizedUser,
+	scope: GoogleAdsScope = 'products',
+	now: Date = new Date(),
+) {
+	assertActiveAdmin(user);
+
+	return createMarketingGoalLoaders(scope, now).response;
 }

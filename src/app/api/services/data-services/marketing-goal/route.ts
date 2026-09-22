@@ -1,38 +1,22 @@
-/** @format */
-
-import { requireAdmin } from '@/lib/auth';
-import { AuthorizationError } from '@/lib/authorization';
-import { createMarketingGoalLoaders } from '@/services/data-services/get-marketing-goals';
 import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentUserFromRequest } from '@/lib/auth';
+import { assertActiveAdmin } from '@/lib/authorization';
+import { serviceErrorResponse } from '@/app/api/services/response';
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
 	try {
-		await requireAdmin();
-		const scope =
-			req.nextUrl.searchParams.get('scope') === 'services'
-				? 'services'
-				: 'products';
-		const result = await createMarketingGoalLoaders(scope).response;
+		const currentUser = await getCurrentUserFromRequest(request);
+		assertActiveAdmin(currentUser);
+		const scope = request.nextUrl.searchParams.get('scope') === 'services' ? 'services' : 'products';
+		const { getMarketingGoals } = await import('@/services/data-services/get-marketing-goals');
+		const result = await getMarketingGoals(currentUser, scope);
+
 		if (!result.ok) {
-			return NextResponse.json(
-				{ ok: false, error: result.error, data: null },
-				{ status: result.status },
-			);
+			return NextResponse.json({ ok: false, error: result.error, data: null }, { status: result.status });
 		}
-		return NextResponse.json({
-			ok: true,
-			data: result.data,
-			bigNumbers: result.bigNumbers,
-			error: null,
-		});
+
+		return NextResponse.json({ ok: true, data: result.data, bigNumbers: result.bigNumbers, error: null });
 	} catch (error) {
-		if (error instanceof AuthorizationError) {
-			return NextResponse.json({ error: error.message }, { status: error.status });
-		}
-		console.error('Erro ao buscar ROAS goals:', error);
-		return NextResponse.json(
-			{ ok: false, error: 'Erro ao buscar metas de ROAS', data: null },
-			{ status: 500 },
-		);
+		return serviceErrorResponse(error, 'GET marketing-goal');
 	}
 }

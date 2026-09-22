@@ -3,7 +3,7 @@ import { z } from "zod";
 import { LINX_PRODUCTION_URL } from "./client";
 
 const envSchema = z.object({
-  LINX_API_KEY: z.string().uuid(),
+  LINX_API_KEY: z.guid(),
   LINX_API_USER: z.string().min(1).default("linx_export"),
   LINX_API_PASSWORD: z.string().min(1).default("linx_export"),
 });

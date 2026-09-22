@@ -2,7 +2,7 @@ import { z } from "zod";
 import { parseRows, text } from "./common";
 import type { LinxResponseRow } from "../types";
 
-const paymentRowSchema = z.object({ identificador: z.string().uuid(), forma_pgto: text });
+const paymentRowSchema = z.object({ identificador: z.guid(), forma_pgto: text });
 
 export function combinePaymentLabels(labels: string[]) {
   const unique = [...new Set(labels.map((label) => label.trim()).filter(Boolean))];

@@ -28,10 +28,15 @@ const formSchema = z.object({
 		.min(6, { message: 'A senha deve conter no mínimo 6 dígitos' }),
 });
 
+type SignInFormProps = React.ComponentPropsWithoutRef<'form'> & {
+	callbackUrl: string;
+};
+
 export function SignInForm({
 	className,
+	callbackUrl,
 	...props
-}: React.ComponentPropsWithoutRef<'form'>) {
+}: SignInFormProps) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -53,7 +58,7 @@ export function SignInForm({
 
 		if (response?.ok) {
 			router.refresh();
-			router.push('/dashboard');
+			router.push(callbackUrl);
 			toast.success('Usuário Logado com sucesso');
 			form.reset();
 		} else {
@@ -65,9 +70,10 @@ export function SignInForm({
 		<>
 			<Form {...form}>
 				<form
+					{...props}
+					method='post'
 					onSubmit={form.handleSubmit(onSubmit)}
-					className={cn('flex flex-col gap-6 mt-5', className)}
-					{...props}>
+					className={cn('flex flex-col gap-6 mt-5', className)}>
 					<FormField
 						control={form.control}
 						name='email'
@@ -111,8 +117,7 @@ export function SignInForm({
 					<Button
 						disabled={
 							form.formState.isSubmitting ||
-							form.formState.isLoading ||
-							!form.formState.isValid
+							form.formState.isLoading
 						}
 						type='submit'
 						className='w-full font-semibold disabled:opacity-70'>

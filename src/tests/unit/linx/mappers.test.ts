@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest";
 import { parseLinxResponse } from "@/services/linx/xml";
 import { LinxDataError } from "@/services/linx/errors";
 import { mapCatalogs } from "@/services/linx/mappers/catalogs";
-import { mapCommercialOrigins } from "@/services/linx/mappers/commercial-origin";
+import {
+  mapCommercialOrigins,
+  mapMovementPrincipals,
+} from "@/services/linx/mappers/commercial-origin";
 import { mapMovementRows } from "@/services/linx/mappers/movement";
 import { combinePaymentLabels, mapPaymentLabels } from "@/services/linx/mappers/payment";
 import { discoverStores } from "@/services/linx/store-discovery";
@@ -12,6 +15,8 @@ import type { LinxCommand, LinxResponse } from "@/services/linx/types";
 const fixture = (name: string) => parseLinxResponse(readFileSync(`src/tests/fixtures/linx/${name}`, "utf8"));
 
 describe("Linx mappers", () => {
+  const nonRfcGuid = "12345678-1234-1234-1234-123456789abc";
+
   it("maps movements using v267 column names and preserves bigint and document zeros", () => {
     expect(mapMovementRows(fixture("movimento.xml").rows)).toEqual([expect.objectContaining({
       identificador: "7c0ab11c-95b6-4e14-8186-bb5292198ff1",
@@ -20,6 +25,13 @@ describe("Linx mappers", () => {
       unitValue: 10.5,
       operationalOriginCode: 7,
     })]);
+  });
+
+  it("accepts a Linx GUID without RFC version bits in movements", () => {
+    const row = fixture("movimento.xml").rows[0]!;
+
+    expect(mapMovementRows([{ ...row, identificador: nonRfcGuid }])[0]?.identificador)
+      .toBe(nonRfcGuid);
   });
 
   it("fails the entire movement mapping when a required v267 field is missing", () => {
@@ -38,6 +50,20 @@ describe("Linx mappers", () => {
   it("deduplicates and orders payment descriptions deterministically", () => {
     expect(combinePaymentLabels([" PIX ", "Cartão", "PIX", ""])).toBe("Cartão, PIX");
     expect(mapPaymentLabels(fixture("movimento-planos.xml").rows).get("7c0ab11c-95b6-4e14-8186-bb5292198ff1")).toBe("Cartão, PIX");
+  });
+
+  it("accepts a Linx GUID without RFC version bits in payment rows", () => {
+    const row = fixture("movimento-planos.xml").rows[0]!;
+
+    expect(mapPaymentLabels([{ ...row, identificador: nonRfcGuid }]).get(nonRfcGuid))
+      .toBe("PIX");
+  });
+
+  it("accepts a Linx GUID without RFC version bits in principal rows", () => {
+    const row = fixture("movimento-principal.xml").rows[0]!;
+
+    expect(mapMovementPrincipals([{ ...row, identificador: nonRfcGuid }]).get(nonRfcGuid))
+      .toBe(10);
   });
 
   it("keeps operational and commercial origins as distinct lookups", () => {

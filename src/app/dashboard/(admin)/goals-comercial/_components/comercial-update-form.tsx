@@ -38,22 +38,10 @@ interface IMetaComercialFormUpdate {
 }
 
 const formSchema = z.object({
-	seller: z.string({
-		coerce: true,
-		required_error: 'É necessário incluir um vendedor',
-	}),
-	goal: z.number({
-		coerce: true,
-		required_error: 'É necessário incluir uma meta',
-	}),
-	month: z.number({
-		coerce: true,
-		required_error: 'É necessário incluir um mês',
-	}),
-	year: z.number({
-		coerce: true,
-		required_error: 'É necessário incluir um ano',
-	}),
+	seller: z.coerce.string<string>({ error: 'É necessário incluir um vendedor' }),
+	goal: z.coerce.number<number>({ error: 'É necessário incluir uma meta' }),
+	month: z.coerce.number<number>({ error: 'É necessário incluir um mês' }),
+	year: z.coerce.number<number>({ error: 'É necessário incluir um ano' }),
 });
 
 const MONTHS = [

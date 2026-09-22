@@ -1,215 +1,56 @@
-import { beforeEach, expect, test, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
-  queryRaw: vi.fn(),
+	getCurrentUserFromRequest: vi.fn(),
+	getResultsByOrganization: vi.fn(),
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: { $queryRaw: mocks.queryRaw },
+vi.mock('@/lib/auth', () => ({
+	getCurrentUserFromRequest: mocks.getCurrentUserFromRequest,
 }));
 
-import { GET } from "@/app/api/services/data-services/home/route";
+vi.mock('@/services/data-services/shared-read-services', async () => {
+	const actual = await vi.importActual<typeof import('@/services/data-services/shared-read-services')>('@/services/data-services/shared-read-services');
 
-beforeEach(() => {
-  const responses = [
-    [
-      {
-        organizationId: "org-centro",
-        organization: "JD Centro",
-        label: "2026-08-01",
-        revenue: "266",
-      },
-    ],
-    [
-      {
-        organizationId: "org-centro",
-        organization: "JD Centro",
-        label: "2026-08-01",
-        sales_count: BigInt(3),
-      },
-    ],
-    [{ organizationId: "org-centro", organization: "JD Centro", cnt: "2" }],
-    [
-      {
-        organizationId: "org-centro",
-        organization: "JD Centro",
-        revenue: 266,
-        sales_count: BigInt(3),
-        new_customers: BigInt(2),
-      },
-    ],
-  ];
-
-  mocks.queryRaw.mockImplementation(async (query: { values: unknown[] }) => {
-    const usesCivilDateBoundaries =
-      query.values.filter((value) => value === "2026-08-01").length >= 2;
-    return usesCivilDateBoundaries ? responses.shift() ?? [] : [];
-  });
+	return { ...actual, getResultsByOrganization: mocks.getResultsByOrganization };
 });
 
-test("returns dashboard data for a DATE column without shifting the day by timezone", async () => {
-  const response = await GET(
-    new NextRequest(
-      "http://localhost/api/services/data-services/home?startDate=2026-08-01&endDate=2026-08-01",
-    ),
-  );
+import { GET } from '@/app/api/services/data-services/home/route';
 
-  expect(response.status).toBe(200);
-  await expect(response.json()).resolves.toEqual({
-    ok: true,
-    data: {
-      result: [
-        {
-          organizationId: "org-centro",
-          organization: "JD Centro",
-          revenue: 266,
-          salesCount: 3,
-          newCustomers: 2,
-        },
-      ],
-      historyOrganizations: [
-        { organizationId: "org-centro", organization: "JD Centro" },
-      ],
-      revenueByOrg: [{ period: "2026-08-01", "org-centro": 266 }],
-      salesByOrg: [{ period: "2026-08-01", "org-centro": 3 }],
-    },
-    error: null,
-  });
-});
+const user = { id: 'manager-1', role: 'MANAGER' as const, isActive: true };
+const data = {
+	result: [{ organizationId: 'org-space', organization: 'Loja A B', revenue: 100, salesCount: 3, newCustomers: 3 }],
+	historyOrganizations: [{ organizationId: 'org-space', organization: 'Loja A B' }],
+	revenueByOrg: [{ period: '2026-08-01', 'org-space': 100 }],
+	salesByOrg: [{ period: '2026-08-01', 'org-space': 3 }],
+};
 
-test("keeps colliding and punctuated organization names in separate history fields", async () => {
-  const responses = [
-    [
-      {
-        organizationId: "org-space",
-        organization: "Loja A B",
-        label: "2026-08-01",
-        revenue: "100",
-      },
-      {
-        organizationId: "org-underscore",
-        organization: "Loja A_B",
-        label: "2026-08-01",
-        revenue: "200",
-      },
-      {
-        organizationId: "org-punctuation",
-        organization: "Ótica & Café",
-        label: "2026-08-01",
-        revenue: "300",
-      },
-    ],
-    [
-      {
-        organizationId: "org-space",
-        organization: "Loja A B",
-        label: "2026-08-01",
-        sales_count: BigInt(3),
-      },
-      {
-        organizationId: "org-underscore",
-        organization: "Loja A_B",
-        label: "2026-08-01",
-        sales_count: BigInt(2),
-      },
-      {
-        organizationId: "org-punctuation",
-        organization: "Ótica & Café",
-        label: "2026-08-01",
-        sales_count: BigInt(1),
-      },
-    ],
-    [
-      { organizationId: "org-space", organization: "Loja A B", cnt: "3" },
-      { organizationId: "org-underscore", organization: "Loja A_B", cnt: "2" },
-      { organizationId: "org-punctuation", organization: "Ótica & Café", cnt: "1" },
-    ],
-    [
-      {
-        organizationId: "org-space",
-        organization: "Loja A B",
-        revenue: 100,
-        sales_count: BigInt(3),
-        new_customers: BigInt(3),
-      },
-      {
-        organizationId: "org-underscore",
-        organization: "Loja A_B",
-        revenue: 200,
-        sales_count: BigInt(2),
-        new_customers: BigInt(2),
-      },
-      {
-        organizationId: "org-punctuation",
-        organization: "Ótica & Café",
-        revenue: 300,
-        sales_count: BigInt(1),
-        new_customers: BigInt(1),
-      },
-    ],
-  ];
+describe('rota de histórico por organização', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		mocks.getCurrentUserFromRequest.mockResolvedValue(user);
+		mocks.getResultsByOrganization.mockResolvedValue({ ok: true, data, error: null });
+	});
 
-  mocks.queryRaw.mockImplementation(async (query: { values: unknown[] }) => {
-    const usesCivilDateBoundaries =
-      query.values.filter((value) => value === "2026-08-01").length >= 2;
-    return usesCivilDateBoundaries ? responses.shift() ?? [] : [];
-  });
+	it('mantém o resultado do serviço compartilhado sem transformar nomes de organizações', async () => {
+		const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/home?startDate=2026-08-01&endDate=2026-08-01`);
+		const response = await GET(request);
 
-  const response = await GET(
-    new NextRequest(
-      "http://localhost/api/services/data-services/home?startDate=2026-08-01&endDate=2026-08-01",
-    ),
-  );
+		expect(response.status).toBe(200);
+		expect(mocks.getResultsByOrganization).toHaveBeenCalledWith(user, {
+			startDate: '2026-08-01',
+			endDate: '2026-08-01',
+		});
+		await expect(response.json()).resolves.toEqual({ ok: true, data, error: null });
+	});
 
-  await expect(response.json()).resolves.toEqual({
-    ok: true,
-    data: {
-      result: [
-        {
-          organizationId: "org-space",
-          organization: "Loja A B",
-          revenue: 100,
-          salesCount: 3,
-          newCustomers: 3,
-        },
-        {
-          organizationId: "org-underscore",
-          organization: "Loja A_B",
-          revenue: 200,
-          salesCount: 2,
-          newCustomers: 2,
-        },
-        {
-          organizationId: "org-punctuation",
-          organization: "Ótica & Café",
-          revenue: 300,
-          salesCount: 1,
-          newCustomers: 1,
-        },
-      ],
-      historyOrganizations: [
-        { organizationId: "org-space", organization: "Loja A B" },
-        { organizationId: "org-underscore", organization: "Loja A_B" },
-        { organizationId: "org-punctuation", organization: "Ótica & Café" },
-      ],
-      revenueByOrg: [
-        {
-          period: "2026-08-01",
-          "org-space": 100,
-          "org-underscore": 200,
-          "org-punctuation": 300,
-        },
-      ],
-      salesByOrg: [
-        {
-          period: "2026-08-01",
-          "org-space": 3,
-          "org-underscore": 2,
-          "org-punctuation": 1,
-        },
-      ],
-    },
-    error: null,
-  });
+	it('recusa sessão ausente antes de acessar os dados', async () => {
+		mocks.getCurrentUserFromRequest.mockResolvedValue(null);
+
+		const response = await GET(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/home?startDate=2026-08-01&endDate=2026-08-01`));
+
+		expect(response.status).toBe(401);
+		expect(mocks.getResultsByOrganization).not.toHaveBeenCalled();
+	});
 });

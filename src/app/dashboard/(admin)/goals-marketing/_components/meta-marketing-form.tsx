@@ -31,18 +31,9 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 const formSchema = z.object({
-	roas: z.number({
-		coerce: true,
-		required_error: 'É necessário incluir uma meta de roas',
-	}),
-	month: z.number({
-		coerce: true,
-		required_error: 'É necessário incluir um mês',
-	}),
-	year: z.number({
-		coerce: true,
-		required_error: 'É necessário incluir um ano',
-	}),
+	roas: z.coerce.number<number>({ error: 'É necessário incluir uma meta de roas' }),
+	month: z.coerce.number<number>({ error: 'É necessário incluir um mês' }),
+	year: z.coerce.number<number>({ error: 'É necessário incluir um ano' }),
 });
 
 const MONTHS = [

@@ -17,7 +17,7 @@ describe("readMultipartCsv", () => {
       new Blob(["header,value\none,two"], { type: "text/csv" }),
       "orders.csv",
     );
-    const request = new NextRequest("http://localhost/api/upload", {
+    const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
       method: "POST",
       body: formData,
     });
@@ -36,7 +36,7 @@ describe("readMultipartCsv", () => {
       },
       { highWaterMark: 0 },
     );
-    const request = new NextRequest("http://localhost/api/upload", {
+    const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
       method: "POST",
       headers: {
         ...multipartHeaders("declared-limit"),
@@ -70,7 +70,7 @@ describe("readMultipartCsv", () => {
         controller.close();
       },
     });
-    const request = new NextRequest("http://localhost/api/upload", {
+    const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
       method: "POST",
       headers: multipartHeaders(boundary),
       body: stream,
@@ -83,7 +83,7 @@ describe("readMultipartCsv", () => {
   it("rejects a multipart request without the csv field", async () => {
     const formData = new FormData();
     formData.set("not-csv", "value");
-    const request = new NextRequest("http://localhost/api/upload", {
+    const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
       method: "POST",
       body: formData,
     });

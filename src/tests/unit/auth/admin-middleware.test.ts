@@ -9,7 +9,7 @@ vi.mock("next-auth/jwt", () => ({ getToken: mocks.getToken }));
 import { config, proxy } from "@/proxy";
 
 function request(path: string) {
-  return new NextRequest(`http://localhost${path}`);
+  return new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}${path}`);
 }
 
 describe("admin proxy", () => {
@@ -58,7 +58,7 @@ describe("admin proxy", () => {
     const response = await proxy(request("/dashboard/comercial"));
 
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("http://localhost/sign-in");
+    expect(response.headers.get("location")).toBe(`${process.env.NEXT_PUBLIC_API_URL}/sign-in`);
   });
 
   it("treats an invalid JWT as unauthenticated", async () => {
@@ -67,7 +67,7 @@ describe("admin proxy", () => {
     const response = await proxy(request("/dashboard/comercial"));
 
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("http://localhost/sign-in");
+    expect(response.headers.get("location")).toBe(`${process.env.NEXT_PUBLIC_API_URL}/sign-in`);
   });
 
   it("redirects an active manager from an admin route to dashboard", async () => {
@@ -76,7 +76,7 @@ describe("admin proxy", () => {
     const response = await proxy(request("/dashboard/users"));
 
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("http://localhost/dashboard");
+    expect(response.headers.get("location")).toBe(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`);
   });
 
   it.each(["/dashboard/%75sers", "/dashboard%2Fusers"])(
@@ -87,7 +87,7 @@ describe("admin proxy", () => {
       const response = await proxy(request(url));
 
       expect(response.status).toBe(307);
-      expect(response.headers.get("location")).toBe("http://localhost/dashboard");
+      expect(response.headers.get("location")).toBe(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`);
     },
   );
 
@@ -115,7 +115,7 @@ describe("admin proxy", () => {
       const response = await proxy(request(url));
 
       expect(response.status).toBe(307);
-      expect(response.headers.get("location")).toBe("http://localhost/dashboard");
+      expect(response.headers.get("location")).toBe(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`);
     },
   );
 
@@ -127,7 +127,7 @@ describe("admin proxy", () => {
       const response = await proxy(request(url));
 
       expect(response.status).toBe(307);
-      expect(response.headers.get("location")).toBe("http://localhost/dashboard");
+      expect(response.headers.get("location")).toBe(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`);
     },
   );
 

@@ -1,31 +1,12 @@
-/** @format */
+import { requireActiveUser } from '@/lib/auth';
+import type { PeriodFilters } from '@/services/app-read-contracts';
+import { getGoogleAnalyticsData } from '@/services/google-services/shared-operations';
+
+export { getGoogleAnalyticsData } from '@/services/google-services/shared-operations';
 
 export async function FetchAnalyticsData(startDate: string, endDate: string) {
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const response = await fetch(
-		`${baseURL}/api/services/google-services/get-analytics-data?startDate=${startDate}&endDate=${endDate}`,
-		{
-			method: 'GET',
-			next: { revalidate: 30 },
-		},
-	);
+	const user = await requireActiveUser();
+	const filters: PeriodFilters = { startDate, endDate };
 
-	if (!response.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado - Erro interno do servidor',
-		};
-	}
-
-	const data = await response.json();
-
-	if (!data.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado ' + data.error,
-		};
-	}
-	return data;
+	return getGoogleAnalyticsData(user, filters);
 }

@@ -1,97 +1,46 @@
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
-  salesGoalFindMany: vi.fn(),
-  pedidoFindMany: vi.fn(),
-  roasGoalFindFirst: vi.fn(),
-  getMarketingReportAggregate: vi.fn(),
+	getCurrentUserForRequest: vi.fn(),
+	getGoalsCurrent: vi.fn(),
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
-    salesGoal: { findMany: mocks.salesGoalFindMany },
-    pedido: { findMany: mocks.pedidoFindMany },
-    roasGoal: { findFirst: mocks.roasGoalFindFirst },
-  },
+vi.mock('@/lib/auth', () => ({
+	getCurrentUserForRequest: mocks.getCurrentUserForRequest,
 }));
 
-vi.mock("@/services/marketing-report/get-marketing-report-aggregate", () => ({
-  getMarketingReportAggregate: mocks.getMarketingReportAggregate,
-}));
+vi.mock('@/services/data-services/goals-shared-services', async () => {
+	const actual = await vi.importActual<typeof import('@/services/data-services/goals-shared-services')>('@/services/data-services/goals-shared-services');
 
-import { GET } from "@/app/api/services/data-services/goals-current/route";
-
-beforeEach(() => {
-  vi.useFakeTimers();
-  vi.setSystemTime(new Date("2026-08-03T15:00:00.000Z"));
-  mocks.salesGoalFindMany.mockResolvedValue([]);
-  mocks.pedidoFindMany.mockResolvedValue([]);
-  mocks.roasGoalFindFirst.mockResolvedValue(null);
-  mocks.getMarketingReportAggregate.mockResolvedValue({
-    ok: false,
-    data: null,
-    error: "Nenhum investimento META encontrado para o mes 2026-08-01",
-  });
+	return { ...actual, getGoalsCurrent: mocks.getGoalsCurrent };
 });
 
-afterEach(() => {
-  vi.useRealTimers();
-});
+import { GET } from '@/app/api/services/data-services/goals-current/route';
 
-test("uses São Paulo's current civil day for August goals, orders, and ROAS", async () => {
-  const response = await GET();
+const user = { id: 'manager-1', role: 'MANAGER' as const, isActive: true };
 
-  expect(response.status).toBe(200);
-  expect(mocks.salesGoalFindMany).toHaveBeenCalledWith({
-    where: {
-      goalDateRef: {
-        gte: new Date("2026-08-01T00:00:00.000Z"),
-        lt: new Date("2026-09-01T00:00:00.000Z"),
-      },
-    },
-  });
-  expect(mocks.roasGoalFindFirst).toHaveBeenCalledWith({
-    where: {
-      goalDateRef: {
-        gte: new Date("2026-08-01T00:00:00.000Z"),
-        lt: new Date("2026-09-01T00:00:00.000Z"),
-      },
-    },
-  });
-  expect(mocks.pedidoFindMany).toHaveBeenCalledWith({
-    where: {
-      data_pedido: {
-        gte: new Date("2026-08-01T00:00:00.000Z"),
-        lte: new Date("2026-08-03T00:00:00.000Z"),
-      },
-      cancelled: false,
-    },
-    include: { items: true },
-  });
-  expect(mocks.getMarketingReportAggregate).toHaveBeenCalledWith({
-    date: "2026-08-03",
-  });
-  await expect(response.json()).resolves.toMatchObject({
-    ok: true,
-    data: { roas: { currentRoas: 0 } },
-  });
-});
+describe('rota de metas correntes', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		mocks.getCurrentUserForRequest.mockResolvedValue(user);
+		mocks.getGoalsCurrent.mockResolvedValue({ ok: true, data: { commercial: {}, roas: {} }, error: null });
+	});
 
-test("does not advance the business date before São Paulo midnight", async () => {
-  vi.setSystemTime(new Date("2026-08-03T02:30:00.000Z"));
+	it('usa a sessão da requisição e repassa o escopo ao serviço', async () => {
+		const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/goals-current?scope=services`);
+		const response = await GET(request);
 
-  await GET();
+		expect(response.status).toBe(200);
+		expect(mocks.getGoalsCurrent).toHaveBeenCalledWith(user, 'services');
+	});
 
-  expect(mocks.pedidoFindMany).toHaveBeenCalledWith(
-    expect.objectContaining({
-      where: expect.objectContaining({
-        data_pedido: expect.objectContaining({
-          lte: new Date("2026-08-02T00:00:00.000Z"),
-        }),
-      }),
-    }),
-  );
-  expect(mocks.getMarketingReportAggregate).toHaveBeenCalledWith({
-    date: "2026-08-02",
-  });
+	it('não consulta metas quando a sessão está ausente', async () => {
+		mocks.getCurrentUserForRequest.mockResolvedValue(null);
+
+		const response = await GET(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/goals-current`));
+
+		expect(response.status).toBe(401);
+		expect(mocks.getGoalsCurrent).not.toHaveBeenCalled();
+	});
 });

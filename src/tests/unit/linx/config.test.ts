@@ -15,6 +15,16 @@ describe("Linx server config", () => {
     expect(() => readLinxConfig()).toThrow("LINX_API_KEY");
   });
 
+  it("accepts the GUID format issued by Linx after the Zod 4 upgrade", () => {
+    vi.stubEnv("LINX_API_KEY", "12345678-1234-1234-1234-123456789abc");
+    vi.stubEnv("LINX_API_USER", "user");
+    vi.stubEnv("LINX_API_PASSWORD", "password");
+
+    expect(readLinxConfig().key).toBe(
+      "12345678-1234-1234-1234-123456789abc",
+    );
+  });
+
   it("does not expose credentials in the public view", () => {
     vi.stubEnv("LINX_API_KEY", "00000000-0000-4000-8000-000000000000");
     vi.stubEnv("LINX_API_USER", "user");

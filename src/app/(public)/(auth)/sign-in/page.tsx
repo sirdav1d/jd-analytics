@@ -6,7 +6,29 @@ import { SignInForm } from './_components/sign-in-form';
 import Image from 'next/image';
 import svg from '@/assets/data-analysis.svg';
 
-export default function SignIn() {
+type SignInProps = {
+	searchParams: Promise<{ callbackUrl?: string | string[] }>;
+};
+
+function resolveSafeCallbackUrl(value: string | undefined) {
+	if (!value || !value.startsWith('/') || value.startsWith('//') || /[\u0000-\u001F\\]/u.test(value)) return '/dashboard';
+	try {
+		const parsed = new URL(value, 'https://jd.local');
+		if (parsed.origin !== 'https://jd.local') return '/dashboard';
+	} catch {
+		return '/dashboard';
+	}
+
+	return value;
+}
+
+export default async function SignIn({ searchParams }: SignInProps) {
+	const params = await searchParams;
+	const callbackValue = typeof params.callbackUrl === 'string'
+		? params.callbackUrl
+		: undefined;
+	const callbackUrl = resolveSafeCallbackUrl(callbackValue);
+
 	return (
 		<div className='grid min-h-svh lg:grid-cols-2'>
 			<div className='flex flex-col gap-4 p-6 md:p-10'>
@@ -24,7 +46,7 @@ export default function SignIn() {
 						</p>
 
 						<div className='w-full max-w-xs text-left mt-5'>
-							<SignInForm />
+							<SignInForm callbackUrl={callbackUrl} />
 						</div>
 					</div>
 				</div>
