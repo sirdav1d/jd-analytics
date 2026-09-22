@@ -44,4 +44,7 @@ yarn-error.log*
 next-env.d.ts
 
 
-/docs*
+# Local documentation and planning artifacts
+/docs/
+
+certificates
