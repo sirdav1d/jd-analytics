@@ -33,10 +33,7 @@ import z from 'zod';
 const formSchema = z.object({
 	periodEnd: z.string().nonempty('Selecione a data final (inclusive)'),
 	totalInvestment: z
-		.number({
-			coerce: true,
-			required_error: 'Informe o valor acumulado do período',
-		})
+		.coerce.number<number>({ error: 'Informe o valor acumulado do período' })
 		.positive('Informe um valor maior que zero'),
 });
 

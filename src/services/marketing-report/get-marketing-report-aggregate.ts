@@ -1,6 +1,7 @@
 /** @format */
 
 import { prisma } from '@/lib/prisma';
+import { assertActiveUser, type AuthorizedUser } from '@/lib/authorization';
 import { readGoogleAccountSpend } from '@/services/marketing-spend/google';
 import { startOfMonth, subMonths } from 'date-fns';
 
@@ -276,4 +277,13 @@ export async function getMarketingReportAggregate(
 			error: 'Erro ao agregar dados do relat\u00f3rio de marketing',
 		};
 	}
+}
+
+export async function getAuthenticatedMarketingReport(
+	user: AuthorizedUser,
+	filters?: MarketingReportAggregateFilters,
+) {
+	assertActiveUser(user);
+
+	return getMarketingReportAggregate(filters);
 }

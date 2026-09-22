@@ -1,58 +1,54 @@
-import { beforeEach, expect, test, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
-  queryRaw: vi.fn(),
+	getCurrentUserFromRequest: vi.fn(),
+	getCommercialSalesBy: vi.fn(),
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: { $queryRaw: mocks.queryRaw },
+vi.mock('@/lib/auth', () => ({
+	getCurrentUserFromRequest: mocks.getCurrentUserFromRequest,
 }));
 
-import { GET } from "@/app/api/services/data-services/comercial-sales-by/route";
+vi.mock('@/services/data-services/shared-read-services', async () => {
+	const actual = await vi.importActual<typeof import('@/services/data-services/shared-read-services')>('@/services/data-services/shared-read-services');
 
-beforeEach(() => {
-  const responses = [
-    [{ person_type: "FISICA", revenue: "266" }],
-    [{ sector: "GERAL", revenue: "266" }],
-    [{ method: "PIX", revenue: "266" }],
-    [{ tipo: "Produto", revenue: "266" }],
-    [{ revenue: "100", clients: 1 }],
-    [{ revenue: "166", clients: 2 }],
-    [{ label: "2026-08-01", revenue: "266" }],
-  ];
-
-  mocks.queryRaw.mockImplementation(async (query: { values: unknown[] }) => {
-    const usesCivilDateBoundaries =
-      query.values.filter((value) => value === "2026-08-01").length >= 2;
-    return usesCivilDateBoundaries ? responses.shift() ?? [] : [];
-  });
+	return { ...actual, getCommercialSalesBy: mocks.getCommercialSalesBy };
 });
 
-test("returns every commercial chart series without shifting a DATE column by timezone", async () => {
-  const response = await GET(
-    new NextRequest(
-      "http://localhost/api/services/data-services/comercial-sales-by?startDate=2026-08-01&endDate=2026-08-01&category=all&customerType=all&org=all",
-    ),
-  );
+import { GET } from '@/app/api/services/data-services/comercial-sales-by/route';
 
-  expect(response.status).toBe(200);
-  await expect(response.json()).resolves.toEqual({
-    ok: true,
-    data: {
-      salesByClient: [
-        { type: "FISICA", revenue: 266 },
-        { type: "JURIDICA", revenue: 0 },
-      ],
-      salesByCategory: [{ category: "GERAL", revenue: 266 }],
-      SalesByPayment: [{ method: "PIX", revenue: 266 }],
-      salesByItemType: [{ type: "Produto", revenue: 266 }],
-      salesByClientType: [
-        { type: "Novo", clients: 1, revenue: 100 },
-        { type: "Recorrente", clients: 2, revenue: 166 },
-      ],
-      revenueOverTime: [{ label: "2026-08-01", revenue: 266 }],
-    },
-    error: null,
-  });
+const user = { id: 'seller-1', role: 'SELLER' as const, isActive: true };
+
+describe('rota de dimensões comerciais', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		mocks.getCurrentUserFromRequest.mockResolvedValue(user);
+		mocks.getCommercialSalesBy.mockResolvedValue({ ok: true, data: { revenueOverTime: [] }, error: null });
+	});
+
+	it('autentica e delega os filtros ao serviço compartilhado', async () => {
+		const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/comercial-sales-by?startDate=2026-08-01&endDate=2026-08-01&category=all&customerType=all&org=all`);
+
+		const response = await GET(request);
+
+		expect(response.status).toBe(200);
+		expect(mocks.getCommercialSalesBy).toHaveBeenCalledWith(user, {
+			startDate: '2026-08-01',
+			endDate: '2026-08-01',
+			category: 'all',
+			customerType: 'all',
+			org: 'all',
+		});
+		await expect(response.json()).resolves.toMatchObject({ ok: true, error: null });
+	});
+
+	it('recusa a chamada sem sessão antes do serviço', async () => {
+		mocks.getCurrentUserFromRequest.mockResolvedValue(null);
+
+		const response = await GET(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/comercial-sales-by?startDate=2026-08-01&endDate=2026-08-01&category=all&customerType=all&org=all`));
+
+		expect(response.status).toBe(401);
+		expect(mocks.getCommercialSalesBy).not.toHaveBeenCalled();
+	});
 });

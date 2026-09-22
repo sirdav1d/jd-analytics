@@ -41,6 +41,8 @@ model User {
   isActive              Boolean              @default(true)
   requestedLinxSyncRuns LinxSyncRun[]        @relation("LinxSyncRequestedBy")
   passwordResetTokens   PasswordResetToken[]
+  mcpAuthorizationCodes McpAuthorizationCode[]
+  mcpRefreshTokens      McpRefreshToken[]
 }
 
 model Customer {
@@ -266,4 +268,46 @@ model MetaInvestment {
   updatedAt       DateTime @updatedAt
 
   @@unique([periodStart])
+}
+
+model McpOAuthClient {
+  clientId     String   @id
+  clientName   String
+  redirectUris String[]
+  grantTypes   String[]
+  createdAt    DateTime @default(now())
+}
+
+model McpAuthorizationCode {
+  codeHash      String    @id
+  userId        String
+  clientId      String
+  redirectUri   String
+  resource      String
+  scope         String
+  codeChallenge String
+  allowRefresh  Boolean
+  expiresAt     DateTime
+  consumedAt    DateTime?
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model McpRefreshToken {
+  tokenHash  String    @id
+  familyId   String
+  userId     String
+  clientId   String
+  resource   String
+  scope      String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  revokedAt  DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+  @@index([userId])
+  @@index([expiresAt])
 }

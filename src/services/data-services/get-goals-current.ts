@@ -1,36 +1,17 @@
-/** @format */
-
+import { requireActiveUser } from '@/lib/auth';
+import {
+	getGoalsCurrent,
+	type GoalsCurrentResponse,
+} from '@/services/data-services/goals-shared-services';
 import type { GoogleAdsScope } from '@/lib/google-ads-account';
 
+export { getGoalsCurrent } from '@/services/data-services/goals-shared-services';
+export type { GoalsCurrentResponse } from '@/services/data-services/goals-shared-services';
+
 export async function FetchGoalsCurrentData(
-	_scope: GoogleAdsScope = 'products',
-) {
-	void _scope;
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const response = await fetch(
-		`${baseURL}/api/services/data-services/goals-current`,
-		{
-			method: 'GET',
-			next: { revalidate: 30, tags: ['goals-current'] },
-		},
-	);
+	scope: GoogleAdsScope = 'products',
+): Promise<GoalsCurrentResponse> {
+	const user = await requireActiveUser();
 
-	if (!response.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado - Erro interno do servidor',
-		};
-	}
-
-	const data = await response.json();
-
-	if (!data.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado ' + data.error,
-		};
-	}
-	return data;
+	return getGoalsCurrent(user, scope);
 }

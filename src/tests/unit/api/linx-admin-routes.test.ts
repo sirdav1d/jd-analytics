@@ -102,7 +102,7 @@ const admin = {
 };
 
 function makeRequest(path = "/api/admin/linx/status", init?: RequestInit) {
-  return new Request(`http://localhost${path}`, init);
+  return new Request(`${process.env.NEXT_PUBLIC_API_URL}${path}`, init);
 }
 
 function jsonRequest(path: string, body: unknown) {

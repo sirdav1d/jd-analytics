@@ -1,25 +1,15 @@
-/** @format */
+import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentUserForRequest } from '@/lib/auth';
+import { getCommercialGoalTargets } from '@/services/data-services/get-goal-target';
+import { assertActiveAdmin } from '@/lib/authorization';
+import { serviceErrorResponse } from '@/app/api/services/response';
 
-import { requireAdmin } from '@/lib/auth';
-import { AuthorizationError } from '@/lib/authorization';
-import { FetchGoalTargetData } from '@/services/data-services/get-goal-target';
-import { NextResponse } from 'next/server';
-
-export async function GET() {
+export async function GET(request?: NextRequest) {
 	try {
-		await requireAdmin();
-		return NextResponse.json(await FetchGoalTargetData());
-	} catch (err: unknown) {
-		if (err instanceof AuthorizationError) {
-			return NextResponse.json({ error: err.message }, { status: err.status });
-		}
-		console.error(err);
-		return NextResponse.json(
-			{
-				ok: false,
-				error: err instanceof Error ? err.message : 'Erro interno do servidor',
-			},
-			{ status: 500 },
-		);
+		const currentUser = await getCurrentUserForRequest(request);
+		assertActiveAdmin(currentUser);
+		return NextResponse.json(await getCommercialGoalTargets(currentUser));
+	} catch (error) {
+		return serviceErrorResponse(error, 'GET goal-target');
 	}
 }

@@ -13,6 +13,16 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/auth", () => ({
+	getCurrentUserFromRequest: vi.fn(async () => ({
+		id: "seller",
+		role: "SELLER",
+		isActive: true,
+	})),
+	getCurrentUserForRequest: vi.fn(async () => ({
+		id: "seller",
+		role: "SELLER",
+		isActive: true,
+	})),
 	requireAdmin: vi.fn(async () => {
 		throw new AuthorizationError(403, "Acesso restrito a administradores");
 	}),
@@ -50,14 +60,14 @@ const assertNoEffect = () => {
 
 describe("administrative surfaces for active non-admins", () => {
 	it.each([
-		["CSV uploads", () => import("@/app/api/upload/route").then(({ POST }) => POST(new NextRequest("http://localhost/api/upload", { method: "POST" })) )],
-		["origin CSV uploads", () => import("@/app/api/upload-origin/route").then(({ POST }) => POST(new NextRequest("http://localhost/api/upload-origin", { method: "POST" })) )],
+		["CSV uploads", () => import("@/app/api/upload/route").then(({ POST }) => POST(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, { method: "POST" })) )],
+		["origin CSV uploads", () => import("@/app/api/upload-origin/route").then(({ POST }) => POST(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/upload-origin`, { method: "POST" })) )],
 		["user listing", () => import("@/app/api/services/user-get-all/route").then(({ GET }) => GET())],
-		["Meta investment listing", () => import("@/app/api/services/meta-investments/route").then(({ GET }) => GET(new NextRequest("http://localhost/api/services/meta-investments")))],
+		["Meta investment listing", () => import("@/app/api/services/meta-investments/route").then(({ GET }) => GET(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/meta-investments`)))],
 		["sales goal reporting", () => import("@/app/api/services/data-services/goal-target/route").then(({ GET }) => GET())],
-		["marketing goal reporting", () => import("@/app/api/services/data-services/marketing-goal/route").then(({ GET }) => GET(new NextRequest("http://localhost/api/services/data-services/marketing-goal")))],
+		["marketing goal reporting", () => import("@/app/api/services/data-services/marketing-goal/route").then(({ GET }) => GET(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/marketing-goal`)))],
 		["Google OAuth initiation", () => import("@/app/api/auth/login-google/route").then(({ GET }) => GET())],
-		["Google OAuth callback", () => import("@/app/api/auth/callback/route").then(({ GET }) => GET(new NextRequest("http://localhost/api/auth/callback?code=secret")))],
+		["Google OAuth callback", () => import("@/app/api/auth/callback/route").then(({ GET }) => GET(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/callback?code=secret`)))],
 	])("returns 403 before running %s", async (_surface, invoke) => {
 		const response = await invoke();
 

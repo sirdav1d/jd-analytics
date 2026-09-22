@@ -1,38 +1,17 @@
-/** @format */
-
+import { requireActiveUser } from '@/lib/auth';
 import type { GoogleAdsScope } from '@/lib/google-ads-account';
+import type { GoogleAdsFilters } from '@/services/app-read-contracts';
+import { getGoogleTopAds } from '@/services/google-services/shared-operations';
+
+export { getGoogleTopAds } from '@/services/google-services/shared-operations';
 
 export async function FetchTopADSData(
 	startDate: string,
 	endDate: string,
 	scope: GoogleAdsScope = 'products',
 ) {
-	const baseURL = process.env.NEXT_PUBLIC_API_URL;
-	const response = await fetch(
-		`${baseURL}/api/services/google-services/top-ads?startDate=${startDate}&endDate=${endDate}&scope=${scope}`,
-		{
-			method: 'GET',
-			next: { revalidate: 60 },
-		},
-	);
+	const user = await requireActiveUser();
+	const filters: GoogleAdsFilters = { startDate, endDate, scope, campaignId: 'all' };
 
-	if (!response.ok) {
-		console.log(response);
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado - Erro interno do servidor',
-		};
-	}
-
-	const dataADS = await response.json();
-
-	if (!dataADS.ok) {
-		return {
-			ok: false,
-			data: null,
-			error: 'Algo deu errado ' + dataADS.error,
-		};
-	}
-	return dataADS;
+	return getGoogleTopAds(user, filters);
 }

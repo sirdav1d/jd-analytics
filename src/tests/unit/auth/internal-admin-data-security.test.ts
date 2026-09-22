@@ -102,7 +102,7 @@ describe("backend administrative authorization", () => {
 
 		const response = await GET(
 			new NextRequest(
-				"http://localhost/api/services/data-services/marketing-goal?scope=services",
+				`${process.env.NEXT_PUBLIC_API_URL}/api/services/data-services/marketing-goal?scope=services`,
 			),
 		);
 

@@ -13,7 +13,7 @@ const optionalTransactionType = z.preprocess(
 );
 
 const movementRowSchema = z.object({
-  identificador: z.string().uuid(),
+  identificador: z.guid(),
   transacao: integer.optional(),
   timestamp: z.string().regex(/^\d+$/).transform(BigInt),
   documento: text,

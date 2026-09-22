@@ -19,14 +19,14 @@ import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useTransition } from 'react';
-import { useForm } from 'react-hook-form';
+import { type Resolver, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 const requestSchema = z.object({
 	email: z
-		.string({ coerce: true, required_error: 'Este campo é obrigatório' })
-		.email({ message: 'Este campo é obrigatório' }),
+		.coerce.string<string>({ error: 'Este campo é obrigatório' })
+		.pipe(z.email({ error: 'Este campo é obrigatório' })),
 });
 const redeemSchema = z.object({
 	newPassword: z.string().min(12, 'Use pelo menos 12 caracteres'),
@@ -36,18 +36,20 @@ const redeemSchema = z.object({
 	path: ['confirmPassword'],
 });
 
+type ResetPassFormValues = {
+	email?: string;
+	newPassword?: string;
+	confirmPassword?: string;
+};
+
 export function ResetPassForm({
 	token,
 	className,
 	...props
 }: React.ComponentPropsWithoutRef<'form'> & { token?: string }) {
 	const [isPending, startTransition] = useTransition();
-	const form = useForm<{
-		email?: string;
-		newPassword?: string;
-		confirmPassword?: string;
-	}>({
-		resolver: zodResolver(token ? redeemSchema : requestSchema),
+	const form = useForm<ResetPassFormValues>({
+		resolver: zodResolver(token ? redeemSchema : requestSchema) as Resolver<ResetPassFormValues>,
 		defaultValues: {
 			email: '',
 			newPassword: '',
@@ -55,11 +57,7 @@ export function ResetPassForm({
 		},
 	});
 
-	async function onSubmit(values: {
-		email?: string;
-		newPassword?: string;
-		confirmPassword?: string;
-	}) {
+	async function onSubmit(values: ResetPassFormValues) {
 		startTransition(async () => {
 			try {
 				if (token) {

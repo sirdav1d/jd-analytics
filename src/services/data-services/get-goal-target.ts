@@ -2,6 +2,8 @@
 
 import 'server-only';
 import { Prisma } from '@prisma/client';
+import { assertActiveAdmin, type AuthorizedUser } from '@/lib/authorization';
+import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { formatBusinessCivilDate } from '@/services/data-services/civil-date-range';
 
@@ -25,7 +27,7 @@ function monthReference(month: string) {
 	return `${month}-01T00:00:00.000Z`;
 }
 
-export async function FetchGoalTargetData(now: Date = new Date()) {
+async function loadGoalTargetData(now: Date = new Date()) {
 	const today = formatBusinessCivilDate(now);
 	const currentMonth = today.slice(0, 7);
 	const currentMonthStart = `${currentMonth}-01`;
@@ -124,4 +126,19 @@ export async function FetchGoalTargetData(now: Date = new Date()) {
 			goals: monthlyGoals,
 		})),
 	};
+}
+
+export async function getCommercialGoalTargets(
+	user: AuthorizedUser,
+	now: Date = new Date(),
+) {
+	assertActiveAdmin(user);
+
+	return loadGoalTargetData(now);
+}
+
+export async function FetchGoalTargetData(now: Date = new Date()) {
+	await requireAdmin();
+
+	return loadGoalTargetData(now);
 }

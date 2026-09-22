@@ -68,7 +68,7 @@ const routes = [
 ] as const;
 
 function request(path: string) {
-  return new NextRequest(`http://localhost${path}`, { method: "POST" });
+  return new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}${path}`, { method: "POST" });
 }
 
 beforeEach(() => {

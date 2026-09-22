@@ -72,7 +72,7 @@ describe("Google OAuth routes", () => {
 
 		const response = await callback(
 			new NextRequest(
-				"http://localhost/api/auth/callback?code=code-from-attacker&state=wrong-state",
+				`${process.env.NEXT_PUBLIC_API_URL}/api/auth/callback?code=code-from-attacker&state=wrong-state`,
 				{ headers: { cookie } },
 			),
 		);
@@ -93,7 +93,7 @@ describe("Google OAuth routes", () => {
 
 		const response = await callback(
 			new NextRequest(
-				`http://localhost/api/auth/callback?code=valid-code&state=${state}`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/auth/callback?code=valid-code&state=${state}`,
 				{ headers: { cookie } },
 			),
 		);
@@ -118,7 +118,7 @@ describe("Google OAuth routes", () => {
 
 		const response = await callback(
 			new NextRequest(
-				`http://localhost/api/auth/callback?code=valid-code&state=${state}`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/auth/callback?code=valid-code&state=${state}`,
 				{ headers: { cookie } },
 			),
 		);
@@ -139,7 +139,7 @@ describe("Google OAuth routes", () => {
 
 		const response = await callback(
 			new NextRequest(
-				`http://localhost/api/auth/callback?code=valid-code&state=${state}`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/auth/callback?code=valid-code&state=${state}`,
 				{ headers: { cookie } },
 			),
 		);

@@ -1,140 +1,47 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
-	report: vi.fn(),
-	pedidoFindMany: vi.fn(),
-	getAuthenticatedClient: vi.fn(),
+	getCurrentUserFromRequest: vi.fn(),
+	getGoogleAdsData: vi.fn(),
 }));
 
-vi.mock("@/lib/google-ads-account", () => ({
-	resolveGoogleAdsAccount: () => ({
-		customerId: "customer-id",
-		managerId: "manager-id",
-	}),
+vi.mock('@/lib/auth', () => ({
+	getCurrentUserFromRequest: mocks.getCurrentUserFromRequest,
 }));
 
-vi.mock("@/lib/google-authenticated-client", () => ({
-	getAuthenticatedClient: mocks.getAuthenticatedClient,
-}));
+vi.mock('@/services/google-services/shared-operations', async () => {
+	const actual = await vi.importActual<typeof import('@/services/google-services/shared-operations')>('@/services/google-services/shared-operations');
 
-vi.mock("@/lib/prisma", () => ({
-	prisma: { pedido: { findMany: mocks.pedidoFindMany } },
-}));
+	return { ...actual, getGoogleAdsData: mocks.getGoogleAdsData };
+});
 
-vi.mock("google-ads-api", () => ({
-	Constraints: {},
-	enums: { CampaignStatus: { ENABLED: "ENABLED" } },
-	GoogleAdsApi: class {
-		Customer() {
-			return { report: mocks.report };
-		}
-	},
-}));
+import { GET } from '@/app/api/services/google-services/get-ads-data/route';
 
-describe("Google Ads metrics route", () => {
+const user = { id: 'manager-1', role: 'MANAGER' as const, isActive: true };
+const filters = { startDate: '2026-08-01', endDate: '2026-08-31', scope: 'products' as const, campaignId: 'all' };
+
+describe('rota Google Ads', () => {
 	beforeEach(() => {
-		mocks.report.mockReset();
-		mocks.pedidoFindMany.mockReset().mockResolvedValue([]);
-		mocks.getAuthenticatedClient.mockReset().mockResolvedValue({
-			refreshToken: "refresh-token",
-		});
+		vi.clearAllMocks();
+		mocks.getCurrentUserFromRequest.mockResolvedValue(user);
+		mocks.getGoogleAdsData.mockResolvedValue({ ok: true, data: { dataADS: {} }, error: null });
 	});
 
-	it("returns every metric when the current period has no Google Ads rows", async () => {
-		mocks.report
-			.mockResolvedValueOnce([])
-			.mockResolvedValueOnce([])
-			.mockResolvedValueOnce([
-				{
-					metrics: {
-						ctr: 0.1,
-						impressions: 100,
-						clicks: 10,
-						cost_micros: 1_000_000,
-						conversions: 2,
-					},
-				},
-			]);
+	it('usa autenticação do app e delega os filtros ao serviço Google compartilhado', async () => {
+		const request = new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/google-services/get-ads-data?startDate=2026-08-01&endDate=2026-08-31&scope=products&campaignId=all`);
+		const response = await GET(request);
 
-		const { GET } = await import(
-			"@/app/api/services/google-services/get-ads-data/route"
-		);
-		const response = await GET(
-			new NextRequest(
-				"http://internal.test/api/services/google-services/get-ads-data?startDate=2026-08-01&endDate=2026-08-01&scope=products",
-			),
-		);
-		const body = await response.json();
-
-		expect(body.ok).toBe(true);
-		expect(body.data.dataADS).toEqual({
-			ctr: { current: 0, previous: 0.1, diff: -0.1, percentChange: -100 },
-			impressions: {
-				current: 0,
-				previous: 100,
-				diff: -100,
-				percentChange: -100,
-			},
-			clicks: { current: 0, previous: 10, diff: -10, percentChange: -100 },
-			cost_micros: {
-				current: 0,
-				previous: 1_000_000,
-				diff: -1_000_000,
-				percentChange: -100,
-			},
-			conversions: {
-				current: 0,
-				previous: 2,
-				diff: -2,
-				percentChange: -100,
-			},
-		});
+		expect(response.status).toBe(200);
+		expect(mocks.getGoogleAdsData).toHaveBeenCalledWith(user, filters);
 	});
 
-	it("calculates ROAS with ERP sales from the requested civil day", async () => {
-		mocks.report
-			.mockResolvedValueOnce([])
-			.mockResolvedValueOnce([
-				{ metrics: { cost_micros: 1_000_000 } },
-			])
-			.mockResolvedValueOnce([
-				{ metrics: { cost_micros: 1_000_000 } },
-			]);
-		mocks.pedidoFindMany.mockImplementation(async ({ where }) => {
-			const { gte, lte } = where.data_pedido;
-			const start = gte.toISOString();
-			const end = lte.toISOString();
-			if (
-				start === "2026-08-01T00:00:00.000Z" &&
-				end === "2026-08-01T00:00:00.000Z"
-			) {
-				return [{ items: [{ totalValue: 266 }] }];
-			}
-			if (
-				start === "2026-07-01T00:00:00.000Z" &&
-				end === "2026-07-01T00:00:00.000Z"
-			) {
-				return [{ items: [{ totalValue: 100 }] }];
-			}
-			return [];
-		});
+	it('não abre a integração para sessão ausente', async () => {
+		mocks.getCurrentUserFromRequest.mockResolvedValue(null);
 
-		const { GET } = await import(
-			"@/app/api/services/google-services/get-ads-data/route"
-		);
-		const response = await GET(
-			new NextRequest(
-				"http://internal.test/api/services/google-services/get-ads-data?startDate=2026-08-01&endDate=2026-08-01&scope=products",
-			),
-		);
-		const body = await response.json();
+		const response = await GET(new NextRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/services/google-services/get-ads-data?startDate=2026-08-01&endDate=2026-08-31&scope=products&campaignId=all`));
 
-		expect(body.data.roas).toEqual({
-			current: 266,
-			previous: 100,
-			diff: 166,
-			percentChange: 166,
-		});
+		expect(response.status).toBe(401);
+		expect(mocks.getGoogleAdsData).not.toHaveBeenCalled();
 	});
 });
